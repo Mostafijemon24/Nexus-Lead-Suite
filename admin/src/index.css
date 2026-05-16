@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--sidebar: #0b1120;
+	--sidebar-border: rgba(255, 255, 255, 0.08);
+	--sidebar-active: #5b21b6;
+}
+
+.bg-sidebar {
+	background-color: var(--sidebar);
+}
+
+.border-sidebar-border {
+	border-color: var(--sidebar-border);
+}
+
+.bg-sidebar-active {
+	background-color: var(--sidebar-active);
+}
