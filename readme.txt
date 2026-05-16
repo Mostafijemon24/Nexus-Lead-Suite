@@ -18,6 +18,26 @@ Nexus Lead Suite helps you capture Leads, record Interactions, manage Submission
 * Admin tools built as a modern single-page experience.
 * Public-facing scripts use vanilla JavaScript only (no front-end framework bloat).
 
+== Source Code ==
+
+The WordPress admin single-page app is distributed as a production build:
+
+* `assets/admin/js/main.js` — JavaScript bundle (minified; built with Vite and React)
+* `assets/admin/css/main.css` — compiled styles (built with Vite)
+
+Human-readable source (JSX components, styles, and build configuration) is available in this public repository:
+
+https://github.com/Mostafijemon24/Nexus-Lead-Suite/tree/main/admin/src
+
+To rebuild the admin assets from source:
+
+1. Clone the repository above.
+2. `cd admin` then run `npm ci`
+3. Build for production: `npm run build`
+4. Output is written to `assets/admin/js/main.js` and `assets/admin/css/main.css` (see `admin/vite.config.js`).
+
+For local development with hot reload, run `npm run dev` and add `define( 'NEXUS_LS_VITE_DEV', true );` to `wp-config.php` (see `admin/class-admin-app.php`).
+
 == Installation ==
 
 1. Upload the plugin files to the `/wp-content/plugins/nexus-lead-suite` directory, or install the plugin through the WordPress plugins screen directly.
