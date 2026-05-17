@@ -1,15 +1,29 @@
 # Nexus Lead Suite
 
+![Version](https://img.shields.io/badge/version-0.1.1-blue) ![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-0073aa) ![Tested Up To](https://img.shields.io/badge/Tested%20Up%20To-6.8-46b450) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/github/license/Mostafijemon24/Nexus-Lead-Suite)
+
 > A high-performance, all-in-one lead generation and user analytics suite with a modern admin experience.
 
 ## Description
 
 Nexus Lead Suite helps you capture leads, record interactions, manage submissions, and review analytics from one place—built for performance and a clean admin experience.
 
-**Key highlights**
+## Features
+
+- Lead capture tools with structured submissions
+- Interaction tracking and activity history
+- Analytics views and summary insights
 - Modular architecture designed for performance and security
 - Modern single-page admin UI
 - Lightweight public scripts (vanilla JS, no front-end bloat)
+
+## Demo
+
+Demo is not available yet.
+
+## Screenshots
+
+Screenshots are not included yet. Add images under `assets/screenshots/` and update this section with previews.
 
 ## Requirements
 
@@ -18,9 +32,18 @@ Nexus Lead Suite helps you capture leads, record interactions, manage submission
 
 ## Installation
 
-1. Upload the plugin files to the `/wp-content/plugins/nexus-lead-suite` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through the **Plugins** screen in WordPress.
-3. Use the **Nexus Lead Suite** menu in the admin area to configure the plugin.
+### Option A — WordPress Admin (Upload)
+
+1. Download the ZIP for this repository.
+2. In WordPress, go to **Plugins → Add New → Upload Plugin**.
+3. Upload the ZIP, then click **Activate**.
+4. Open the **Nexus Lead Suite** menu in the admin to configure settings.
+
+### Option B — Manual (SFTP)
+
+1. Upload the plugin folder to: `/wp-content/plugins/nexus-lead-suite`.
+2. Activate the plugin from **Plugins** in WordPress.
+3. Open the **Nexus Lead Suite** menu in the admin to configure settings.
 
 ## Admin App (Source & Build)
 
