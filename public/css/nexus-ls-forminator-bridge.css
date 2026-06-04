@@ -1,0 +1,51 @@
+/**
+ * Maps Nexus form structure to Forminator field semantics without breaking existing runtime CSS.
+ * Forminator UI vendored under assets/vendor/forminator-ui (GPLv3 — see plugin readme).
+ */
+
+.nexus-st-form.forminator-ui {
+  box-sizing: border-box;
+}
+
+.nexus-st-form.forminator-ui *,
+.nexus-st-form.forminator-ui *::before,
+.nexus-st-form.forminator-ui *::after {
+  box-sizing: border-box;
+}
+
+.nexus-st-form.forminator-ui .nexus-st-grid.forminator-row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.nexus-st-form.forminator-ui .forminator-field {
+  position: relative;
+}
+
+.nexus-st-form.forminator-ui .nexus-st-field__label.forminator-label {
+  display: block;
+}
+
+.nexus-st-form.forminator-ui .nexus-st-field__help.forminator-description {
+  margin-top: 0.35rem;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  opacity: 0.9;
+}
+
+.nexus-st-form.forminator-ui .nexus-st-input.forminator-input,
+.nexus-st-form.forminator-ui .nexus-st-textarea.forminator-input,
+.nexus-st-form.forminator-ui .nexus-st-select.forminator-input {
+  width: 100%;
+  max-width: 100%;
+}
+
+.nexus-st-form.forminator-ui .nexus-st-float-wrap {
+  position: relative;
+}
+
+.nexus-st-form.forminator-ui .nexus-st-actions .nexus-st-btn.forminator-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
