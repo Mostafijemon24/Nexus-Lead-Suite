@@ -1,6 +1,6 @@
 # Nexus Lead Suite
 
-![Version](https://img.shields.io/badge/version-0.1.1-blue) ![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-0073aa) ![Tested Up To](https://img.shields.io/badge/Tested%20Up%20To-6.8-46b450) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/github/license/Mostafijemon24/Nexus-Lead-Suite)
+![Version](https://img.shields.io/badge/version-0.1.5-blue) ![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-0073aa) ![Tested Up To](https://img.shields.io/badge/Tested%20Up%20To-7.0-46b450) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/github/license/Mostafijemon24/Nexus-Lead-Suite)
 
 > A high-performance, all-in-one lead generation and user analytics suite with a modern admin experience.
 

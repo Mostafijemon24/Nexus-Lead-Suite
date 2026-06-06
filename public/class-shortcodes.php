@@ -327,7 +327,9 @@ final class Shortcodes {
 			return;
 		}
 
-		$hp_val = isset( $_POST[ self::HONEYPOT_FIELD_NAME ] ) ? (string) wp_unslash( $_POST[ self::HONEYPOT_FIELD_NAME ] ) : '';
+		$hp_val = isset( $_POST[ self::HONEYPOT_FIELD_NAME ] )
+			? sanitize_text_field( wp_unslash( (string) $_POST[ self::HONEYPOT_FIELD_NAME ] ) )
+			: '';
 		if ( '' !== trim( $hp_val ) ) {
 			wp_send_json_error( array( 'message' => __( 'Something went wrong. Please try again.', 'nexus-lead-suite' ) ), 400 );
 			return;
@@ -523,6 +525,7 @@ final class Shortcodes {
 				);
 				return false;
 			}
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified in handle_form_submit_ajax().
 			$token = isset( $_POST['g-recaptcha-response'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['g-recaptcha-response'] ) ) : '';
 			if ( '' === $token || ! $this->verify_recaptcha_with_google(
 				$token,
@@ -546,6 +549,7 @@ final class Shortcodes {
 				);
 				return false;
 			}
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified in handle_form_submit_ajax().
 			$token = isset( $_POST['cf-turnstile-response'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['cf-turnstile-response'] ) ) : '';
 			if ( '' === $token || ! $this->verify_turnstile_with_cloudflare( $token, $ts_keys['secret'] ) ) {
 				wp_send_json_error(
@@ -1227,6 +1231,7 @@ final class Shortcodes {
 		$skip_like = array( 'g-recaptcha-response', 'h-captcha-response', 'cf-turnstile-response' );
 
 		$rows = array();
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- called only from nonce-verified AJAX handler.
 		foreach ( $_POST as $key => $value ) {
 			if ( ! is_string( $key ) ) {
 				continue;
@@ -1372,6 +1377,7 @@ final class Shortcodes {
 	 * @return string Empty or "Name <email>" fragment safe for header.
 	 */
 	private function guess_reply_to_email_from_post(): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- called only from nonce-verified AJAX handler.
 		foreach ( $_POST as $key => $value ) {
 			if ( ! is_string( $key ) ) {
 				continue;
@@ -1388,6 +1394,7 @@ final class Shortcodes {
 				return $e;
 			}
 		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- called only from nonce-verified AJAX handler.
 		foreach ( $_POST as $value ) {
 			$value = wp_unslash( $value );
 			if ( ! is_string( $value ) ) {
@@ -1853,8 +1860,8 @@ final class Shortcodes {
 
 			printf(
 				'<div class="nexus-popup" style="max-width:%dpx;border-radius:%dpx;">',
-				$width,
-				$radius
+				absint( $width ),
+				absint( $radius )
 			);
 
 			/* Close button */
@@ -1863,9 +1870,9 @@ final class Shortcodes {
 				esc_attr__( 'Close', 'nexus-lead-suite' ),
 				esc_attr( $close_bg ),
 				esc_attr( $close_col ),
-				$close_size + 10,
-				$close_size + 10,
-				$close_size
+				absint( $close_size + 10 ),
+				absint( $close_size + 10 ),
+				absint( $close_size )
 			);
 
 			/* Header */
@@ -1873,10 +1880,10 @@ final class Shortcodes {
 				'<div class="nexus-popup__header" style="background:%s;color:%s;padding:%dpx;text-align:%s;">',
 				esc_attr( $heading_bg ),
 				esc_attr( $heading_tc ),
-				$padding,
+				absint( $padding ),
 				esc_attr( $align )
 			);
-			printf( '<div class="nexus-popup__heading" style="font-size:%dpx;">', $heading_fs );
+			printf( '<div class="nexus-popup__heading" style="font-size:%dpx;">', absint( $heading_fs ) );
 			// Convert legacy <font color="..."> tags to <span style="color:..."> so inline-style
 			// specificity [1,0,0,0] always beats any theme CSS color rules.
 			$heading_html = preg_replace_callback(
@@ -1907,7 +1914,7 @@ final class Shortcodes {
 			printf(
 				'<div class="nexus-popup__body" style="background:%s;padding:%dpx;">',
 				esc_attr( $body_bg ),
-				$padding
+				absint( $padding )
 			);
 			echo $rendered_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '</div>';
@@ -2425,24 +2432,36 @@ final class Shortcodes {
 			$recaptcha_js_url = ( 'v3' === $rec['apiVersion'] )
 				? 'https://www.google.com/recaptcha/api.js?render=' . rawurlencode( $rec_site )
 				: 'https://www.google.com/recaptcha/api.js?render=explicit';
-			wp_enqueue_script(
-				'nexus-ls-recaptcha',
-				$recaptcha_js_url,
-				array(),
-				null,
-				true
+			wp_register_script( 'nexus-ls-recaptcha', false, array(), NEXUS_LS_VERSION, true );
+			wp_enqueue_script( 'nexus-ls-recaptcha' );
+			add_filter(
+				'script_loader_src',
+				static function ( $src, $handle ) use ( $recaptcha_js_url ) {
+					if ( 'nexus-ls-recaptcha' === $handle ) {
+						return $recaptcha_js_url;
+					}
+					return $src;
+				},
+				10,
+				2
 			);
 			wp_script_add_data( 'nexus-ls-recaptcha', 'strategy', 'defer' );
 			$script_deps[] = 'nexus-ls-recaptcha';
 		}
 
 		if ( '' !== $ts_site ) {
-			wp_enqueue_script(
-				'nexus-ls-turnstile',
-				'https://challenges.cloudflare.com/turnstile/v0/api.js',
-				array(),
-				null,
-				true
+			wp_register_script( 'nexus-ls-turnstile', false, array(), NEXUS_LS_VERSION, true );
+			wp_enqueue_script( 'nexus-ls-turnstile' );
+			add_filter(
+				'script_loader_src',
+				static function ( $src, $handle ) {
+					if ( 'nexus-ls-turnstile' === $handle ) {
+						return 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+					}
+					return $src;
+				},
+				10,
+				2
 			);
 			wp_script_add_data( 'nexus-ls-turnstile', 'strategy', 'defer' );
 			$script_deps[] = 'nexus-ls-turnstile';
@@ -2970,6 +2989,21 @@ final class Shortcodes {
 	}
 
 	/**
+	 * Formats hardcoded extra HTML attributes from internal call sites (mask, inputmode, etc.).
+	 *
+	 * @param string $attrs Space-separated attribute string.
+	 * @return string Leading space + attrs, or empty.
+	 */
+	private function format_trusted_input_attrs( string $attrs ): string {
+		$attrs = trim( $attrs );
+		if ( '' === $attrs ) {
+			return '';
+		}
+
+		return ' ' . $attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- hardcoded at internal call sites only.
+	}
+
+	/**
 	 * Stable unique id for floating-label inputs (wp_unique_id requires WP 6.4+).
 	 *
 	 * @return string
@@ -2991,32 +3025,25 @@ final class Shortcodes {
 	 * @return void
 	 */
 	private function render_float_text_input( string $name, string $type, string $placeholder, string $label, bool $show_label, bool $required, string $extra_attrs = '' ): void {
-		$extra = trim( $extra_attrs );
-		$extra = '' === $extra ? '' : ' ' . $extra;
+		$extra   = $this->format_trusted_input_attrs( $extra_attrs );
 		$caption = $this->floating_caption( $placeholder, $label, $show_label );
 		if ( '' === $caption ) {
-			printf(
-				'<input class="nexus-st-input forminator-input" type="%s" name="%s" placeholder="%s"%s%s />',
-				esc_attr( $type ),
-				esc_attr( $name ),
-				esc_attr( $placeholder ),
-				$required ? ' required' : '',
-				$extra
-			);
+			echo '<input class="nexus-st-input forminator-input" type="' . esc_attr( $type ) . '" name="' . esc_attr( $name ) . '" placeholder="' . esc_attr( $placeholder ) . '"';
+			if ( $required ) {
+				echo ' required';
+			}
+			echo $extra . ' />'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $extra from format_trusted_input_attrs().
 			return;
 		}
 
 		$id = $this->floating_input_dom_id();
 		echo '<div class="nexus-st-float-wrap">';
-		printf(
-			'<input id="%s" class="nexus-st-input forminator-input" type="%s" name="%s"%s%s%s />',
-			esc_attr( $id ),
-			esc_attr( $type ),
-			esc_attr( $name ),
-			$this->floating_nbsp_placeholder_attr(),
-			$required ? ' required' : '',
-			$extra
-		);
+		echo '<input id="' . esc_attr( $id ) . '" class="nexus-st-input forminator-input" type="' . esc_attr( $type ) . '" name="' . esc_attr( $name ) . '"';
+		echo $this->floating_nbsp_placeholder_attr(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied in method.
+		if ( $required ) {
+			echo ' required';
+		}
+		echo $extra . ' />'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $extra from format_trusted_input_attrs().
 		printf(
 			'<label class="nexus-st-float-label" for="%s">%s%s</label></div>',
 			esc_attr( $id ),
@@ -3038,24 +3065,22 @@ final class Shortcodes {
 	private function render_float_textarea( string $name, string $placeholder, string $label, bool $show_label, bool $required ): void {
 		$caption = $this->floating_caption( $placeholder, $label, $show_label );
 		if ( '' === $caption ) {
-			printf(
-				'<textarea class="nexus-st-textarea forminator-input" name="%s" placeholder="%s"%s></textarea>',
-				esc_attr( $name ),
-				esc_attr( $placeholder ),
-				$required ? ' required' : ''
-			);
+			echo '<textarea class="nexus-st-textarea forminator-input" name="' . esc_attr( $name ) . '" placeholder="' . esc_attr( $placeholder ) . '"';
+			if ( $required ) {
+				echo ' required';
+			}
+			echo '></textarea>';
 			return;
 		}
 
 		$id = $this->floating_input_dom_id();
 		echo '<div class="nexus-st-float-wrap nexus-st-float-wrap--textarea">';
-		printf(
-			'<textarea id="%s" class="nexus-st-textarea forminator-input" name="%s"%s%s></textarea>',
-			esc_attr( $id ),
-			esc_attr( $name ),
-			$this->floating_nbsp_placeholder_attr(),
-			$required ? ' required' : ''
-		);
+		echo '<textarea id="' . esc_attr( $id ) . '" class="nexus-st-textarea forminator-input" name="' . esc_attr( $name ) . '"';
+		echo $this->floating_nbsp_placeholder_attr(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied in method.
+		if ( $required ) {
+			echo ' required';
+		}
+		echo '></textarea>';
 		printf(
 			'<label class="nexus-st-float-label" for="%s">%s%s</label></div>',
 			esc_attr( $id ),
@@ -3069,7 +3094,7 @@ final class Shortcodes {
 	 * Only activates when settings differ from REST defaults — otherwise floating layout & form theme stay intact.
 	 *
 	 * @param array<string,mixed> $settings Field settings.
-	 * @return array{class_suffix:string,style_attr:string}
+	 * @return array{class_suffix:string,inline_style:string}
 	 */
 	private function get_field_custom_appearance( array $settings ): array {
 		$defaults = array(
@@ -3117,7 +3142,7 @@ final class Shortcodes {
 		if ( ! $touched ) {
 			return array(
 				'class_suffix' => '',
-				'style_attr'   => '',
+				'inline_style' => '',
 			);
 		}
 
@@ -3135,7 +3160,7 @@ final class Shortcodes {
 
 		return array(
 			'class_suffix' => ' nexus-st-field--custom-appearance',
-			'style_attr'   => ' style="' . esc_attr( implode( ';', $decl ) ) . '"',
+			'inline_style' => implode( ';', $decl ),
 		);
 	}
 
@@ -3195,7 +3220,11 @@ final class Shortcodes {
 			$field_help = sanitize_text_field( (string) $settings['description'] );
 		}
 
-		echo '<div class="' . esc_attr( $field_class ) . '" data-module="' . esc_attr( $module_id ) . '"' . $appearance['style_attr'] . '>';
+		echo '<div class="' . esc_attr( $field_class ) . '" data-module="' . esc_attr( $module_id ) . '"';
+		if ( '' !== $appearance['inline_style'] ) {
+			echo ' style="' . esc_attr( $appearance['inline_style'] ) . '"';
+		}
+		echo '>';
 
 		if ( 'terms-conditions' !== $module_id && $show_label && '' !== $label ) {
 			echo '<label class="nexus-st-field__label forminator-label">' . esc_html( $label ) . ( $required ? '<span class="nexus-st-req">*</span>' : '' ) . '</label>';
@@ -3412,14 +3441,12 @@ final class Shortcodes {
 			}
 			$id = $this->floating_input_dom_id();
 			echo '<div class="nexus-st-float-wrap">';
-			printf(
-				'<input id="%s" class="nexus-st-input forminator-input" type="text" name="%s[%s]"%s%s />',
-				esc_attr( $id ),
-				esc_attr( $base_name ),
-				esc_attr( $key ),
-				$this->floating_nbsp_placeholder_attr(),
-				$sub_req ? ' required' : ''
-			);
+			echo '<input id="' . esc_attr( $id ) . '" class="nexus-st-input forminator-input" type="text" name="' . esc_attr( $base_name ) . '[' . esc_attr( $key ) . ']"';
+			echo $this->floating_nbsp_placeholder_attr(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied in method.
+			if ( $sub_req ) {
+				echo ' required';
+			}
+			echo ' />';
 			printf(
 				'<label class="nexus-st-float-label" for="%s">%s%s</label></div>',
 				esc_attr( $id ),
@@ -4061,14 +4088,12 @@ final class Shortcodes {
 			$id      = $this->floating_input_dom_id();
 			$sub_req = $required && 'address1' === $key;
 			echo '<div class="nexus-st-float-wrap">';
-			printf(
-				'<input id="%s" class="nexus-st-input forminator-input" type="text" name="%s[%s]"%s%s />',
-				esc_attr( $id ),
-				esc_attr( $base_name ),
-				esc_attr( $key ),
-				$this->floating_nbsp_placeholder_attr(),
-				$sub_req ? ' required' : ''
-			);
+			echo '<input id="' . esc_attr( $id ) . '" class="nexus-st-input forminator-input" type="text" name="' . esc_attr( $base_name ) . '[' . esc_attr( $key ) . ']"';
+			echo $this->floating_nbsp_placeholder_attr(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied in method.
+			if ( $sub_req ) {
+				echo ' required';
+			}
+			echo ' />';
 			printf(
 				'<label class="nexus-st-float-label" for="%s">%s%s</label></div>',
 				esc_attr( $id ),

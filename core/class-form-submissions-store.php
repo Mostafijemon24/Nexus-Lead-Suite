@@ -58,10 +58,8 @@ final class Form_Submissions_Store {
 		$days  = self::retention_days();
 		$cut   = wp_date( 'Y-m-d H:i:s', time() - ( $days * DAY_IN_SECONDS ) );
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from trusted prefix.
-		$sql = $wpdb->prepare( "DELETE FROM {$table} WHERE created_at < %s", $cut );
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$ok = $wpdb->query( $sql );
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table from trusted prefix; retention purge.
+		$ok = $wpdb->query( $wpdb->prepare( "DELETE FROM {$table} WHERE created_at < %s", $cut ) );
 
 		return is_int( $ok ) ? $ok : 0;
 	}
@@ -87,7 +85,7 @@ final class Form_Submissions_Store {
 			return;
 		}
 
-		$wpdb->insert(
+		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- custom submissions table insert.
 			$table,
 			array(
 				'form_key'   => substr( $form_id, 0, 64 ),

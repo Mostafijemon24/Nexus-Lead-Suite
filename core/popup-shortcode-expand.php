@@ -61,6 +61,7 @@ function expand_popup_body_shortcodes( string $raw ): string {
 		$html = do_shortcode( (string) $html );
 
 		if ( '' === trim( $html ) && strpos( $raw, '[' ) !== false ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core WordPress content filter required for third-party shortcodes.
 			$fallback = apply_filters( 'the_content', $raw );
 			if ( '' !== trim( $fallback ) ) {
 				$html = $fallback;
@@ -88,6 +89,7 @@ function build_popup_preview_payload( string $raw ): array {
 		$raw = trim( (string) preg_replace( '#<\s*script\b[^>]*>.*?</\s*script\s*>#is', '', wp_unslash( $raw ) ) );
 
 		if ( ! did_action( 'wp_enqueue_scripts' ) ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core WordPress hook required to load theme/plugin assets in preview.
 			do_action( 'wp_enqueue_scripts' );
 		}
 

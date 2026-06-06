@@ -64,7 +64,7 @@ final class Activities_Store {
 
 		$table = self::table();
 
-		$wpdb->insert(
+		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- custom activities table insert.
 			$table,
 			array(
 				'session_key'   => '',
@@ -92,9 +92,11 @@ final class Activities_Store {
 		$table = self::table();
 
 		// TRUNCATE is faster but may require higher privileges; fallback to DELETE.
-		$deleted = $wpdb->query( "TRUNCATE TABLE {$table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name from trusted prefix; admin-only purge.
+		$deleted = $wpdb->query( "TRUNCATE TABLE {$table}" );
 		if ( false === $deleted ) {
-			$deleted = $wpdb->query( "DELETE FROM {$table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name from trusted prefix; admin-only purge.
+			$deleted = $wpdb->query( "DELETE FROM {$table}" );
 		}
 
 		return is_int( $deleted ) ? $deleted : 0;
@@ -221,13 +223,9 @@ final class Activities_Store {
 			. ' ORDER BY created_at DESC LIMIT %d';
 
 		$params[] = $limit;
-		$query    = $wpdb->prepare( $sql, ...$params );
 
-		if ( ! is_string( $query ) ) {
-			return array();
-		}
-
-		$rows = $wpdb->get_results( $query, ARRAY_A );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- dynamic WHERE with placeholders; table from trusted prefix.
+		$rows = $wpdb->get_results( $wpdb->prepare( $sql, ...$params ), ARRAY_A );
 
 		return is_array( $rows ) ? $rows : array();
 	}

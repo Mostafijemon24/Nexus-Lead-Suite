@@ -49,6 +49,14 @@
 		}
 	}
 
+	function ensureStopProp( a ) {
+		if ( a.getAttribute( 'data-nexus-ve-stop-prop' ) ) return;
+		a.setAttribute( 'data-nexus-ve-stop-prop', '1' );
+		a.addEventListener( 'click', function ( e ) {
+			e.stopPropagation();
+		} );
+	}
+
 	var raf = 0;
 	var last = null;
 	var lastOutline = '';
@@ -439,17 +447,43 @@
 					else target.removeAttribute( 'id' );
 				} catch ( e ) {}
 
-				try {
-					if ( attrs.href ) {
-						if ( String( target.tagName || '' ).toLowerCase() === 'a' ) {
-							target.setAttribute( 'href', attrs.href );
-						}
+			try {
+				var veTargetTag = String( target.tagName || '' ).toLowerCase();
+				if ( attrs.href ) {
+					if ( veTargetTag === 'a' ) {
+						target.setAttribute( 'href', attrs.href );
+						ensureStopProp( target );
 					} else {
-						if ( String( target.tagName || '' ).toLowerCase() === 'a' ) {
-							target.removeAttribute( 'href' );
+						var vePa = target.parentElement;
+						var veWrapA = null;
+						if ( vePa && vePa.getAttribute && vePa.getAttribute( 'data-nexus-ve-wrap' ) ) {
+							vePa.setAttribute( 'href', attrs.href );
+							vePa.setAttribute( 'rel', 'noopener' );
+							vePa.setAttribute( 'target', '_self' );
+							veWrapA = vePa;
+						} else if ( vePa && String( vePa.tagName || '' ).toLowerCase() === 'a' && vePa.children.length === 1 ) {
+							vePa.setAttribute( 'href', attrs.href );
+							vePa.setAttribute( 'rel', 'noopener' );
+							vePa.setAttribute( 'target', '_self' );
+							veWrapA = vePa;
+						} else {
+							var veNewA = document.createElement( 'a' );
+							veNewA.setAttribute( 'href', attrs.href );
+							veNewA.setAttribute( 'rel', 'noopener' );
+							veNewA.setAttribute( 'target', '_self' );
+							veNewA.setAttribute( 'data-nexus-ve-wrap', '1' );
+							target.parentNode.insertBefore( veNewA, target );
+							veNewA.appendChild( target );
+							veWrapA = veNewA;
 						}
+						if ( veWrapA ) ensureStopProp( veWrapA );
 					}
-				} catch ( e ) {}
+				} else {
+					if ( veTargetTag === 'a' ) {
+						target.removeAttribute( 'href' );
+					}
+				}
+			} catch ( e ) {}
 
 				var body = {
 					postId: resolveVePostId(),
