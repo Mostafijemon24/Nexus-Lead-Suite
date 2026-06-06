@@ -1207,13 +1207,16 @@ final class Rest_Api {
 		global $wpdb;
 
 		$table = \Nexus_Lead_Suite\Core\Form_Submissions_Store::table();
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from trusted prefix.
-		$sql = $wpdb->prepare(
-			"SELECT id, form_key, status, payload, created_at FROM {$table} ORDER BY id DESC LIMIT %d",
-			500
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name from trusted prefix; admin-only REST endpoint.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT id, form_key, status, payload, created_at FROM {$table} ORDER BY id DESC LIMIT %d",
+				500
+			),
+			ARRAY_A
 		);
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$rows = $wpdb->get_results( $sql, ARRAY_A );
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		$out = array();
 		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
@@ -1764,21 +1767,23 @@ final class Rest_Api {
 	 * Skips {@see wp_generate_attachment_metadata()} so weak hosts (e.g. XAMPP GD) do not trigger
 	 * “The web server cannot generate responsive image sizes…” notices.
 	 *
-	 * @param \WP_REST_Request $request Request (unused; file is in $_FILES).
+	 * @param \WP_REST_Request $request Request with multipart file under `file`.
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function upload_livechat_avatar( \WP_REST_Request $request ) {
-		unset( $request );
+		$file_params = $request->get_file_params();
+		$file        = ( isset( $file_params['file'] ) && is_array( $file_params['file'] ) )
+			? $file_params['file']
+			: array();
 
-		if ( empty( $_FILES['file']['tmp_name'] ) || ! is_uploaded_file( $_FILES['file']['tmp_name'] ) ) {
+		$tmp_name = isset( $file['tmp_name'] ) ? (string) $file['tmp_name'] : '';
+		if ( '' === $tmp_name || ! is_uploaded_file( $tmp_name ) ) {
 			return new \WP_Error(
 				'nexus_ls_no_file',
 				__( 'No valid image upload received.', 'nexus-lead-suite' ),
 				array( 'status' => 400 )
 			);
 		}
-
-		$file = $_FILES['file'];
 
 		if ( ! empty( $file['error'] ) ) {
 			return new \WP_Error(
@@ -1907,7 +1912,7 @@ final class Rest_Api {
 	/**
 	 * Report/PDF logo upload: saves to Media Library without generating responsive subsizes.
 	 *
-	 * @param \WP_REST_Request $request Request (unused; file is in $_FILES).
+	 * @param \WP_REST_Request $request Request with multipart file under `file`.
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function upload_report_logo( \WP_REST_Request $request ) {
@@ -3554,7 +3559,14 @@ final class Rest_Api {
 					return new \WP_Error( 'nexus_ls_uploads_mkdir_failed', 'Failed to create uploads directory.' );
 				}
 			}
-			if ( ! is_dir( $dir ) || ! is_writable( $dir ) ) {
+
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			if ( ! WP_Filesystem() ) {
+				return new \WP_Error( 'nexus_ls_uploads_fs_unavailable', 'Filesystem unavailable.' );
+			}
+
+			global $wp_filesystem;
+			if ( ! is_object( $wp_filesystem ) || ! $wp_filesystem->is_dir( $dir ) || ! $wp_filesystem->is_writable( $dir ) ) {
 				return new \WP_Error( 'nexus_ls_uploads_not_writable', 'Uploads directory is not writable.' );
 			}
 

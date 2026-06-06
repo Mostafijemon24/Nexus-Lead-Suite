@@ -3,11 +3,11 @@
  * Plugin Name:       Nexus Lead Suite
  * Plugin URI:        https://wordpress.org/plugins/nexus-lead-suite/
  * Description:       A high-performance, all-in-one lead generation and user analytics suite with a modern admin experience.
- * Version:           0.1.1
+ * Version:           0.1.5
  * Requires at least: 6.2
  * Requires PHP:      7.4
  * Author:            Nexus Lead Suite Contributors
- * Author URI:        https://wordpress.org/plugins/nexus-lead-suite/
+ * Author URI:        https://github.com/Mostafijemon24
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       nexus-lead-suite
@@ -52,7 +52,7 @@ if ( defined( 'PHP_VERSION_ID' ) && PHP_VERSION_ID < 70400 ) {
 	return;
 }
 
-define( 'NEXUS_LS_VERSION', '0.1.1' );
+define( 'NEXUS_LS_VERSION', '0.1.5' );
 define( 'NEXUS_LS_PLUGIN_FILE', __FILE__ );
 define( 'NEXUS_LS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NEXUS_LS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -86,12 +86,12 @@ if ( ! function_exists( 'str_ends_with' ) ) {
 }
 
 try {
-	$polyfills = NEXUS_LS_PLUGIN_DIR . 'core/polyfills.php';
-	if ( file_exists( $polyfills ) ) {
-		require_once $polyfills;
+	$nexus_ls_polyfills = NEXUS_LS_PLUGIN_DIR . 'core/polyfills.php';
+	if ( file_exists( $nexus_ls_polyfills ) ) {
+		require_once $nexus_ls_polyfills;
 	}
 
-	$required = array(
+	$nexus_ls_required = array(
 		NEXUS_LS_PLUGIN_DIR . 'core/class-activator.php',
 		NEXUS_LS_PLUGIN_DIR . 'core/class-forms-payload-codec.php',
 		NEXUS_LS_PLUGIN_DIR . 'core/class-form-submissions-store.php',
@@ -102,24 +102,24 @@ try {
 		NEXUS_LS_PLUGIN_DIR . 'core/class-plugin.php',
 	);
 
-	$missing = array();
-	foreach ( $required as $path ) {
+	$nexus_ls_missing = array();
+	foreach ( $nexus_ls_required as $path ) {
 		if ( ! file_exists( $path ) ) {
-			$missing[] = $path;
+			$nexus_ls_missing[] = $path;
 		}
 	}
 
-	if ( ! empty( $missing ) ) {
+	if ( ! empty( $nexus_ls_missing ) ) {
 		if ( is_admin() ) {
 			add_action(
 				'admin_notices',
-				static function () use ( $missing ): void {
+				static function () use ( $nexus_ls_missing ): void {
 					echo '<div class="notice notice-error"><p><strong>' .
 						esc_html__( 'Nexus Lead Suite installation is incomplete.', 'nexus-lead-suite' ) .
 						'</strong></p><p>' .
 						esc_html__( 'Some required plugin files are missing. Re-upload the full plugin folder (do not upload only a single PHP file). Missing:', 'nexus-lead-suite' ) .
 						'</p><ul style="margin-left:16px;list-style:disc;">';
-					foreach ( $missing as $p ) {
+					foreach ( $nexus_ls_missing as $p ) {
 						echo '<li><code>' . esc_html( (string) $p ) . '</code></li>';
 					}
 					echo '</ul></div>';
@@ -134,7 +134,7 @@ try {
 			}
 			wp_die(
 				esc_html__( 'Plugin activation failed because the installation is incomplete. Missing files:', 'nexus-lead-suite' ) .
-					'<br /><br /><code>' . esc_html( implode( "\n", $missing ) ) . '</code>',
+					'<br /><br /><code>' . esc_html( implode( "\n", $nexus_ls_missing ) ) . '</code>',
 				esc_html__( 'Activation error', 'nexus-lead-suite' ),
 				array( 'back_link' => true )
 			);
@@ -171,8 +171,8 @@ try {
 		if ( function_exists( 'deactivate_plugins' ) ) {
 			deactivate_plugins( plugin_basename( __FILE__ ) );
 		}
-		if ( function_exists( 'error_log' ) ) {
-			error_log( '[Nexus Lead Suite] Activation load error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() );
+		if ( function_exists( 'error_log' ) && ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ) {
+			error_log( '[Nexus Lead Suite] Activation load error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- logged only when WP_DEBUG is enabled.
 		}
 		wp_die(
 			esc_html__( 'Plugin activation failed due to a fatal error:', 'nexus-lead-suite' ) .
@@ -226,8 +226,8 @@ try {
 		if ( function_exists( 'deactivate_plugins' ) ) {
 			deactivate_plugins( plugin_basename( __FILE__ ) );
 		}
-		if ( function_exists( 'error_log' ) ) {
-			error_log( '[Nexus Lead Suite] Activation boot error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() );
+		if ( function_exists( 'error_log' ) && ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ) {
+			error_log( '[Nexus Lead Suite] Activation boot error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- logged only when WP_DEBUG is enabled.
 		}
 		wp_die(
 			esc_html__( 'Plugin activation failed due to a fatal error:', 'nexus-lead-suite' ) .

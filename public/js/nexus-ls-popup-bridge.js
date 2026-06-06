@@ -178,44 +178,44 @@
 				__nexusNotifyClassToEvent = cfg && cfg.notifyClassMap ? cfg.notifyClassMap : null;
 			}
 
-			/*
-			 * Visual Editor support (Settings → Button Classes):
-			 * - popupClassMap: first class in the line => popup open
-			 * - notifyClassMap: remaining classes => email click notify
-			 *
-			 * If both classes are present on the same element, do both (notify + popup).
-			 * If notify-only and element has a real href, allow navigation.
-			 */
-			var popupEvent =
-				__nexusPopupClassToEvent ? findPopupByClassOnTarget( e.target, __nexusPopupClassToEvent ) : null;
-			var notifyEvent =
-				__nexusNotifyClassToEvent ? findPopupByClassOnTarget( e.target, __nexusNotifyClassToEvent ) : null;
+		/*
+		 * Visual Editor support (Settings → Button Classes):
+		 * - popupClassMap: first class in the line => popup open
+		 * - notifyClassMap: remaining classes => email click notify
+		 *
+		 * If both classes are present on the same element, do both (notify + popup).
+		 * Popup always blocks navigation. Notify-only with a real href allows navigation.
+		 */
+		var popupEvent =
+			__nexusPopupClassToEvent ? findPopupByClassOnTarget( e.target, __nexusPopupClassToEvent ) : null;
+		var notifyEvent =
+			__nexusNotifyClassToEvent ? findPopupByClassOnTarget( e.target, __nexusNotifyClassToEvent ) : null;
 
-			if ( notifyEvent ) {
-				fireNotifyForEvent( notifyEvent, notifyEvent );
-			}
+		if ( notifyEvent ) {
+			fireNotifyForEvent( notifyEvent, notifyEvent );
+		}
 
-			if ( popupEvent ) {
-				var overlay =
-					window.NexusLsPopupUi &&
-					typeof window.NexusLsPopupUi.findOverlayByEventId === 'function'
-						? window.NexusLsPopupUi.findOverlayByEventId( popupEvent )
-						: null;
-				if ( overlay ) {
-					e.preventDefault();
-					e.stopPropagation();
-					window.NexusLsPopupUi.open( overlay );
-					return;
-				}
+		if ( popupEvent ) {
+			var overlay =
+				window.NexusLsPopupUi &&
+				typeof window.NexusLsPopupUi.findOverlayByEventId === 'function'
+					? window.NexusLsPopupUi.findOverlayByEventId( popupEvent )
+					: null;
+			if ( overlay ) {
+				e.preventDefault();
+				e.stopPropagation();
+				window.NexusLsPopupUi.open( overlay );
+				return;
 			}
+		}
 
-			// Notify-only: allow navigation if it is a real link.
-			if ( notifyEvent && ! popupEvent ) {
-				var a = e.target.closest ? e.target.closest( 'a[href]' ) : null;
-				if ( a && shouldAllowDefaultNavigation( a ) ) {
-					return;
-				}
+		// Notify-only: allow navigation if it is a real link (popup absent = link works).
+		if ( notifyEvent && ! popupEvent ) {
+			var a = e.target.closest ? e.target.closest( 'a[href]' ) : null;
+			if ( a && shouldAllowDefaultNavigation( a ) ) {
+				return;
 			}
+		}
 
 			// Back-compat: direct match class==eventId (older setups).
 			var popupByClass = findPopupByClassOnTarget( e.target, __nexusPopupEventMap );

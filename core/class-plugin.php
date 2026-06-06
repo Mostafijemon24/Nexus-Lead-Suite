@@ -95,6 +95,7 @@ final class Plugin {
 		if ( ! \Nexus_Lead_Suite\Core\Access_Gate::is_unlocked() ) {
 			\Nexus_Lead_Suite\Core\Access_Gate::render_lock_screen_and_exit(
 				__( 'Nexus Lead Suite — Locked', 'nexus-lead-suite' ),
+				// phpcs:ignore WordPress.Security.NonceVerification.Missing -- display-only wrong-password hint; Access_Gate validates POST.
 				isset( $_POST['nexus_ls_gate_password'] ) ? __( 'Wrong password.', 'nexus-lead-suite' ) : ''
 			);
 		}
@@ -128,6 +129,7 @@ final class Plugin {
 	 * @return void
 	 */
 	public function load_textdomain(): void {
+		// phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- required for non–WordPress.org installs and bundled language packs.
 		load_plugin_textdomain(
 			'nexus-lead-suite',
 			false,

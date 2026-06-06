@@ -2,9 +2,9 @@
 Contributors: nexusleadcontributors
 Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
-Tested up to: 6.8
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 0.1.1
+Stable tag: 0.1.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,6 +71,11 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 == Changelog ==
 
+= 0.1.5 =
+* WordPress Plugin Check compliance: security hardening, WPCS fixes, and Plugin Directory requirements.
+* Sanitized form inputs, escaped outputs, REST file uploads via get_file_params(), WP_Filesystem for writable checks.
+* Updated Tested up to: 7.0; Author URI set to GitHub profile; added .distignore for release packaging.
+
 = 0.1.1 =
 * Optional full data removal on uninstall (opt-in via option or wp-config constant).
 * Performance: REST API PHP loads only when the REST API runs; shortcodes module skips typical wp-admin requests.
@@ -79,6 +84,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 * Initial scaffold: custom database tables, REST bootstrap, admin build tooling.
 
 == Upgrade Notice ==
+
+= 0.1.5 =
+Security and coding standards update for WordPress.org Plugin Check compliance. No intentional changes to core functionality.
 
 = 0.1.1 =
 Adds documented uninstall data removal and loading optimizations.

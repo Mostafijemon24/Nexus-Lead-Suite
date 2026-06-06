@@ -79,12 +79,12 @@ final class Data_Bundle {
 		if ( '-1' !== $mem_limit && function_exists( 'wp_convert_hr_to_bytes' ) ) {
 			$cur = wp_convert_hr_to_bytes( $mem_limit );
 			if ( false === $cur || $cur < 512 * 1024 * 1024 ) {
-				@ini_set( 'memory_limit', '512M' );
+				@ini_set( 'memory_limit', '512M' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- large import/export requires raised memory.
 			}
 		} elseif ( '-1' !== $mem_limit ) {
-			@ini_set( 'memory_limit', '512M' );
+			@ini_set( 'memory_limit', '512M' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- large import/export requires raised memory.
 		}
-		set_time_limit( 300 );
+		set_time_limit( 300 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- large import/export may exceed default timeout.
 
 		$marker  = self::missing_option_marker();
 		$options = array();
@@ -355,12 +355,13 @@ final class Data_Bundle {
 			return array();
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- table existence check during export; table name validated by regex above.
 		$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
 		if ( $found !== $table ) {
 			return array();
 		}
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.DirectQuery
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.DirectQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name validated by regex above.
 		$rows = $wpdb->get_results( "SELECT * FROM {$table}", ARRAY_A );
 
 		return is_array( $rows ) ? $rows : array();
@@ -708,12 +709,12 @@ final class Data_Bundle {
 		if ( '-1' !== $mem_limit && function_exists( 'wp_convert_hr_to_bytes' ) ) {
 			$cur = wp_convert_hr_to_bytes( $mem_limit );
 			if ( false === $cur || $cur < 512 * 1024 * 1024 ) {
-				@ini_set( 'memory_limit', '512M' );
+				@ini_set( 'memory_limit', '512M' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- large import/export requires raised memory.
 			}
 		} elseif ( '-1' !== $mem_limit ) {
-			@ini_set( 'memory_limit', '512M' );
+			@ini_set( 'memory_limit', '512M' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- large import/export requires raised memory.
 		}
-		set_time_limit( 300 );
+		set_time_limit( 300 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- large import/export may exceed default timeout.
 
 		$fmt = isset( $bundle['nexus_ls_export_format'] ) ? (int) $bundle['nexus_ls_export_format'] : 0;
 		$allowed = array(
@@ -1193,16 +1194,17 @@ final class Data_Bundle {
 			return true;
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- table existence check during import restore.
 		$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
 		if ( $found !== $table ) {
 			return true;
 		}
 
 		try {
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.DirectQuery
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.DirectQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name validated by regex above; import restore.
 			$trunc = $wpdb->query( "TRUNCATE TABLE {$table}" );
 			if ( false === $trunc ) {
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.DirectQuery
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.DirectQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name validated by regex above; import restore.
 				$wpdb->query( "DELETE FROM {$table}" );
 			}
 		} catch ( \Throwable $e ) {

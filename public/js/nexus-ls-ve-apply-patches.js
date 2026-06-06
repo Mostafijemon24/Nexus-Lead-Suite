@@ -7,6 +7,14 @@
 		return;
 	}
 
+	function ensureStopProp( a ) {
+		if ( a.getAttribute( 'data-nexus-ve-stop-prop' ) ) return;
+		a.setAttribute( 'data-nexus-ve-stop-prop', '1' );
+		a.addEventListener( 'click', function ( e ) {
+			e.stopPropagation();
+		} );
+	}
+
 	function applyOne( p ) {
 		if ( ! p || ! p.selector ) {
 			return;
@@ -62,6 +70,7 @@
 				pa.setAttribute( 'href', href );
 				pa.setAttribute( 'rel', 'noopener' );
 				pa.setAttribute( 'target', '_self' );
+				ensureStopProp( pa );
 				return;
 			}
 			var a = document.createElement( 'a' );
@@ -69,6 +78,7 @@
 			a.setAttribute( 'rel', 'noopener' );
 			a.setAttribute( 'target', '_self' );
 			a.setAttribute( 'data-nexus-ve-wrap', '1' );
+			ensureStopProp( a );
 			el.parentNode.insertBefore( a, el );
 			a.appendChild( el );
 		}

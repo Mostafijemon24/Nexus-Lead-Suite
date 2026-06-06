@@ -35,8 +35,8 @@ if ( ! isset( $nexus_ls_ca_report_logo_max_px ) ) {
 }
 $nexus_ls_ca_report_logo_max_px = max( 100, min( 1000, (int) $nexus_ls_ca_report_logo_max_px ) );
 
-$plain_urls = ! (bool) get_option( 'permalink_structure' );
-$report_base = $plain_urls
+$nexus_ls_ca_plain_urls = ! (bool) get_option( 'permalink_structure' );
+$nexus_ls_ca_report_base = $nexus_ls_ca_plain_urls
 	? trailingslashit( home_url() )
 	: trailingslashit( home_url( Client_Access::slug_from_db() ) );
 
@@ -46,21 +46,21 @@ $report_base = $plain_urls
  * @param array<string,string> $extra Query args (tab/from/to/q).
  * @return string
  */
-$nexus_ls_report_url = static function ( array $extra = array() ) use ( $plain_urls, $report_base, $nexus_ls_ca_token ): string {
+$nexus_ls_report_url = static function ( array $extra = array() ) use ( $nexus_ls_ca_plain_urls, $nexus_ls_ca_report_base, $nexus_ls_ca_token ): string {
 	$args = array_merge(
 		array(
 			'token' => $nexus_ls_ca_token,
 		),
 		$extra
 	);
-	if ( $plain_urls ) {
+	if ( $nexus_ls_ca_plain_urls ) {
 		$args['nexus_ls_client_report'] = '1';
 	}
 
-	return esc_url( add_query_arg( $args, $report_base ) );
+	return esc_url( add_query_arg( $args, $nexus_ls_ca_report_base ) );
 };
 
-$tab_labels = array(
+$nexus_ls_ca_tab_labels = array(
 	'all'           => __( 'All', 'nexus-lead-suite' ),
 	'forms'         => __( 'Forms', 'nexus-lead-suite' ),
 	'calls'         => __( 'Calls', 'nexus-lead-suite' ),
@@ -116,26 +116,26 @@ $tab_labels = array(
 		<header class="report-header">
 			<?php if ( '' !== $nexus_ls_ca_report_logo ) : ?>
 				<?php
-				$logo_style = sprintf(
+				$nexus_ls_ca_logo_style = sprintf(
 					'max-width:min(100%%,%dpx);max-height:min(70vh,%dpx);',
 					$nexus_ls_ca_report_logo_max_px,
 					$nexus_ls_ca_report_logo_max_px
 				);
 				?>
-				<img class="report-header__logo" style="<?php echo esc_attr( $logo_style ); ?>" src="<?php echo esc_url( $nexus_ls_ca_report_logo ); ?>" alt="" decoding="async" />
+				<img class="report-header__logo" style="<?php echo esc_attr( $nexus_ls_ca_logo_style ); ?>" src="<?php echo esc_url( $nexus_ls_ca_report_logo ); ?>" alt="" decoding="async" />
 			<?php endif; ?>
 			<h1><?php esc_html_e( 'Activity report', 'nexus-lead-suite' ); ?></h1>
 			<p class="sub"><?php echo esc_html( $nexus_ls_ca_site_title ); ?> — <?php esc_html_e( 'Read-only access. Download a PDF snapshot of the filtered list below.', 'nexus-lead-suite' ); ?></p>
 		</header>
 
 		<div class="tabs">
-			<?php foreach ( $tab_labels as $tid => $tlabel ) : ?>
+			<?php foreach ( $nexus_ls_ca_tab_labels as $nexus_ls_ca_tid => $nexus_ls_ca_tlabel ) : ?>
 				<?php
-				$active = ( $nexus_ls_ca_tab === $tid ) ? 'active' : '';
-				$url    = $nexus_ls_report_url(
+				$nexus_ls_ca_active = ( $nexus_ls_ca_tab === $nexus_ls_ca_tid ) ? 'active' : '';
+				$nexus_ls_ca_url    = $nexus_ls_report_url(
 					array_filter(
 						array(
-							'tab'  => 'all' === $tid ? '' : $tid,
+							'tab'  => 'all' === $nexus_ls_ca_tid ? '' : $nexus_ls_ca_tid,
 							'from' => $nexus_ls_ca_date_from,
 							'to'   => $nexus_ls_ca_date_to,
 							'q'    => $nexus_ls_ca_search,
@@ -143,13 +143,13 @@ $tab_labels = array(
 					)
 				);
 				?>
-				<a class="<?php echo esc_attr( $active ); ?>" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $tlabel ); ?></a>
+				<a class="<?php echo esc_attr( $nexus_ls_ca_active ); ?>" href="<?php echo esc_url( $nexus_ls_ca_url ); ?>"><?php echo esc_html( $nexus_ls_ca_tlabel ); ?></a>
 			<?php endforeach; ?>
 		</div>
 
-		<form class="toolbar" method="get" action="<?php echo esc_url( $report_base ); ?>">
+		<form class="toolbar" method="get" action="<?php echo esc_url( $nexus_ls_ca_report_base ); ?>">
 			<input type="hidden" name="token" value="<?php echo esc_attr( $nexus_ls_ca_token ); ?>">
-			<?php if ( $plain_urls ) : ?>
+			<?php if ( $nexus_ls_ca_plain_urls ) : ?>
 				<input type="hidden" name="nexus_ls_client_report" value="1">
 			<?php endif; ?>
 			<input type="hidden" name="tab" value="<?php echo esc_attr( $nexus_ls_ca_tab ); ?>">
@@ -184,27 +184,27 @@ $tab_labels = array(
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach ( $nexus_ls_ca_rows as $r ) : ?>
+					<?php foreach ( $nexus_ls_ca_rows as $nexus_ls_ca_row ) : ?>
 						<?php
-						$key  = isset( $r['categoryKey'] ) ? (string) $r['categoryKey'] : 'forms';
-						$bcls = 'forms' === $key ? 'b-forms' : ( 'calls' === $key ? 'b-calls' : ( 'consultations' === $key ? 'b-consult' : 'b-interactions' ) );
-						$mcls = isset( $r['mailSent'] ) ? ( ! empty( $r['mailSent'] ) ? 'm-sent' : 'm-fail' ) : 'm-na';
+						$nexus_ls_ca_key  = isset( $nexus_ls_ca_row['categoryKey'] ) ? (string) $nexus_ls_ca_row['categoryKey'] : 'forms';
+						$nexus_ls_ca_bcls = 'forms' === $nexus_ls_ca_key ? 'b-forms' : ( 'calls' === $nexus_ls_ca_key ? 'b-calls' : ( 'consultations' === $nexus_ls_ca_key ? 'b-consult' : 'b-interactions' ) );
+						$nexus_ls_ca_mcls = isset( $nexus_ls_ca_row['mailSent'] ) ? ( ! empty( $nexus_ls_ca_row['mailSent'] ) ? 'm-sent' : 'm-fail' ) : 'm-na';
 						?>
 						<tr>
-							<td><strong><?php echo esc_html( (string) ( $r['actionName'] ?? '' ) ); ?></strong></td>
+							<td><strong><?php echo esc_html( (string) ( $nexus_ls_ca_row['actionName'] ?? '' ) ); ?></strong></td>
 							<td>
-								<?php $pu = isset( $r['pageUrl'] ) ? (string) $r['pageUrl'] : ''; ?>
-								<?php if ( '' !== $pu ) : ?>
-									<a class="url" href="<?php echo esc_url( $pu ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $pu ); ?></a>
+								<?php $nexus_ls_ca_pu = isset( $nexus_ls_ca_row['pageUrl'] ) ? (string) $nexus_ls_ca_row['pageUrl'] : ''; ?>
+								<?php if ( '' !== $nexus_ls_ca_pu ) : ?>
+									<a class="url" href="<?php echo esc_url( $nexus_ls_ca_pu ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $nexus_ls_ca_pu ); ?></a>
 								<?php else : ?>
 									—
 								<?php endif; ?>
 							</td>
-							<td><span class="badge <?php echo esc_attr( $bcls ); ?>"><?php echo esc_html( (string) ( $r['category'] ?? '' ) ); ?></span></td>
-							<td><?php echo esc_html( (string) ( $r['context'] ?? '' ) ); ?></td>
-							<td><?php echo esc_html( (string) ( $r['dateTime'] ?? '' ) ); ?></td>
-							<td class="<?php echo esc_attr( $mcls ); ?>"><?php echo esc_html( (string) ( $r['mailStatus'] ?? '' ) ); ?></td>
-							<td><code><?php echo esc_html( (string) ( $r['id'] ?? '' ) ); ?></code></td>
+							<td><span class="badge <?php echo esc_attr( $nexus_ls_ca_bcls ); ?>"><?php echo esc_html( (string) ( $nexus_ls_ca_row['category'] ?? '' ) ); ?></span></td>
+							<td><?php echo esc_html( (string) ( $nexus_ls_ca_row['context'] ?? '' ) ); ?></td>
+							<td><?php echo esc_html( (string) ( $nexus_ls_ca_row['dateTime'] ?? '' ) ); ?></td>
+							<td class="<?php echo esc_attr( $nexus_ls_ca_mcls ); ?>"><?php echo esc_html( (string) ( $nexus_ls_ca_row['mailStatus'] ?? '' ) ); ?></td>
+							<td><code><?php echo esc_html( (string) ( $nexus_ls_ca_row['id'] ?? '' ) ); ?></code></td>
 						</tr>
 					<?php endforeach; ?>
 				</tbody>

@@ -104,6 +104,7 @@ final class Admin_App {
 		if ( ! \Nexus_Lead_Suite\Core\Access_Gate::is_unlocked() ) {
 			\Nexus_Lead_Suite\Core\Access_Gate::render_lock_screen_and_exit(
 				__( 'Nexus Lead Suite — Locked', 'nexus-lead-suite' ),
+				// phpcs:ignore WordPress.Security.NonceVerification.Missing -- display-only wrong-password hint; Access_Gate validates POST.
 				isset( $_POST['nexus_ls_gate_password'] ) ? __( 'Wrong password.', 'nexus-lead-suite' ) : ''
 			);
 		}
@@ -133,7 +134,7 @@ final class Admin_App {
 			return;
 		}
 
-		$content = isset( $_POST['content'] ) ? wp_unslash( (string) $_POST['content'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified above.
+		$content = isset( $_POST['content'] ) ? wp_unslash( (string) $_POST['content'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above; raw HTML for shortcode preview.
 
 		$data = \Nexus_Lead_Suite\build_popup_preview_payload( $content );
 
@@ -335,7 +336,7 @@ final class Admin_App {
 			'nexus-ls-vite-client',
 			esc_url( $origin . '/@vite/client' ),
 			array(),
-			null,
+			NEXUS_LS_VERSION,
 			true
 		);
 
@@ -344,7 +345,7 @@ final class Admin_App {
 			'nexus-ls-admin-dev',
 			esc_url( $origin . '/src/main.jsx' ),
 			array(),
-			null,
+			NEXUS_LS_VERSION,
 			true
 		);
 
@@ -356,10 +357,11 @@ final class Admin_App {
 					return $tag;
 				}
 
-				return sprintf(
-					'<script type="module" src="%s"></script>',
-					esc_url( $src )
-				);
+				if ( false !== strpos( $tag, 'type=' ) ) {
+					return $tag;
+				}
+
+				return str_replace( ' src=', ' type="module" src=', $tag );
 			},
 			10,
 			3

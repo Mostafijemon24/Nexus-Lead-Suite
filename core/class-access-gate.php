@@ -78,7 +78,10 @@ final class Access_Gate {
 			return true;
 		}
 
-		if ( 'POST' !== strtoupper( (string) ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) ) {
+		$method = isset( $_SERVER['REQUEST_METHOD'] )
+			? sanitize_text_field( wp_unslash( (string) $_SERVER['REQUEST_METHOD'] ) )
+			: '';
+		if ( 'POST' !== strtoupper( $method ) ) {
 			return false;
 		}
 

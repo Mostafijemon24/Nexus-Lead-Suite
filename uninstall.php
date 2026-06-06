@@ -93,8 +93,10 @@ function nexus_ls_uninstall_delete_site_data(): void {
 	$submissions  = $wpdb->prefix . 'nexus_ls_submissions';
 
 	// Table identifiers are built from $wpdb->prefix only.
-	$wpdb->query( "DROP TABLE IF EXISTS `{$interactions}`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	$wpdb->query( "DROP TABLE IF EXISTS `{$submissions}`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- intentional uninstall cleanup.
+	$wpdb->query( "DROP TABLE IF EXISTS `{$interactions}`" );
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- intentional uninstall cleanup.
+	$wpdb->query( "DROP TABLE IF EXISTS `{$submissions}`" );
 
 	foreach ( nexus_ls_uninstall_option_keys() as $key ) {
 		delete_option( $key );
@@ -105,6 +107,7 @@ function nexus_ls_uninstall_delete_site_data(): void {
 	$like_site_transient   = $wpdb->esc_like( '_site_transient_nexus_ls_' ) . '%';
 	$like_site_timeout     = $wpdb->esc_like( '_site_transient_timeout_nexus_ls_' ) . '%';
 
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- intentional uninstall cleanup.
 	$wpdb->query(
 		$wpdb->prepare(
 			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s",
@@ -125,16 +128,16 @@ if ( ! is_multisite() ) {
 	return;
 }
 
-$site_ids = get_sites(
+$nexus_ls_site_ids = get_sites(
 	array(
 		'fields' => 'ids',
 		'number' => 0,
 	)
 );
 
-if ( is_array( $site_ids ) ) {
-	foreach ( $site_ids as $site_id ) {
-		switch_to_blog( (int) $site_id );
+if ( is_array( $nexus_ls_site_ids ) ) {
+	foreach ( $nexus_ls_site_ids as $nexus_ls_site_id ) {
+		switch_to_blog( (int) $nexus_ls_site_id );
 		nexus_ls_uninstall_delete_site_data();
 		restore_current_blog();
 	}
