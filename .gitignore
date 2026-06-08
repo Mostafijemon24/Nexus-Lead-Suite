@@ -35,6 +35,15 @@ wp-config.php
 # htaccess
 /.htaccess
 
+# Plugin development
+admin/node_modules/
+admin/dist/
+release/
+.DS_Store
+.cursor/
+.cursorrules
+cursorrules.md
+
 # All plugins
 #
 # Note: If you wish to whitelist plugins,

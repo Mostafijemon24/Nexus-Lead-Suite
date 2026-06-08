@@ -1177,7 +1177,6 @@ export function SettingsPage() {
 																{ uploadingChatImg ? <Loader2 size={ 18 } className="animate-spin" /> : <Upload size={ 18 } /> }
 															</button>
 														</div>
-														<p className="text-[10px] text-slate-500 leading-relaxed">Images are uploaded via Nexus (no WordPress responsive resizing) — works on XAMPP / limited GD installs. Browser still converts to JPEG (512px max) first when possible.</p>
 													</div>
 													<div className="space-y-2">
 														<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Livechat Title</label>
@@ -1412,15 +1411,14 @@ export function SettingsPage() {
 												<div className="flex items-center gap-3">
 													<div className="p-2.5 bg-green-50 text-green-600 rounded-2xl"><Download size={ 20 } /></div>
 													<div>
-														<h4 className="text-sm font-bold text-slate-800 capitalize leading-none">Export Settings</h4>
-														<p className="text-[10px] text-slate-400 font-medium mt-0.5">Download all plugin settings as a JSON backup.</p>
+														<h4 className="text-sm font-bold text-slate-800 capitalize leading-none">Export full backup</h4>
+														<p className="text-[10px] text-slate-400 font-medium mt-0.5">Settings, forms, popups, emails, nav, analytics &amp; uploads — one JSON file.</p>
 													</div>
 												</div>
-												<p className="text-[11px] text-slate-500 leading-relaxed">Export fonts, forms, popups, email templates &amp; settings as one JSON file.</p>
 												<button
 													type="button"
 													onClick={ () => {
-														const data = { version: '2.5.0', settings };
+														const data = { version: '1.0.0', settings };
 														const blob = new Blob( [ JSON.stringify( data, null, 2 ) ], { type: 'application/json' } );
 														const url = URL.createObjectURL( blob );
 														const a = document.createElement( 'a' );
@@ -1439,11 +1437,10 @@ export function SettingsPage() {
 												<div className="flex items-center gap-3">
 													<div className="p-2.5 bg-blue-50 text-blue-600 rounded-2xl"><Upload size={ 20 } /></div>
 													<div>
-														<h4 className="text-sm font-bold text-slate-800 capitalize leading-none">Import Settings</h4>
-														<p className="text-[10px] text-slate-400 font-medium mt-0.5">Restore settings from a previously exported JSON file.</p>
+														<h4 className="text-sm font-bold text-slate-800 capitalize leading-none">Import full backup</h4>
+														<p className="text-[10px] text-slate-400 font-medium mt-0.5">Upload a full export (.json). Replaces all plugin data — no Save step.</p>
 													</div>
 												</div>
-												<p className="text-[11px] text-slate-500 leading-relaxed">Upload a previously exported settings JSON file. This will overwrite your current configuration including font selection.</p>
 												<label className="w-full flex items-center justify-center gap-2 py-4 bg-blue-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all hover:bg-blue-500 cursor-pointer">
 													<Upload size={ 16 } /> Import Settings JSON
 													<input

@@ -2,7 +2,6 @@ import React, { useId, useState } from 'react';
 import {
 	Activity,
 	ChevronLeft,
-	ChevronDown,
 	FileText,
 	Layout,
 	Mail,
@@ -21,7 +20,7 @@ const NAV_ITEMS = [
 function SidebarLogo() {
 	return (
 		<div
-			className="flex h-full w-full items-center justify-center rounded-xl bg-slate-800 shadow-sm shadow-black/35"
+			className="nexus-ls-sidebar-logo flex h-full w-full items-center justify-center rounded-xl"
 			aria-hidden="true"
 		>
 			<span
@@ -45,7 +44,7 @@ export function AdminSidebar( { activeId, onNavigate } ) {
 	return (
 		<aside
 			className={ [
-				'flex h-full min-h-screen flex-col border-r border-sidebar-border bg-sidebar py-4 text-slate-200 transition-[width] duration-200 ease-out',
+				'nexus-ls-admin-sidebar flex h-full min-h-screen flex-col border-r py-4 transition-[width] duration-200 ease-out',
 				collapsed ? 'w-[4.5rem]' : 'w-60',
 			].join( ' ' ) }
 			aria-label="Nexus Lead Suite navigation"
@@ -61,23 +60,17 @@ export function AdminSidebar( { activeId, onNavigate } ) {
 					<SidebarLogo />
 				</div>
 				{ ! collapsed && (
-					<button
-						type="button"
-						className="flex min-h-10 min-w-0 items-center gap-1.5 rounded-lg py-0 text-left text-white outline-none ring-violet-500/50 transition hover:bg-white/5 focus-visible:ring-2"
-						aria-expanded="false"
-						aria-haspopup="true"
-					>
-						<span className="truncate text-[15px] font-semibold leading-normal tracking-tight">Nexus</span>
-						<ChevronDown className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
-					</button>
+					<div className="nexus-ls-sidebar-brand flex min-h-10 min-w-0 items-center rounded-lg py-0 text-left text-[15px] font-semibold leading-normal tracking-tight">
+						<span className="truncate">Nexus</span>
+					</div>
 				) }
 			</div>
 
-			<div className="mx-3 mt-4 border-t border-sidebar-border" role="presentation" />
+			<div className="nexus-ls-sidebar-divider mx-3 mt-4 border-t" role="presentation" />
 
 			<nav
 				id="nexus-ls-sidebar-nav"
-				className="mt-4 flex flex-1 flex-col gap-0.5 px-2"
+				className="mt-4 flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2"
 				aria-labelledby={ navLabelId }
 			>
 				<h2 id={ navLabelId } className="sr-only">
@@ -112,16 +105,14 @@ export function AdminSidebar( { activeId, onNavigate } ) {
 									}
 								} }
 								className={ [
-									'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[14px] font-medium outline-none transition-colors no-underline',
+									'nexus-ls-sidebar-link flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[14px] font-medium outline-none transition-colors',
 									collapsed ? 'justify-center px-2' : '',
-									isActive
-										? 'bg-sidebar-active text-white shadow-sm'
-										: 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-200',
+									isActive ? 'is-active' : '',
 								].join( ' ' ) }
 								title={ collapsed ? item.label : undefined }
 								aria-current={ isActive ? 'page' : undefined }
 							>
-								<Icon className={ [ 'h-5 w-5 shrink-0', isActive ? 'text-white' : '' ].join( ' ' ) } />
+								<Icon className="h-5 w-5 shrink-0" />
 								{ ! collapsed && (
 									<span className="min-w-0 flex-1 truncate">{ item.label }</span>
 								) }
@@ -131,23 +122,23 @@ export function AdminSidebar( { activeId, onNavigate } ) {
 				} ) }
 			</nav>
 
-			<div className="mx-3 mt-auto border-t border-sidebar-border pt-3">
+			<div className="nexus-ls-sidebar-footer nexus-ls-sidebar-divider relative z-10 mx-3 mt-auto shrink-0 border-t pt-3">
 				<button
 					type="button"
 					onClick={ () => setCollapsed( ( value ) => ! value ) }
 					className={ [
-						'flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-medium text-slate-400 outline-none ring-violet-500/50 transition hover:bg-white/[0.06] hover:text-slate-200 focus-visible:ring-2',
+						'nexus-ls-sidebar-collapse flex w-full cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-medium outline-none ring-violet-500/50 transition focus-visible:ring-2',
 						collapsed ? 'justify-center px-2' : '',
 					].join( ' ' ) }
 					aria-label={ collapsed ? 'Expand sidebar' : 'Collapse sidebar' }
 				>
 					<ChevronLeft
-						className={ [ 'h-4 w-4 shrink-0 transition-transform', collapsed ? 'rotate-180' : '' ].join( ' ' ) }
+						className={ [ 'pointer-events-none h-4 w-4 shrink-0 transition-transform', collapsed ? 'rotate-180' : '' ].join( ' ' ) }
+						aria-hidden="true"
 					/>
-					{ ! collapsed && <span>Collapse</span> }
+					{ ! collapsed && <span className="pointer-events-none">Collapse</span> }
 				</button>
 			</div>
 		</aside>
 	);
 }
-

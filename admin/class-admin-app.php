@@ -162,6 +162,7 @@ final class Admin_App {
 		}
 
 		wp_enqueue_style( 'dashicons' );
+		$this->enqueue_admin_chrome_styles();
 
 		// Load TinyMCE core so the React heading editor can call window.tinymce.init() directly.
 		// We deliberately avoid wp_enqueue_editor() because it outputs conflicting
@@ -196,6 +197,9 @@ final class Admin_App {
 				$fallback_js_ver,
 				true
 			);
+
+			$this->localize_admin_script( 'nexus-ls-admin-fallback' );
+			$this->append_email_templates_rest_patch( 'nexus-ls-admin-fallback' );
 
 			return;
 		}
@@ -245,22 +249,8 @@ final class Admin_App {
 			$admin_pages[ $route ] = esc_url_raw( admin_url( 'admin.php?page=' . $slug ) );
 		}
 
-		wp_localize_script(
-			'nexus-ls-admin',
-				'nexusLsAdmin',
-				array(
-					'restUrl'           => esc_url_raw( rest_url() ),
-					'nonce'             => wp_create_nonce( 'wp_rest' ),
-					'adminAjaxUrl'      => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
-					'popupPreviewNonce' => wp_create_nonce( 'nexus_ls_popup_preview' ),
-					'pluginUrl'         => esc_url_raw( NEXUS_LS_PLUGIN_URL ),
-					'siteUrl'           => esc_url_raw( home_url( '/' ) ),
-					'siteTitle'         => get_bloginfo( 'name' ),
-					'formsPayload'      => $this->get_forms_payload_for_boot(),
-					'initialRoute'      => $initial_route,
-					'adminPages'        => $admin_pages,
-				)
-		);
+		$this->localize_admin_script( 'nexus-ls-admin', $initial_route, $admin_pages );
+		$this->append_email_templates_rest_patch( 'nexus-ls-admin' );
 
 		// Enhance Livechat "Button 01 → Popup" dropdown: include Form Builder forms as selectable items.
 		// The bundled admin UI currently shows only popups; selecting a form stores "popup:form:{id}".
@@ -285,6 +275,100 @@ final class Admin_App {
 			'mo.observe(document.documentElement,{childList:true,subtree:true});' .
 			'})();',
 			'after'
+		);
+	}
+
+	/**
+	 * Removes default WP admin content padding so the SPA sits flush against the menu.
+	 *
+	 * @return void
+	 */
+	private function enqueue_admin_chrome_styles(): void {
+		$path = NEXUS_LS_PLUGIN_DIR . 'assets/admin/css/wp-admin-chrome.css';
+		$ver  = file_exists( $path ) ? (string) filemtime( $path ) : NEXUS_LS_VERSION;
+
+		wp_enqueue_style(
+			'nexus-ls-admin-chrome',
+			esc_url( NEXUS_LS_PLUGIN_URL . 'assets/admin/css/wp-admin-chrome.css' ),
+			array(),
+			$ver
+		);
+	}
+
+	/**
+	 * Localizes admin script globals for the React SPA.
+	 *
+	 * @param string               $handle        Script handle.
+	 * @param string               $initial_route Optional initial route.
+	 * @param array<string,string> $admin_pages   Optional admin page URLs.
+	 * @return void
+	 */
+	private function localize_admin_script( string $handle, string $initial_route = 'activities', array $admin_pages = array() ): void {
+		if ( array() === $admin_pages ) {
+			$submenu_routes = $this->get_submenu_routes();
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$current_page  = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['page'] ) ) : self::MENU_SLUG;
+			$initial_route = $submenu_routes[ $current_page ] ?? 'activities';
+			foreach ( $submenu_routes as $slug => $route ) {
+				$admin_pages[ $route ] = esc_url_raw( admin_url( 'admin.php?page=' . $slug ) );
+			}
+		}
+
+		wp_localize_script(
+			$handle,
+			'nexusLsAdmin',
+			array(
+				'restUrl'           => esc_url_raw( rest_url() ),
+				'nonce'             => wp_create_nonce( 'wp_rest' ),
+				'adminAjaxUrl'      => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+				'popupPreviewNonce' => wp_create_nonce( 'nexus_ls_popup_preview' ),
+				'pluginUrl'         => esc_url_raw( NEXUS_LS_PLUGIN_URL ),
+				'siteUrl'           => esc_url_raw( home_url( '/' ) ),
+				'siteTitle'         => get_bloginfo( 'name' ),
+				'formsPayload'      => $this->get_forms_payload_for_boot(),
+				'initialRoute'      => $initial_route,
+				'adminPages'        => $admin_pages,
+			)
+		);
+	}
+
+	/**
+	 * Patches fetch() so email template saves use a canonical REST URL and base64 HTML bodies (avoids WAF/HTML blocks).
+	 *
+	 * @param string $handle Script handle to attach the patch before.
+	 * @return void
+	 */
+	private function append_email_templates_rest_patch( string $handle ): void {
+		wp_add_inline_script(
+			$handle,
+			'(function(){' .
+			'"use strict";' .
+			'if(window.__nexusLsEmailTemplatesFetchPatch){return;}' .
+			'window.__nexusLsEmailTemplatesFetchPatch=true;' .
+			'var nativeFetch=window.fetch.bind(window);' .
+			'function restBase(){var raw=(window.nexusLsAdmin&&window.nexusLsAdmin.restUrl)||"/wp-json/";return raw.replace(/\\/?$/,"/");}' .
+			'function templatesUrl(){return restBase()+"nexus-lead-suite/v1/emails/templates";}' .
+			'function encodeUtf8Base64(value){var bytes=new TextEncoder().encode(String(value||""));var binary="";for(var i=0;i<bytes.length;i++){binary+=String.fromCharCode(bytes[i]);}return btoa(binary);}' .
+			'window.fetch=function(input,init){' .
+			'var url=typeof input==="string"?input:(input&&input.url)||"";' .
+			'var method=(init&&init.method)||"GET";' .
+			'var nextInit=init;' .
+			'var nextUrl=url;' .
+			'if(url.indexOf("emails/templates")!==-1){nextUrl=templatesUrl();' .
+			'if(method.toUpperCase()==="POST"&&init&&typeof init.body==="string"){' .
+			'try{var parsed=JSON.parse(init.body);' .
+			'if(parsed&&Array.isArray(parsed.templates)&&parsed.contentEncoding!=="base64"){' .
+			'parsed.contentEncoding="base64";' .
+			'parsed.templates=parsed.templates.map(function(tpl){' .
+			'var copy={};for(var k in tpl){if(Object.prototype.hasOwnProperty.call(tpl,k)){copy[k]=tpl[k];}}' .
+			'copy.content=encodeUtf8Base64(tpl.content||"");return copy;});' .
+			'nextInit=Object.assign({},init,{body:JSON.stringify(parsed)});' .
+			'}}catch(e){}}}' .
+			'if(typeof input==="string"){return nativeFetch(nextUrl,nextInit);}' .
+			'return nativeFetch(input,nextInit);' .
+			'};' .
+			'})();',
+			'before'
 		);
 	}
 

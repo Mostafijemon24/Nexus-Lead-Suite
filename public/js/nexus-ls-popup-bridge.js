@@ -149,16 +149,26 @@
 	}
 
 	function fireNotifyForEvent( trigId, notifyLabel ) {
-		if ( ! trigId ) return;
+		if ( ! trigId || ! cfg.ajaxUrl ) {
+			return;
+		}
 		var fd = new FormData();
 		fd.append( 'action', 'nexus_trigger_notify' );
 		fd.append( 'nonce', cfg.notifyNonce || '' );
 		fd.append( 'trigger_id', trigId );
 		fd.append( 'notify_label', notifyLabel || trigId );
 		fd.append( 'page_url', window.location.href );
-		if ( cfg.ajaxUrl ) {
-			fetch( cfg.ajaxUrl, { method: 'POST', body: fd, credentials: 'same-origin' } );
-		}
+		try {
+			if ( typeof navigator.sendBeacon === 'function' && navigator.sendBeacon( cfg.ajaxUrl, fd ) ) {
+				return;
+			}
+		} catch ( _beaconErr ) {}
+		fetch( cfg.ajaxUrl, {
+			method: 'POST',
+			body: fd,
+			credentials: 'same-origin',
+			keepalive: true,
+		} ).catch( function () {} );
 	}
 
 	document.addEventListener(
@@ -230,7 +240,7 @@
 			if ( ! el ) {
 				return;
 			}
-			var raw = norm( el.getAttribute( 'data-nexas-trigger' ) );
+			var raw = norm( String( el.getAttribute( 'data-nexas-trigger' ) || '' ).trim() );
 			if ( ! raw ) {
 				return;
 			}

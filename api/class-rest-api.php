@@ -337,6 +337,11 @@ final class Rest_Api {
 						'type'     => 'array',
 						'required' => true,
 					),
+					'contentEncoding' => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
 				),
 			)
 		);
@@ -2074,8 +2079,12 @@ final class Rest_Api {
 					$event = $popup_ref2;
 				}
 			}
-			$css_id    = isset( $item['cssId'] ) ? sanitize_text_field( (string) $item['cssId'] ) : '';
-			$css_class = isset( $item['cssClass'] ) ? sanitize_text_field( (string) $item['cssClass'] ) : '';
+			$css_id       = isset( $item['cssId'] ) ? sanitize_text_field( (string) $item['cssId'] ) : '';
+			$css_class    = isset( $item['cssClass'] ) ? sanitize_text_field( (string) $item['cssClass'] ) : '';
+			$display_mode = isset( $item['displayMode'] ) ? sanitize_text_field( (string) $item['displayMode'] ) : 'inline';
+			if ( ! in_array( $display_mode, array( 'inline', 'block' ), true ) ) {
+				$display_mode = 'inline';
+			}
 
 			$style_in  = isset( $item['style'] ) && is_array( $item['style'] ) ? $item['style'] : array();
 			$bg        = isset( $style_in['bg'] ) ? sanitize_hex_color( (string) $style_in['bg'] ) : '#2563eb';
@@ -2100,14 +2109,20 @@ final class Rest_Api {
 				$hover = 'none';
 			}
 
+			$display_mode = isset( $item['displayMode'] ) ? sanitize_text_field( (string) $item['displayMode'] ) : 'inline';
+			if ( ! in_array( $display_mode, array( 'inline', 'block' ), true ) ) {
+				$display_mode = 'inline';
+			}
+
 			$out[] = array(
-				'id'        => $id !== '' ? $id : 'btn-' . ( count( $out ) + 1 ),
-				'label'     => $label,
-				'url'       => $url,
-				'eventName' => $event,
-				'icon'      => $icon,
-				'cssId'     => $css_id,
-				'cssClass'  => $css_class,
+				'id'          => $id !== '' ? $id : 'btn-' . ( count( $out ) + 1 ),
+				'label'       => $label,
+				'url'         => $url,
+				'eventName'   => $event,
+				'icon'        => $icon,
+				'displayMode' => $display_mode,
+				'cssId'       => $css_id,
+				'cssClass'    => $css_class,
 				'style'     => array(
 					'bg'                => $bg,
 					'text'              => $text,
@@ -2927,6 +2942,21 @@ final class Rest_Api {
 		$templates = $request->get_param( 'templates' );
 		if ( ! is_array( $templates ) ) {
 			$templates = array();
+		}
+
+		$content_encoding = $request->get_param( 'contentEncoding' );
+		$use_base64       = is_string( $content_encoding ) && 'base64' === strtolower( $content_encoding );
+		if ( $use_base64 ) {
+			foreach ( $templates as $idx => $tpl ) {
+				if ( ! is_array( $tpl ) || ! isset( $tpl['content'] ) ) {
+					continue;
+				}
+				$raw     = (string) $tpl['content'];
+				$decoded = base64_decode( $raw, true );
+				if ( false !== $decoded ) {
+					$templates[ $idx ]['content'] = $decoded;
+				}
+			}
 		}
 
 		$clean = $this->sanitize_email_templates_payload( $templates );

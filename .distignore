@@ -1,3 +1,36 @@
+# Development / VCS (exclude from WordPress.org production ZIP)
+.git
+.gitattributes
+.github
+.gitignore
+.distignore
+
+# Cursor / editor
+.cursor
 .cursorrules
 cursorrules.md
-.cursor/
+
+# GitHub-only docs
+README.md
+RELEASE_NOTES_v0.1.5.md
+RELEASE_NOTES_v1.0.0.md
+
+# Admin build toolchain (compiled assets live in /assets/admin)
+/admin/.gitignore
+/admin/node_modules
+/admin/dist
+/admin/src
+/admin/package.json
+/admin/package-lock.json
+/admin/vite.config.js
+/admin/tailwind.config.js
+/admin/postcss.config.js
+
+# Release tooling
+/scripts
+/release
+
+# OS / logs
+.DS_Store
+Thumbs.db
+*.log

@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 0.1.5
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,6 +71,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 == Changelog ==
 
+= 1.0.0 =
+* First stable release.
+
 = 0.1.5 =
 * WordPress Plugin Check compliance: security hardening, WPCS fixes, and Plugin Directory requirements.
 * Sanitized form inputs, escaped outputs, REST file uploads via get_file_params(), WP_Filesystem for writable checks.
@@ -84,6 +87,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 * Initial scaffold: custom database tables, REST bootstrap, admin build tooling.
 
 == Upgrade Notice ==
+
+= 1.0.0 =
+First stable release of Nexus Lead Suite.
 
 = 0.1.5 =
 Security and coding standards update for WordPress.org Plugin Check compliance. No intentional changes to core functionality.

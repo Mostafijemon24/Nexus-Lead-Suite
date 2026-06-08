@@ -4,9 +4,10 @@ import {
 	Bell,
 	Calendar,
 	Code,
+	Copy,
 	Download,
 	Eye,
-	Grid,
+	GripVertical,
 	Mail,
 	MapPin,
 	MessageSquare,
@@ -61,6 +62,8 @@ export function MenuItemsPage() {
 	const [ popOutBtn, setPopOutBtn ] = useState( null );
 	const [ status, setStatus ] = useState( { loading: true, saving: false, error: '' } );
 	const [ savedSnapshot, setSavedSnapshot ] = useState( [] );
+	const [ dragId, setDragId ] = useState( null );
+	const [ dropId, setDropId ] = useState( null );
 
 	const activeBtn = useMemo( () => buttons.find( ( b ) => b.id === activeTab ) || buttons[ 0 ], [ buttons, activeTab ] );
 
@@ -145,6 +148,31 @@ export function MenuItemsPage() {
 		setActiveTab( newBtn.id );
 	};
 
+	const duplicateButton = ( id ) => {
+		const source = buttons.find( ( b ) => b.id === id );
+		if ( ! source ) {
+			return;
+		}
+
+		const newId = `btn-${ Date.now() }`;
+		const copy = {
+			...source,
+			id: newId,
+			label: source.label ? `${ source.label } (Copy)` : 'New Action Button (Copy)',
+			style: { ...source.style },
+			cssId: '',
+		};
+
+		setButtons( ( prev ) => {
+			const idx = prev.findIndex( ( b ) => b.id === id );
+			if ( idx === -1 ) {
+				return prev;
+			}
+			return [ ...prev.slice( 0, idx + 1 ), copy, ...prev.slice( idx + 1 ) ];
+		} );
+		setActiveTab( newId );
+	};
+
 	const removeButton = ( id ) => {
 		setButtons( ( prev ) => {
 			if ( prev.length <= 1 ) {
@@ -154,6 +182,23 @@ export function MenuItemsPage() {
 			const nextActive = filtered[ 0 ]?.id || null;
 			setActiveTab( ( cur ) => ( cur === id ? nextActive : cur ) );
 			return filtered;
+		} );
+	};
+
+	const reorderButtons = ( fromId, toId ) => {
+		if ( ! fromId || ! toId || fromId === toId ) {
+			return;
+		}
+		setButtons( ( prev ) => {
+			const fromIdx = prev.findIndex( ( b ) => b.id === fromId );
+			const toIdx = prev.findIndex( ( b ) => b.id === toId );
+			if ( fromIdx === -1 || toIdx === -1 ) {
+				return prev;
+			}
+			const next = [ ...prev ];
+			const [ moved ] = next.splice( fromIdx, 1 );
+			next.splice( toIdx, 0, moved );
+			return next;
 		} );
 	};
 
@@ -195,7 +240,7 @@ export function MenuItemsPage() {
 			} }
 			onClick={ ( e ) => e.preventDefault() }
 		>
-			{ iconLibrary[ btn.icon ] }
+			{ iconLibrary[ btn.icon || 'none' ] }
 			<span>{ btn.label || 'Button' }</span>
 		</a>
 	);
@@ -260,6 +305,7 @@ export function MenuItemsPage() {
 					<div className="w-72 border-r border-slate-200 bg-slate-50 flex flex-col shrink-0">
 						<div className="p-4 border-b border-slate-200">
 							<h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Button Layers</h2>
+							<p className="mt-1 text-[10px] text-slate-400">Drag to reorder</p>
 						</div>
 						<div className="flex-1 overflow-y-auto p-3 space-y-2">
 							{ status.loading ? (
@@ -269,15 +315,47 @@ export function MenuItemsPage() {
 									<div
 										key={ btn.id }
 										onClick={ () => setActiveTab( btn.id ) }
+										onDragOver={ ( e ) => {
+											e.preventDefault();
+											setDropId( btn.id );
+										} }
+										onDragLeave={ () => setDropId( null ) }
+										onDrop={ ( e ) => {
+											e.preventDefault();
+											e.stopPropagation();
+											reorderButtons( dragId, btn.id );
+											setDragId( null );
+											setDropId( null );
+										} }
 										className={ `group p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
 											activeTab === btn.id
 												? 'bg-white border-blue-500 shadow-md ring-2 ring-blue-500/10'
 												: 'bg-transparent border-transparent hover:bg-slate-200/50'
+										} ${ dropId === btn.id && dragId !== btn.id ? 'ring-2 ring-blue-300 border-blue-200' : '' } ${
+											dragId === btn.id ? 'opacity-50' : ''
 										}` }
 									>
-										<div className="flex items-center gap-3 truncate">
-											<div className={ activeTab === btn.id ? 'text-blue-600' : 'text-slate-400' }>
-												{ iconLibrary[ btn.icon ] || <Grid size={ 16 } /> }
+										<div className="flex min-w-0 flex-1 items-center gap-2 truncate">
+											<button
+												type="button"
+												draggable
+												onDragStart={ ( e ) => {
+													setDragId( btn.id );
+													e.dataTransfer.effectAllowed = 'move';
+												} }
+												onDragEnd={ () => {
+													setDragId( null );
+													setDropId( null );
+												} }
+												onClick={ ( e ) => e.stopPropagation() }
+												className="shrink-0 rounded p-1 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing"
+												title="Drag to reorder"
+												aria-label="Drag to reorder"
+											>
+												<GripVertical size={ 16 } />
+											</button>
+											<div className={ activeTab === btn.id ? 'text-blue-600 shrink-0' : 'text-slate-400 shrink-0' }>
+												{ iconLibrary[ btn.icon || 'none' ] }
 											</div>
 											<span
 												className={ `text-sm font-semibold truncate ${
@@ -295,6 +373,14 @@ export function MenuItemsPage() {
 												title="Quick Preview"
 											>
 												<Eye size={ 14 } />
+											</button>
+											<button
+												type="button"
+												onClick={ () => duplicateButton( btn.id ) }
+												className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+												title="Duplicate"
+											>
+												<Copy size={ 14 } />
 											</button>
 											{ buttons.length > 1 && (
 												<button

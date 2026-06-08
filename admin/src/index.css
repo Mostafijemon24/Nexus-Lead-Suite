@@ -3,19 +3,72 @@
 @tailwind utilities;
 
 :root {
-	--sidebar: #0b1120;
-	--sidebar-border: rgba(255, 255, 255, 0.08);
-	--sidebar-active: #5b21b6;
+	--nexus-sidebar-bg: transparent;
+	--nexus-sidebar-border: #dcdcde;
+	--nexus-sidebar-text: #50575e;
+	--nexus-sidebar-link: #2c3338;
+	--nexus-sidebar-hover-bg: #f0f0f1;
+	--nexus-sidebar-hover-text: #1d2327;
+	--nexus-sidebar-active-bg: var(--wp-admin-theme-color, #2271b1);
+	--nexus-sidebar-active-text: #fff;
 }
 
-.bg-sidebar {
-	background-color: var(--sidebar);
+.nexus-ls-admin-app {
+	background: transparent;
 }
 
-.border-sidebar-border {
-	border-color: var(--sidebar-border);
+.nexus-ls-admin-sidebar {
+	background-color: var(--nexus-sidebar-bg);
+	border-color: var(--nexus-sidebar-border);
+	color: var(--nexus-sidebar-text);
 }
 
-.bg-sidebar-active {
-	background-color: var(--sidebar-active);
+.nexus-ls-sidebar-divider {
+	border-color: var(--nexus-sidebar-border);
+}
+
+.nexus-ls-sidebar-logo {
+	background-color: var(--nexus-sidebar-active-bg);
+	color: var(--nexus-sidebar-active-text);
+	box-shadow: none;
+}
+
+.nexus-ls-sidebar-brand {
+	color: var(--nexus-sidebar-hover-text);
+}
+
+.nexus-ls-sidebar-brand:hover {
+	background-color: var(--nexus-sidebar-hover-bg);
+	color: var(--nexus-sidebar-hover-text);
+}
+
+.nexus-ls-sidebar-link {
+	color: var(--nexus-sidebar-link);
+	text-decoration: none;
+}
+
+.nexus-ls-sidebar-link:hover {
+	background-color: var(--nexus-sidebar-hover-bg);
+	color: var(--nexus-sidebar-hover-text);
+}
+
+.nexus-ls-sidebar-link.is-active,
+.nexus-ls-sidebar-link[aria-current="page"] {
+	background-color: var(--nexus-sidebar-active-bg);
+	color: var(--nexus-sidebar-active-text);
+	box-shadow: none;
+}
+
+.nexus-ls-sidebar-link.is-active svg,
+.nexus-ls-sidebar-link[aria-current="page"] svg {
+	color: var(--nexus-sidebar-active-text);
+}
+
+.nexus-ls-sidebar-collapse {
+	color: #646970;
+}
+
+.nexus-ls-sidebar-collapse:hover {
+	background-color: var(--nexus-sidebar-hover-bg);
+	color: var(--nexus-sidebar-hover-text);
 }
