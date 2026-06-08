@@ -43,7 +43,7 @@ export function App() {
 	const Page = ROUTES[ route ] || null;
 
 	return (
-		<div className="flex min-h-screen bg-[#070b14]">
+		<div className="nexus-ls-admin-app flex min-h-screen">
 			<AdminSidebar activeId={ route } onNavigate={ setRoute } />
 			<main className="min-h-screen flex-1">
 				{ Page ? (

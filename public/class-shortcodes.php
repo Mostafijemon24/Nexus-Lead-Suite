@@ -246,8 +246,18 @@ final class Shortcodes {
 		$notify_label = sanitize_text_field( wp_unslash( $_POST['notify_label'] ?? '' ) );
 		$page_url     = esc_url_raw( wp_unslash( $_POST['page_url'] ?? '' ) );
 
-		$templates  = $this->read_email_templates_from_storage();
-		$recipients = $this->collect_union_recipients_from_templates( $templates );
+		$templates = $this->read_email_templates_from_storage();
+		$general   = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
+		$sel_id    = is_array( $general ) ? sanitize_text_field( (string) ( $general['selectedEmailTemplate'] ?? '' ) ) : '';
+		$event_tpl = $this->find_email_template_by_id( $templates, $sel_id );
+		if ( ! is_array( $event_tpl ) ) {
+			$event_tpl = $this->find_first_email_template_with_html( $templates );
+		}
+
+		$recipients = $this->collect_recipients_from_template( $event_tpl );
+		if ( empty( $recipients ) ) {
+			$recipients = $this->collect_union_recipients_from_templates( $templates );
+		}
 		if ( empty( $recipients ) ) {
 			$admin = (string) get_option( 'admin_email' );
 			if ( $admin && is_email( $admin ) ) {
@@ -257,16 +267,9 @@ final class Shortcodes {
 
 		$site_name = (string) get_bloginfo( 'name' );
 		$sent      = false;
+		$html_body = $this->get_email_template_html_body( $event_tpl );
 
 		if ( ! empty( $recipients ) ) {
-			$general   = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
-			$sel_id    = is_array( $general ) ? sanitize_text_field( (string) ( $general['selectedEmailTemplate'] ?? '' ) ) : '';
-			$event_tpl = $this->find_email_template_by_id( $templates, $sel_id );
-			$html_body = $this->get_email_template_html_body( $event_tpl );
-			if ( '' === trim( $html_body ) ) {
-				$event_tpl = $this->find_first_email_template_with_html( $templates );
-				$html_body = $this->get_email_template_html_body( $event_tpl );
-			}
 
 			try {
 				if ( is_array( $event_tpl ) && '' !== trim( $html_body ) ) {
@@ -798,6 +801,38 @@ final class Shortcodes {
 	}
 
 	/**
+	 * Valid recipients from a single email template row.
+	 *
+	 * @param array<string,mixed>|null $tpl Template or null.
+	 * @return array<int,string>
+	 */
+	private function collect_recipients_from_template( ?array $tpl ): array {
+		if ( ! is_array( $tpl ) ) {
+			return array();
+		}
+
+		$list = array();
+		if ( isset( $tpl['recipients'] ) && is_array( $tpl['recipients'] ) ) {
+			$list = $tpl['recipients'];
+		} elseif ( isset( $tpl['emails'] ) ) {
+			$split = preg_split( '/[\r\n,]+/', (string) $tpl['emails'] );
+			$list  = is_array( $split ) ? $split : array();
+		}
+
+		$seen = array();
+		$out  = array();
+		foreach ( $list as $email ) {
+			$email = sanitize_email( trim( (string) $email ) );
+			if ( $email && is_email( $email ) && ! isset( $seen[ $email ] ) ) {
+				$seen[ $email ] = true;
+				$out[]          = $email;
+			}
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Every valid recipient from every template (union) for trigger notifications.
 	 *
 	 * @param array<int,mixed> $templates Templates payload.
@@ -810,16 +845,8 @@ final class Shortcodes {
 			if ( ! is_array( $tpl ) ) {
 				continue;
 			}
-			$list = array();
-			if ( isset( $tpl['recipients'] ) && is_array( $tpl['recipients'] ) ) {
-				$list = $tpl['recipients'];
-			} elseif ( isset( $tpl['emails'] ) ) {
-				$split = preg_split( '/[\r\n,]+/', (string) $tpl['emails'] );
-				$list  = is_array( $split ) ? $split : array();
-			}
-			foreach ( $list as $email ) {
-				$email = sanitize_email( trim( (string) $email ) );
-				if ( $email && is_email( $email ) && ! isset( $seen[ $email ] ) ) {
+			foreach ( $this->collect_recipients_from_template( $tpl ) as $email ) {
+				if ( ! isset( $seen[ $email ] ) ) {
 					$seen[ $email ] = true;
 					$out[]          = $email;
 				}
@@ -2199,8 +2226,9 @@ final class Shortcodes {
 			return;
 		}
 
-		$payload = $this->get_menu_items_payload();
-		$items   = $payload['items'];
+		$payload    = $this->get_menu_items_payload();
+		$items      = $payload['items'];
+		$global_fs  = (int) $payload['globalFontSize'];
 		if ( count( $items ) === 0 ) {
 			return;
 		}
@@ -2225,35 +2253,64 @@ final class Shortcodes {
   padding-bottom: max(8px, env(safe-area-inset-bottom));
 }
 @media (max-width: 1023px) {
-  .nexus-bottom-nav { display: flex; }
+  .nexus-bottom-nav { display: block; }
 }
 .nexus-bottom-nav__inner {
+  container-type: inline-size;
+  --nexus-nav-gap: 4px;
+  --nexus-nav-fs-min: 10px;
+  --nexus-nav-fs-max: ' . $global_fs . 'px;
+  /* 280px viewport − 12px padding each side */
+  --nexus-nav-inner-min: 256px;
+  --nexus-nav-inner-max: 700px;
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
-  gap: 8px;
-  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--nexus-nav-gap);
+  justify-content: flex-start;
   align-items: stretch;
   width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  max-width: 100%;
 }
-.nexus-bottom-nav__inner::-webkit-scrollbar { display: none; }
 .nexus-bottom-nav__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 0.35em;
   text-decoration: none !important;
   font-weight: 600;
-  font-size: 14px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  flex: 1 1 0;
-  min-width: 0;
+  box-sizing: border-box;
   cursor: pointer;
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: visible;
+  font-size: clamp(
+    var(--nexus-nav-fs-min),
+    calc(
+      var(--nexus-nav-fs-min)
+      + (100cqw - var(--nexus-nav-inner-min))
+      * (var(--nexus-nav-fs-max) - var(--nexus-nav-fs-min))
+      / (var(--nexus-nav-inner-max) - var(--nexus-nav-inner-min))
+    ),
+    var(--nexus-nav-fs-max)
+  );
   transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease, opacity 0.18s ease;
+}
+/* Inline: grow to fill each row; wrap only when content no longer fits */
+.nexus-bottom-nav__btn--inline {
+  flex: 1 1 0%;
+  min-width: max-content;
+  max-width: 100%;
+}
+.nexus-bottom-nav__btn--inline span {
+  overflow: visible;
+}
+/* Block: always own full-width row */
+.nexus-bottom-nav__btn--block {
+  flex: 0 0 100%;
+  width: 100%;
+  max-width: 100%;
 }
 .nexus-bottom-nav__btn svg {
   flex-shrink: 0;
@@ -2291,7 +2348,6 @@ final class Shortcodes {
 
 		$payload    = $this->get_menu_items_payload();
 		$items      = $payload['items'];
-		$global_fs  = $payload['globalFontSize'];
 		if ( count( $items ) === 0 ) {
 			return;
 		}
@@ -2312,21 +2368,28 @@ final class Shortcodes {
 			$hover_effect = isset( $btn['style']['hoverEffect'] ) ? sanitize_text_field( (string) $btn['style']['hoverEffect'] ) : 'none';
 			$bg           = isset( $btn['style']['bg'] ) ? sanitize_hex_color( (string) $btn['style']['bg'] ) : '#2563eb';
 			$text_color   = isset( $btn['style']['text'] ) ? sanitize_hex_color( (string) $btn['style']['text'] ) : '#ffffff';
-			$pad_v        = max( 4, min( 40, (int) ( $btn['style']['paddingVertical'] ?? 12 ) ) );
-			$pad_h        = max( 8, min( 60, (int) ( $btn['style']['paddingHorizontal'] ?? 20 ) ) );
-			$radius       = max( 0, min( 50, (int) ( $btn['style']['radius'] ?? 8 ) ) );
+			$pad_v        = isset( $btn['style']['paddingVertical'] ) ? (int) $btn['style']['paddingVertical'] : 12;
+			$pad_h        = isset( $btn['style']['paddingHorizontal'] ) ? (int) $btn['style']['paddingHorizontal'] : 24;
+			$radius       = isset( $btn['style']['radius'] ) ? (int) $btn['style']['radius'] : 8;
+			$pad_v        = max( 0, min( 80, $pad_v ) );
+			$pad_h        = max( 0, min( 120, $pad_h ) );
+			$radius       = max( 0, min( 80, $radius ) );
+			$display_mode = isset( $btn['displayMode'] ) ? sanitize_text_field( (string) $btn['displayMode'] ) : 'inline';
+			if ( ! in_array( $display_mode, array( 'inline', 'block' ), true ) ) {
+				$display_mode = 'inline';
+			}
+			$mode_class = 'block' === $display_mode ? ' nexus-bottom-nav__btn--block' : ' nexus-bottom-nav__btn--inline';
 
 			$allowed_effects = array( 'lift', 'scale', 'glow', 'darken', 'shake', 'rotate' );
 			$hover_class     = in_array( $hover_effect, $allowed_effects, true ) ? ' nexus-bottom-nav__btn--' . $hover_effect : '';
 
 			$inline_style = sprintf(
-				'background-color:%s;color:%s;padding:%dpx %dpx;border-radius:%dpx;font-size:%dpx;',
+				'background-color:%s;color:%s;padding:%dpx %dpx;border-radius:%dpx;',
 				esc_attr( $bg ?: '#2563eb' ),
 				esc_attr( $text_color ?: '#ffffff' ),
 				$pad_v,
 				$pad_h,
-				$radius,
-				$global_fs
+				$radius
 			);
 
 			$event_name = isset( $btn['eventName'] ) ? trim( sanitize_text_field( (string) $btn['eventName'] ) ) : '';
@@ -2357,10 +2420,11 @@ final class Shortcodes {
 			}
 
 			printf(
-				'<a href="%s"%s%s class="nexus-bottom-nav__btn%s%s" style="%s">',
+				'<a href="%s"%s%s class="nexus-bottom-nav__btn%s%s%s" style="%s">',
 				esc_url( $href_attr ),
 				$css_id ? ' id="' . esc_attr( $css_id ) . '"' : '',
 				$trigger_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already escaped above.
+				esc_attr( $mode_class ),
 				esc_attr( $hover_class ),
 				$css_class ? ' ' . esc_attr( $css_class ) : '',
 				esc_attr( $inline_style )

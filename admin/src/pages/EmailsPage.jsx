@@ -30,6 +30,38 @@ function copyText( text ) {
 	}
 }
 
+function getPluginRestUrl( route ) {
+	const base = ( window?.nexusLsAdmin?.restUrl || '/wp-json/' ).replace( /\/?$/, '/' );
+	const path = String( route || '' ).replace( /^\//, '' );
+	return `${ base }${ path }`;
+}
+
+function encodeUtf8Base64( value ) {
+	const bytes = new TextEncoder().encode( String( value ?? '' ) );
+	let binary = '';
+	bytes.forEach( ( byte ) => {
+		binary += String.fromCharCode( byte );
+	} );
+	return btoa( binary );
+}
+
+async function parsePluginRestJson( res ) {
+	const text = await res.text();
+	const trimmed = text.trim();
+	if ( trimmed.startsWith( '<' ) ) {
+		const hint =
+			res.status === 403 || res.status === 406
+				? 'The server security layer blocked this save (HTML email content). Try again or ask your host to allow REST POST to wp-json.'
+				: `The server returned an HTML page instead of JSON (HTTP ${ res.status }). Check that WordPress REST API and permalinks are working.`;
+		throw new Error( hint );
+	}
+	try {
+		return trimmed ? JSON.parse( text ) : {};
+	} catch {
+		throw new Error( 'Invalid response from server while saving email templates.' );
+	}
+}
+
 function makeTemplate() {
 	const now = Date.now();
 	const uuid = window?.crypto?.randomUUID ? window.crypto.randomUUID() : `uuid-${ now }`;
@@ -105,13 +137,12 @@ export function EmailsPage() {
 		async function boot() {
 			setStatus( { loading: true, saving: false, error: '' } );
 			try {
-				const base = window?.nexusLsAdmin?.restUrl || '/wp-json/';
-				const res = await fetch( `${ base }nexus-lead-suite/v1/emails/templates`, {
+				const res = await fetch( getPluginRestUrl( 'nexus-lead-suite/v1/emails/templates' ), {
 					method: 'GET',
 					credentials: 'same-origin',
 					headers: { 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
 				} );
-				const json = await res.json();
+				const json = await parsePluginRestJson( res );
 				const loaded = Array.isArray( json?.data?.templates ) ? json.data.templates : [];
 
 				const initial = loaded.length > 0 ? loaded : [
@@ -190,14 +221,19 @@ export function EmailsPage() {
 	const save = async () => {
 		setStatus( ( s ) => ( { ...s, saving: true, error: '' } ) );
 		try {
-			const base = window?.nexusLsAdmin?.restUrl || '/wp-json/';
-			const res = await fetch( `${ base }nexus-lead-suite/v1/emails/templates`, {
+			const res = await fetch( getPluginRestUrl( 'nexus-lead-suite/v1/emails/templates' ), {
 				method: 'POST',
 				credentials: 'same-origin',
 				headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
-				body: JSON.stringify( { templates } ),
+				body: JSON.stringify( {
+					contentEncoding: 'base64',
+					templates: templates.map( ( tpl ) => ( {
+						...tpl,
+						content: encodeUtf8Base64( tpl?.content || '' ),
+					} ) ),
+				} ),
 			} );
-			const json = await res.json();
+			const json = await parsePluginRestJson( res );
 			if ( ! res.ok || json?.success !== true ) {
 				throw new Error( json?.message || 'Save failed.' );
 			}

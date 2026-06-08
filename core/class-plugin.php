@@ -310,8 +310,11 @@ final class Plugin {
 		}
 
 		require_once NEXUS_LS_PLUGIN_DIR . 'admin/class-admin-app.php';
+		require_once NEXUS_LS_PLUGIN_DIR . 'admin/class-plugin-list-links.php';
 		$admin = new \Nexus_Lead_Suite\Admin\Admin_App();
 		$admin->register_hooks();
+		$plugin_links = new \Nexus_Lead_Suite\Admin\Plugin_List_Links();
+		$plugin_links->register_hooks();
 	}
 
 	/**
