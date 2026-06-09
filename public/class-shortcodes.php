@@ -1980,8 +1980,15 @@ final class Shortcodes {
 				};
 
 				/* ── open / close (shared with site-wide bridge script) ── */
-				function openPopup(el){
-					if(window.NexusLsPopupUi&&typeof window.NexusLsPopupUi.open==='function'){window.NexusLsPopupUi.open(el);return;}
+				function openPopup(el, autoTrigger){
+					if(window.NexusLsPopupUi&&typeof window.NexusLsPopupUi.open==='function'){
+						if(autoTrigger){
+							window.NexusLsPopupUi.open(el,{source:'auto',autoTrigger:autoTrigger});
+						}else{
+							window.NexusLsPopupUi.open(el);
+						}
+						return;
+					}
 					if(el.classList.contains('nexus-popup--open')) return;
 					el.classList.add('nexus-popup--open');
 					el.setAttribute('aria-hidden','false');
@@ -2027,7 +2034,7 @@ final class Shortcodes {
 						if(type==='timer'){
 							/* Blocked when Enable Auto Popup is OFF in Settings */
 							if(!nexusAutoPopupEnabled) return;
-							setTimeout(function(){ openPopup(overlay); }, delay * 1000);
+							setTimeout(function(){ openPopup(overlay,'timer'); }, delay * 1000);
 
 						/* ── Scroll Depth trigger ────────────────── */
 						} else if(type==='scroll'){
@@ -2042,7 +2049,7 @@ final class Shortcodes {
 									if((scrolled / total) * 100 >= pct){
 										fired=true;
 										window.removeEventListener('scroll', onScroll);
-										openPopup(overlay);
+										openPopup(overlay,'scroll');
 									}
 								}
 								window.addEventListener('scroll', onScroll, {passive:true});
@@ -2061,7 +2068,7 @@ final class Shortcodes {
 										if(document.documentElement){
 											document.documentElement.removeEventListener('mouseleave', onLeave);
 										}
-										openPopup(overlay);
+										openPopup(overlay,'exit');
 									}
 								}
 								if(document.documentElement){
@@ -2637,13 +2644,16 @@ final class Shortcodes {
 	}
 
 	/**
-	 * Parses Settings → Button Classes textarea into a class => eventId map.
+	 * Parses Settings → Button Classes into popup + notify class maps.
 	 *
-	 * Input format (per line):
-	 *   eventId | class-1, class-2
+	 * Input format (per line): eventId | class-1, class-2
+	 *
+	 * - One class (e.g. ldd | ldd-alert) => notify/mail only.
+	 * - Two or more => first popup, rest notify.
+	 * - Prefixes: popup:classname (popup only), mail: or notify:classname (notify only).
 	 *
 	 * @param string $raw Raw textarea.
-	 * @return array<string,string> class => eventId
+	 * @return array{popup: array<string,string>, notify: array<string,string>}
 	 */
 	private function parse_activity_button_classes_to_pair_maps( string $raw ): array {
 		$raw = (string) $raw;
@@ -2698,8 +2708,8 @@ final class Shortcodes {
 				if ( '' === $cls ) {
 					continue;
 				}
-				// Basic class token guard (avoid spaces and weird separators).
-				if ( ! preg_match( '/^[A-Za-z0-9_-]{1,80}$/', $cls ) ) {
+				// Basic class token guard (optional popup:/mail:/notify: prefix + 1–80 char name).
+				if ( ! preg_match( '/^(?:(?:popup|mail|notify):)?[A-Za-z0-9_-]{1,80}$/', $cls ) ) {
 					continue;
 				}
 				$clean_classes[] = $cls;
@@ -2709,19 +2719,58 @@ final class Shortcodes {
 				continue;
 			}
 
-			/*
-			 * Semantics:
-			 * - first class  => popup trigger
-			 * - remaining    => notify-only triggers
-			 */
-			$popup_cls = $clean_classes[0];
-			$out_popup[ $popup_cls ] = $event;
-			$out_popup[ strtolower( $popup_cls ) ] = $event;
+			$explicit_popup  = array();
+			$explicit_notify = array();
+			$auto_classes    = array();
 
-			if ( count( $clean_classes ) > 1 ) {
-				foreach ( array_slice( $clean_classes, 1 ) as $notify_cls ) {
-					$out_notify[ $notify_cls ] = $event;
-					$out_notify[ strtolower( $notify_cls ) ] = $event;
+			foreach ( $clean_classes as $cls ) {
+				if ( str_starts_with( $cls, 'popup:' ) ) {
+					$name = trim( substr( $cls, 6 ) );
+					if ( '' !== $name ) {
+						$explicit_popup[] = $name;
+					}
+					continue;
+				}
+				if ( str_starts_with( $cls, 'mail:' ) || str_starts_with( $cls, 'notify:' ) ) {
+					$prefix_len = str_starts_with( $cls, 'mail:' ) ? 5 : 7;
+					$name       = trim( substr( $cls, $prefix_len ) );
+					if ( '' !== $name ) {
+						$explicit_notify[] = $name;
+					}
+					continue;
+				}
+				$auto_classes[] = $cls;
+			}
+
+			$register_popup = static function ( string $class_name ) use ( $event, &$out_popup ): void {
+				$out_popup[ $class_name ] = $event;
+				$out_popup[ strtolower( $class_name ) ] = $event;
+			};
+
+			$register_notify = static function ( string $class_name ) use ( $event, &$out_notify ): void {
+				$out_notify[ $class_name ] = $event;
+				$out_notify[ strtolower( $class_name ) ] = $event;
+			};
+
+			foreach ( $explicit_popup as $popup_cls ) {
+				$register_popup( $popup_cls );
+			}
+			foreach ( $explicit_notify as $notify_cls ) {
+				$register_notify( $notify_cls );
+			}
+
+			/*
+			 * Auto classes (no popup:/mail:/notify: prefix):
+			 * - one class  => mail/notify trigger (e.g. ldd | ldd-alert on a tel: button)
+			 * - two or more => first popup, remaining notify (legacy multi-class lines)
+			 */
+			$auto_count = count( $auto_classes );
+			if ( 1 === $auto_count ) {
+				$register_notify( $auto_classes[0] );
+			} elseif ( $auto_count > 1 ) {
+				$register_popup( $auto_classes[0] );
+				foreach ( array_slice( $auto_classes, 1 ) as $notify_cls ) {
+					$register_notify( $notify_cls );
 				}
 			}
 		}

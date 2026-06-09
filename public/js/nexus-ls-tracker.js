@@ -147,21 +147,81 @@
 		return 'page';
 	}
 
-	function labelOf( el ) {
-		var t = ( el.innerText || '' ).trim().replace( /\s+/g, ' ' );
-		if ( t.length > 120 ) {
-			t = t.slice( 0, 117 ) + '…';
-		}
+	function trimLabel( t ) {
+		t = String( t || '' ).trim().replace( /\s+/g, ' ' );
 		if ( ! t ) {
-			var aria = el.getAttribute( 'aria-label' );
-			if ( aria ) {
-				return aria.trim().slice( 0, 120 );
-			}
-			if ( el.title ) {
-				return el.title.trim().slice( 0, 120 );
+			return '';
+		}
+		if ( t.length > 120 ) {
+			return t.slice( 0, 117 ) + '…';
+		}
+		return t;
+	}
+
+	function isGenericTagLabel( t ) {
+		return /^(A|BUTTON|INPUT|DIV|SPAN|IMG|I|SVG)$/i.test( String( t || '' ).trim() );
+	}
+
+	function textFromNode( node ) {
+		if ( ! node || node.nodeType !== 1 ) {
+			return '';
+		}
+		var tag = String( node.tagName || '' ).toUpperCase();
+		if ( tag === 'INPUT' ) {
+			var submitVal = node.value || node.getAttribute( 'value' ) || '';
+			submitVal = trimLabel( submitVal );
+			if ( submitVal ) {
+				return submitVal;
 			}
 		}
-		return t || el.tagName;
+		var t = trimLabel( node.innerText || node.textContent || '' );
+		if ( t && ! isGenericTagLabel( t ) ) {
+			return t;
+		}
+		return '';
+	}
+
+	/*
+	 * Visible label of the clicked control (button/link text the visitor actually tapped).
+	 */
+	function labelOf( el, clickTarget ) {
+		if ( ! el ) {
+			return '';
+		}
+
+		var candidates = [];
+		if ( clickTarget && el.contains && el.contains( clickTarget ) ) {
+			var hop = clickTarget;
+			while ( hop && hop !== el ) {
+				candidates.push( hop );
+				hop = hop.parentElement;
+			}
+		}
+		candidates.push( el );
+
+		var i;
+		for ( i = 0; i < candidates.length; i++ ) {
+			var t = textFromNode( candidates[ i ] );
+			if ( t ) {
+				return t;
+			}
+		}
+
+		var aria = el.getAttribute( 'aria-label' ) || el.getAttribute( 'aria-labelledby' );
+		if ( aria ) {
+			aria = trimLabel( aria );
+			if ( aria && ! isGenericTagLabel( aria ) ) {
+				return aria;
+			}
+		}
+		if ( el.title ) {
+			var title = trimLabel( el.title );
+			if ( title && ! isGenericTagLabel( title ) ) {
+				return title;
+			}
+		}
+
+		return '';
 	}
 
 	/*
@@ -191,19 +251,47 @@
 			}
 		}
 
-		var lab = labelOf( el );
+		var lab = labelOf( el, e.target );
 
 		/*
-		 * data-nexas-trigger="id, label" sends admin email via AJAX and logs trigger_notify (with mail_sent).
-		 * Do not also log click_phone / click_mailto for the same tap — that row looked like "no mail" (N/A).
+		 * Email notify taps log trigger_notify server-side; skip duplicate click_phone / click_mailto rows.
 		 */
 		function nexasTriggerIsEmailNotify( node ) {
 			var trig = node && node.closest ? node.closest( '[data-nexas-trigger]' ) : null;
-			if ( ! trig ) {
+			if ( trig ) {
+				var raw = String( trig.getAttribute( 'data-nexas-trigger' ) || '' ).trim();
+				if ( raw.indexOf( ',' ) !== -1 ) {
+					return true;
+				}
+			}
+
+			var notifyMap =
+				window.nexusLsPopupBridgeCfg && window.nexusLsPopupBridgeCfg.notifyClassMap
+					? window.nexusLsPopupBridgeCfg.notifyClassMap
+					: null;
+			if ( ! notifyMap || ! node ) {
 				return false;
 			}
-			var raw = String( trig.getAttribute( 'data-nexas-trigger' ) || '' ).trim();
-			return raw.indexOf( ',' ) !== -1;
+
+			var hop = node;
+			var depth = 0;
+			while ( hop && hop !== document.body && depth < 12 ) {
+				depth++;
+				if ( hop.classList && hop.classList.length ) {
+					for ( var ci = 0; ci < hop.classList.length; ci++ ) {
+						var cls = hop.classList.item( ci );
+						if ( ! cls ) {
+							continue;
+						}
+						if ( notifyMap[ cls ] || notifyMap[ cls.toLowerCase() ] ) {
+							return true;
+						}
+					}
+				}
+				hop = hop.parentElement;
+			}
+
+			return false;
 		}
 
 		if ( href.indexOf( 'tel:' ) === 0 ) {
