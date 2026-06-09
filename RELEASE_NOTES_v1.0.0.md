@@ -14,7 +14,9 @@ First stable release (updated package — same version tag).
 
 ## v1.0.0 package update (June 2026)
 
-This release replaces the previous `nexus-lead-suite-1.0.0.zip` asset with an updated build (same **v1.0.0** tag).
+This release replaces the previous `nexus-lead-suite-1.0.0.zip` asset with an updated build.
+
+> **Tag:** Published at GitHub tag `1.0.0` because the prior immutable `v1.0.0` tag cannot be reused after deletion ([GitHub immutable releases](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases)).
 
 ### Activities & tracking
 
