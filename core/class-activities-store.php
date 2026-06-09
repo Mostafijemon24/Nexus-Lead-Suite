@@ -301,14 +301,10 @@ final class Activities_Store {
 				$label         = isset( $meta['notify_label'] ) ? sanitize_text_field( (string) $meta['notify_label'] ) : '';
 				$mail_sent     = self::meta_mail_sent_value( $meta );
 				$action        = __( 'Notify trigger', 'nexus-lead-suite' );
-				$context       = '' !== $label
-					? sprintf(
-						/* translators: 1: trigger id, 2: human label */
-						__( 'ID %1$s — %2$s', 'nexus-lead-suite' ),
-						$tid,
-						$label
-					)
-					: $tid;
+				$context       = self::click_element_label_context( $label, '' );
+				if ( '—' === $context && '' !== $tid ) {
+					$context = $tid;
+				}
 				break;
 
 			case 'click_phone':
@@ -317,13 +313,9 @@ final class Activities_Store {
 				$category_slug = 'calls';
 				$label         = isset( $meta['label'] ) ? sanitize_text_field( (string) $meta['label'] ) : '';
 				$href          = isset( $meta['href'] ) ? esc_url_raw( (string) $meta['href'] ) : '';
-				$zone          = isset( $meta['zone'] ) ? sanitize_text_field( (string) $meta['zone'] ) : '';
 				$action        = 'click_phone' === $etype ? __( 'Phone tap', 'nexus-lead-suite' ) : __( 'Email tap', 'nexus-lead-suite' );
-				$context       = trim( $label . ( '' !== $href ? ' · ' . $href : '' ) . ( '' !== $zone ? ' · ' . $zone : '' ) );
-				if ( '' === $context ) {
-					$context = '—';
-				}
-				$mail_sent = self::meta_mail_sent_value( $meta );
+				$context       = self::click_element_label_context( $label, $href );
+				$mail_sent     = self::meta_mail_sent_value( $meta );
 				break;
 
 			case 'scroll_depth':
@@ -346,13 +338,20 @@ final class Activities_Store {
 			case 'popup_close':
 				$category      = __( 'Interactions', 'nexus-lead-suite' );
 				$category_slug = 'interactions';
-				$ev            = isset( $meta['popup_event'] ) ? sanitize_text_field( (string) $meta['popup_event'] ) : '';
+				$label         = isset( $meta['label'] ) ? sanitize_text_field( (string) $meta['label'] ) : '';
+				$open_source   = isset( $meta['open_source'] ) ? sanitize_key( (string) $meta['open_source'] ) : '';
+				$auto_trigger  = isset( $meta['auto_trigger'] ) ? sanitize_key( (string) $meta['auto_trigger'] ) : '';
 				$action        = 'popup_open' === $etype ? __( 'Popup opened', 'nexus-lead-suite' ) : __( 'Popup closed', 'nexus-lead-suite' );
-				$context       = '' !== $ev ? sprintf(
-					/* translators: %s: popup event id */
-					__( 'Popup “%s”', 'nexus-lead-suite' ),
-					$ev
-				) : '—';
+				if ( 'popup_open' === $etype && 'auto' === $open_source ) {
+					$context = self::auto_popup_open_context( $auto_trigger );
+				} else {
+					$context = self::click_element_label_context( $label, '' );
+					if ( '—' === $context ) {
+						$context = 'popup_open' === $etype
+							? __( 'Pop-up opened', 'nexus-lead-suite' )
+							: __( 'Pop-up closed', 'nexus-lead-suite' );
+					}
+				}
 				break;
 
 			case 'footer_click':
@@ -361,10 +360,8 @@ final class Activities_Store {
 				$category_slug = 'interactions';
 				$label         = isset( $meta['label'] ) ? sanitize_text_field( (string) $meta['label'] ) : '';
 				$href          = isset( $meta['href'] ) ? esc_url_raw( (string) $meta['href'] ) : '';
-				$zone          = isset( $meta['zone'] ) ? sanitize_text_field( (string) $meta['zone'] ) : '';
 				$action        = 'footer_click' === $etype ? __( 'Footer click', 'nexus-lead-suite' ) : __( 'Button / link click', 'nexus-lead-suite' );
-				$parts         = array_filter( array( $label, $href, $zone ) );
-				$context       = ! empty( $parts ) ? implode( ' · ', $parts ) : '—';
+				$context       = self::click_element_label_context( $label, $href );
 				break;
 
 			default:
@@ -459,6 +456,53 @@ final class Activities_Store {
 		return $flag
 			? __( 'Sent', 'nexus-lead-suite' )
 			: __( 'Send failed', 'nexus-lead-suite' );
+	}
+
+	/**
+	 * Interaction text when a popup was opened by timer / scroll / exit intent.
+	 *
+	 * @param string $auto_trigger timer|scroll|exit or empty.
+	 * @return string
+	 */
+	private static function auto_popup_open_context( string $auto_trigger ): string {
+		switch ( $auto_trigger ) {
+			case 'timer':
+				return __( 'Auto pop-up · time delay', 'nexus-lead-suite' );
+			case 'scroll':
+				return __( 'Auto pop-up · scroll depth', 'nexus-lead-suite' );
+			case 'exit':
+				return __( 'Auto pop-up · exit intent', 'nexus-lead-suite' );
+			default:
+				return __( 'Auto pop-up', 'nexus-lead-suite' );
+		}
+	}
+
+	/**
+	 * Interaction column text for click rows: the visible control label the visitor tapped.
+	 *
+	 * @param string $label Sanitized label from tracker meta.
+	 * @param string $href  Optional link (tel/mailto/http) fallback when label is empty.
+	 * @return string
+	 */
+	private static function click_element_label_context( string $label, string $href = '' ): string {
+		$label = trim( $label );
+		if ( '' !== $label && ! preg_match( '/^(A|BUTTON|INPUT|DIV|SPAN|IMG|I|SVG)$/i', $label ) ) {
+			return self::truncate_ctx( $label );
+		}
+
+		$href = trim( $href );
+		if ( '' !== $href ) {
+			if ( 0 === stripos( $href, 'tel:' ) ) {
+				return self::truncate_ctx( substr( $href, 4 ) );
+			}
+			if ( 0 === stripos( $href, 'mailto:' ) ) {
+				return self::truncate_ctx( substr( $href, 7 ) );
+			}
+
+			return self::truncate_ctx( $href );
+		}
+
+		return '—';
 	}
 
 	/**

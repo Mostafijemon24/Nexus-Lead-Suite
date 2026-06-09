@@ -237,12 +237,41 @@
 					} ).filter( Boolean );
 					if ( ! clsParts.length ) continue;
 
-					// Keep the same semantics as the backend parser:
-					// first => popup, remaining => notify/mail.
+					var popupClass = '';
+					var notifyClasses = [];
+					var autoClasses = [];
+
+					clsParts.forEach( function ( token ) {
+						if ( token.indexOf( 'popup:' ) === 0 ) {
+							var p = token.slice( 6 ).trim();
+							if ( p ) popupClass = p;
+							return;
+						}
+						if ( token.indexOf( 'mail:' ) === 0 || token.indexOf( 'notify:' ) === 0 ) {
+							var n = token.indexOf( 'mail:' ) === 0 ? token.slice( 5 ).trim() : token.slice( 7 ).trim();
+							if ( n ) notifyClasses.push( n );
+							return;
+						}
+						autoClasses.push( token );
+					} );
+
+					if ( autoClasses.length === 1 ) {
+						notifyClasses.push( autoClasses[ 0 ] );
+					} else if ( autoClasses.length > 1 ) {
+						if ( ! popupClass ) {
+							popupClass = autoClasses[ 0 ];
+						}
+						autoClasses.slice( 1 ).forEach( function ( c ) {
+							if ( notifyClasses.indexOf( c ) === -1 ) {
+								notifyClasses.push( c );
+							}
+						} );
+					}
+
 					out.push( {
 						eventId: eventId,
-						popupClass: clsParts[ 0 ],
-						notifyClasses: clsParts.slice( 1 ),
+						popupClass: popupClass,
+						notifyClasses: notifyClasses,
 					} );
 				}
 				return out;

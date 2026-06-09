@@ -56,7 +56,7 @@
 		return null;
 	};
 
-	window.NexusLsPopupUi.open = function ( el ) {
+	window.NexusLsPopupUi.open = function ( el, openContext ) {
 		if ( ! el || el.classList.contains( 'nexus-popup--open' ) ) {
 			return;
 		}
@@ -68,7 +68,29 @@
 				norm( el.getAttribute( 'data-event' ) ) ||
 				norm( el.getAttribute( 'data-popup-id' ) );
 			if ( window.NexusLsTrack && typeof window.NexusLsTrack.push === 'function' ) {
-				window.NexusLsTrack.push( { type: 'popup_open', meta: { popup_event: evn } } );
+				var openMeta = { popup_event: evn };
+				var label = '';
+				var openSource = 'click';
+				var autoTrigger = '';
+
+				if ( typeof openContext === 'string' ) {
+					label = trimClickLabel( openContext );
+				} else if ( openContext && typeof openContext === 'object' ) {
+					label = trimClickLabel( openContext.label || '' );
+					openSource = openContext.source === 'auto' ? 'auto' : 'click';
+					autoTrigger = trimClickLabel( openContext.autoTrigger || '' );
+				}
+
+				if ( label ) {
+					openMeta.label = label;
+				}
+				if ( 'auto' === openSource ) {
+					openMeta.open_source = 'auto';
+					if ( autoTrigger ) {
+						openMeta.auto_trigger = autoTrigger;
+					}
+				}
+				window.NexusLsTrack.push( { type: 'popup_open', meta: openMeta } );
 				if ( typeof window.NexusLsTrack.flush === 'function' ) {
 					window.NexusLsTrack.flush();
 				}
@@ -148,6 +170,89 @@
 		);
 	}
 
+	function trimClickLabel( t ) {
+		t = String( t || '' ).trim().replace( /\s+/g, ' ' );
+		if ( ! t ) {
+			return '';
+		}
+		if ( t.length > 120 ) {
+			return t.slice( 0, 117 ) + '…';
+		}
+		return t;
+	}
+
+	function isGenericTagLabel( t ) {
+		return /^(A|BUTTON|INPUT|DIV|SPAN|IMG|I|SVG)$/i.test( String( t || '' ).trim() );
+	}
+
+	function textFromClickNode( node ) {
+		if ( ! node || node.nodeType !== 1 ) {
+			return '';
+		}
+		var tag = String( node.tagName || '' ).toUpperCase();
+		if ( tag === 'INPUT' ) {
+			var submitVal = trimClickLabel( node.value || node.getAttribute( 'value' ) || '' );
+			if ( submitVal ) {
+				return submitVal;
+			}
+		}
+		var t = trimClickLabel( node.innerText || node.textContent || '' );
+		if ( t && ! isGenericTagLabel( t ) ) {
+			return t;
+		}
+		return '';
+	}
+
+	function clickControlOf( target ) {
+		if ( ! target || ! target.closest ) {
+			return null;
+		}
+		return target.closest(
+			'a[href],button,[role="button"],input[type="submit"],input[type="button"]'
+		);
+	}
+
+	function clickLabelOf( target ) {
+		var el = clickControlOf( target );
+		if ( ! el ) {
+			return '';
+		}
+
+		var candidates = [];
+		if ( target && el.contains && el.contains( target ) ) {
+			var hop = target;
+			while ( hop && hop !== el ) {
+				candidates.push( hop );
+				hop = hop.parentElement;
+			}
+		}
+		candidates.push( el );
+
+		var i;
+		for ( i = 0; i < candidates.length; i++ ) {
+			var t = textFromClickNode( candidates[ i ] );
+			if ( t ) {
+				return t;
+			}
+		}
+
+		var aria = el.getAttribute( 'aria-label' ) || el.getAttribute( 'aria-labelledby' );
+		if ( aria ) {
+			aria = trimClickLabel( aria );
+			if ( aria && ! isGenericTagLabel( aria ) ) {
+				return aria;
+			}
+		}
+		if ( el.title ) {
+			var title = trimClickLabel( el.title );
+			if ( title && ! isGenericTagLabel( title ) ) {
+				return title;
+			}
+		}
+
+		return '';
+	}
+
 	function fireNotifyForEvent( trigId, notifyLabel ) {
 		if ( ! trigId || ! cfg.ajaxUrl ) {
 			return;
@@ -201,11 +306,19 @@
 		var notifyEvent =
 			__nexusNotifyClassToEvent ? findPopupByClassOnTarget( e.target, __nexusNotifyClassToEvent ) : null;
 
+		var clickLabel = clickLabelOf( e.target );
+
 		if ( notifyEvent ) {
-			fireNotifyForEvent( notifyEvent, notifyEvent );
+			fireNotifyForEvent( notifyEvent, clickLabel || notifyEvent );
 		}
 
-		if ( popupEvent ) {
+		var notifyNavAnchor = e.target.closest ? e.target.closest( 'a[href]' ) : null;
+		var notifyAllowsRealLink =
+			notifyEvent &&
+			notifyNavAnchor &&
+			shouldAllowDefaultNavigation( notifyNavAnchor );
+
+		if ( popupEvent && ! ( notifyAllowsRealLink && notifyEvent === popupEvent ) ) {
 			var overlay =
 				window.NexusLsPopupUi &&
 				typeof window.NexusLsPopupUi.findOverlayByEventId === 'function'
@@ -214,17 +327,14 @@
 			if ( overlay ) {
 				e.preventDefault();
 				e.stopPropagation();
-				window.NexusLsPopupUi.open( overlay );
+				window.NexusLsPopupUi.open( overlay, clickLabel );
 				return;
 			}
 		}
 
-		// Notify-only: allow navigation if it is a real link (popup absent = link works).
-		if ( notifyEvent && ! popupEvent ) {
-			var a = e.target.closest ? e.target.closest( 'a[href]' ) : null;
-			if ( a && shouldAllowDefaultNavigation( a ) ) {
-				return;
-			}
+		// Notify + real tel/mailto/http(s) link: email sent above; keep default navigation.
+		if ( notifyAllowsRealLink ) {
+			return;
 		}
 
 			// Back-compat: direct match class==eventId (older setups).
@@ -232,7 +342,7 @@
 			if ( popupByClass ) {
 				e.preventDefault();
 				e.stopPropagation();
-				window.NexusLsPopupUi.open( popupByClass );
+				window.NexusLsPopupUi.open( popupByClass, clickLabel );
 				return;
 			}
 
@@ -248,9 +358,10 @@
 			if ( parts.length >= 2 ) {
 				var trigId = norm( parts[ 0 ] );
 				var notifyLabel = norm( parts.slice( 1 ).join( ',' ) );
+				var resolvedNotifyLabel = clickLabel || notifyLabel;
 
 				function fireNotify() {
-					fireNotifyForEvent( trigId, notifyLabel );
+					fireNotifyForEvent( trigId, resolvedNotifyLabel );
 				}
 
 				var hrefRaw = norm( el.getAttribute( 'href' ) ) || '';
@@ -267,7 +378,7 @@
 				if ( popup ) {
 					e.preventDefault();
 					e.stopPropagation();
-					window.NexusLsPopupUi.open( popup );
+					window.NexusLsPopupUi.open( popup, clickLabel || notifyLabel );
 					return;
 				}
 
@@ -301,7 +412,7 @@
 			if ( popup ) {
 				e.preventDefault();
 				e.stopPropagation();
-				window.NexusLsPopupUi.open( popup );
+				window.NexusLsPopupUi.open( popup, clickLabel );
 			} else if ( evName && parts.length === 1 && ( hrefRaw === '' || hrefRaw === '#' ) ) {
 				/* Popup configured but overlay missing / mismatch — avoid broken empty href or hash jump. */
 				e.preventDefault();

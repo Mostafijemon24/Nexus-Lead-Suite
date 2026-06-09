@@ -73,6 +73,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 = 1.0.0 =
 * First stable release.
+* Activities: visible click labels on phone/email/footer/link rows; auto-popup source context (timer, scroll, exit intent); reliable mail status in admin grid.
+* Button Classes: single-class notify-only lines; `popup:` / `mail:` / `notify:` prefixes; Visual Editor parser aligned with backend.
+* Tracker & popup bridge: notify dedupe, click-label capture, real-link navigation preserved after notify.
 
 = 0.1.5 =
 * WordPress Plugin Check compliance: security hardening, WPCS fixes, and Plugin Directory requirements.
