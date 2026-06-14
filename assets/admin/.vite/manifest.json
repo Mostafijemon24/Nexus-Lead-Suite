@@ -7,5 +7,9 @@
     "css": [
       "css/main.css"
     ]
+  },
+  "style.css": {
+    "file": "css/main.css",
+    "src": "style.css"
   }
 }

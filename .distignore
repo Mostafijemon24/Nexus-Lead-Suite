@@ -14,17 +14,24 @@ cursorrules.md
 README.md
 RELEASE_NOTES_v0.1.5.md
 RELEASE_NOTES_v1.0.0.md
+RELEASE_NOTES_*
 
 # Admin build toolchain (compiled assets live in /assets/admin)
 /admin/.gitignore
 /admin/node_modules
 /admin/dist
 /admin/src
+/admin/scripts
 /admin/package.json
 /admin/package-lock.json
 /admin/vite.config.js
 /admin/tailwind.config.js
 /admin/postcss.config.js
+
+# Dev sample exports
+/menu-items.json
+/popups.json
+/nexus-lead-suite-*.zip
 
 # Release tooling
 /scripts

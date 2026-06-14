@@ -44,7 +44,7 @@ export function AdminSidebar( { activeId, onNavigate } ) {
 	return (
 		<aside
 			className={ [
-				'nexus-ls-admin-sidebar flex h-full min-h-screen flex-col border-r py-4 transition-[width] duration-200 ease-out',
+				'nexus-ls-admin-sidebar flex h-full min-h-screen flex-col border-r py-5 transition-[width] duration-200 ease-out',
 				collapsed ? 'w-[4.5rem]' : 'w-60',
 			].join( ' ' ) }
 			aria-label="Nexus Lead Suite navigation"
@@ -70,7 +70,7 @@ export function AdminSidebar( { activeId, onNavigate } ) {
 
 			<nav
 				id="nexus-ls-sidebar-nav"
-				className="mt-4 flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2"
+				className="mt-5 flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto px-3"
 				aria-labelledby={ navLabelId }
 			>
 				<h2 id={ navLabelId } className="sr-only">
@@ -105,8 +105,8 @@ export function AdminSidebar( { activeId, onNavigate } ) {
 									}
 								} }
 								className={ [
-									'nexus-ls-sidebar-link flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[14px] font-medium outline-none transition-colors',
-									collapsed ? 'justify-center px-2' : '',
+									'nexus-ls-sidebar-link flex w-full items-center gap-3.5 rounded-xl px-4 py-3 text-left text-[14px] font-medium outline-none',
+									collapsed ? 'justify-center px-2.5' : '',
 									isActive ? 'is-active' : '',
 								].join( ' ' ) }
 								title={ collapsed ? item.label : undefined }

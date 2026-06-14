@@ -700,279 +700,278 @@ export function SettingsPage() {
 								    GENERAL & NAVIGATION
 								════════════════════════════════════════════ */}
 								{ activeTab === 'general' && (
-									<div className="flex flex-col gap-10">
-
-										{/* Row 1: Nav + Email Template | Client Access + Token */}
-										<div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-start">
-											<div className="flex flex-col gap-6 h-full">
-												<InlineToggle
-													enabled={ settings.enableNavigation }
-													onClick={ () => updateSetting( 'enableNavigation', ! settings.enableNavigation ) }
-													label="Enable Navigation"
-													desc="Footer navigation menu auto-stack"
-													icon={ Layout }
-												/>
-												<div className="p-6 bg-slate-50 border border-slate-100 rounded-3xl space-y-4 flex-1 flex flex-col justify-center min-h-[220px]">
-													<label className="text-[11px] font-bold text-slate-500 capitalize tracking-widest flex items-center gap-2">
-														<Mail size={ 14 } className="text-blue-500" /> Events Email Template
-							</label>
-									<select
-														value={ settings.selectedEmailTemplate }
-														onChange={ ( e ) => updateSetting( 'selectedEmailTemplate', e.target.value ) }
-														className="w-full p-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
-													>
-														<option value="">No Template Selected</option>
-														{ emailTemplates.map( ( t ) => (
-															<option key={ t.id } value={ t.id }>{ t.name }</option>
-														) ) }
-									</select>
-												</div>
-											</div>
-
-											<div className="flex flex-col gap-6 h-full">
-												<InlineToggle
-													enabled={ settings.allowClientAccess }
-													onClick={ () => updateSetting( 'allowClientAccess', ! settings.allowClientAccess ) }
-													label="Allow Client Access"
-													desc="Temporary reporting access"
-													icon={ ShieldCheck }
-												/>
-												<div className={ `p-6 bg-indigo-50/50 border border-indigo-100 rounded-3xl space-y-5 flex-1 min-h-[220px] transition-all duration-300 ${ ! settings.allowClientAccess ? 'opacity-50 grayscale pointer-events-none' : '' }` }>
-													<div className="space-y-2">
-														<label className="text-[11px] font-bold text-indigo-400 capitalize tracking-widest flex items-center gap-2">
-															<Globe size={ 14 } /> Report URL slug
-														</label>
-														<input
-															type="text"
-															value={ settings.clientAccessSlug }
-															onChange={ ( e ) => updateSetting( 'clientAccessSlug', e.target.value ) }
-															className="w-full p-3 bg-white border border-indigo-100 rounded-xl text-sm font-bold outline-none"
-															placeholder="report-access"
-														/>
-														<p className="text-[10px] text-indigo-400/80 leading-relaxed">
-															Pretty URL path (save settings, then generate link). Plain permalinks use a query-string URL automatically.
-														</p>
+									<div className="nls-settings-general-wrap">
+										<div className="nls-sg-card">
+											<section className="nls-sg-section is-first">
+												<div className="nls-sg-sec-head">
+													<span className="nls-sg-sec-ico">
+														<Layout size={ 16 } />
+													</span>
+													<div>
+														<span className="nls-sg-sec-title">Navigation &amp; Email</span>
+														<p className="nls-sg-sec-desc">Footer menu behaviour and activity notification routing.</p>
 													</div>
-													<div className="space-y-2">
-														<label className="text-[11px] font-bold text-indigo-400 capitalize tracking-widest flex items-center gap-2">
-															<Clock size={ 14 } /> Token TTL (Minutes)
-														</label>
-									<input
-															type="number"
-															value={ settings.tokenTTL }
-															onChange={ ( e ) => updateSetting( 'tokenTTL', e.target.value ) }
-															className="w-full p-3 bg-white border border-indigo-100 rounded-xl text-sm font-bold outline-none"
-														/>
-							</div>
-													<div className="space-y-4">
-								<button
-															type="button"
-															onClick={ handleGenerateLink }
-															className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
-														>
-															<Wand2 size={ 14 } /> Generate Dynamic Access Link
-														</button>
-														<div className="flex items-center gap-3 p-4 bg-white border border-indigo-100 rounded-2xl shadow-inner min-h-[56px]">
-															<div className="bg-indigo-50 p-2 rounded-lg text-indigo-400 shrink-0"><Globe size={ 16 } /></div>
-															{ generatedLink ? (
-																<div className="flex flex-1 items-center gap-2 overflow-hidden">
-																	<input readOnly value={ generatedLink } className="flex-1 bg-transparent border-none text-[11px] font-mono text-indigo-400 outline-none truncate" />
-																	<button type="button" onClick={ copyToClipboard } className="p-2 text-indigo-600 shrink-0">
-																		{ copySuccess ? <Check size={ 16 } className="text-green-500" /> : <Copy size={ 16 } /> }
-								</button>
-																</div>
-															) : (
-																<span className="text-[11px] text-slate-300 italic">Link will appear here after generation...</span>
-															) }
+												</div>
+												<div className="nls-sg-grid-2">
+													<div className="nls-sg-stack">
+														<div className="nls-sg-toggle-card">
+															<div className="nls-sg-toggle-card-body">
+																<span className="nls-sg-toggle-card-title">Enable Navigation</span>
+																<p className="hint">Footer navigation menu auto-stack</p>
+															</div>
+															<div
+																className={ `nls-sg-toggle${ settings.enableNavigation ? ' on' : '' }` }
+																role="switch"
+																aria-checked={ settings.enableNavigation }
+																tabIndex={ 0 }
+																onClick={ () => updateSetting( 'enableNavigation', ! settings.enableNavigation ) }
+																onKeyDown={ ( e ) => {
+																	if ( e.key === ' ' || e.key === 'Enter' ) {
+																		e.preventDefault();
+																		updateSetting( 'enableNavigation', ! settings.enableNavigation );
+																	}
+																} }
+															>
+																<span className="track"><span className="knob" /></span>
+															</div>
+														</div>
+														<div className="nls-sg-select-card">
+															<span className="lbl">Events Email Template</span>
+															<select
+																className="sel"
+																value={ settings.selectedEmailTemplate }
+																onChange={ ( e ) => updateSetting( 'selectedEmailTemplate', e.target.value ) }
+															>
+																<option value="">No Template Selected</option>
+																{ emailTemplates.map( ( t ) => (
+																	<option key={ t.id } value={ t.id }>{ t.name }</option>
+																) ) }
+															</select>
+														</div>
+													</div>
+													<div className="nls-sg-stack">
+														<div className="nls-sg-toggle-card">
+															<div className="nls-sg-toggle-card-body">
+																<span className="nls-sg-toggle-card-title">Allow Client Access</span>
+																<p className="hint">Temporary reporting access</p>
+															</div>
+															<div
+																className={ `nls-sg-toggle${ settings.allowClientAccess ? ' on' : '' }` }
+																role="switch"
+																aria-checked={ settings.allowClientAccess }
+																tabIndex={ 0 }
+																onClick={ () => updateSetting( 'allowClientAccess', ! settings.allowClientAccess ) }
+																onKeyDown={ ( e ) => {
+																	if ( e.key === ' ' || e.key === 'Enter' ) {
+																		e.preventDefault();
+																		updateSetting( 'allowClientAccess', ! settings.allowClientAccess );
+																	}
+																} }
+															>
+																<span className="track"><span className="knob" /></span>
+															</div>
+														</div>
+														<div className={ `nls-sg-client-panel${ ! settings.allowClientAccess ? ' is-disabled' : '' }` }>
+															<div className="nls-sg-field">
+																<span className="lbl">Report URL slug</span>
+																<input
+																	type="text"
+																	className="inp"
+																	value={ settings.clientAccessSlug }
+																	onChange={ ( e ) => updateSetting( 'clientAccessSlug', e.target.value ) }
+																	placeholder="report-access"
+																/>
+																<p className="hint">
+																	Pretty URL path (save settings, then generate link). Plain permalinks use a query-string URL automatically.
+																</p>
+															</div>
+															<div className="nls-sg-field">
+																<span className="lbl">Token TTL (Minutes)</span>
+																<input
+																	type="number"
+																	className="inp"
+																	value={ settings.tokenTTL }
+																	onChange={ ( e ) => updateSetting( 'tokenTTL', e.target.value ) }
+																/>
+															</div>
+															<button
+																type="button"
+																onClick={ handleGenerateLink }
+																className="nls-sg-btn nls-sg-btn-primary"
+															>
+																<Wand2 size={ 14 } /> Generate Dynamic Access Link
+															</button>
+															<div className="nls-sg-link-box">
+																<span className="nls-sg-link-ico" aria-hidden="true"><Globe size={ 16 } /></span>
+																{ generatedLink ? (
+																	<div className="nls-sg-link-inner">
+																		<input readOnly value={ generatedLink } className="nls-sg-link-inp" />
+																		<button type="button" onClick={ copyToClipboard } className="nls-sg-link-copy" aria-label="Copy link">
+																			{ copySuccess ? <Check size={ 16 } className="is-copied" /> : <Copy size={ 16 } /> }
+																		</button>
+																	</div>
+																) : (
+																	<span className="nls-sg-link-placeholder">Link will appear here after generation...</span>
+																) }
+															</div>
 														</div>
 													</div>
 												</div>
-											</div>
-										</div>
+											</section>
 
-										{/* ── REPORT & PDF BRANDING (compact — logo preview stays square / no stretch) ── */}
-										<div className="p-5 md:p-6 bg-white border border-slate-200 rounded-[1.75rem] space-y-4">
-											{/* Row 1: section titles aligned on one line (desktop) */}
-											<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5 items-start">
-												<div className="flex items-start gap-2.5 min-w-0">
-													<div className="p-2 bg-blue-50 text-blue-600 rounded-xl shrink-0">
-														<ImageIcon size={ 18 } />
-													</div>
-													<div className="min-w-0">
-														<h4 className="text-sm font-bold text-slate-800 capitalize leading-none">Report &amp; PDF Logo</h4>
-														<p className="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
+											<section className="nls-sg-section">
+												<div className="nls-sg-sec-head">
+													<span className="nls-sg-sec-ico">
+														<ImageIcon size={ 16 } />
+													</span>
+													<div>
+														<span className="nls-sg-sec-title">Report &amp; PDF Logo</span>
+														<p className="nls-sg-sec-desc">
 															If uploaded, the logo appears above the site title in PDF reports; otherwise only the title shows.
 														</p>
 													</div>
 												</div>
-												<h5 className="text-sm font-bold text-slate-800 capitalize leading-none lg:justify-self-start min-w-0">
-													PDF report header
-												</h5>
-											</div>
-
-											<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5 items-start">
-												<div className="space-y-2">
-													<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Logo URL</label>
-													<div className="flex flex-col sm:flex-row gap-2">
-														<input
-															type="text"
-															value={ settings.reportLogo }
-															onChange={ ( e ) => updateSetting( 'reportLogo', e.target.value ) }
-															placeholder="Paste an image URL or upload…"
-															className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-blue-500"
-														/>
-														<input type="file" accept="image/*" className="hidden" ref={ reportLogoInputRef } onChange={ handleReportLogoUpload } />
-														<button
-															type="button"
-															onClick={ () => reportLogoInputRef.current?.click?.() }
-															disabled={ uploadingReportLogo }
-															className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-md active:scale-95 transition-all disabled:opacity-60 disabled:pointer-events-none"
-														>
-															{ uploadingReportLogo ? <Loader2 size={ 18 } className="animate-spin" /> : <Upload size={ 18 } /> }
-															Upload
-														</button>
-														<button
-															type="button"
-															onClick={ () => updateSetting( 'reportLogo', '' ) }
-															disabled={ ! settings.reportLogo }
-															className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-[11px] font-black uppercase tracking-widest border border-slate-200 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none"
-														>
-															<X size={ 18 } /> Remove
-														</button>
-													</div>
-													<p className="text-[10px] text-slate-400 font-medium leading-relaxed">
-														Source file min. <span className="text-slate-600 font-semibold">700 × 700 px</span> for sharp PDF · transparent PNG/WebP · max 3 MB · Preview uses <span className="font-semibold text-slate-600">70 × 70 px</span> (no cropping or stretch).
-													</p>
-												</div>
-
-												<div className="space-y-2">
-													<span className="block text-[10px] font-black text-slate-300 uppercase tracking-widest ml-1">Live Preview</span>
-													<div className="p-3 md:p-4 bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl shadow-inner flex flex-col items-center justify-center text-center gap-2">
-														{/* Same square slot with or without logo — intrinsic aspect preserved (object-contain). */}
-														<div className="size-[70px] min-w-[70px] min-h-[70px] shrink-0 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden">
-															{ settings.reportLogo ? (
-																<img
-																	src={ settings.reportLogo }
-																	alt="Report Logo"
-																	className="max-w-full max-h-full w-auto h-auto object-contain object-center"
+												<div className="nls-sg-grid-2">
+													<div className="nls-sg-stack">
+														<div className="nls-sg-field">
+															<span className="lbl">Logo URL</span>
+															<div className="nls-sg-logo-row">
+																<input
+																	type="text"
+																	className="inp"
+																	value={ settings.reportLogo }
+																	onChange={ ( e ) => updateSetting( 'reportLogo', e.target.value ) }
+																	placeholder="Paste an image URL or upload…"
 																/>
-															) : (
-																<ImageIcon size={ 22 } className="text-slate-300" aria-hidden />
-															) }
-														</div>
-														<div className="text-xs font-bold text-slate-900 leading-tight">{ window?.nexusLsAdmin?.siteName || 'Site Title' }</div>
-														<div className="text-[9px] text-slate-400 font-medium leading-none">Activities Report</div>
-													</div>
-												</div>
-											</div>
-										</div>
-
-										{/* ── FONT SETTINGS ── */}
-										<div className="p-8 bg-white border border-slate-200 rounded-[2.5rem] space-y-6">
-											<div className="flex items-center gap-3">
-												<div className="p-2.5 bg-violet-50 text-violet-600 rounded-2xl">
-													<FontIcon size={ 20 } />
-												</div>
-												<div>
-													<h4 className="text-sm font-bold text-slate-800 capitalize leading-none">Global Font Settings</h4>
-													<p className="text-[10px] text-slate-400 font-medium mt-0.5">
-														Applies to all plugin elements: Forms, Popups, Menu Items, Reports &amp; PDF.
-													</p>
-												</div>
-											</div>
-
-											<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-
-												{/* ── Left: font picker + typography controls ── */}
-												<div className="space-y-5">
-													{/* Search */}
-									<input
-														type="text"
-														placeholder="Search fonts..."
-														value={ fontSearch }
-														onChange={ ( e ) => setFontSearch( e.target.value ) }
-														className="w-full p-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium outline-none focus:ring-2 focus:ring-violet-400 transition-all"
-													/>
-
-													{/* Font list */}
-													<div className="h-[280px] overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-3 space-y-1">
-														{ filteredFonts.length === 0 ? (
-															<div className="flex items-center justify-center h-full text-[11px] text-slate-400 font-medium">No fonts found</div>
-														) : filteredFonts.map( ( font ) => {
-															const isSelected = settings.globalFont === font.family;
-															return (
-									<button
-																	key={ font.family }
-										type="button"
-																	onClick={ () => updateSetting( 'globalFont', font.family ) }
-																	className={ `w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all duration-150 group ${ isSelected ? 'bg-violet-600 text-white shadow-md' : 'bg-white hover:bg-violet-50 text-slate-700 border border-slate-100' }` }
-																	style={ { fontFamily: `'${ font.family }', ${ font.category === 'Serif' ? 'serif' : font.category === 'Monospace' ? 'monospace' : 'sans-serif' }` } }
+																<input type="file" accept="image/*" className="hidden" ref={ reportLogoInputRef } onChange={ handleReportLogoUpload } />
+																<button
+																	type="button"
+																	onClick={ () => reportLogoInputRef.current?.click?.() }
+																	disabled={ uploadingReportLogo }
+																	className="nls-sg-btn nls-sg-btn-primary"
 																>
-																	<span className="text-sm font-semibold">{ font.family }</span>
-																	<span className={ `text-[9px] font-black uppercase tracking-widest ${ isSelected ? 'text-violet-200' : 'text-slate-300 group-hover:text-violet-400' }` }>
-																		{ font.category }
-																	</span>
+																	{ uploadingReportLogo ? <Loader2 size={ 16 } className="animate-spin" /> : <Upload size={ 16 } /> }
+																	Upload
 																</button>
-															);
-														} ) }
-													</div>
-													<p className="text-[10px] text-slate-400 font-medium text-center">{ GOOGLE_FONTS.length } fonts · Google CDN · zero files in plugin</p>
-												</div>
-
-												{/* ── Right: live preview ── */}
-												<div className="space-y-4">
-													<div
-														className="p-6 bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-3xl shadow-inner space-y-4 min-h-[280px]"
-														style={ { fontFamily: settings.globalFont ? `'${ settings.globalFont }', sans-serif` : 'inherit' } }
-													>
-														<div className="flex items-center justify-between flex-wrap gap-2">
-															<span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Live Preview</span>
-															<span className="text-[10px] font-bold text-violet-500 bg-violet-50 px-2 py-1 rounded-lg border border-violet-100">
-																{ settings.globalFont || 'System Default' }
-															</span>
-														</div>
-														<div className="space-y-3 pt-1">
-															<h2 className="text-2xl font-bold text-slate-900 leading-tight">The quick brown fox</h2>
-															<h4 className="text-base font-semibold text-slate-700">Jumps over the lazy dog</h4>
-															<p className="text-sm text-slate-500 leading-relaxed">
-																Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+																<button
+																	type="button"
+																	onClick={ () => updateSetting( 'reportLogo', '' ) }
+																	disabled={ ! settings.reportLogo }
+																	className="nls-sg-btn nls-sg-btn-secondary"
+																>
+																	<X size={ 16 } /> Remove
+																</button>
+															</div>
+															<p className="hint">
+																Source file min. <strong>700 × 700 px</strong> for sharp PDF · transparent PNG/WebP · max 3 MB · Preview uses <strong>70 × 70 px</strong> (no cropping or stretch).
 															</p>
-															<div className="flex gap-2 flex-wrap pt-1">
-																<button type="button" className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg shadow">
-																	Submit Form
-																</button>
-																<button type="button" className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-200">
-																	Chat Now
-																</button>
-															</div>
-															<div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-																<p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest mb-1">Form Input</p>
-																<div className="p-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-400">
-																	Type your name here...
-																</div>
-															</div>
 														</div>
 													</div>
+													<div className="nls-sg-stack">
+														<span className="lbl">PDF report header preview</span>
+														<div className="nls-sg-preview-box">
+															<div className="nls-sg-preview-logo">
+																{ settings.reportLogo ? (
+																	<img
+																		src={ settings.reportLogo }
+																		alt="Report Logo"
+																		className="nls-sg-preview-img"
+																	/>
+																) : (
+																	<ImageIcon size={ 22 } className="nls-sg-preview-empty" aria-hidden />
+																) }
+															</div>
+															<div className="nls-sg-preview-title">{ window?.nexusLsAdmin?.siteName || 'Site Title' }</div>
+															<div className="nls-sg-preview-sub">Activities Report</div>
+														</div>
+													</div>
+												</div>
+											</section>
 
-													<div className="p-4 bg-violet-50 border border-violet-100 rounded-2xl flex gap-3 items-start">
-														<Info size={ 14 } className="text-violet-500 mt-0.5 shrink-0" />
-														<p className="text-[10px] text-violet-700 font-medium leading-relaxed">
-															Font, size, weight &amp; line height apply globally to all plugin frontend elements: Forms, Popups, Menu Items &amp; Reports. Served via Google CDN — <strong>no files stored in plugin</strong>.
+											<section className="nls-sg-section">
+												<div className="nls-sg-sec-head">
+													<span className="nls-sg-sec-ico is-violet">
+														<FontIcon size={ 16 } />
+													</span>
+													<div>
+														<span className="nls-sg-sec-title">Global Font Settings</span>
+														<p className="nls-sg-sec-desc">
+															Applies to all plugin elements: Forms, Popups, Menu Items, Reports &amp; PDF.
 														</p>
 													</div>
 												</div>
-											</div>
-										</div>
+												<div className="nls-sg-grid-2">
+													<div className="nls-sg-stack">
+														<input
+															type="text"
+															className="inp"
+															placeholder="Search fonts..."
+															value={ fontSearch }
+															onChange={ ( e ) => setFontSearch( e.target.value ) }
+														/>
+														<div className="nls-sg-font-list">
+															{ filteredFonts.length === 0 ? (
+																<div className="nls-sg-font-empty">No fonts found</div>
+															) : filteredFonts.map( ( font ) => {
+																const isSelected = settings.globalFont === font.family;
+																return (
+																	<button
+																		key={ font.family }
+																		type="button"
+																		onClick={ () => updateSetting( 'globalFont', font.family ) }
+																		className={ `nls-sg-font-item${ isSelected ? ' is-selected' : '' }` }
+																		style={ { fontFamily: `'${ font.family }', ${ font.category === 'Serif' ? 'serif' : font.category === 'Monospace' ? 'monospace' : 'sans-serif' }` } }
+																	>
+																		<span className="nls-sg-font-name">{ font.family }</span>
+																		<span className="nls-sg-font-cat">{ font.category }</span>
+																	</button>
+																);
+															} ) }
+														</div>
+														<p className="nls-sg-font-meta">{ GOOGLE_FONTS.length } fonts · Google CDN · zero files in plugin</p>
+													</div>
+													<div className="nls-sg-stack">
+														<div
+															className="nls-sg-font-preview"
+															style={ { fontFamily: settings.globalFont ? `'${ settings.globalFont }', sans-serif` : 'inherit' } }
+														>
+															<div className="nls-sg-font-preview-head">
+																<span className="lbl">Live Preview</span>
+																<span className="nls-sg-font-badge">{ settings.globalFont || 'System Default' }</span>
+															</div>
+															<h2 className="nls-sg-font-h2">The quick brown fox</h2>
+															<h4 className="nls-sg-font-h4">Jumps over the lazy dog</h4>
+															<p className="nls-sg-font-body">
+																Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+															</p>
+															<div className="nls-sg-font-btns">
+																<button type="button" className="nls-sg-font-btn-primary">Submit Form</button>
+																<button type="button" className="nls-sg-font-btn-secondary">Chat Now</button>
+															</div>
+															<div className="nls-sg-font-input-demo">
+																<span className="lbl">Form Input</span>
+																<div className="nls-sg-font-input-fake">Type your name here...</div>
+															</div>
+														</div>
+														<div className="nls-sg-info-box">
+															<Info size={ 14 } className="nls-sg-info-ico" />
+															<p>
+																Font, size, weight &amp; line height apply globally to all plugin frontend elements: Forms, Popups, Menu Items &amp; Reports. Served via Google CDN — <strong>no files stored in plugin</strong>.
+															</p>
+														</div>
+													</div>
+												</div>
+											</section>
 
-										{/* ── Notification alert ── */}
-										<div className="p-6 bg-amber-50 rounded-2xl border border-amber-100 flex flex-col md:flex-row gap-4 items-start md:items-center shadow-sm">
-											<div className="bg-amber-500 p-2 rounded-lg text-white shrink-0 shadow-lg shadow-amber-200"><AlertTriangle size={ 18 } /></div>
-											<div className="space-y-1">
-												<h6 className="text-xs font-bold text-amber-900 capitalize leading-tight">System Notification Logic Alert</h6>
-												<p className="text-[10px] text-amber-700/80 leading-relaxed font-medium">
-													The email template selected above is strictly for <span className="text-amber-900 font-bold underline">Activity Notifications only</span>.
-													Submission data will NOT be sent via this notification email.
-												</p>
+											<div className="nls-sg-alert">
+												<span className="nls-sg-alert-ico" aria-hidden="true"><AlertTriangle size={ 18 } /></span>
+												<div>
+													<h6 className="nls-sg-alert-title">System Notification Logic Alert</h6>
+													<p className="nls-sg-alert-text">
+														The email template selected above is strictly for <strong>Activity Notifications only</strong>.
+														Submission data will NOT be sent via this notification email.
+													</p>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -1007,58 +1006,87 @@ export function SettingsPage() {
 										</div>
 
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:items-stretch">
-											<div className="p-8 bg-white border border-slate-200 rounded-[2.5rem] space-y-6 shadow-sm flex flex-col min-h-[320px]">
-												<div className="flex items-center gap-2 text-red-500 mb-2">
-													<FileX size={ 20 } /><h5 className="text-sm font-bold uppercase tracking-tight">Exclusion Rules</h5>
-												</div>
-
-												<div className="space-y-4 flex-1">
-													<div className="space-y-2">
-														<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Exclude Posts</label>
-														<select
-															onChange={ ( e ) => {
-																const item = allPosts.find( ( p ) => p.id === parseInt( e.target.value ) );
-																if ( item ) toggleExclusion( 'excludePosts', item );
-																e.target.value = '';
-															} }
-															className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium"
-														>
-															<option value="">Select posts...</option>
-															{ allPosts.filter( ( p ) => ! settings.excludePosts.some( ( ex ) => ex.id === p.id ) ).map( ( p ) => (
-																<option key={ p.id } value={ p.id }>{ p.title }</option>
-															) ) }
-														</select>
-														<div className="flex flex-wrap gap-2 pt-1">
-															{ settings.excludePosts.map( ( post ) => (
-																<span key={ post.id } className="flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-600 border border-red-100 rounded-xl text-[10px] font-bold">
-																	{ post.title }<button type="button" onClick={ () => toggleExclusion( 'excludePosts', post ) }><X size={ 12 } /></button>
-																</span>
-															) ) }
+											<div className="nls-settings-autopopup-exclusion-wrap flex flex-col min-h-[320px]">
+												<div className="nls-sap-excl-card">
+													<section className="nls-sap-excl-section is-first">
+														<div className="nls-sap-excl-sec-head">
+															<span className="nls-sap-excl-sec-ico" aria-hidden="true">
+																<FileX size={ 16 } />
+															</span>
+															<div>
+																<span className="nls-sap-excl-sec-title">Exclusion Rules</span>
+																<p className="nls-sap-excl-sec-desc">Suppress auto popup on selected posts and pages.</p>
+															</div>
 														</div>
-													</div>
-													<div className="space-y-2">
-														<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Exclude Pages</label>
-														<select
-															onChange={ ( e ) => {
-																const item = allPages.find( ( p ) => p.id === parseInt( e.target.value ) );
-																if ( item ) toggleExclusion( 'excludePages', item );
-																e.target.value = '';
-															} }
-															className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium"
-														>
-															<option value="">Select pages...</option>
-															{ allPages.filter( ( p ) => ! settings.excludePages.some( ( ex ) => ex.id === p.id ) ).map( ( p ) => (
-																<option key={ p.id } value={ p.id }>{ p.title }</option>
-															) ) }
-														</select>
-														<div className="flex flex-wrap gap-2 pt-1">
-															{ settings.excludePages.map( ( page ) => (
-																<span key={ page.id } className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-xl text-[10px] font-bold">
-																	{ page.title }<button type="button" onClick={ () => toggleExclusion( 'excludePages', page ) }><X size={ 12 } /></button>
-																</span>
-															) ) }
+														<div className="nls-sap-excl-stack">
+															<div className="nls-sap-excl-field">
+																<span className="lbl">Exclude Posts</span>
+																<select
+																	onChange={ ( e ) => {
+																		const item = allPosts.find( ( p ) => p.id === parseInt( e.target.value ) );
+																		if ( item ) toggleExclusion( 'excludePosts', item );
+																		e.target.value = '';
+																	} }
+																	className="sel"
+																>
+																	<option value="">Select posts...</option>
+																	{ allPosts.filter( ( p ) => ! settings.excludePosts.some( ( ex ) => ex.id === p.id ) ).map( ( p ) => (
+																		<option key={ p.id } value={ p.id }>{ p.title }</option>
+																	) ) }
+																</select>
+																{ settings.excludePosts.length > 0 && (
+																	<div className="nls-sap-excl-tags">
+																		{ settings.excludePosts.map( ( post ) => (
+																			<span key={ post.id } className="nls-sap-excl-chip is-post">
+																				{ post.title }
+																				<button
+																					type="button"
+																					className="nls-sap-excl-chip-remove"
+																					onClick={ () => toggleExclusion( 'excludePosts', post ) }
+																					aria-label={ `Remove ${ post.title }` }
+																				>
+																					<X size={ 12 } />
+																				</button>
+																			</span>
+																		) ) }
+																	</div>
+																) }
+															</div>
+															<div className="nls-sap-excl-field">
+																<span className="lbl">Exclude Pages</span>
+																<select
+																	onChange={ ( e ) => {
+																		const item = allPages.find( ( p ) => p.id === parseInt( e.target.value ) );
+																		if ( item ) toggleExclusion( 'excludePages', item );
+																		e.target.value = '';
+																	} }
+																	className="sel"
+																>
+																	<option value="">Select pages...</option>
+																	{ allPages.filter( ( p ) => ! settings.excludePages.some( ( ex ) => ex.id === p.id ) ).map( ( p ) => (
+																		<option key={ p.id } value={ p.id }>{ p.title }</option>
+																	) ) }
+																</select>
+																{ settings.excludePages.length > 0 && (
+																	<div className="nls-sap-excl-tags">
+																		{ settings.excludePages.map( ( page ) => (
+																			<span key={ page.id } className="nls-sap-excl-chip is-page">
+																				{ page.title }
+																				<button
+																					type="button"
+																					className="nls-sap-excl-chip-remove"
+																					onClick={ () => toggleExclusion( 'excludePages', page ) }
+																					aria-label={ `Remove ${ page.title }` }
+																				>
+																					<X size={ 12 } />
+																				</button>
+																			</span>
+																		) ) }
+																	</div>
+																) }
+															</div>
 														</div>
-													</div>
+													</section>
 												</div>
 											</div>
 
@@ -1157,246 +1185,334 @@ export function SettingsPage() {
 								    LIVECHAT & STYLING
 								════════════════════════════════════════════ */}
 								{ activeTab === 'chat' && (
-									<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-										<div className="lg:col-span-2 space-y-6">
-											<div className="p-8 bg-white border border-slate-200 rounded-[2.5rem] space-y-6">
-												<InlineToggle enabled={ settings.enableLivechat } onClick={ () => updateSetting( 'enableLivechat', ! settings.enableLivechat ) } label="Enable Livechat Widget" icon={ MessageCircle } />
-												<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-													<div className="space-y-2 md:col-span-2">
-														<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2"><ImageIcon size={ 14 } /> Livechat Button Image</label>
-														<div className="flex gap-2">
-															<input type="text" value={ settings.chatButtonImage } onChange={ ( e ) => updateSetting( 'chatButtonImage', e.target.value ) } placeholder="URL or upload — chat panel header only (launcher uses chat icon)" className="flex-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-blue-500" />
-															<input type="file" accept="image/*" className="hidden" ref={ fileInputRef } onChange={ handleImageUpload } />
-															<button
-																type="button"
-																disabled={ uploadingChatImg }
-																onClick={ () => fileInputRef.current.click() }
-																className="p-3.5 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors shadow-lg active:scale-95 disabled:opacity-60 shrink-0"
-																title="Upload to Media Library"
-															>
-																{ uploadingChatImg ? <Loader2 size={ 18 } className="animate-spin" /> : <Upload size={ 18 } /> }
-															</button>
+									<div className="nls-settings-livechat-wrap">
+										<div className="nls-lc-layout">
+											<div className="nls-lc-main">
+												<div className="nls-lc-card">
+													<section className="nls-lc-section is-first">
+														<div className="nls-lc-sec-head">
+															<span className="nls-lc-sec-ico" aria-hidden="true">
+																<MessageCircle size={ 16 } />
+															</span>
+															<div>
+																<span className="nls-lc-sec-title">Livechat Widget</span>
+																<p className="nls-lc-sec-desc">Enable the floating chat widget and configure header content shown in the panel.</p>
+															</div>
 														</div>
-													</div>
-													<div className="space-y-2">
-														<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Livechat Title</label>
-														<input type="text" value={ settings.chatTitle } onChange={ ( e ) => updateSetting( 'chatTitle', e.target.value ) } className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-blue-500" />
-													</div>
-													<div className="space-y-2">
-														<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Livechat Badge</label>
-														<input type="text" value={ settings.chatBadge } onChange={ ( e ) => updateSetting( 'chatBadge', e.target.value ) } className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-blue-500" />
-													</div>
-													<div className="md:col-span-2 space-y-2">
-														<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Livechat Content</label>
-														<textarea value={ settings.chatContent } onChange={ ( e ) => updateSetting( 'chatContent', e.target.value ) } className="w-full h-20 p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium resize-none outline-none focus:ring-2 focus:ring-blue-500" />
-													</div>
-												</div>
-											</div>
-
-											<div className="p-8 bg-white border border-slate-200 rounded-[2.5rem] space-y-6">
-												<h5 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 text-slate-800"><MousePointer2 size={ 18 } className="text-blue-500" /> Chat Buttons & Redirects</h5>
-												<div className="space-y-5">
-													{ [
-														{ key: 'chatFormButton', linkKey: 'chatFormButtonLink', label: 'Button 01', placeholder: 'Start Conversation' },
-														{ key: 'chatButtonTwo',  linkKey: 'chatButtonTwoLink',  label: 'Button 02', placeholder: "What's App" },
-														{ key: 'chatButtonThird', linkKey: 'chatButtonThirdLink', label: 'Button 03', placeholder: 'E-mail' },
-													].map( ( btn ) => {
-														const rawLink   = settings[ btn.linkKey ] || '';
-														const isPopup   = rawLink.startsWith( 'popup:' );
-														const popupVal  = isPopup ? rawLink.replace( 'popup:', '' ) : '';
-														const linkType  = isPopup ? 'popup' : 'link';
-														const isBtn1    = btn.key === 'chatFormButton';
-
-														const switchType = ( type ) => {
-															if ( type === 'popup' ) {
-																updateSetting( btn.linkKey, 'popup:' );
-															} else {
-																updateSetting( btn.linkKey, '' );
-															}
-														};
-														const setPopupVal = ( eventName ) => updateSetting( btn.linkKey, 'popup:' + eventName );
-
-														return (
-															<div key={ btn.key } className="p-5 bg-slate-50/60 rounded-2xl border border-slate-100 space-y-4">
-																{ /* ── Button label ── */ }
-																<div className="space-y-1">
-																	<label className="text-[10px] font-black text-slate-500 uppercase flex items-center gap-1"><Type size={ 12 } /> { btn.label } — Label</label>
-																	<input
-																		type="text"
-																		value={ settings[ btn.key ] }
-																		onChange={ ( e ) => updateSetting( btn.key, e.target.value ) }
-																		placeholder={ btn.placeholder }
-																		className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-blue-400"
-																	/>
+														<div className="nls-lc-stack">
+															<div className="nls-lc-toggle-card">
+																<div className="nls-lc-toggle-card-body">
+																	<span className="nls-lc-toggle-card-title">Enable Livechat Widget</span>
+																	<p className="hint">Show the floating chat launcher on the front-end</p>
 																</div>
-
-																{ /* ── Link type toggle ── */ }
-																<div className="space-y-2">
-																	<label className="text-[10px] font-black text-slate-500 uppercase flex items-center gap-1"><LinkIcon size={ 12 } /> Link Type</label>
-																	<div className="flex bg-white border border-slate-200 p-1 rounded-xl gap-1">
-																		{ [ 'link', 'popup' ].map( ( type ) => (
-																			<button
-																				key={ type }
-																				type="button"
-																				onClick={ () => switchType( type ) }
-																				className={ `flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${ linkType === type ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-slate-600' }` }
-																			>
-																				{ type === 'link' ? '🔗 Link' : '🪟 Popup' }
-																			</button>
-																		) ) }
+																<div
+																	className={ `nls-lc-toggle${ settings.enableLivechat ? ' on' : '' }` }
+																	role="switch"
+																	aria-checked={ settings.enableLivechat }
+																	tabIndex={ 0 }
+																	onClick={ () => updateSetting( 'enableLivechat', ! settings.enableLivechat ) }
+																	onKeyDown={ ( e ) => {
+																		if ( e.key === ' ' || e.key === 'Enter' ) {
+																			e.preventDefault();
+																			updateSetting( 'enableLivechat', ! settings.enableLivechat );
+																		}
+																	} }
+																>
+																	<span className="track"><span className="knob" /></span>
+																</div>
+															</div>
+															<div className="nls-lc-grid-2">
+																<div className="nls-lc-field is-full">
+																	<span className="lbl">Livechat Button Image</span>
+																	<div className="nls-lc-upload-row">
+																		<input
+																			type="text"
+																			className="inp"
+																			value={ settings.chatButtonImage }
+																			onChange={ ( e ) => updateSetting( 'chatButtonImage', e.target.value ) }
+																			placeholder="URL or upload — chat panel header only (launcher uses chat icon)"
+																		/>
+																		<input type="file" accept="image/*" className="hidden" ref={ fileInputRef } onChange={ handleImageUpload } />
+																		<button
+																			type="button"
+																			disabled={ uploadingChatImg }
+																			onClick={ () => fileInputRef.current.click() }
+																			className="nls-lc-btn nls-lc-btn-primary"
+																			title="Upload to Media Library"
+																		>
+																			{ uploadingChatImg ? <Loader2 size={ 16 } className="animate-spin" /> : <Upload size={ 16 } /> }
+																			Upload
+																		</button>
 																	</div>
 																</div>
-
-																{ /* ── Conditional input ── */ }
-																{ linkType === 'link' ? (
+																<div className="nls-lc-field">
+																	<span className="lbl">Livechat Title</span>
 																	<input
 																		type="text"
-																		value={ isPopup ? '' : rawLink }
-																		onChange={ ( e ) => updateSetting( btn.linkKey, e.target.value ) }
-																		placeholder="https://wa.me/... or mailto:... or any URL"
-																		className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-mono text-blue-600 outline-none focus:ring-2 focus:ring-blue-400"
+																		className="inp"
+																		value={ settings.chatTitle }
+																		onChange={ ( e ) => updateSetting( 'chatTitle', e.target.value ) }
 																	/>
-																) : (
-																	<div className="space-y-1">
-																		{ popups.length === 0 ? (
-																			<div className="p-3 bg-amber-50 border border-amber-100 rounded-xl text-[10px] text-amber-700 font-bold">
-																				No popups created yet. Go to <strong>Nexus → Popups</strong> and create one first.
+																</div>
+																<div className="nls-lc-field">
+																	<span className="lbl">Livechat Badge</span>
+																	<input
+																		type="text"
+																		className="inp"
+																		value={ settings.chatBadge }
+																		onChange={ ( e ) => updateSetting( 'chatBadge', e.target.value ) }
+																	/>
+																</div>
+																<div className="nls-lc-field is-full">
+																	<span className="lbl">Livechat Content</span>
+																	<textarea
+																		className="ta"
+																		value={ settings.chatContent }
+																		onChange={ ( e ) => updateSetting( 'chatContent', e.target.value ) }
+																	/>
+																</div>
+															</div>
+														</div>
+													</section>
+
+													<section className="nls-lc-section">
+														<div className="nls-lc-sec-head">
+															<span className="nls-lc-sec-ico is-violet" aria-hidden="true">
+																<MousePointer2 size={ 16 } />
+															</span>
+															<div>
+																<span className="nls-lc-sec-title">Chat Buttons &amp; Redirects</span>
+																<p className="nls-lc-sec-desc">Configure button labels and where each action links — URL or popup.</p>
+															</div>
+														</div>
+														<div className="nls-lc-btn-list">
+															{ [
+																{ key: 'chatFormButton', linkKey: 'chatFormButtonLink', label: 'Button 01', placeholder: 'Start Conversation' },
+																{ key: 'chatButtonTwo',  linkKey: 'chatButtonTwoLink',  label: 'Button 02', placeholder: "What's App" },
+																{ key: 'chatButtonThird', linkKey: 'chatButtonThirdLink', label: 'Button 03', placeholder: 'E-mail' },
+															].map( ( btn ) => {
+																const rawLink   = settings[ btn.linkKey ] || '';
+																const isPopup   = rawLink.startsWith( 'popup:' );
+																const popupVal  = isPopup ? rawLink.replace( 'popup:', '' ) : '';
+																const linkType  = isPopup ? 'popup' : 'link';
+																const isBtn1    = btn.key === 'chatFormButton';
+
+																const switchType = ( type ) => {
+																	if ( type === 'popup' ) {
+																		updateSetting( btn.linkKey, 'popup:' );
+																	} else {
+																		updateSetting( btn.linkKey, '' );
+																	}
+																};
+																const setPopupVal = ( eventName ) => updateSetting( btn.linkKey, 'popup:' + eventName );
+
+																return (
+																	<div key={ btn.key } className="nls-lc-btn-card">
+																		<div className="nls-lc-field">
+																			<span className="lbl">{ btn.label } — Label</span>
+																			<input
+																				type="text"
+																				className="inp"
+																				value={ settings[ btn.key ] }
+																				onChange={ ( e ) => updateSetting( btn.key, e.target.value ) }
+																				placeholder={ btn.placeholder }
+																			/>
+																		</div>
+																		<div className="nls-lc-field">
+																			<span className="lbl">Link Type</span>
+																			<div className="nls-lc-seg">
+																				{ [ 'link', 'popup' ].map( ( type ) => (
+																					<button
+																						key={ type }
+																						type="button"
+																						onClick={ () => switchType( type ) }
+																						className={ linkType === type ? 'is-active' : '' }
+																					>
+																						{ type === 'link' ? 'Link' : 'Popup' }
+																					</button>
+																				) ) }
+																			</div>
+																		</div>
+																		{ linkType === 'link' ? (
+																			<div className="nls-lc-field">
+																				<span className="lbl">Destination URL</span>
+																				<input
+																					type="text"
+																					className="inp mono"
+																					value={ isPopup ? '' : rawLink }
+																					onChange={ ( e ) => updateSetting( btn.linkKey, e.target.value ) }
+																					placeholder="https://wa.me/... or mailto:... or any URL"
+																				/>
 																			</div>
 																		) : (
-																			<select
-																				value={ popupVal }
-																				onChange={ ( e ) => setPopupVal( e.target.value ) }
-																				className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-blue-400"
-																			>
-																				<option value="">— Select a Popup —</option>
-																				{ popups.map( ( p ) => (
-																					<option key={ p.id } value={ p.eventName || p.id }>
-																						{ p.name || p.id }{ p.eventName ? ` (event: ${ p.eventName })` : '' }
-																					</option>
-																				) ) }
-																			</select>
+																			<div className="nls-lc-field is-popup-select">
+																				<span className="lbl">Select Popup</span>
+																				{ popups.length === 0 ? (
+																					<div className="nls-lc-alert">
+																						No popups created yet. Go to <strong>Nexus → Popups</strong> and create one first.
+																					</div>
+																				) : (
+																					<select
+																						value={ popupVal }
+																						onChange={ ( e ) => setPopupVal( e.target.value ) }
+																						className="sel"
+																					>
+																						<option value="">— Select a Popup —</option>
+																						{ popups.map( ( p ) => (
+																							<option key={ p.id } value={ p.eventName || p.id }>
+																								{ p.name || p.id }{ p.eventName ? ` (event: ${ p.eventName })` : '' }
+																							</option>
+																						) ) }
+																					</select>
+																				) }
+																			</div>
+																		) }
+																		{ isBtn1 && linkType === 'popup' && (
+																			<p className="nls-lc-info-note">
+																				Selected popup content is shown inside the chat bubble. Use <code>[smart_trigger_form id=&quot;…&quot;]</code> in the popup body. Set recipient email(s) on that form under <strong>Form Builder → Advanced → Submission notification email(s)</strong>.
+																			</p>
 																		) }
 																	</div>
-																) }
-																{ isBtn1 && linkType === 'popup' && (
-																	<p className="text-[10px] text-slate-500 leading-relaxed font-medium border-t border-slate-100 pt-3 mt-1">
-																		Selected popup content is shown inside the chat bubble. Use <code className="font-mono text-violet-600 text-[9px]">[smart_trigger_form id=&quot;…&quot;]</code> in the popup body. Set recipient email(s) on that form under <strong className="text-slate-700">Form Builder → Advanced → Submission notification email(s)</strong>.
-																	</p>
-																) }
-															</div>
-														);
-													} ) }
-												</div>
-											</div>
-
-											<div className="p-8 bg-white border border-slate-200 rounded-[2.5rem] space-y-8">
-												<h5 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 text-slate-800"><Paintbrush size={ 18 } className="text-purple-500" /> Button & Widget Styling</h5>
-												<div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
-													<div className="space-y-2 md:col-span-2">
-														<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Widget position</label>
-														<div className="flex bg-slate-50 p-1.5 rounded-2xl border border-slate-200 gap-1">
-															{ [
-																{ id: 'left', label: 'Left side', Icon: AlignLeft },
-																{ id: 'right', label: 'Right side', Icon: AlignRight },
-															].map( ( { id, label, Icon } ) => {
-																const active = ( settings.chatAlign === 'left' ? 'left' : 'right' ) === id;
-																return (
-																	<button
-																		key={ id }
-																		type="button"
-																		onClick={ () => updateSetting( 'chatAlign', id ) }
-																		className={ `flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${ active ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400' }` }
-																	>
-																		<Icon size={ 16 } strokeWidth={ 2.25 } aria-hidden />
-																		<span>{ label }</span>
-																	</button>
 																);
 															} ) }
 														</div>
-														<p className="text-[10px] text-slate-500 leading-relaxed ml-1">Pins the entire floating chat widget to the left or right edge of the site (same as front-end).</p>
-													</div>
-													<ColorField label="Button BG" value={ settings.primaryBtnBg } onChange={ ( v ) => updateSetting( 'primaryBtnBg', v ) } />
-													<div className="space-y-2">
-														<div className="flex justify-between items-center ml-1">
-															<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Padding (px)</label>
-															<span className="text-xs font-bold text-blue-600">{ settings.chatPadding }</span>
-														</div>
-														<div className="h-10 flex items-center">
-															<input type="range" min="4" max="40" value={ settings.chatPadding } onChange={ ( e ) => updateSetting( 'chatPadding', e.target.value ) } className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600" />
-														</div>
-													</div>
-													<div className="space-y-4">
-														<ColorField label="Button Text" value={ settings.primaryBtnText } onChange={ ( v ) => updateSetting( 'primaryBtnText', v ) } />
-														<ColorField label="Online blink dot" value={ settings.chatBlinkDotColor } onChange={ ( v ) => updateSetting( 'chatBlinkDotColor', v ) } hint="Header status indicator next to the badge text." />
-													</div>
-													<div className="space-y-8">
-														<div className="space-y-2">
-															<div className="flex justify-between items-center ml-1">
-																<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Radius (px)</label>
-																<span className="text-xs font-bold text-blue-600">{ settings.chatBorderRadius }</span>
-															</div>
-															<div className="h-10 flex items-center">
-																<input type="range" min="0" max="50" value={ settings.chatBorderRadius } onChange={ ( e ) => updateSetting( 'chatBorderRadius', e.target.value ) } className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600" />
-															</div>
-														</div>
-														<div className="space-y-2">
-															<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Button Hover Effect</label>
-															<select value={ settings.chatHoverEffect } onChange={ ( e ) => updateSetting( 'chatHoverEffect', e.target.value ) } className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
-																<option value="none">None</option>
-																<option value="lift">Lift Up</option>
-																<option value="scale">Scale Pulse</option>
-																<option value="glow">Outer Glow</option>
-																<option value="shake">Wobble/Shake</option>
-																<option value="rotate">Slight Rotate</option>
-																<option value="darken">Color Shift</option>
-															</select>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
+													</section>
 
-										{/* Preview Panel — mini mock shows dock side + panel styling */}
-										<div className="bg-slate-900 rounded-[3rem] p-6 text-white flex flex-col justify-start h-fit sticky top-10 overflow-hidden shadow-2xl">
-											<div className="w-full flex items-center gap-2 opacity-30 mb-6">
-												<Eye size={ 14 } /><span className="text-[10px] font-black uppercase tracking-widest">Real-time Preview</span>
-											</div>
-											<div className={ `w-full flex ${ settings.chatAlign === 'left' ? 'justify-start' : 'justify-end' }` }>
-												<div
-													className="max-w-[300px] w-full bg-white rounded-3xl p-6 shadow-2xl space-y-5 overflow-hidden text-left"
-													style={ {
-														fontFamily: settings.globalFont ? `'${ settings.globalFont }', sans-serif` : 'inherit',
-													} }
-												>
-													<div className="flex items-center gap-4 border-b border-slate-50 pb-4">
-														{ settings.chatButtonImage
-															? <img src={ settings.chatButtonImage } className="w-12 h-12 rounded-full object-cover shadow-md border-2 border-slate-100" alt="Support" />
-															: <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg"><MessageCircle size={ 24 } /></div>
-														}
-														<div className="overflow-hidden flex-1 flex flex-col gap-[5px]">
-															<h6 className="text-slate-900 text-sm font-bold truncate leading-tight m-0">{ settings.chatTitle || 'Support Widget' }</h6>
-															<span className="inline-flex items-center gap-1.5 text-blue-500 text-[10px] font-black uppercase tracking-tighter leading-none mt-0">
-																<span className="inline-block w-2 h-2 rounded-full shrink-0 animate-pulse" style={ { backgroundColor: settings.chatBlinkDotColor || settings.primaryBtnText } } aria-hidden />
-																{ settings.chatBadge || 'Online' }
+													<section className="nls-lc-section">
+														<div className="nls-lc-sec-head">
+															<span className="nls-lc-sec-ico is-violet" aria-hidden="true">
+																<Paintbrush size={ 16 } />
 															</span>
+															<div>
+																<span className="nls-lc-sec-title">Button &amp; Widget Styling</span>
+																<p className="nls-lc-sec-desc">Position, colours, spacing, and hover effects for the chat widget and buttons.</p>
+															</div>
 														</div>
-													</div>
-													<div className="p-4 bg-slate-50 rounded-2xl text-[11px] text-slate-500 font-medium leading-relaxed">{ settings.chatContent }</div>
-													<div className="space-y-2">
-														<button type="button" className={ `w-full font-bold uppercase shadow-md transition-all active:scale-95 text-[11px] duration-300 ${ getHoverClass( settings.chatHoverEffect ) }` } style={ { backgroundColor: settings.primaryBtnBg, color: settings.primaryBtnText, padding: `${ settings.chatPadding }px`, borderRadius: `${ settings.chatBorderRadius }px` } }>
-															{ settings.chatFormButton || 'Start Conversation' }
-														</button>
-														<div className="grid grid-cols-2 gap-2">
-															<button type="button" className={ `text-[10px] font-bold transition-all duration-300 ${ getHoverClass( settings.chatHoverEffect ) }` } style={ { backgroundColor: settings.primaryBtnBg, color: settings.primaryBtnText, padding: `${ settings.chatPadding }px`, borderRadius: `${ settings.chatBorderRadius }px`, opacity: 0.9 } }>
-																{ settings.chatButtonTwo || "What's App" }
+														<div className="nls-lc-grid-2">
+															<div className="nls-lc-field is-full">
+																<span className="lbl">Widget Position</span>
+																<div className="nls-lc-seg">
+																	{ [
+																		{ id: 'left', label: 'Left side', Icon: AlignLeft },
+																		{ id: 'right', label: 'Right side', Icon: AlignRight },
+																	].map( ( { id, label, Icon } ) => {
+																		const active = ( settings.chatAlign === 'left' ? 'left' : 'right' ) === id;
+																		return (
+																			<button
+																				key={ id }
+																				type="button"
+																				onClick={ () => updateSetting( 'chatAlign', id ) }
+																				className={ active ? 'is-active' : '' }
+																			>
+																				<Icon size={ 15 } strokeWidth={ 2.25 } aria-hidden />
+																				<span>{ label }</span>
+																			</button>
+																		);
+																	} ) }
+																</div>
+																<p className="hint">Pins the entire floating chat widget to the left or right edge of the site (same as front-end).</p>
+															</div>
+															<div className="nls-lc-color-field">
+																<span className="lbl">Button BG</span>
+																<div className="cgroup">
+																	<label className="cswatch" style={ { backgroundColor: settings.primaryBtnBg } }>
+																		<input type="color" value={ settings.primaryBtnBg } onChange={ ( e ) => updateSetting( 'primaryBtnBg', e.target.value ) } />
+																	</label>
+																	<input type="text" className="chex" value={ settings.primaryBtnBg } onChange={ ( e ) => updateSetting( 'primaryBtnBg', e.target.value ) } />
+																</div>
+															</div>
+															<div className="nls-lc-range-field">
+																<div className="nls-lc-range-head">
+																	<span className="lbl">Padding (px)</span>
+																	<span className="nls-lc-range-val">{ settings.chatPadding }</span>
+																</div>
+																<input type="range" min="4" max="40" value={ settings.chatPadding } onChange={ ( e ) => updateSetting( 'chatPadding', e.target.value ) } className="nls-lc-range" />
+															</div>
+															<div className="nls-lc-color-field">
+																<span className="lbl">Button Text</span>
+																<div className="cgroup">
+																	<label className="cswatch" style={ { backgroundColor: settings.primaryBtnText } }>
+																		<input type="color" value={ settings.primaryBtnText } onChange={ ( e ) => updateSetting( 'primaryBtnText', e.target.value ) } />
+																	</label>
+																	<input type="text" className="chex" value={ settings.primaryBtnText } onChange={ ( e ) => updateSetting( 'primaryBtnText', e.target.value ) } />
+																</div>
+															</div>
+															<div className="nls-lc-color-field">
+																<span className="lbl">Online Blink Dot</span>
+																<div className="cgroup">
+																	<label className="cswatch" style={ { backgroundColor: settings.chatBlinkDotColor } }>
+																		<input type="color" value={ settings.chatBlinkDotColor } onChange={ ( e ) => updateSetting( 'chatBlinkDotColor', e.target.value ) } />
+																	</label>
+																	<input type="text" className="chex" value={ settings.chatBlinkDotColor } onChange={ ( e ) => updateSetting( 'chatBlinkDotColor', e.target.value ) } />
+																</div>
+																<p className="hint">Header status indicator next to the badge text.</p>
+															</div>
+															<div className="nls-lc-range-field">
+																<div className="nls-lc-range-head">
+																	<span className="lbl">Radius (px)</span>
+																	<span className="nls-lc-range-val">{ settings.chatBorderRadius }</span>
+																</div>
+																<input type="range" min="0" max="50" value={ settings.chatBorderRadius } onChange={ ( e ) => updateSetting( 'chatBorderRadius', e.target.value ) } className="nls-lc-range" />
+															</div>
+															<div className="nls-lc-field">
+																<span className="lbl">Button Hover Effect</span>
+																<select value={ settings.chatHoverEffect } onChange={ ( e ) => updateSetting( 'chatHoverEffect', e.target.value ) } className="sel">
+																	<option value="none">None</option>
+																	<option value="lift">Lift Up</option>
+																	<option value="scale">Scale Pulse</option>
+																	<option value="glow">Outer Glow</option>
+																	<option value="shake">Wobble/Shake</option>
+																	<option value="rotate">Slight Rotate</option>
+																	<option value="darken">Color Shift</option>
+																</select>
+															</div>
+														</div>
+													</section>
+												</div>
+											</div>
+
+											<aside className="nls-lc-preview">
+												<div className="nls-lc-preview-head">
+													<Eye size={ 14 } aria-hidden="true" />
+													<span>Real-time Preview</span>
+												</div>
+												<div className={ `nls-lc-preview-stage${ settings.chatAlign === 'left' ? ' is-left' : ' is-right' }` }>
+													<div
+														className="nls-lc-preview-panel"
+														style={ {
+															fontFamily: settings.globalFont ? `'${ settings.globalFont }', sans-serif` : 'inherit',
+														} }
+													>
+														<div className="nls-lc-preview-header">
+															{ settings.chatButtonImage
+																? <img src={ settings.chatButtonImage } className="nls-lc-preview-avatar" alt="Support" />
+																: <div className="nls-lc-preview-avatar-fallback"><MessageCircle size={ 22 } /></div>
+															}
+															<div className="nls-lc-preview-meta">
+																<h6>{ settings.chatTitle || 'Support Widget' }</h6>
+																<span className="nls-lc-preview-badge">
+																	<span className="nls-lc-preview-dot" style={ { backgroundColor: settings.chatBlinkDotColor || settings.primaryBtnText } } aria-hidden />
+																	{ settings.chatBadge || 'Online' }
+																</span>
+															</div>
+														</div>
+														<div className="nls-lc-preview-body">{ settings.chatContent }</div>
+														<div className="nls-lc-preview-actions">
+															<button type="button" className={ `nls-lc-preview-btn is-full ${ getHoverClass( settings.chatHoverEffect ) }` } style={ { backgroundColor: settings.primaryBtnBg, color: settings.primaryBtnText, padding: `${ settings.chatPadding }px`, borderRadius: `${ settings.chatBorderRadius }px` } }>
+																{ settings.chatFormButton || 'Start Conversation' }
 															</button>
-															<button type="button" className={ `text-[10px] font-bold transition-all duration-300 ${ getHoverClass( settings.chatHoverEffect ) }` } style={ { backgroundColor: settings.primaryBtnBg, color: settings.primaryBtnText, padding: `${ settings.chatPadding }px`, borderRadius: `${ settings.chatBorderRadius }px`, opacity: 0.9 } }>
-																{ settings.chatButtonThird || 'E-mail' }
-															</button>
+															<div className="nls-lc-preview-btn-row">
+																<button type="button" className={ `nls-lc-preview-btn ${ getHoverClass( settings.chatHoverEffect ) }` } style={ { backgroundColor: settings.primaryBtnBg, color: settings.primaryBtnText, padding: `${ settings.chatPadding }px`, borderRadius: `${ settings.chatBorderRadius }px`, opacity: 0.9 } }>
+																	{ settings.chatButtonTwo || "What's App" }
+																</button>
+																<button type="button" className={ `nls-lc-preview-btn ${ getHoverClass( settings.chatHoverEffect ) }` } style={ { backgroundColor: settings.primaryBtnBg, color: settings.primaryBtnText, padding: `${ settings.chatPadding }px`, borderRadius: `${ settings.chatBorderRadius }px`, opacity: 0.9 } }>
+																	{ settings.chatButtonThird || 'E-mail' }
+																</button>
+															</div>
 														</div>
 													</div>
 												</div>
-											</div>
+											</aside>
 										</div>
 									</div>
 								) }

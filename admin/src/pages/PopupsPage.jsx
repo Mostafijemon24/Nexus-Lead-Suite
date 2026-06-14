@@ -1,16 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-	AlignCenter,
-	AlignLeft,
-	AlignRight,
-	Clock,
 	Code,
 	Eye,
-	Info,
 	Laptop,
 	Layers,
-	Layout,
-	Palette,
 	Plus,
 	Save,
 	Smartphone,
@@ -20,13 +13,161 @@ import {
 	Trash2,
 	X,
 } from 'lucide-react';
+import { DisplayConditionsEditor } from '../components/DisplayConditionsEditor.jsx';
+import { PopupHeadingEditor } from '../components/PopupHeadingEditor.jsx';
+import { SuccessModal } from '../components/NexusModal.jsx';
+
+const ALIGN_OPTIONS = [
+	{
+		id: 'left',
+		label: 'Align left',
+		icon: (
+			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+				<path d="M4 6h16M4 12h10M4 18h13" />
+			</svg>
+		),
+	},
+	{
+		id: 'center',
+		label: 'Align center',
+		icon: (
+			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+				<path d="M4 6h16M7 12h10M5 18h14" />
+			</svg>
+		),
+	},
+	{
+		id: 'right',
+		label: 'Align right',
+		icon: (
+			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+				<path d="M4 6h16M10 12h10M7 18h13" />
+			</svg>
+		),
+	},
+];
+
+const COLOR_FIELDS = [
+	{ key: 'headingBgColor', label: 'Header', badge: 'Area 1' },
+	{ key: 'bodyBgColor', label: 'Body', badge: 'Area 2' },
+	{ key: 'buttonColor', label: 'Button' },
+	{ key: 'closeIconColor', label: 'Icon color' },
+	{ key: 'closeIconBg', label: 'Icon bg' },
+];
+
+function PopAlignSegment( { value, onChange } ) {
+	const segRef = useRef( null );
+	const btnRefs = useRef( {} );
+
+	const positionGlider = useCallback( () => {
+		const seg = segRef.current;
+		const active = btnRefs.current[ value ];
+		const glider = seg?.querySelector( '.glider' );
+		if ( ! seg || ! active || ! glider ) {
+			return;
+		}
+		glider.style.width = `${ active.offsetWidth }px`;
+		glider.style.transform = `translateX(${ active.offsetLeft - 4 }px)`;
+	}, [ value ] );
+
+	useEffect( () => {
+		positionGlider();
+		window.addEventListener( 'resize', positionGlider );
+		return () => window.removeEventListener( 'resize', positionGlider );
+	}, [ positionGlider ] );
+
+	return (
+		<div className="seg icononly" ref={ segRef } role="tablist" aria-label="Text alignment">
+			<span className="glider" />
+			{ ALIGN_OPTIONS.map( ( opt ) => (
+				<button
+					key={ opt.id }
+					ref={ ( el ) => {
+						btnRefs.current[ opt.id ] = el;
+					} }
+					type="button"
+					className={ value === opt.id ? 'active' : '' }
+					role="tab"
+					aria-label={ opt.label }
+					onClick={ () => onChange( opt.id ) }
+				>
+					{ opt.icon }
+				</button>
+			) ) }
+		</div>
+	);
+}
+
+function PopRangeSlider( { label, value, min, max, unit, onChange } ) {
+	const [ dragging, setDragging ] = useState( false );
+	const numVal = parseInt( value, 10 ) || min;
+	const pct = ( ( numVal - min ) / ( max - min ) ) * 100;
+
+	return (
+		<div className={ `slide-field${ dragging ? ' dragging' : '' }` }>
+			<label>
+				{ label } <span className="val">{ numVal }{ unit }</span>
+			</label>
+			<input
+				type="range"
+				min={ min }
+				max={ max }
+				value={ numVal }
+				style={ { '--pct': `${ pct }%` } }
+				onChange={ ( e ) => onChange( e.target.value ) }
+				onPointerDown={ () => setDragging( true ) }
+				onPointerUp={ () => setDragging( false ) }
+				onPointerCancel={ () => setDragging( false ) }
+				onBlur={ () => setDragging( false ) }
+			/>
+		</div>
+	);
+}
+
+function PopColorField( { label, badge, colorKey, value, onChange } ) {
+	const normalized = value || '#ffffff';
+
+	const applyColor = ( next ) => {
+		onChange( colorKey, next );
+	};
+
+	return (
+		<div>
+			<div className="clab">
+				<span className="t">{ label }</span>
+				{ badge ? <span className="badge">{ badge }</span> : null }
+			</div>
+			<div className="cgroup">
+				<span className="cswatch" style={ { background: normalized } }>
+					<input
+						type="color"
+						value={ normalized }
+						onChange={ ( e ) => applyColor( e.target.value ) }
+					/>
+				</span>
+				<input
+					type="text"
+					className="chex"
+					value={ normalized }
+					onChange={ ( e ) => {
+						let next = e.target.value.trim();
+						if ( next && ! next.startsWith( '#' ) ) {
+							next = `#${ next }`;
+						}
+						applyColor( next );
+					} }
+				/>
+			</div>
+		</div>
+	);
+}
 
 export function PopupsPage() {
 
 	const makeDefaultPopup = () => ( {
 		id: `pop-${ Date.now() }`,
 		name: 'New Popup',
-		eventName: `event-${ Date.now() }`,
+		eventName: `nexus-pop-${ Date.now() }`,
 		heading: '<h2 style="margin:0; font-weight:500;">New Campaign Heading</h2>',
 		headingEditMode: 'visual',
 		subHeading: 'Sub-text here',
@@ -37,6 +178,7 @@ export function PopupsPage() {
 			buttonWidth: '100',
 			headingTextColor: '#ffffff',
 			headingBgColor: '#1e3a8a',
+			headingFontSize: '20',
 			bodyBgColor: '#ffffff',
 			width: '600',
 			radius: '16',
@@ -46,6 +188,7 @@ export function PopupsPage() {
 			closeIconBg: '#ff4444',
 		},
 		logic: [ { id: 'L1', trigger: 'scroll', delay: '0', scrollPercentage: '0' } ],
+		conditions: { match: 'any', rules: [] },
 	} );
 
 	const [ popups, setPopups ] = useState( [] );
@@ -53,8 +196,10 @@ export function PopupsPage() {
 	const [ previewPopup, setPreviewPopup ] = useState( null );
 	const [ previewDevice, setPreviewDevice ] = useState( 'desktop' );
 	const [ status, setStatus ] = useState( { loading: true, saving: false, error: '' } );
+	const [ successOpen, setSuccessOpen ] = useState( false );
 	const [ savedSnapshot, setSavedSnapshot ] = useState( [] );
-	const visualHeadingRef = useRef( null );
+	const [ conditionMeta, setConditionMeta ] = useState( { postTypes: [], categories: [], tags: [] } );
+	const [ contentSearch, setContentSearch ] = useState( {} );
 
 	const activePopup = useMemo( () => popups.find( ( p ) => p.id === activeId ) || popups[ 0 ], [ popups, activeId ] );
 	const isDirty = useMemo( () => JSON.stringify( popups ) !== JSON.stringify( savedSnapshot ), [ popups, savedSnapshot ] );
@@ -65,52 +210,39 @@ export function PopupsPage() {
 			setStatus( { loading: true, saving: false, error: '' } );
 			try {
 				const base = window?.nexusLsAdmin?.restUrl || '/wp-json/';
-				const res = await fetch( `${ base }nexus-lead-suite/v1/popups`, {
-					method: 'GET',
-					credentials: 'same-origin',
-					headers: { 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
-				} );
-				const json = await res.json();
+				const [ popRes, metaRes ] = await Promise.all( [
+					fetch( `${ base }nexus-lead-suite/v1/popups`, {
+						method: 'GET',
+						credentials: 'same-origin',
+						headers: { 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
+					} ),
+					fetch( `${ base }nexus-lead-suite/v1/menu-items/condition-meta`, {
+						method: 'GET',
+						credentials: 'same-origin',
+						headers: { 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
+					} ),
+				] );
+				const json = await popRes.json();
+				const metaJson = await metaRes.json();
 				const loaded = Array.isArray( json?.data?.popups ) ? json.data.popups : [];
 
-				const initial = loaded.length > 0 ? loaded : [
-					{
-						id: 'pop-1',
-						name: 'Appointment/Consultation!',
-						eventName: 'voss-pop',
-						heading: '<h2 style="margin:0; font-weight:500;">Book Your <span style="color:#ffcc00;">Consultation</span></h2>',
-						headingEditMode: 'visual',
-						subHeading: 'GET EXPERT ADVICE WITHIN 24 HOURS.',
-						textAlign: 'left',
-						content: '<p>[forminator_form id="244624"]</p>',
-						style: {
-							buttonColor: '#2563eb',
-							buttonWidth: '100',
-							headingTextColor: '#ffffff',
-							headingBgColor: '#1e3a8a',
-							bodyBgColor: '#ffffff',
-							width: '600',
-							radius: '16',
-							padding: '30',
-							closeIconSize: '20',
-							closeIconColor: '#ffffff',
-							closeIconBg: '#ff4444',
-						},
-						logic: [ { id: 'L1', trigger: 'scroll', delay: '0', scrollPercentage: '0' } ],
-					},
-				];
-
 				if ( cancelled ) return;
-				setPopups( initial );
-				setSavedSnapshot( initial );
-				setActiveId( initial[ 0 ]?.id || null );
+				setPopups( loaded );
+				setSavedSnapshot( loaded );
+				setActiveId( loaded[ 0 ]?.id || null );
+				if ( metaJson?.data ) {
+					setConditionMeta( {
+						postTypes: Array.isArray( metaJson.data.postTypes ) ? metaJson.data.postTypes : [],
+						categories: Array.isArray( metaJson.data.categories ) ? metaJson.data.categories : [],
+						tags: Array.isArray( metaJson.data.tags ) ? metaJson.data.tags : [],
+					} );
+				}
 				setStatus( { loading: false, saving: false, error: '' } );
 			} catch ( e ) {
 				if ( cancelled ) return;
-				const fallback = [ makeDefaultPopup() ];
-				setPopups( fallback );
-				setSavedSnapshot( fallback );
-				setActiveId( fallback[ 0 ]?.id || null );
+				setPopups( [] );
+				setSavedSnapshot( [] );
+				setActiveId( null );
 				setStatus( { loading: false, saving: false, error: e?.message || 'Failed to load popups.' } );
 			}
 		}
@@ -158,16 +290,27 @@ export function PopupsPage() {
 
 	const deletePopup = ( id ) => {
 		setPopups( ( prev ) => {
-			if ( prev.length <= 1 ) return prev;
 			const filtered = prev.filter( ( p ) => p.id !== id );
 			setActiveId( ( cur ) => ( cur === id ? filtered[ 0 ]?.id || null : cur ) );
 			return filtered;
 		} );
 	};
 
-	const syncVisualHeading = () => {
-		if ( ! visualHeadingRef.current ) return;
-		updateActive( { heading: visualHeadingRef.current.innerHTML } );
+	const searchContent = async ( key, types, query ) => {
+		setContentSearch( ( s ) => ( { ...s, [ key ]: { loading: true, results: s[ key ]?.results || [] } } ) );
+		try {
+			const base = window?.nexusLsAdmin?.restUrl || '/wp-json/';
+			const params = new URLSearchParams( { search: query, types } );
+			const res = await fetch( `${ base }nexus-lead-suite/v1/menu-items/content-search?${ params }`, {
+				credentials: 'same-origin',
+				headers: { 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
+			} );
+			const json = await res.json();
+			const results = Array.isArray( json?.data?.results ) ? json.data.results : [];
+			setContentSearch( ( s ) => ( { ...s, [ key ]: { loading: false, results } } ) );
+		} catch {
+			setContentSearch( ( s ) => ( { ...s, [ key ]: { loading: false, results: [] } } ) );
+		}
 	};
 
 	const discard = () => {
@@ -192,7 +335,9 @@ export function PopupsPage() {
 			const saved = Array.isArray( json?.data?.popups ) ? json.data.popups : popups;
 			setPopups( saved );
 			setSavedSnapshot( saved );
+			setActiveId( saved[ 0 ]?.id || null );
 			setStatus( { loading: false, saving: false, error: '' } );
+			setSuccessOpen( true );
 		} catch ( e ) {
 			setStatus( ( s ) => ( { ...s, saving: false, error: e?.message || 'Save failed.' } ) );
 		}
@@ -207,6 +352,12 @@ export function PopupsPage() {
 	};
 
 	return (
+		<>
+			<SuccessModal
+				open={ successOpen }
+				message="Your settings have been successfully updated. All changes are now live."
+				onDismiss={ () => setSuccessOpen( false ) }
+			/>
 		<div className="min-h-screen bg-slate-100 px-4 py-4 md:px-8 md:py-8 font-medium text-slate-900 leading-relaxed">
 			<div className="w-full bg-white rounded-[2.5rem] shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[92vh]">
 				{/* Header */}
@@ -273,315 +424,273 @@ export function PopupsPage() {
 					</aside>
 
 					{/* Settings Canvas */}
-					<main className="flex-1 overflow-y-auto bg-white p-10">
-						{ status.error ? (
-							<div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{ status.error }</div>
-						) : null }
+					<main className="flex-1 overflow-y-auto p-8" style={ { background: '#f4f5f8' } }>
+						<div className="nls-popups-editor-wrap max-w-[1080px] mx-auto pb-20">
+							{ status.error ? (
+								<div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{ status.error }</div>
+							) : null }
 
-						<div className="max-w-5xl mx-auto space-y-12 pb-20">
-							{/* Identity */}
-							<section className="space-y-6">
-								<div className="flex items-center gap-2 text-blue-600 border-b border-slate-100 pb-3">
-									<Layout size={ 18 } />
-									<h3 className="font-bold text-slate-800">Identity & Core Structure</h3>
-								</div>
-
-								<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-									<div className="space-y-2">
-										<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Internal Name</label>
-										<input
-											type="text"
-											value={ activePopup?.name || '' }
-											onChange={ ( e ) => updateActive( { name: e.target.value } ) }
-											className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none"
-										/>
+							<div className="nls-pop-card">
+								<section className="nls-pop-section is-first">
+									<div className="nls-pop-sec-head">
+										<span className="nls-pop-sec-ico">
+											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+												<rect x="3" y="4" width="18" height="16" rx="2" />
+												<path d="M3 9h18M9 9v11" />
+											</svg>
+										</span>
+										<span className="nls-pop-sec-title">Identity &amp; Core Structure</span>
 									</div>
 
-									<div className="space-y-2">
-										<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Event Name (Unique ID)</label>
-										<input
-											type="text"
-											value={ activePopup?.eventName || '' }
-											onChange={ ( e ) => updateActive( { eventName: e.target.value } ) }
-											className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-none"
-										/>
-									</div>
-
-									<div className="space-y-2">
-										<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Text Alignment</label>
-										<div className="flex bg-slate-50 p-1.5 rounded-2xl border border-slate-200">
-											{ [
-												{ id: 'left', Icon: AlignLeft },
-												{ id: 'center', Icon: AlignCenter },
-												{ id: 'right', Icon: AlignRight },
-											].map( ( a ) => {
-												const selected = ( activePopup?.textAlign || 'left' ) === a.id;
-												return (
-													<button
-														key={ a.id }
-														type="button"
-														onClick={ () => updateActive( { textAlign: a.id } ) }
-														className={ [
-															'flex-1 flex justify-center py-2 rounded-xl transition-all',
-															selected ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400 hover:text-slate-600',
-														].join( ' ' ) }
-														aria-label={ a.id }
-													>
-														<a.Icon size={ 18 } />
-													</button>
-												);
-											} ) }
-										</div>
-									</div>
-
-									{/* Heading editor */}
-									<div className="space-y-2 md:col-span-2 lg:col-span-3">
-										<div className="flex items-center justify-between mb-1">
-											<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Main Heading Editor</label>
-											<div className="flex bg-slate-100 p-1 rounded-lg">
-												{ [
-													{ id: 'visual', label: 'Visual', Icon: Sparkles },
-													{ id: 'code', label: 'Code', Icon: Code },
-												].map( ( m ) => {
-													const selected = ( activePopup?.headingEditMode || 'visual' ) === m.id;
-													return (
-														<button
-															key={ m.id }
-															type="button"
-															onClick={ () => updateActive( { headingEditMode: m.id } ) }
-															className={ [
-																'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold transition-all',
-																selected ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700',
-															].join( ' ' ) }
-														>
-															<m.Icon size={ 12 } />
-															{ m.label }
-														</button>
-													);
-												} ) }
-											</div>
-										</div>
-
-										{ ( activePopup?.headingEditMode || 'visual' ) === 'visual' ? (
-											<div
-												ref={ visualHeadingRef }
-												contentEditable
-												onInput={ syncVisualHeading }
-												onBlur={ syncVisualHeading }
-												className="w-full min-h-[120px] px-6 py-6 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col justify-center transition-all outline-none focus:border-blue-300"
-												style={ {
-													backgroundColor: activePopup?.style?.headingBgColor || '#1e3a8a',
-													color: activePopup?.style?.headingTextColor || '#ffffff',
-													textAlign: activePopup?.textAlign || 'left',
-												} }
-												dangerouslySetInnerHTML={ { __html: activePopup?.heading || '' } }
-											/>
-										) : (
-											<textarea
-												value={ activePopup?.heading || '' }
-												onChange={ ( e ) => updateActive( { heading: e.target.value } ) }
-												className="w-full h-32 px-4 py-4 bg-slate-900 text-blue-300 font-mono border border-slate-800 rounded-2xl text-xs focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-												style={ { textAlign: activePopup?.textAlign || 'left' } }
-												placeholder="Add heading HTML..."
-											/>
-										) }
-										<p className="text-[9px] text-slate-400 italic mt-1 font-medium">Visual mode lets you edit inline; Code mode stores HTML.</p>
-									</div>
-
-									<div className="space-y-2 md:col-span-2 lg:col-span-3">
-										<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Sub Heading Text</label>
-										<input
-											type="text"
-											value={ activePopup?.subHeading || '' }
-											onChange={ ( e ) => updateActive( { subHeading: e.target.value } ) }
-											className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none"
-											style={ { textAlign: activePopup?.textAlign || 'left' } }
-										/>
-									</div>
-								</div>
-							</section>
-
-							{/* Visual Styling */}
-							<section className="space-y-8">
-								<div className="flex items-center gap-2 text-purple-600 border-b border-slate-100 pb-3">
-									<Palette size={ 18 } />
-									<h3 className="font-bold text-slate-800">Visual Styling & Area Controls</h3>
-								</div>
-
-								<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-									{ [
-										{ key: 'headingBgColor', label: 'Header', badge: 'Area 1' },
-										{ key: 'bodyBgColor', label: 'Body', badge: 'Area 2' },
-										{ key: 'buttonColor', label: 'Button' },
-										{ key: 'closeIconColor', label: 'Icon Color' },
-										{ key: 'closeIconBg', label: 'Icon BG' },
-									].map( ( f ) => (
-										<div key={ f.key } className="space-y-2">
-											<label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
-												{ f.label }
-												{ f.badge ? <span className="bg-blue-100 text-blue-600 px-1 rounded">{ f.badge }</span> : null }
-											</label>
-											<div className="flex items-center gap-2">
-												<input
-													type="color"
-													value={ activePopup?.style?.[ f.key ] || '#ffffff' }
-													onChange={ ( e ) => updateStyle( { [ f.key ]: e.target.value } ) }
-													className="h-10 w-10 border-none cursor-pointer rounded-lg shrink-0"
-												/>
-												<input
-													type="text"
-													value={ activePopup?.style?.[ f.key ] || '' }
-													onChange={ ( e ) => updateStyle( { [ f.key ]: e.target.value } ) }
-													className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-mono uppercase focus:ring-2 focus:ring-blue-500 outline-none"
-												/>
-											</div>
-										</div>
-									) ) }
-								</div>
-
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
-									<div className="space-y-6">
-										<div className="space-y-1">
-											<div className="flex justify-between mb-1">
-												<label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Button Width (%)</label>
-												<span className="text-xs font-bold text-blue-600">{ activePopup?.style?.buttonWidth }%</span>
-											</div>
+									<div className="id-row">
+										<div>
+											<span className="lbl">Internal name</span>
 											<input
-												type="range"
-												min="10"
-												max="100"
+												type="text"
+												className="inp"
+												value={ activePopup?.name || '' }
+												onChange={ ( e ) => updateActive( { name: e.target.value } ) }
+											/>
+										</div>
+										<div>
+											<span className="lbl">Event name (unique id)</span>
+											<input
+												type="text"
+												className="inp mono"
+												value={ activePopup?.eventName || '' }
+												onChange={ ( e ) => updateActive( { eventName: e.target.value } ) }
+												placeholder="e.g. nexus-pop-contact"
+											/>
+											<div className="hint">
+												This ID is used to link a <b>Menu Item button</b> to this popup (Manual Click trigger).
+											</div>
+										</div>
+										<div>
+											<span className="lbl">Text alignment</span>
+											<PopAlignSegment
+												value={ activePopup?.textAlign || 'left' }
+												onChange={ ( next ) => updateActive( { textAlign: next } ) }
+											/>
+										</div>
+									</div>
+								</section>
+
+								<section className="nls-pop-section">
+									<div className="nls-pop-sec-head">
+										<span className="nls-pop-sec-ico pink">
+											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+												<path d="M6 4v16M18 4v16M6 12h12M4 4h4M16 4h4M4 20h4M16 20h4" />
+											</svg>
+										</span>
+										<span className="nls-pop-sec-title">Main Heading Editor</span>
+									</div>
+									<PopupHeadingEditor
+										heading={ activePopup?.heading || '' }
+										onChange={ ( html ) => updateActive( { heading: html } ) }
+										disabled={ ! activePopup }
+									/>
+								</section>
+
+								<section className="nls-pop-section">
+									<div className="nls-pop-sec-head">
+										<span className="nls-pop-sec-ico">
+											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+												<path d="M4 7h16M4 12h12M4 17h8" />
+											</svg>
+										</span>
+										<span className="nls-pop-sec-title">Sub Heading Text</span>
+									</div>
+									<input
+										type="text"
+										className="inp"
+										value={ activePopup?.subHeading || '' }
+										onChange={ ( e ) => updateActive( { subHeading: e.target.value } ) }
+										style={ { textAlign: activePopup?.textAlign || 'left' } }
+									/>
+								</section>
+
+								<section className="nls-pop-section">
+									<div className="nls-pop-sec-head">
+										<span className="nls-pop-sec-ico">
+											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+												<circle cx="13.5" cy="6.5" r="2.5" />
+												<circle cx="6.5" cy="12" r="2.5" />
+												<circle cx="15" cy="16" r="2.5" />
+												<path d="M3 21c2-4 4-6 8-7" />
+											</svg>
+										</span>
+										<span className="nls-pop-sec-title">Visual Styling &amp; Area Controls</span>
+									</div>
+
+									<div className="color-row5">
+										{ COLOR_FIELDS.map( ( f ) => (
+											<PopColorField
+												key={ f.key }
+												label={ f.label }
+												badge={ f.badge }
+												colorKey={ f.key }
+												value={ activePopup?.style?.[ f.key ] || '#ffffff' }
+												onChange={ ( key, val ) => updateStyle( { [ key ]: val } ) }
+											/>
+										) ) }
+									</div>
+
+									<div className="slider-panel">
+										<div className="slider-grid">
+											<PopRangeSlider
+												label="Button width (%)"
 												value={ activePopup?.style?.buttonWidth || 100 }
-												onChange={ ( e ) => updateStyle( { buttonWidth: e.target.value } ) }
-												className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+												min={ 40 }
+												max={ 100 }
+												unit="%"
+												onChange={ ( val ) => updateStyle( { buttonWidth: val } ) }
 											/>
-										</div>
-										<div className="space-y-1">
-											<div className="flex justify-between mb-1">
-												<label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Close Icon Size (px)</label>
-												<span className="text-xs font-bold text-blue-600">{ activePopup?.style?.closeIconSize }px</span>
-											</div>
-											<input
-												type="range"
-												min="12"
-												max="40"
-												value={ activePopup?.style?.closeIconSize || 20 }
-												onChange={ ( e ) => updateStyle( { closeIconSize: e.target.value } ) }
-												className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-											/>
-										</div>
-									</div>
-
-									<div className="space-y-6">
-										<div className="space-y-1">
-											<div className="flex justify-between mb-1">
-												<label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Popup Radius (px)</label>
-												<span className="text-xs font-bold text-blue-600">{ activePopup?.style?.radius }px</span>
-											</div>
-											<input
-												type="range"
-												min="0"
-												max="50"
+											<PopRangeSlider
+												label="Popup radius (px)"
 												value={ activePopup?.style?.radius || 16 }
-												onChange={ ( e ) => updateStyle( { radius: e.target.value } ) }
-												className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+												min={ 0 }
+												max={ 40 }
+												unit="px"
+												onChange={ ( val ) => updateStyle( { radius: val } ) }
+											/>
+											<PopRangeSlider
+												label="Close icon size (px)"
+												value={ activePopup?.style?.closeIconSize || 20 }
+												min={ 14 }
+												max={ 36 }
+												unit="px"
+												onChange={ ( val ) => updateStyle( { closeIconSize: val } ) }
+											/>
+											<PopRangeSlider
+												label="Heading font size (px)"
+												value={ activePopup?.style?.headingFontSize || 20 }
+												min={ 14 }
+												max={ 40 }
+												unit="px"
+												onChange={ ( val ) => updateStyle( { headingFontSize: val } ) }
 											/>
 										</div>
-										<div className="p-4 bg-white/50 border border-slate-200 rounded-2xl flex items-center gap-3">
-											<Info size={ 16 } className="text-blue-500 shrink-0" />
-											<p className="text-[10px] text-slate-400 font-medium leading-tight">Preview uses a blurred backdrop for an immersive simulator feel.</p>
-										</div>
 									</div>
-								</div>
-							</section>
+								</section>
 
-							{/* Logic */}
-							<section className="space-y-8 bg-indigo-50/20 p-8 rounded-[2.5rem] border border-indigo-100">
-								<div className="flex items-center justify-between border-b border-indigo-100 pb-4">
-									<div className="flex items-center gap-2 text-indigo-600">
-										<Clock size={ 18 } />
-										<h3 className="font-bold text-slate-800">Advanced Behavior & Logic</h3>
+								<section className="nls-pop-section">
+									<div className="nls-pop-sec-head dense">
+										<span className="nls-pop-sec-ico">
+											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+												<path d="M4 6h16M7 12h10M10 18h4" />
+											</svg>
+										</span>
+										<span className="nls-pop-sec-title">Display Conditions</span>
 									</div>
-									<button
-										type="button"
-										onClick={ addRule }
-										className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2 rounded-xl text-[11px] font-bold shadow-xl shadow-indigo-100 transition-all hover:bg-indigo-700 active:scale-95"
-									>
-										<Plus size={ 14 } /> Add New Trigger
-									</button>
-								</div>
+									<DisplayConditionsEditor
+										variant="popup-reference"
+										conditions={ activePopup?.conditions || { match: 'any', rules: [] } }
+										onChange={ ( next ) => updateActive( { conditions: next } ) }
+										conditionMeta={ conditionMeta }
+										contentSearch={ contentSearch }
+										onSearchContent={ searchContent }
+										searchKeyPrefix={ `popup-${ activePopup?.id || 'new' }` }
+										description="Where this popup is allowed to appear. Leave all rules unchecked to show on every page."
+									/>
+								</section>
 
-								<div className="space-y-4">
-									{ ( activePopup?.logic || [] ).map( ( rule, idx ) => (
-										<div key={ rule.id } className="p-6 bg-white rounded-[2rem] border border-indigo-50 shadow-sm relative group">
-											<div className="flex flex-col md:flex-row items-end gap-6">
-												<div className="flex-1 space-y-2 w-full">
-													<label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Trigger Type { idx + 1 }</label>
-													<select
-														value={ rule.trigger }
-														onChange={ ( e ) => updateRule( rule.id, { trigger: e.target.value } ) }
-														className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 appearance-none"
-													>
-														<option value="click">Manual Click</option>
-														<option value="timer">Time Delay</option>
-														<option value="scroll">Scroll Percentage</option>
-														<option value="exit">Exit Intent</option>
-													</select>
-												</div>
+								<section className="nls-pop-section">
+									<div className="nls-pop-sec-head dense">
+										<span className="nls-pop-sec-ico pink">
+											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+												<path d="M13 2L4 14h6l-1 8 9-12h-6z" />
+											</svg>
+										</span>
+										<span className="nls-pop-sec-title">Advanced Automation Logic</span>
+										<span className="nls-pop-sec-pill">
+											{ ( activePopup?.logic || [] ).length } trigger{ ( activePopup?.logic || [] ).length !== 1 ? 's' : '' }
+										</span>
+									</div>
+									<p className="nls-pop-sec-sub">When the popup fires. Add multiple triggers to fire on whichever happens first.</p>
 
-												{ rule.trigger === 'timer' ? (
-													<div className="flex-1 space-y-2 w-full">
-														<label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Delay Time (Seconds)</label>
-														<input
-															type="number"
-															value={ rule.delay }
-															onChange={ ( e ) => updateRule( rule.id, { delay: e.target.value } ) }
-															className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
-														/>
-													</div>
-												) : null }
-
-												{ rule.trigger === 'scroll' ? (
-													<div className="flex-1 space-y-2 w-full">
-														<label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Scroll Depth (%)</label>
-														<input
-															type="number"
-															value={ rule.scrollPercentage }
-															onChange={ ( e ) => updateRule( rule.id, { scrollPercentage: e.target.value } ) }
-															className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
-														/>
-													</div>
-												) : null }
-
-												<div className="flex items-center gap-2">
+									<div className="nls-pop-logic-list">
+										{ ( activePopup?.logic || [] ).map( ( rule, idx ) => (
+											<div key={ rule.id } className="nls-pop-logic-row">
+												<div className="nls-pop-logic-top">
+													<span className="ln">{ idx + 1 }</span>
+													<span className="lt">Trigger { idx + 1 }</span>
 													{ ( activePopup?.logic || [] ).length > 1 ? (
 														<button
 															type="button"
 															onClick={ () => removeRule( rule.id ) }
-															className="p-3 text-red-400 hover:bg-red-50 rounded-2xl transition-colors border border-transparent hover:border-red-100"
+															className="nls-pop-icon-btn danger"
 															aria-label="Remove trigger"
 														>
-															<Trash2 size={ 18 } />
+															<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+																<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" />
+															</svg>
 														</button>
 													) : null }
 												</div>
-											</div>
-										</div>
-									) ) }
-								</div>
-							</section>
+												<div className="nls-pop-logic-grid">
+													<div className="nls-pop-field">
+														<label>Event</label>
+														<select
+															value={ rule.trigger }
+															onChange={ ( e ) => updateRule( rule.id, { trigger: e.target.value } ) }
+														>
+															<option value="scroll">On scroll</option>
+															<option value="timer">After delay</option>
+															<option value="exit">Exit intent</option>
+															<option value="click">Manual Click</option>
+														</select>
+													</div>
 
-							{/* Content */}
-							<section className="space-y-6">
-								<div className="flex items-center gap-2 text-slate-800 border-b border-slate-100 pb-3">
-									<Code size={ 18 } />
-									<h3 className="font-bold tracking-tight">Popup Body (HTML / Shortcode)</h3>
-								</div>
-								<textarea
-									value={ activePopup?.content || '' }
-									onChange={ ( e ) => updateActive( { content: e.target.value } ) }
-									className="w-full h-[350px] px-8 py-8 bg-slate-900 border border-slate-800 rounded-[2.5rem] text-sm font-mono text-blue-300 leading-relaxed outline-none focus:ring-2 focus:ring-blue-500/20"
-								/>
-							</section>
+													<div className="nls-pop-field" style={ { display: rule.trigger === 'timer' ? '' : 'none' } }>
+														<label>Delay (sec)</label>
+														<input
+															type="number"
+															value={ rule.delay }
+															min="0"
+															onChange={ ( e ) => updateRule( rule.id, { delay: e.target.value } ) }
+														/>
+													</div>
+
+													<div className="nls-pop-field" style={ { display: rule.trigger === 'scroll' ? '' : 'none' } }>
+														<label>Scroll depth (%)</label>
+														<input
+															type="number"
+															value={ rule.scrollPercentage }
+															min="0"
+															max="100"
+															onChange={ ( e ) => updateRule( rule.id, { scrollPercentage: e.target.value } ) }
+														/>
+													</div>
+												</div>
+											</div>
+										) ) }
+									</div>
+
+									<button type="button" onClick={ addRule } className="nls-pop-add-dash">
+										<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+											<path d="M12 5v14M5 12h14" />
+										</svg>
+										Add trigger
+									</button>
+								</section>
+
+								<section className="nls-pop-section">
+									<div className="nls-pop-sec-head dense">
+										<span className="nls-pop-sec-ico">
+											<Code size={ 16 } strokeWidth={ 2 } />
+										</span>
+										<span className="nls-pop-sec-title">Popup Body (HTML / Shortcode)</span>
+									</div>
+									<p className="content-hint">
+										Put the form you want here (e.g. <code>[smart_trigger_form id="…"]</code>). If this box has any content, Settings → Default Nexus forms (ordered list) are <b>not</b> prepended — you will not get duplicate forms. Leave it empty only if you rely on those global defaults for timer/scroll/exit.
+									</p>
+									<textarea
+										className="content-code"
+										value={ activePopup?.content || '' }
+										onChange={ ( e ) => updateActive( { content: e.target.value } ) }
+									/>
+								</section>
+							</div>
 						</div>
 					</main>
 				</div>
@@ -709,6 +818,7 @@ export function PopupsPage() {
 				</div>
 			) }
 		</div>
+		</>
 	);
 }
 

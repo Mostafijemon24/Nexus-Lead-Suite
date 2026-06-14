@@ -34,6 +34,7 @@ final class Plugin {
 		add_action( 'plugins_loaded', array( $this, 'migrate_legacy_nav_client_toggle_defaults_once' ), 30 );
 		add_action( 'plugins_loaded', array( $this, 'migrate_enable_auto_popup_off_once' ), 35 );
 		add_action( 'plugins_loaded', array( $this, 'migrate_enable_livechat_off_once' ), 36 );
+		add_action( 'plugins_loaded', array( $this, 'migrate_menu_items_groups_once' ), 37 );
 		/*
 		 * Priority 0: load routes before other rest_api_init listeners (core defaults to 10).
 		 * Defers parsing api/class-rest-api.php until a REST request or wp-json discovery runs.
@@ -286,6 +287,16 @@ final class Plugin {
 		}
 
 		update_option( 'nexus_ls_migrate_livechat_off_v1', '1', false );
+	}
+
+	/**
+	 * One-time: migrate flat menu buttons into grouped storage format.
+	 *
+	 * @return void
+	 */
+	public function migrate_menu_items_groups_once(): void {
+		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-menu-items-payload.php';
+		\Nexus_Lead_Suite\Core\Menu_Items_Payload::maybe_migrate_legacy_option();
 	}
 
 	/**

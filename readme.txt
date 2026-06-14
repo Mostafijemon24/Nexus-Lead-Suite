@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,6 +71,11 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 == Changelog ==
 
+= 1.0.1 =
+* Admin UI redesign across dashboard, settings, popups, emails, and sidebar navigation.
+* Save confirmation and settings polish; delete actions persist correctly for popups and emails.
+* Activities PDF export restored; assorted admin UX fixes.
+
 = 1.0.0 =
 * First stable release.
 * Activities: visible click labels on phone/email/footer/link rows; auto-popup source context (timer, scroll, exit intent); reliable mail status in admin grid.
@@ -90,6 +95,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 * Initial scaffold: custom database tables, REST bootstrap, admin build tooling.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Admin UI refresh, save/delete reliability improvements, and Activities PDF export fix.
 
 = 1.0.0 =
 First stable release of Nexus Lead Suite.

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/patch-manifest.mjs",
+    "restore:downloads": "bash scripts/use-downloads-bundle.sh",
     "preview": "vite preview"
   },
   "dependencies": {

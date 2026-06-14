@@ -209,19 +209,30 @@ final class Admin_App {
 			return;
 		}
 
+		$css_files = array();
 		if ( ! empty( $entry['css'] ) && is_array( $entry['css'] ) ) {
-			foreach ( $entry['css'] as $idx => $css_file ) {
-				$css_rel  = ltrim( (string) $css_file, '/' );
-				$css_path = NEXUS_LS_PLUGIN_DIR . 'assets/admin/' . $css_rel;
-				$css_ver  = file_exists( $css_path ) ? (string) filemtime( $css_path ) : NEXUS_LS_VERSION;
+			$css_files = $entry['css'];
+		} elseif ( isset( $manifest['style.css']['file'] ) && is_string( $manifest['style.css']['file'] ) ) {
+			// IIFE builds emit CSS as a separate manifest chunk without linking it on the JS entry.
+			$css_files = array( $manifest['style.css']['file'] );
+		} else {
+			$css_files = array( 'css/main.css' );
+		}
 
-				wp_enqueue_style(
-					'nexus-ls-admin-' . absint( $idx ),
-					esc_url( NEXUS_LS_PLUGIN_URL . 'assets/admin/' . $css_rel ),
-					array(),
-					$css_ver
-				);
+		foreach ( $css_files as $idx => $css_file ) {
+			$css_rel  = ltrim( (string) $css_file, '/' );
+			$css_path = NEXUS_LS_PLUGIN_DIR . 'assets/admin/' . $css_rel;
+			if ( ! file_exists( $css_path ) ) {
+				continue;
 			}
+			$css_ver = (string) filemtime( $css_path );
+
+			wp_enqueue_style(
+				'nexus-ls-admin-' . absint( $idx ),
+				esc_url( NEXUS_LS_PLUGIN_URL . 'assets/admin/' . $css_rel ),
+				array(),
+				$css_ver
+			);
 		}
 
 		$js_rel  = ltrim( (string) $entry['file'], '/' );
