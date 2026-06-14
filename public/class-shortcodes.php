@@ -1745,6 +1745,11 @@ final class Shortcodes {
 			return;
 		}
 
+		$popups = $this->filter_popups_for_current_request( $popups );
+		if ( empty( $popups ) ) {
+			return;
+		}
+
 		/* Read the global "Enable Auto Popup" setting.
 		 * When false, timer / scroll / exit-intent triggers are suppressed;
 		 * only Manual Click (data-nexas-trigger button) still works. */
@@ -2204,27 +2209,70 @@ final class Shortcodes {
 	 * @return void
 	 */
 	/**
-	 * Reads menu items payload from option (supports both legacy and new format).
+	 * Returns popups whose display conditions match the current request.
 	 *
-	 * @return array{ items: array<int,mixed>, globalFontSize: int }
+	 * @param array<int,mixed> $popups Stored popups.
+	 * @return array<int,array<string,mixed>>
+	 */
+	private function filter_popups_for_current_request( array $popups ): array {
+		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-menu-group-resolver.php';
+
+		$resolver = new \Nexus_Lead_Suite\Core\Menu_Group_Resolver();
+		$out      = array();
+
+		foreach ( $popups as $popup ) {
+			if ( ! is_array( $popup ) ) {
+				continue;
+			}
+
+			$conditions = isset( $popup['conditions'] ) && is_array( $popup['conditions'] )
+				? $popup['conditions']
+				: array();
+			$rules      = isset( $conditions['rules'] ) && is_array( $conditions['rules'] )
+				? $conditions['rules']
+				: array();
+
+			// Legacy popups without conditions: show on all pages (previous behaviour).
+			if ( count( $rules ) === 0 ) {
+				$out[] = $popup;
+				continue;
+			}
+
+			if ( $resolver->group_matches( $conditions ) ) {
+				$out[] = $popup;
+			}
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Reads menu items payload from option (grouped format with legacy migration).
+	 *
+	 * @return array{ groups: array<int,mixed>, globalFontSize: int }
 	 */
 	private function get_menu_items_payload(): array {
+		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-menu-items-payload.php';
+
 		$stored = get_option( self::MENU_ITEMS_OPTION_KEY, array() );
-		if ( ! is_array( $stored ) ) {
-			return array( 'items' => array(), 'globalFontSize' => 14 );
-		}
+		return \Nexus_Lead_Suite\Core\Menu_Items_Payload::normalize_stored( $stored );
+	}
 
-		// New format: ['items' => [...], 'globalFontSize' => 14]
-		if ( isset( $stored['items'] ) ) {
-			$items     = is_array( $stored['items'] ) ? $stored['items'] : array();
-			$font_size = isset( $stored['globalFontSize'] ) ? max( 10, min( 32, (int) $stored['globalFontSize'] ) ) : 14;
-		} else {
-			// Legacy format: plain array of item objects.
-			$items     = array_values( $stored );
-			$font_size = 14;
-		}
+	/**
+	 * Resolves buttons visible on the current front-end request.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	private function get_active_menu_buttons(): array {
+		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-menu-group-resolver.php';
 
-		return array( 'items' => $items, 'globalFontSize' => $font_size );
+		$payload = $this->get_menu_items_payload();
+		$groups  = isset( $payload['groups'] ) && is_array( $payload['groups'] )
+			? $payload['groups']
+			: array();
+
+		$resolver = new \Nexus_Lead_Suite\Core\Menu_Group_Resolver();
+		return $resolver->get_buttons_for_request( $groups );
 	}
 
 	public function enqueue_bottom_nav_styles(): void {
@@ -2234,7 +2282,7 @@ final class Shortcodes {
 		}
 
 		$payload    = $this->get_menu_items_payload();
-		$items      = $payload['items'];
+		$items      = $this->get_active_menu_buttons();
 		$global_fs  = (int) $payload['globalFontSize'];
 		if ( count( $items ) === 0 ) {
 			return;
@@ -2354,7 +2402,7 @@ final class Shortcodes {
 		}
 
 		$payload    = $this->get_menu_items_payload();
-		$items      = $payload['items'];
+		$items      = $this->get_active_menu_buttons();
 		if ( count( $items ) === 0 ) {
 			return;
 		}

@@ -364,11 +364,52 @@ final class Rest_Api {
 				'callback'            => array( $this, 'save_menu_items' ),
 				'permission_callback' => array( $this, 'can_manage_settings' ),
 				'args'                => array(
+					'groups' => array(
+						'type'     => 'array',
+						'required' => false,
+					),
 					'items' => array(
 						'type'     => 'array',
-						'required' => true,
+						'required' => false,
+					),
+					'globalFontSize' => array(
+						'type'              => 'integer',
+						'required'          => false,
+						'sanitize_callback' => 'absint',
 					),
 				),
+			)
+		);
+
+		register_rest_route(
+			'nexus-lead-suite/v1',
+			'/menu-items/content-search',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'search_menu_content' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+				'args'                => array(
+					'search' => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'types' => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexus-lead-suite/v1',
+			'/menu-items/condition-meta',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_menu_condition_meta' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
 			)
 		);
 
@@ -1931,27 +1972,17 @@ final class Rest_Api {
 	 * @return \WP_REST_Response
 	 */
 	public function get_menu_items() {
-		$stored = get_option( self::MENU_ITEMS_OPTION_KEY, array() );
-		if ( ! is_array( $stored ) ) {
-			$stored = array();
-		}
+		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-menu-items-payload.php';
 
-		// Legacy format: option was a plain array of item objects.
-		// New format:    ['items' => [...], 'globalFontSize' => 14]
-		if ( isset( $stored['items'] ) ) {
-			$items           = is_array( $stored['items'] ) ? $stored['items'] : array();
-			$global_font_size = isset( $stored['globalFontSize'] ) ? max( 10, min( 32, (int) $stored['globalFontSize'] ) ) : 14;
-		} else {
-			$items           = array_values( $stored );
-			$global_font_size = 14;
-		}
+		$stored     = get_option( self::MENU_ITEMS_OPTION_KEY, array() );
+		$normalized = \Nexus_Lead_Suite\Core\Menu_Items_Payload::normalize_stored( $stored );
 
 		return rest_ensure_response(
 			array(
 				'success' => true,
 				'data'    => array(
-					'items'          => $items,
-					'globalFontSize' => $global_font_size,
+					'groups'         => $normalized['groups'],
+					'globalFontSize' => $normalized['globalFontSize'],
 				),
 			)
 		);
@@ -2010,16 +2041,27 @@ final class Rest_Api {
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function save_menu_items( \WP_REST_Request $request ) {
-		$items = $request->get_param( 'items' );
-		if ( ! is_array( $items ) ) {
+		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-menu-items-payload.php';
+
+		$groups_in = $request->get_param( 'groups' );
+		$items_in  = $request->get_param( 'items' );
+
+		if ( is_array( $groups_in ) ) {
+			$clean_groups = $this->sanitize_menu_groups( $groups_in );
+		} elseif ( is_array( $items_in ) ) {
+			$clean_groups = array(
+				\Nexus_Lead_Suite\Core\Menu_Items_Payload::build_default_group(
+					$this->sanitize_menu_items( $items_in )
+				),
+			);
+		} else {
 			return new \WP_Error( 'nexus_ls_invalid_menu_items', 'Invalid menu items payload.' );
 		}
 
 		$global_font_size = max( 10, min( 32, (int) ( $request->get_param( 'globalFontSize' ) ?? 14 ) ) );
-		$clean_items      = $this->sanitize_menu_items( $items );
 
 		$payload = array(
-			'items'          => $clean_items,
+			'groups'         => $clean_groups,
 			'globalFontSize' => $global_font_size,
 		);
 
@@ -2029,11 +2071,249 @@ final class Rest_Api {
 			array(
 				'success' => true,
 				'data'    => array(
-					'items'          => $clean_items,
+					'groups'         => $clean_groups,
 					'globalFontSize' => $global_font_size,
 				),
 			)
 		);
+	}
+
+	/**
+	 * Searches published pages/posts for the menu condition picker.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function search_menu_content( \WP_REST_Request $request ) {
+		$search = sanitize_text_field( (string) ( $request->get_param( 'search' ) ?? '' ) );
+		$types  = sanitize_text_field( (string) ( $request->get_param( 'types' ) ?? 'page,post' ) );
+
+		$allowed = array( 'page', 'post' );
+		$wanted  = array();
+		foreach ( array_map( 'trim', explode( ',', $types ) ) as $type ) {
+			$clean = sanitize_key( $type );
+			if ( in_array( $clean, $allowed, true ) ) {
+				$wanted[] = $clean;
+			}
+		}
+		if ( count( $wanted ) === 0 ) {
+			$wanted = $allowed;
+		}
+
+		$query_args = array(
+			'post_type'              => $wanted,
+			'post_status'            => 'publish',
+			'posts_per_page'         => 20,
+			'orderby'                => 'title',
+			'order'                  => 'ASC',
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		);
+
+		if ( '' !== $search ) {
+			$query_args['s'] = $search;
+		}
+
+		$query   = new \WP_Query( $query_args );
+		$results = array();
+
+		foreach ( $query->posts as $post ) {
+			if ( ! $post instanceof \WP_Post ) {
+				continue;
+			}
+			$results[] = array(
+				'id'    => (int) $post->ID,
+				'title' => get_the_title( $post ),
+				'type'  => $post->post_type,
+			);
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'results' => $results,
+				),
+			)
+		);
+	}
+
+	/**
+	 * Returns taxonomy/post-type metadata for the menu condition builder.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function get_menu_condition_meta() {
+		$post_types = array();
+		$objects    = get_post_types( array( 'public' => true ), 'objects' );
+		foreach ( $objects as $obj ) {
+			if ( ! $obj instanceof \WP_Post_Type ) {
+				continue;
+			}
+			$post_types[] = array(
+				'slug'  => $obj->name,
+				'label' => $obj->labels->singular_name ?: $obj->label,
+			);
+		}
+
+		$categories = array();
+		$cat_terms  = get_terms(
+			array(
+				'taxonomy'   => 'category',
+				'hide_empty' => false,
+				'number'     => 200,
+			)
+		);
+		if ( is_array( $cat_terms ) ) {
+			foreach ( $cat_terms as $term ) {
+				if ( $term instanceof \WP_Term ) {
+					$categories[] = array(
+						'id'   => (int) $term->term_id,
+						'name' => $term->name,
+					);
+				}
+			}
+		}
+
+		$tags = array();
+		$tag_terms = get_terms(
+			array(
+				'taxonomy'   => 'post_tag',
+				'hide_empty' => false,
+				'number'     => 200,
+			)
+		);
+		if ( is_array( $tag_terms ) ) {
+			foreach ( $tag_terms as $term ) {
+				if ( $term instanceof \WP_Term ) {
+					$tags[] = array(
+						'id'   => (int) $term->term_id,
+						'name' => $term->name,
+					);
+				}
+			}
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'postTypes'  => $post_types,
+					'categories' => $categories,
+					'tags'       => $tags,
+				),
+			)
+		);
+	}
+
+	/**
+	 * Sanitizes grouped menu payload.
+	 *
+	 * @param array<int,mixed> $groups Groups.
+	 * @return array<int,array<string,mixed>>
+	 */
+	private function sanitize_menu_groups( array $groups ): array {
+		$out = array();
+
+		foreach ( $groups as $group ) {
+			if ( ! is_array( $group ) ) {
+				continue;
+			}
+
+			$id = isset( $group['id'] ) ? sanitize_text_field( (string) $group['id'] ) : '';
+			if ( '' === $id ) {
+				$id = 'group-' . ( count( $out ) + 1 );
+			}
+
+			$name     = isset( $group['name'] ) ? sanitize_text_field( (string) $group['name'] ) : '';
+			$priority = isset( $group['priority'] ) ? (int) $group['priority'] : 0;
+			$priority = max( 0, min( 999, $priority ) );
+			$enabled  = ! array_key_exists( 'enabled', $group ) || ! empty( $group['enabled'] );
+
+			$conditions_in = isset( $group['conditions'] ) && is_array( $group['conditions'] )
+				? $group['conditions']
+				: array();
+			$match         = isset( $conditions_in['match'] ) ? sanitize_key( (string) $conditions_in['match'] ) : 'any';
+			if ( 'all' !== $match ) {
+				$match = 'any';
+			}
+
+			$rules_in = isset( $conditions_in['rules'] ) && is_array( $conditions_in['rules'] )
+				? $conditions_in['rules']
+				: array();
+			$rules    = $this->sanitize_menu_condition_rules( $rules_in );
+
+			$buttons_in = isset( $group['buttons'] ) && is_array( $group['buttons'] )
+				? $group['buttons']
+				: array();
+
+			$out[] = array(
+				'id'         => $id,
+				'name'       => $name,
+				'priority'   => $priority,
+				'enabled'    => $enabled,
+				'conditions' => array(
+					'match' => $match,
+					'rules' => $rules,
+				),
+				'buttons'    => $this->sanitize_menu_items( $buttons_in ),
+			);
+		}
+
+		return $out;
+	}
+
+	/**
+	 * @param array<int,mixed> $rules Condition rules.
+	 * @return array<int,array<string,mixed>>
+	 */
+	private function sanitize_menu_condition_rules( array $rules ): array {
+		$allowed_types = array( 'all', 'homepage', 'page', 'post', 'post_type', 'category', 'tag' );
+		$out           = array();
+
+		foreach ( $rules as $rule ) {
+			if ( ! is_array( $rule ) ) {
+				continue;
+			}
+
+			$type = isset( $rule['type'] ) ? sanitize_key( (string) $rule['type'] ) : '';
+			if ( ! in_array( $type, $allowed_types, true ) ) {
+				continue;
+			}
+
+			$clean = array( 'type' => $type );
+
+			if ( in_array( $type, array( 'page', 'post', 'category', 'tag' ), true ) ) {
+				$ids = isset( $rule['ids'] ) && is_array( $rule['ids'] ) ? $rule['ids'] : array();
+				$clean['ids'] = array_values(
+					array_unique(
+						array_filter(
+							array_map( 'absint', $ids ),
+							static function ( int $id ): bool {
+								return $id > 0;
+							}
+						)
+					)
+				);
+			}
+
+			if ( 'post_type' === $type ) {
+				$slugs = isset( $rule['slugs'] ) && is_array( $rule['slugs'] ) ? $rule['slugs'] : array();
+				$clean_slugs = array();
+				foreach ( $slugs as $slug ) {
+					$key = sanitize_key( (string) $slug );
+					if ( '' !== $key ) {
+						$clean_slugs[] = $key;
+					}
+				}
+				$clean['slugs'] = array_values( array_unique( $clean_slugs ) );
+			}
+
+			$out[] = $clean;
+		}
+
+		return $out;
 	}
 
 	/**
@@ -2227,6 +2507,18 @@ final class Rest_Api {
 				);
 			}
 
+			$conditions_in = isset( $popup['conditions'] ) && is_array( $popup['conditions'] )
+				? $popup['conditions']
+				: array();
+			$match         = isset( $conditions_in['match'] ) ? sanitize_key( (string) $conditions_in['match'] ) : 'any';
+			if ( 'all' !== $match ) {
+				$match = 'any';
+			}
+			$rules_in = isset( $conditions_in['rules'] ) && is_array( $conditions_in['rules'] )
+				? $conditions_in['rules']
+				: array();
+			$rules    = $this->sanitize_menu_condition_rules( $rules_in );
+
 			$out[] = array(
 				'id'              => $id !== '' ? $id : 'pop-' . ( count( $out ) + 1 ),
 				'name'            => $name,
@@ -2236,6 +2528,10 @@ final class Rest_Api {
 				'subHeading'      => $sub,
 				'textAlign'       => $align,
 				'content'         => wp_kses_post( $content ),
+				'conditions'      => array(
+					'match' => $match,
+					'rules' => $rules,
+				),
 			'style'           => array(
 				'buttonColor'     => $button_color,
 				'buttonWidth'     => (string) $button_width,

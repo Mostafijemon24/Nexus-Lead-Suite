@@ -23,6 +23,7 @@ import {
 	UserPlus,
 	X,
 } from 'lucide-react';
+import { SuccessModal } from '../components/NexusModal.jsx';
 
 function copyText( text ) {
 	if ( navigator?.clipboard?.writeText ) {
@@ -127,6 +128,7 @@ export function EmailsPage() {
 	const [ codeOpen, setCodeOpen ] = useState( false );
 	const [ preview, setPreview ] = useState( null );
 	const [ status, setStatus ] = useState( { loading: true, saving: false, error: '' } );
+	const [ successOpen, setSuccessOpen ] = useState( false );
 	const [ savedSnapshot, setSavedSnapshot ] = useState( [] );
 
 	const active = useMemo( () => templates.find( ( t ) => t.id === activeId ) || templates[ 0 ], [ templates, activeId ] );
@@ -145,28 +147,16 @@ export function EmailsPage() {
 				const json = await parsePluginRestJson( res );
 				const loaded = Array.isArray( json?.data?.templates ) ? json.data.templates : [];
 
-				const initial = loaded.length > 0 ? loaded : [
-					{
-						id: 'template-1',
-						name: 'Welcome Series Notification',
-						uuid: window?.crypto?.randomUUID ? window.crypto.randomUUID() : 'template-uuid',
-						recipients: [ 'admin@example.com' ],
-						subject: 'New Lead: {userName} clicked {btnName}',
-						content: DEFAULT_HTML,
-					},
-				];
-
 				if ( cancelled ) return;
-				setTemplates( initial );
-				setSavedSnapshot( initial );
-				setActiveId( initial[ 0 ]?.id || null );
+				setTemplates( loaded );
+				setSavedSnapshot( loaded );
+				setActiveId( loaded[ 0 ]?.id || null );
 				setStatus( { loading: false, saving: false, error: '' } );
 			} catch ( e ) {
 				if ( cancelled ) return;
-				const fallback = [ makeTemplate() ];
-				setTemplates( fallback );
-				setSavedSnapshot( fallback );
-				setActiveId( fallback[ 0 ]?.id || null );
+				setTemplates( [] );
+				setSavedSnapshot( [] );
+				setActiveId( null );
 				setStatus( { loading: false, saving: false, error: e?.message || 'Failed to load templates.' } );
 			}
 		}
@@ -189,7 +179,6 @@ export function EmailsPage() {
 
 	const remove = ( id ) => {
 		setTemplates( ( prev ) => {
-			if ( prev.length <= 1 ) return prev;
 			const next = prev.filter( ( t ) => t.id !== id );
 			setActiveId( ( cur ) => ( cur === id ? next[ 0 ]?.id || null : cur ) );
 			return next;
@@ -240,7 +229,9 @@ export function EmailsPage() {
 			const saved = Array.isArray( json?.data?.templates ) ? json.data.templates : templates;
 			setTemplates( saved );
 			setSavedSnapshot( saved );
+			setActiveId( saved[ 0 ]?.id || null );
 			setStatus( { loading: false, saving: false, error: '' } );
+			setSuccessOpen( true );
 		} catch ( e ) {
 			setStatus( ( s ) => ( { ...s, saving: false, error: e?.message || 'Save failed.' } ) );
 		}
@@ -260,6 +251,12 @@ export function EmailsPage() {
 	};
 
 	return (
+		<>
+			<SuccessModal
+				open={ successOpen }
+				message="Your settings have been successfully updated. All changes are now live."
+				onDismiss={ () => setSuccessOpen( false ) }
+			/>
 		<div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 font-sans text-slate-900">
 			<div className="w-full bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[90vh]">
 				<header className="p-6 border-b border-slate-200 bg-white flex justify-between items-center shrink-0">
@@ -313,16 +310,14 @@ export function EmailsPage() {
 											>
 												<Eye size={ 12 } />
 											</button>
-											{ templates.length > 1 ? (
-												<button
-													type="button"
-													onClick={ () => remove( t.id ) }
-													className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-white shadow-sm"
-													aria-label="Delete"
-												>
-													<Trash2 size={ 12 } />
-												</button>
-											) : null }
+											<button
+												type="button"
+												onClick={ () => remove( t.id ) }
+												className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-white shadow-sm"
+												aria-label="Delete"
+											>
+												<Trash2 size={ 12 } />
+											</button>
 										</div>
 									</div>
 								);
@@ -330,124 +325,135 @@ export function EmailsPage() {
 						</div>
 					</aside>
 
-					<main className="flex-1 overflow-y-auto bg-white">
-						{ status.error ? (
-							<div className="mx-10 mt-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{ status.error }</div>
-						) : null }
+					<main className="flex-1 overflow-y-auto p-8" style={ { background: '#f4f5f8' } }>
+						<div className="nls-emails-editor-wrap max-w-[1080px] mx-auto pb-20">
+							{ status.error ? (
+								<div className="nls-em-alert">{ status.error }</div>
+							) : null }
 
-						<div className="w-full p-10 space-y-12 pb-20">
-							<div className="space-y-4">
-								<div className="flex items-center justify-between group gap-6">
-									<div className="flex-1">
-										<label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] ml-1 mb-1 block">Template Name</label>
-										<input
-											type="text"
-											value={ active?.name || '' }
-											onChange={ ( e ) => patchActive( { name: e.target.value } ) }
-											className="w-full text-xl font-bold bg-transparent border-none p-0 focus:ring-0 outline-none text-slate-900 placeholder:text-slate-200"
-											placeholder="Template Name..."
-										/>
-									</div>
-									<div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-2xl border border-slate-100 group-hover:shadow-sm transition-shadow">
-										<Hash size={ 14 } className="text-indigo-500" />
-										<span className="text-[11px] font-mono font-bold text-slate-500">{ ( active?.uuid || '' ).substring( 0, 18 ) }...</span>
-										<button
-											type="button"
-											onClick={ () => {
-												copyText( active?.uuid || '' );
-												setCopied( true );
-												setTimeout( () => setCopied( false ), 1800 );
-											} }
-											className="p-1.5 text-slate-400 hover:text-indigo-600 transition-colors"
-											aria-label="Copy UUID"
-										>
-											{ copied ? <Check size={ 14 } className="text-emerald-500" /> : <Copy size={ 14 } /> }
-										</button>
-									</div>
-								</div>
-							</div>
-
-							<section className="space-y-4">
-								<div className="flex items-center gap-2 text-indigo-600 border-b border-slate-50 pb-2">
-									<UserPlus size={ 18 } />
-									<h3 className="font-bold text-slate-800">Recipients Management</h3>
-								</div>
-								<div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-wrap gap-2 items-center min-h-[60px] focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
-									{ ( active?.recipients || [] ).map( ( email, i ) => (
-										<span key={ `${ email }-${ i }` } className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-indigo-700 rounded-xl text-xs font-bold shadow-sm">
-											{ email }
+							<div className="nls-em-card">
+								<section className="nls-em-section is-first">
+									<div className="nls-em-name-row">
+										<div className="nls-em-field">
+											<span className="lbl">Template Name</span>
+											<input
+												type="text"
+												className="inp"
+												value={ active?.name || '' }
+												onChange={ ( e ) => patchActive( { name: e.target.value } ) }
+												placeholder="Template Name..."
+											/>
+										</div>
+										<div className="nls-em-uuid-badge">
+											<Hash size={ 14 } />
+											<span className="nls-em-uuid-text"># { ( active?.uuid || '' ).substring( 0, 18 ) }...</span>
 											<button
 												type="button"
-												onClick={ () => patchActive( { recipients: active.recipients.filter( ( _, idx ) => idx !== i ) } ) }
-												className="text-indigo-300 hover:text-red-500"
-												aria-label="Remove recipient"
+												onClick={ () => {
+													copyText( active?.uuid || '' );
+													setCopied( true );
+													setTimeout( () => setCopied( false ), 1800 );
+												} }
+												className="nls-em-uuid-copy"
+												aria-label="Copy UUID"
 											>
-												<X size={ 12 } />
+												{ copied ? <Check size={ 14 } className="nls-em-uuid-copied" /> : <Copy size={ 14 } /> }
 											</button>
+										</div>
+									</div>
+								</section>
+
+								<section className="nls-em-section">
+									<div className="nls-em-sec-head">
+										<span className="nls-em-sec-ico">
+											<UserPlus size={ 16 } />
 										</span>
-									) ) }
+										<span className="nls-em-sec-title">Recipients Management</span>
+									</div>
+									<div className="nls-em-recipients-box">
+										<div className="nls-em-recipients-inner">
+											{ ( active?.recipients || [] ).map( ( email, i ) => (
+												<span key={ `${ email }-${ i }` } className="nls-em-recipient-chip">
+													{ email }
+													<button
+														type="button"
+														onClick={ () => patchActive( { recipients: active.recipients.filter( ( _, idx ) => idx !== i ) } ) }
+														className="nls-em-recipient-remove"
+														aria-label="Remove recipient"
+													>
+														<X size={ 12 } />
+													</button>
+												</span>
+											) ) }
+											<input
+												type="text"
+												value={ recipientInput }
+												onChange={ ( e ) => setRecipientInput( e.target.value ) }
+												onKeyDown={ addRecipientOnKey }
+												placeholder="Enter email address..."
+												className="nls-em-recipients-inp"
+											/>
+										</div>
+										<span className="nls-em-recipients-mail" aria-hidden="true">
+											<Mail size={ 16 } />
+										</span>
+									</div>
+								</section>
+
+								<section className="nls-em-section">
+									<div className="nls-em-sec-head">
+										<span className="nls-em-sec-ico">
+											<Terminal size={ 16 } />
+										</span>
+										<span className="nls-em-sec-title">Email Subject Line</span>
+									</div>
 									<input
 										type="text"
-										value={ recipientInput }
-										onChange={ ( e ) => setRecipientInput( e.target.value ) }
-										onKeyDown={ addRecipientOnKey }
-										placeholder="Enter email address..."
-										className="flex-1 min-w-[200px] bg-transparent border-none p-1 text-sm focus:ring-0 outline-none"
+										className="inp"
+										value={ active?.subject || '' }
+										onChange={ ( e ) => patchActive( { subject: e.target.value } ) }
+										placeholder="Enter Subject..."
 									/>
-								</div>
-							</section>
+								</section>
 
-							<section className="space-y-4">
-								<div className="flex items-center gap-2 text-blue-600 border-b border-slate-50 pb-2">
-									<Terminal size={ 18 } />
-									<h3 className="font-bold text-slate-800">Email Subject Line</h3>
-								</div>
-								<input
-									type="text"
-									value={ active?.subject || '' }
-									onChange={ ( e ) => patchActive( { subject: e.target.value } ) }
-									placeholder="Enter Subject..."
-									className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-300"
-								/>
-							</section>
-
-							<div className="pt-10 space-y-10 border-t border-slate-100 mt-20">
-								<section className="space-y-6">
-									<div className="flex items-center justify-between">
-										<div className="flex items-center gap-2 text-slate-500">
-											<Database size={ 16 } />
-											<h3 className="text-xs font-bold uppercase tracking-widest">Data Injection Library</h3>
+								<section className="nls-em-section">
+									<div className="nls-em-tags-head">
+										<div className="nls-em-sec-head nls-em-sec-head--dense">
+											<span className="nls-em-sec-ico">
+												<Database size={ 16 } />
+											</span>
+											<span className="nls-em-sec-title">Data Injection Library</span>
 										</div>
-										<span className="text-[10px] font-bold text-slate-400">CLICK TAG TO AUTO-INSERT INTO SUBJECT</span>
+										<span className="nls-em-tags-hint">Click tag to auto-insert into subject</span>
 									</div>
-									<div className="flex flex-wrap gap-3">
+									<div className="nls-em-tags">
 										{ TAGS.map( ( tag ) => (
 											<button
 												key={ tag.val }
 												type="button"
 												onClick={ () => patchActive( { subject: ( active?.subject || '' ) + tag.val } ) }
-												className="flex items-center gap-2 px-3.5 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-xl text-[11px] font-bold hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all active:scale-95 shadow-sm"
+												className="nls-em-tag"
 											>
 												<tag.Icon size={ 12 } />
 												<span>{ tag.label }</span>
-												<code className="text-[9px] opacity-40 ml-1">{ tag.val }</code>
+												<code>{ tag.val }</code>
 											</button>
 										) ) }
 									</div>
 								</section>
 
-								<section className="flex flex-col items-center justify-center p-12 bg-slate-50/50 rounded-[2.5rem] border-2 border-dashed border-slate-200 gap-6">
-									<div className="bg-white p-4 rounded-3xl shadow-xl text-slate-300">
-										<Code size={ 32 } />
+								<section className="nls-em-section nls-em-html-panel">
+									<div className="nls-em-html-ico">
+										<Code size={ 28 } />
 									</div>
-									<div className="text-center">
-										<h4 className="text-lg font-bold text-slate-800">HTML Source Controller</h4>
-										<p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Manage the visual structure and dynamic content mapping here.</p>
+									<div className="nls-em-html-copy">
+										<h4>HTML Source Controller</h4>
+										<p>Manage the visual structure and dynamic content mapping here.</p>
 									</div>
 									<button
 										type="button"
 										onClick={ () => setCodeOpen( true ) }
-										className="flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-2xl text-sm font-bold hover:bg-black transition-all shadow-xl active:scale-95"
+										className="nls-em-html-btn"
 									>
 										<Code size={ 18 } /> Open Source Code Editor
 									</button>
@@ -550,6 +556,7 @@ export function EmailsPage() {
 				</div>
 			) }
 		</div>
+		</>
 	);
 }
 

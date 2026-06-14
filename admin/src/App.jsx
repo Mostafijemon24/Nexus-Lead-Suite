@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { AdminErrorBoundary } from './components/AdminErrorBoundary.jsx';
 import { AdminSidebar } from './components/AdminSidebar.jsx';
 import { ActivitiesPage } from './pages/ActivitiesPage.jsx';
 import { MenuItemsPage } from './pages/MenuItemsPage.jsx';
@@ -43,6 +44,7 @@ export function App() {
 	const Page = ROUTES[ route ] || null;
 
 	return (
+		<AdminErrorBoundary>
 		<div className="nexus-ls-admin-app flex min-h-screen">
 			<AdminSidebar activeId={ route } onNavigate={ setRoute } />
 			<main className="min-h-screen flex-1">
@@ -58,5 +60,6 @@ export function App() {
 				) }
 			</main>
 		</div>
+		</AdminErrorBoundary>
 	);
 }

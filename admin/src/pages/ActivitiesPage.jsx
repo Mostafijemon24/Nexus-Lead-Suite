@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Activity, FileText, Search, Trash2 } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Activity, Search, Trash2, X } from 'lucide-react';
 import { PageShell } from '../components/PageShell.jsx';
 import { AdminStickyFooter } from '../components/AdminStickyFooter.jsx';
 import { ResultModal } from '../components/NexusModal.jsx';
@@ -12,17 +12,36 @@ const TABS = [
 	{ id: 'interactions', label: 'Interactions' },
 ];
 
+function PdfIcon( { className = 'h-4 w-4' } ) {
+	return (
+		<svg
+			className={ className }
+			fill="none"
+			viewBox="0 0 24 24"
+			strokeWidth={ 1.8 }
+			stroke="currentColor"
+			aria-hidden="true"
+		>
+			<path
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 15.75h3.375c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9H5.625c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125H9"
+			/>
+			<path
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				d="M10 18.25h.75a1.75 1.75 0 0 0 0-3.5H10v3.5Zm4.25 0v-3.5h1.9m-.8 1.75h-1.1"
+			/>
+		</svg>
+	);
+}
+
 function TabButton( { active, children, onClick } ) {
 	return (
 		<button
 			type="button"
 			onClick={ onClick }
-			className={ [
-				'rounded-lg border px-3 py-1.5 text-xs font-semibold transition',
-				active
-					? 'border-violet-200 bg-violet-50 text-violet-700'
-					: 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
-			].join( ' ' ) }
+			className={ `nls-act-tab${ active ? ' is-active' : '' }` }
 		>
 			{ children }
 		</button>
@@ -31,20 +50,44 @@ function TabButton( { active, children, onClick } ) {
 
 function Badge( { tone, children } ) {
 	const tones = {
-		blue: 'bg-blue-50 text-blue-700',
-		green: 'bg-emerald-50 text-emerald-700',
-		purple: 'bg-violet-50 text-violet-700',
-		amber: 'bg-amber-50 text-amber-800',
-		red: 'bg-rose-50 text-rose-700',
-		slate: 'bg-slate-100 text-slate-600',
+		blue: 'is-blue',
+		green: 'is-green',
+		purple: 'is-purple',
+		amber: 'is-amber',
+		red: 'is-red',
+		slate: 'is-slate',
 	};
 	return (
-		<span
-			className={ `inline-flex rounded-md px-2 py-0.5 text-[11px] font-semibold ${ tones[ tone ] || tones.slate }` }
-		>
+		<span className={ `nls-act-badge ${ tones[ tone ] || tones.slate }` }>
 			{ children }
 		</span>
 	);
+}
+
+function splitLines( value ) {
+	return String( value || '' )
+		.split( /\r?\n/ )
+		.map( ( line ) => line.trim() )
+		.filter( Boolean );
+}
+
+function splitComma( value ) {
+	return String( value || '' )
+		.split( ',' )
+		.map( ( line ) => line.trim() )
+		.filter( Boolean );
+}
+
+function getMailSent( row ) {
+	if ( ! ( 'mailSent' in row ) && ! ( 'mail_sent' in row ) ) {
+		return undefined;
+	}
+	const sent = 'mailSent' in row ? row.mailSent : row.mail_sent;
+	return sent === null ? null : sent;
+}
+
+function getMailStatus( row ) {
+	return row.mailStatus ?? row.mail_status ?? '—';
 }
 
 function getRest() {
@@ -52,7 +95,317 @@ function getRest() {
 	return {
 		restUrl: admin.restUrl || '',
 		nonce: admin.nonce || '',
+		siteTitle: admin.siteTitle || 'Website',
 	};
+}
+
+function ActivitiesReportModal( { open, onClose, filters } ) {
+	const { restUrl, nonce, siteTitle } = getRest();
+	const [ generating, setGenerating ] = useState( false );
+	const [ sending, setSending ] = useState( false );
+	const [ templates, setTemplates ] = useState( [] );
+	const [ customMessage, setCustomMessage ] = useState( '' );
+	const [ customEmails, setCustomEmails ] = useState( '' );
+	const [ selectedRecipients, setSelectedRecipients ] = useState( {} );
+	const [ modal, setModal ] = useState( { open: false, variant: 'success', title: '', message: '' } );
+
+	useEffect( () => {
+		if ( ! open ) {
+			return undefined;
+		}
+		const controller = new AbortController();
+		( async () => {
+			try {
+				const response = await fetch( `${ restUrl }nexus-lead-suite/v1/emails/templates`, {
+					headers: { 'X-WP-Nonce': nonce },
+					credentials: 'same-origin',
+					signal: controller.signal,
+				} );
+				const json = await response.json();
+				const rows = json?.data?.templates;
+				setTemplates( Array.isArray( rows ) ? rows : [] );
+			} catch {
+				setTemplates( [] );
+			}
+		} )();
+		return () => controller.abort();
+	}, [ open, restUrl, nonce ] );
+
+	useEffect( () => {
+		if ( ! open ) {
+			return undefined;
+		}
+		const onKeyDown = ( event ) => {
+			if ( event.key === 'Escape' ) {
+				onClose();
+			}
+		};
+		window.addEventListener( 'keydown', onKeyDown );
+		return () => window.removeEventListener( 'keydown', onKeyDown );
+	}, [ open, onClose ] );
+
+	const savedRecipients = useMemo( () => {
+		const emails = [];
+		for ( const template of templates ) {
+			const rows = Array.isArray( template?.recipients )
+				? template.recipients
+				: splitLines( template?.emails );
+			for ( const email of rows ) {
+				emails.push( String( email ).trim() );
+			}
+		}
+		return Array.from( new Set( emails.filter( ( email ) => email !== '' ) ) );
+	}, [ templates ] );
+
+	const selectedCount = useMemo(
+		() => Object.values( selectedRecipients ).filter( Boolean ).length,
+		[ selectedRecipients ]
+	);
+
+	const previewPdf = async () => {
+		if ( generating ) {
+			return;
+		}
+		setGenerating( true );
+		try {
+			const response = await fetch( `${ restUrl }nexus-lead-suite/v1/reports/activities/pdf`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': nonce,
+				},
+				credentials: 'same-origin',
+				body: JSON.stringify( {
+					tab: filters.tab,
+					dateFrom: filters.fromDate,
+					dateTo: filters.toDate,
+					search: filters.search,
+				} ),
+			} );
+			const json = await response.json();
+			const pdfUrl = json?.data?.pdf_url;
+			if ( ! response.ok || ! pdfUrl ) {
+				setModal( {
+					open: true,
+					variant: 'error',
+					title: 'Error!',
+					message: 'Failed to generate PDF.',
+				} );
+				return;
+			}
+			window.open( pdfUrl, '_blank', 'noopener,noreferrer' );
+		} catch {
+			setModal( {
+				open: true,
+				variant: 'error',
+				title: 'Error!',
+				message: 'Failed to generate PDF.',
+			} );
+		} finally {
+			setGenerating( false );
+		}
+	};
+
+	const sendEmail = async () => {
+		if ( sending ) {
+			return;
+		}
+		const checked = savedRecipients.filter( ( email ) => selectedRecipients[ email ] );
+		const manual = splitComma( customEmails );
+		const recipients = [ ...checked, ...manual ];
+		if ( recipients.length === 0 ) {
+			setModal( {
+				open: true,
+				variant: 'error',
+				title: 'Error!',
+				message: 'Please select or enter at least one recipient.',
+			} );
+			return;
+		}
+		setSending( true );
+		try {
+			const response = await fetch( `${ restUrl }nexus-lead-suite/v1/reports/activities/email`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': nonce,
+				},
+				credentials: 'same-origin',
+				body: JSON.stringify( {
+					tab: filters.tab,
+					dateFrom: filters.fromDate,
+					dateTo: filters.toDate,
+					search: filters.search,
+					recipients,
+					customMessage,
+				} ),
+			} );
+			const json = await response.json();
+			if ( ! response.ok || ! json?.success ) {
+				const message =
+					json?.message || json?.data?.message || 'Failed to send email.';
+				setModal( {
+					open: true,
+					variant: 'error',
+					title: 'Error!',
+					message: typeof message === 'string' ? message : 'Failed to send email.',
+				} );
+				return;
+			}
+			setModal( {
+				open: true,
+				variant: 'success',
+				title: 'Success!',
+				message: 'Email sent successfully.',
+			} );
+		} catch {
+			setModal( {
+				open: true,
+				variant: 'error',
+				title: 'Error!',
+				message: 'Failed to send email.',
+			} );
+		} finally {
+			setSending( false );
+		}
+	};
+
+	if ( ! open ) {
+		return null;
+	}
+
+	return (
+		<>
+			<ResultModal
+				open={ modal.open }
+				variant={ modal.variant }
+				title={ modal.title }
+				message={ modal.message }
+				onDismiss={ () => setModal( ( state ) => ( { ...state, open: false } ) ) }
+			/>
+			<div className="nls-act-modal">
+				<button
+					type="button"
+					className="nls-act-modal-backdrop"
+					aria-label="Close modal"
+					onClick={ onClose }
+				/>
+				<div className="nls-act-modal-panel" role="dialog" aria-modal="true" aria-labelledby="nls-act-report-title">
+					<div className="nls-act-modal-head">
+						<div>
+							<h2 id="nls-act-report-title" className="nls-act-modal-title">
+								Activities Report
+							</h2>
+							<p className="nls-act-modal-date">
+								{ new Date().toLocaleDateString( undefined, {
+									year: 'numeric',
+									month: 'short',
+									day: 'numeric',
+								} ) }
+							</p>
+						</div>
+						<button
+							type="button"
+							onClick={ onClose }
+							className="nls-act-modal-close"
+							aria-label="Close"
+						>
+							<X className="h-5 w-5" />
+						</button>
+					</div>
+
+					<div className="nls-act-modal-body">
+						<button
+							type="button"
+							onClick={ previewPdf }
+							disabled={ generating }
+							className="nls-act-btn-primary nls-act-btn-primary--block"
+						>
+							{ generating ? 'Generating…' : 'Preview PDF Report' }
+						</button>
+
+						<div className="nls-act-modal-divider" />
+
+						<h3 className="nls-act-modal-subtitle">Share via Email</h3>
+
+						<div className="nls-act-modal-fields">
+							<div>
+								<label className="nls-act-field-label" htmlFor="nls-act-custom-message">
+									Custom Message (Optional)
+								</label>
+								<textarea
+									id="nls-act-custom-message"
+									value={ customMessage }
+									onChange={ ( event ) => setCustomMessage( event.target.value ) }
+									rows={ 3 }
+									placeholder="Add a personal message to include in the email..."
+									className="nls-act-textarea"
+								/>
+							</div>
+
+							<div>
+								<label className="nls-act-field-label" htmlFor="nls-act-custom-emails">
+									Custom Email Addresses
+								</label>
+								<input
+									id="nls-act-custom-emails"
+									value={ customEmails }
+									onChange={ ( event ) => setCustomEmails( event.target.value ) }
+									placeholder="Enter email addresses separated by commas"
+									className="nls-act-input"
+								/>
+							</div>
+
+							<div>
+								<p className="nls-act-field-label">Or Select from Email Settings:</p>
+								<div className="nls-act-recipient-box">
+									<p className="nls-act-recipient-site">{ siteTitle }</p>
+									<div className="nls-act-recipient-list">
+										{ savedRecipients.length === 0 ? (
+											<p className="nls-act-recipient-empty">
+												No saved email recipients yet. Save Emails settings first.
+											</p>
+										) : (
+											savedRecipients.map( ( email ) => (
+												<label key={ email } className="nls-act-recipient-item">
+													<input
+														type="checkbox"
+														checked={ !! selectedRecipients[ email ] }
+														onChange={ ( event ) =>
+															setSelectedRecipients( ( state ) => ( {
+																...state,
+																[ email ]: event.target.checked,
+															} ) )
+														}
+													/>
+													{ email }
+												</label>
+											) )
+										) }
+									</div>
+								</div>
+								<p className="nls-act-recipient-count">{ selectedCount } recipients selected</p>
+							</div>
+						</div>
+					</div>
+
+					<div className="nls-act-modal-foot">
+						<button type="button" onClick={ onClose } className="nls-act-btn-secondary">
+							Cancel
+						</button>
+						<button
+							type="button"
+							onClick={ sendEmail }
+							disabled={ sending }
+							className="nls-act-btn-primary"
+						>
+							{ sending ? 'Sending…' : 'Send Email' }
+						</button>
+					</div>
+				</div>
+			</div>
+		</>
+	);
 }
 
 export function ActivitiesPage() {
@@ -65,6 +418,7 @@ export function ActivitiesPage() {
 	const [ loading, setLoading ] = useState( true );
 	const [ error, setError ] = useState( '' );
 	const [ clearing, setClearing ] = useState( false );
+	const [ pdfOpen, setPdfOpen ] = useState( false );
 	const [ modal, setModal ] = useState( { open: false, variant: 'success', title: '', message: '' } );
 
 	useEffect( () => {
@@ -164,6 +518,14 @@ export function ActivitiesPage() {
 		}
 	};
 
+	const resetFilters = () => {
+		setDateFrom( '' );
+		setDateTo( '' );
+		setSearch( '' );
+		setDebouncedSearch( '' );
+		setTab( 'all' );
+	};
+
 	return (
 		<PageShell
 			title="Activities"
@@ -171,14 +533,14 @@ export function ActivitiesPage() {
 			icon={ <Activity size={ 18 } /> }
 			footer={ <AdminStickyFooter /> }
 			headerRight={
-				<div className="relative">
+				<div className="nls-act-search">
 					<input
 						value={ search }
 						onChange={ ( event ) => setSearch( event.target.value ) }
 						placeholder="Search..."
-						className="h-9 w-44 rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-xs outline-none ring-violet-200 focus:ring-2 sm:w-56 md:w-72 md:text-sm"
+						className="nls-act-search-input"
 					/>
-					<span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+					<span className="nls-act-search-ico" aria-hidden="true">
 						<Search size={ 16 } />
 					</span>
 				</div>
@@ -192,145 +554,179 @@ export function ActivitiesPage() {
 				onDismiss={ () => setModal( ( state ) => ( { ...state, open: false } ) ) }
 			/>
 
-			<div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-				<div className="flex flex-wrap items-center gap-1.5 rounded-xl bg-slate-50 p-1">
-					{ TABS.map( ( item ) => (
-						<TabButton key={ item.id } active={ tab === item.id } onClick={ () => setTab( item.id ) }>
-							{ item.label }
-						</TabButton>
-					) ) }
-				</div>
-				<div className="flex flex-wrap items-center gap-2 sm:ml-auto">
-					<label className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
-						<span>From:</span>
-						<input
-							type="date"
-							value={ dateFrom }
-							onChange={ ( event ) => setDateFrom( event.target.value ) }
-							className="h-8 min-w-0 rounded-lg border border-slate-200 bg-white px-2 text-xs outline-none ring-violet-200 focus:ring-2"
-						/>
-					</label>
-					<label className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
-						<span>To:</span>
-						<input
-							type="date"
-							value={ dateTo }
-							onChange={ ( event ) => setDateTo( event.target.value ) }
-							className="h-8 min-w-0 rounded-lg border border-slate-200 bg-white px-2 text-xs outline-none ring-violet-200 focus:ring-2"
-						/>
-					</label>
-					<button
-						type="button"
-						onClick={ () => {
-							setDateFrom( '' );
-							setDateTo( '' );
-							setSearch( '' );
-							setDebouncedSearch( '' );
-							setTab( 'all' );
-						} }
-						className="h-8 rounded-lg px-3 text-xs font-semibold text-slate-500 hover:bg-slate-50"
-					>
-						Clear
-					</button>
-					{ loading ? (
-						<span className="text-[11px] font-semibold uppercase tracking-wide text-violet-600">
-							Updating…
-						</span>
-					) : null }
-					<button
-						type="button"
-						onClick={ clearAll }
-						className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 text-xs font-semibold text-rose-700 hover:bg-rose-100"
-					>
-						<Trash2 className="h-3.5 w-3.5" />
-						{ clearing ? 'Clearing…' : 'Clear All' }
-					</button>
-				</div>
-			</div>
+			<ActivitiesReportModal
+				open={ pdfOpen }
+				onClose={ () => setPdfOpen( false ) }
+				filters={ {
+					tab,
+					fromDate: dateFrom,
+					toDate: dateTo,
+					search,
+				} }
+			/>
 
-			<div className="mt-4 overflow-x-auto overflow-hidden rounded-xl border border-slate-200">
-				<table className="min-w-[720px] w-full border-separate border-spacing-0">
-					<thead>
-						<tr className="bg-slate-50 text-left text-xs font-semibold text-slate-500">
-							<th className="px-4 py-3">Action Name</th>
-							<th className="px-4 py-3">Page URL</th>
-							<th className="px-4 py-3">Purpose</th>
-							<th className="px-4 py-3">Interaction</th>
-							<th className="px-4 py-3">Date/Time</th>
-							<th className="px-4 py-3">Mail Status</th>
-							<th className="px-4 py-3">Reference</th>
-						</tr>
-					</thead>
-					<tbody className="text-sm">
-						{ loading && rows.length === 0 ? (
-							<tr>
-								<td colSpan={ 7 } className="px-4 py-10 text-center text-sm text-slate-500">
-									Loading activities…
-								</td>
-							</tr>
-						) : (
-							<>
-								{ rows.map( ( row ) => {
-									const categoryKey = row.categoryKey || 'forms';
-									const tone =
-										categoryKey === 'forms'
-											? 'blue'
-											: categoryKey === 'calls'
-												? 'green'
-												: categoryKey === 'consultations'
-													? 'purple'
-													: 'amber';
-									return (
-										<tr
-											key={ row.id }
-											className="border-t border-slate-200 hover:bg-slate-50/60"
-										>
-											<td className="px-4 py-3 font-semibold text-slate-800">
-												{ row.actionName }
-											</td>
-											<td className="px-4 py-3">
-												{ row.pageUrl ? (
-													<a
-														href={ row.pageUrl }
-														target="_blank"
-														rel="noopener noreferrer"
-														className="inline-flex max-w-[220px] items-center gap-1 text-slate-600 hover:text-slate-900"
-													>
-														<span className="truncate">{ row.pageUrl }</span>
-													</a>
-												) : (
-													<span className="text-slate-400">—</span>
-												) }
-											</td>
-											<td className="px-4 py-3">
-												<Badge tone={ tone }>{ row.category }</Badge>
-											</td>
-											<td className="px-4 py-3 text-slate-600">{ row.context }</td>
-											<td className="px-4 py-3 text-slate-600">{ row.dateTime }</td>
-											<td className="px-4 py-3">
-												<Badge tone="slate">{ row.mailStatus ?? row.mail_status ?? '—' }</Badge>
-											</td>
-											<td className="px-4 py-3 font-mono text-xs text-slate-600">{ row.id }</td>
-										</tr>
-									);
-								} ) }
-								{ ! loading && rows.length === 0 ? (
-									<tr>
-										<td colSpan={ 7 } className="px-4 py-10 text-center text-sm text-slate-500">
-											{ error || 'No activities found.' }
-										</td>
-									</tr>
+			<div className="nls-activities-wrap">
+				<div className="nls-act-card">
+					<section className="nls-act-section is-first">
+						<div className="nls-act-sec-head">
+							<span className="nls-act-sec-ico" aria-hidden="true">
+								<Activity size={ 16 } />
+							</span>
+							<div>
+								<span className="nls-act-sec-title">Activity Log</span>
+								<p className="nls-act-sec-desc">
+									Filter by type, date range, or keyword. Export a PDF report or share it by email.
+								</p>
+							</div>
+						</div>
+
+						<div className="nls-act-toolbar">
+							<div className="nls-act-tabs">
+								{ TABS.map( ( item ) => (
+									<TabButton
+										key={ item.id }
+										active={ tab === item.id }
+										onClick={ () => setTab( item.id ) }
+									>
+										{ item.label }
+									</TabButton>
+								) ) }
+							</div>
+
+							<div className="nls-act-filters">
+								<label className="nls-act-date">
+									<span>From:</span>
+									<input
+										type="date"
+										value={ dateFrom }
+										onChange={ ( event ) => setDateFrom( event.target.value ) }
+									/>
+								</label>
+								<label className="nls-act-date">
+									<span>To:</span>
+									<input
+										type="date"
+										value={ dateTo }
+										onChange={ ( event ) => setDateTo( event.target.value ) }
+									/>
+								</label>
+								<button type="button" onClick={ resetFilters } className="nls-act-btn-ghost">
+									Clear
+								</button>
+								{ loading ? (
+									<span className="nls-act-updating">Updating…</span>
 								) : null }
-							</>
-						) }
-					</tbody>
-				</table>
-			</div>
+								<span className="nls-act-filter-divider" aria-hidden="true" />
+								<button
+									type="button"
+									onClick={ () => setPdfOpen( true ) }
+									className="nls-act-btn-pdf"
+								>
+									<PdfIcon className="h-3.5 w-3.5" />
+									<span className="hidden sm:inline">Report PDF</span>
+									<span className="sm:hidden">PDF</span>
+								</button>
+								<button
+									type="button"
+									onClick={ clearAll }
+									disabled={ clearing }
+									className="nls-act-btn-danger"
+								>
+									<Trash2 className="h-3.5 w-3.5" />
+									<span className="hidden sm:inline">{ clearing ? 'Clearing…' : 'Clear All' }</span>
+									<span className="sm:hidden">{ clearing ? '…' : 'Clear' }</span>
+								</button>
+							</div>
+						</div>
+					</section>
 
-			<p className="mt-4 flex items-center gap-2 text-xs text-slate-400">
-				<FileText size={ 14 } />
-				Full PDF report UI lives in the production bundle; list and clear endpoints are implemented here.
-			</p>
+					<section className="nls-act-section">
+						<div className="nls-act-table-wrap">
+							<table className="nls-act-table">
+								<thead>
+									<tr>
+										<th>Action Name</th>
+										<th>Page URL</th>
+										<th>Purpose</th>
+										<th>Interaction</th>
+										<th>Date/Time</th>
+										<th className="nls-act-col-mail">Mail Status</th>
+										<th>Reference</th>
+									</tr>
+								</thead>
+								<tbody>
+									{ loading && rows.length === 0 ? (
+										<tr>
+											<td colSpan={ 7 } className="nls-act-empty">
+												Loading activities…
+											</td>
+										</tr>
+									) : (
+										<>
+											{ rows.map( ( row ) => {
+												const categoryKey = row.categoryKey || 'forms';
+												const tone =
+													categoryKey === 'forms'
+														? 'blue'
+														: categoryKey === 'calls'
+															? 'green'
+															: categoryKey === 'consultations'
+																? 'purple'
+																: 'amber';
+												const mailSent = getMailSent( row );
+												const mailTone =
+													mailSent === undefined || mailSent === null
+														? 'slate'
+														: mailSent === true || mailSent === 1
+															? 'green'
+															: 'red';
+												return (
+													<tr key={ row.id }>
+														<td className="nls-act-cell-strong">{ row.actionName }</td>
+														<td>
+															{ row.pageUrl ? (
+																<a
+																	href={ row.pageUrl }
+																	target="_blank"
+																	rel="noopener noreferrer"
+																	className="nls-act-link"
+																>
+																	<span className="truncate">{ row.pageUrl }</span>
+																	<span className="nls-act-link-ico" aria-hidden="true">
+																		↗
+																	</span>
+																</a>
+															) : (
+																<span className="nls-act-muted">—</span>
+															) }
+														</td>
+														<td>
+															<Badge tone={ tone }>{ row.category }</Badge>
+														</td>
+														<td>{ row.context }</td>
+														<td>{ row.dateTime }</td>
+														<td className="nls-act-col-mail">
+															<Badge tone={ mailTone }>{ getMailStatus( row ) }</Badge>
+														</td>
+														<td className="nls-act-ref">{ row.id }</td>
+													</tr>
+												);
+											} ) }
+											{ ! loading && rows.length === 0 ? (
+												<tr>
+													<td colSpan={ 7 } className="nls-act-empty">
+														{ error || 'No activities found.' }
+													</td>
+												</tr>
+											) : null }
+										</>
+									) }
+								</tbody>
+							</table>
+						</div>
+					</section>
+				</div>
+			</div>
 		</PageShell>
 	);
 }
