@@ -96,8 +96,9 @@ final class Menu_Group_Resolver {
 			? array_values( $conditions['rules'] )
 			: array();
 
+		// No rules configured: show on every page (admin default when all checkboxes are unchecked).
 		if ( count( $rules ) === 0 ) {
-			return false;
+			return true;
 		}
 
 		$match_mode = isset( $conditions['match'] ) ? (string) $conditions['match'] : 'any';

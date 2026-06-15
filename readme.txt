@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,12 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 == Changelog ==
 
+= 1.0.6 =
+* Menu Items: empty Display Conditions now show on all pages.
+* Popups: fix Popup Body shortcode save (`sanitize_popup_body_for_storage`).
+* Emails: default Activity notification HTML template for new templates.
+* Form Builder: fix 1-4 column layout buttons in Insert Form Fields.
+
 = 1.0.5 =
 * Popups: fix Advanced Automation Logic settings not saving.
 * Email Automation: fix Automation Builder settings save behavior.
@@ -151,6 +157,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 * Initial scaffold: custom database tables, REST bootstrap, admin build tooling.
 
 == Upgrade Notice ==
+
+= 1.0.6 =
+Menu Items display conditions, Popup Body save, default email template, and Form Builder column layout fixes.
 
 = 1.0.5 =
 Fixes Popups Advanced Automation Logic and Email Automation Builder settings save issues.

@@ -2527,7 +2527,7 @@ final class Rest_Api {
 				'headingEditMode' => $heading_mode,
 				'subHeading'      => $sub,
 				'textAlign'       => $align,
-				'content'         => wp_kses_post( $content ),
+				'content'         => \Nexus_Lead_Suite\sanitize_popup_body_for_storage( $content ),
 				'conditions'      => array(
 					'match' => $match,
 					'rules' => $rules,
