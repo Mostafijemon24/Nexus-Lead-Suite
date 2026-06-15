@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,10 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 == Changelog ==
 
+= 1.0.5 =
+* Popups: fix Advanced Automation Logic settings not saving.
+* Email Automation: fix Automation Builder settings save behavior.
+
 = 1.0.4 =
 * Popups & Email Automation: fix admin screens freezing after navigation (SPA route guards and modal overlay cleanup).
 * Popups Main Heading Editor: reliable TinyMCE loading via wp-tinymce dependency; purge stray #mce-modal-blocker overlays.
@@ -147,6 +151,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 * Initial scaffold: custom database tables, REST bootstrap, admin build tooling.
 
 == Upgrade Notice ==
+
+= 1.0.5 =
+Fixes Popups Advanced Automation Logic and Email Automation Builder settings save issues.
 
 = 1.0.4 =
 Fixes Popups and Email Automation screen freezes, TinyMCE heading editor issues, and settings toggle glider behavior.
