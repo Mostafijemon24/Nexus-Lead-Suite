@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,6 +102,13 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 1. Dashboard (coming soon)
 
+= 1.0.9 =
+* Visual Editor: fix save reliability (hover outline / snapshotOuterHtml).
+* Visual Editor: save success card modal after successful publish.
+* Live chat: frontend output fix (wp_footer priority 15).
+* Settings: global font applied across admin and public surfaces (`core/class-global-font.php`).
+* Global font: popup heading/button, Visual Editor panel, and success card styling gaps fixed.
+
 = 1.0.8 =
 * Email Automation Builder: fix save crash (use latest templates ref instead of stale state; avoids "Cannot read properties of undefined (reading 'map')").
 
@@ -159,6 +166,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 = 0.1.0 =
 * Initial scaffold: custom database tables, REST bootstrap, admin build tooling.
+
+= 1.0.9 =
+Visual Editor save fixes, success card modal, live chat footer priority, and global font coverage improvements.
 
 = 1.0.8 =
 Email Automation Builder save fix (map error on save).

@@ -113,8 +113,12 @@ final class Shortcodes {
 		 * (Contact Form 7, WPForms, etc.) can enqueue scripts/styles when expanded.
 		 */
 		add_action( 'wp_footer', array( $this, 'render_popups' ), 12 );
+		/*
+		 * After popups (inline popup targets) but before wp_print_footer_scripts (~20)
+		 * so nexus-ls-livechat-widget inline CSS/JS are actually printed.
+		 */
+		add_action( 'wp_footer', array( $this, 'render_livechat_widget' ), 15 );
 		add_action( 'wp_footer', array( $this, 'render_bottom_nav' ), 20 );
-		add_action( 'wp_footer', array( $this, 'render_livechat_widget' ), 25 );
 		// AJAX: notification email trigger (both logged-in and guest visitors).
 		add_action( 'wp_ajax_nexus_ls_trigger_notify', array( $this, 'handle_trigger_notify' ) );
 		add_action( 'wp_ajax_nopriv_nexus_ls_trigger_notify', array( $this, 'handle_trigger_notify' ) );
@@ -126,7 +130,7 @@ final class Shortcodes {
 	/**
 	 * Enqueues the Visual Editor overlay (admin-only, opt-in via query string).
 	 *
-	 * Lightweight rule: only load when `?nexus-ve=1` and user can manage options.
+	 * Lightweight rule: only load when the admin Visual Editor toggle cookie is set and user can manage options.
 	 *
 	 * @return void
 	 */
@@ -168,6 +172,9 @@ final class Shortcodes {
 			true
 		);
 
+		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-global-font.php';
+		\Nexus_Lead_Suite\Core\Global_Font::enqueue( 'nexus-ls-global-font' );
+
 		wp_localize_script(
 			'nexus-ls-visual-editor',
 			'nexusLsVeCfg',
@@ -177,6 +184,7 @@ final class Shortcodes {
 				'postId'   => $post_id,
 				'endpoint' => esc_url_raw( rest_url( 'nexus-lead-suite/v1/visual-editor/update' ) ),
 				'activityButtonClasses' => (string) ( ( get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() )['activityButtonClasses'] ?? '' ) ),
+				'globalFont' => \Nexus_Lead_Suite\Core\Global_Font::get_saved_font(),
 			)
 		);
 	}
@@ -1770,8 +1778,15 @@ final class Shortcodes {
 		$auto_popup_on   = is_array( $general ) ? (bool) ( $general['enableAutoPopup'] ?? false ) : false;
 		$auto_popup_forms = is_array( $general ) ? $this->get_auto_popup_default_form_ids( $general ) : array();
 
+		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-global-font.php';
+		\Nexus_Lead_Suite\Core\Global_Font::enqueue( 'nexus-ls-global-font' );
+		$popup_font_stack = \Nexus_Lead_Suite\Core\Global_Font::get_font_stack(
+			\Nexus_Lead_Suite\Core\Global_Font::get_saved_font()
+		);
+
 		/* ── Popup overlay CSS (wp_enqueue inline) ── */
 		$popup_css = '/* Nexus Lead Suite – Popup Overlay */
+		.nexus-popup-overlay,.nexus-popup-overlay .nexus-popup,.nexus-popup-overlay .nexus-popup *{font-family:' . $popup_font_stack . '!important;}
 		.nexus-popup-overlay{display:none;position:fixed;inset:0;z-index:999999;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:16px;overflow-y:auto;box-sizing:border-box;}
 		.nexus-popup-overlay.nexus-popup--open{display:flex;}
 		.nexus-popup{position:relative;width:100%;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.28);animation:nexus-pop-in .22s ease;box-sizing:border-box;}
@@ -1936,11 +1951,14 @@ final class Shortcodes {
 					if ( preg_match( '/\bsize=["\']?([^"\'> ]+)["\']?/i', $attrs, $s ) ) {
 						$style_bits[] = 'font-size:' . esc_attr( $s[1] );
 					}
+					// face="" is intentionally dropped — global font applies via popup CSS.
 					return '<span' . ( $style_bits ? ' style="' . implode( ';', $style_bits ) . '"' : '' ) . '>';
 				},
 				wp_kses_post( $heading )
 			);
 			$heading_html = str_ireplace( '</font>', '</span>', (string) $heading_html );
+			// Strip TinyMCE inline font-family so Settings → globalFont wins (livechat uses explicit stack).
+			$heading_html = preg_replace( '/\s*font-family\s*:\s*[^;"\']+(!important)?\s*;?/i', '', (string) $heading_html );
 			echo $heading_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized above via wp_kses_post + controlled regex
 			echo '</div>';
 			if ( '' !== $sub ) {
@@ -2119,95 +2137,8 @@ final class Shortcodes {
 	 * @return void
 	 */
 	public function enqueue_global_font(): void {
-		$opt = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
-		if ( ! is_array( $opt ) ) {
-			$opt = array();
-		}
-
-		$font = isset( $opt['globalFont'] ) ? sanitize_text_field( (string) $opt['globalFont'] ) : 'Inter';
-		if ( '' === $font ) {
-			$font = 'Inter';
-		}
-
-		// Build weights string for Google Fonts URL.
-		$weights_map = array(
-			'Inter'               => '400;500;600;700',
-			'Roboto'              => '400;500;700',
-			'Open Sans'           => '400;600;700',
-			'Lato'                => '400;700',
-			'Montserrat'          => '400;500;600;700',
-			'Poppins'             => '400;500;600;700',
-			'Raleway'             => '400;600;700',
-			'Nunito'              => '400;600;700',
-			'Ubuntu'              => '400;500;700',
-			'Rubik'               => '400;500;600;700',
-			'Work Sans'           => '400;500;600;700',
-			'DM Sans'             => '400;500;700',
-			'Figtree'             => '400;500;600;700',
-			'Plus Jakarta Sans'   => '400;500;600;700',
-			'Outfit'              => '400;500;600;700',
-			'Barlow'              => '400;500;600;700',
-			'Manrope'             => '400;500;600;700',
-			'Mulish'              => '400;600;700',
-			'Quicksand'           => '400;500;600;700',
-			'Cabin'               => '400;500;600;700',
-			'Karla'               => '400;500;700',
-			'Josefin Sans'        => '400;600;700',
-			'Exo 2'               => '400;500;600;700',
-			'Space Grotesk'       => '400;500;600;700',
-			'Noto Sans'           => '400;700',
-			'IBM Plex Sans'       => '400;500;600;700',
-			'Syne'                => '400;500;600;700;800',
-			'Oswald'              => '400;500;600;700',
-			'Bebas Neue'          => '400',
-			'Anton'               => '400',
-			'Fjalla One'          => '400',
-			'Righteous'           => '400',
-			'Titan One'           => '400',
-			'Secular One'         => '400',
-			'Abril Fatface'       => '400',
-			'Playfair Display'    => '400;600;700',
-			'Merriweather'        => '400;700',
-			'Lora'                => '400;500;600;700',
-			'PT Serif'            => '400;700',
-			'Libre Baskerville'   => '400;700',
-			'Cormorant Garamond'  => '400;500;600;700',
-			'EB Garamond'         => '400;500;600;700',
-			'Spectral'            => '400;500;600;700',
-			'Cinzel'              => '400;600;700',
-			'Crimson Text'        => '400;600;700',
-			'Dancing Script'      => '400;600;700',
-			'Pacifico'            => '400',
-			'Caveat'              => '400;600;700',
-			'Satisfy'             => '400',
-			'Permanent Marker'    => '400',
-			'Inconsolata'         => '400;600;700',
-			'Source Code Pro'     => '400;600;700',
-			'JetBrains Mono'      => '400;500;700',
-			'Fira Code'           => '400;500;700',
-		);
-
-		$weights = isset( $weights_map[ $font ] ) ? $weights_map[ $font ] : '400;700';
-
-		// Build italic:wght@... axes string.
-		$font_query = str_replace( ' ', '+', $font );
-		$gf_url     = 'https://fonts.googleapis.com/css2?family=' . rawurlencode( $font ) . ':wght@' . $weights . '&display=swap';
-
-		wp_enqueue_style(
-			'nexus-ls-global-font',
-			esc_url( $gf_url ),
-			array(),
-			null // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-		);
-
-		// Inject CSS variable so all plugin elements inherit the selected font.
-		$css_var = ':root { --nexus-ls-font: \'' . esc_attr( $font ) . '\', sans-serif; }' . "\n"
-			. '.nexus-st-form, .nexus-st-form * { font-family: var(--nexus-ls-font) !important; }' . "\n"
-			. '.nexus-popup, .nexus-popup * { font-family: var(--nexus-ls-font) !important; }' . "\n"
-			. '.nexus-menu-widget, .nexus-menu-widget * { font-family: var(--nexus-ls-font) !important; }' . "\n"
-			. '.nexus-chat-widget, .nexus-chat-widget * { font-family: var(--nexus-ls-font) !important; }';
-
-		wp_add_inline_style( 'nexus-ls-global-font', $css_var );
+		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-global-font.php';
+		\Nexus_Lead_Suite\Core\Global_Font::enqueue( 'nexus-ls-global-font' );
 	}
 
 	/**

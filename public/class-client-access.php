@@ -297,10 +297,13 @@ final class Client_Access {
 		$css_ver  = file_exists( $css_path ) ? (string) filemtime( $css_path ) : NEXUS_LS_VERSION;
 		$js_ver   = file_exists( $js_path ) ? (string) filemtime( $js_path ) : NEXUS_LS_VERSION;
 
+		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-global-font.php';
+		\Nexus_Lead_Suite\Core\Global_Font::enqueue( 'nexus-ls-global-font' );
+
 		wp_enqueue_style(
 			'nexus-ls-client-access-gateway',
 			esc_url( NEXUS_LS_PLUGIN_URL . 'public/css/client-access-gateway.css' ),
-			array(),
+			array( 'nexus-ls-global-font' ),
 			$css_ver
 		);
 

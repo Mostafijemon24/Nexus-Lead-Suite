@@ -163,6 +163,7 @@ final class Admin_App {
 
 		wp_enqueue_style( 'dashicons' );
 		$this->enqueue_admin_chrome_styles();
+		$this->enqueue_admin_global_font();
 
 		// Popups Main Heading Editor uses TinyMCE; stray #mce-modal-blocker overlays are
 		// neutralized in wp-admin-chrome.css and purged from assets/admin/js/main.js.
@@ -288,6 +289,16 @@ final class Admin_App {
 	}
 
 	/**
+	 * Enqueues the saved global font for the admin SPA.
+	 *
+	 * @return void
+	 */
+	private function enqueue_admin_global_font(): void {
+		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-global-font.php';
+		\Nexus_Lead_Suite\Core\Global_Font::enqueue( 'nexus-ls-global-font' );
+	}
+
+	/**
 	 * Removes default WP admin content padding so the SPA sits flush against the menu.
 	 *
 	 * @return void
@@ -323,6 +334,10 @@ final class Admin_App {
 			}
 		}
 
+		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-global-font.php';
+		$global_font     = \Nexus_Lead_Suite\Core\Global_Font::get_saved_font();
+		$global_weights  = \Nexus_Lead_Suite\Core\Global_Font::get_weights_for_font( $global_font );
+
 		wp_localize_script(
 			$handle,
 			'nexusLsAdmin',
@@ -338,6 +353,8 @@ final class Admin_App {
 				'formsPayload'      => $this->get_forms_payload_for_boot(),
 				'initialRoute'      => $initial_route,
 				'adminPages'        => $admin_pages,
+				'globalFont'        => $global_font,
+				'globalFontWeights' => $global_weights,
 			)
 		);
 	}

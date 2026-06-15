@@ -989,6 +989,46 @@ final class Rest_Api {
 	}
 
 	/**
+	 * Strips Visual Editor hover artifacts from client outerHTML before post_content matching.
+	 *
+	 * @param string $html Client outerHTML snapshot.
+	 * @return string
+	 */
+	private function ve_normalize_client_outer_html( string $html ): string {
+		$html = trim( $html );
+		if ( '' === $html ) {
+			return '';
+		}
+
+		$el = $this->ve_parse_client_fragment_root( $html );
+		if ( ! ( $el instanceof \DOMElement ) ) {
+			$html = preg_replace( '/\sdata-nexus-ve-hover=(["\'])1\1/i', '', $html );
+			$html = is_string( $html ) ? preg_replace( '/\soutline(-offset)?:\s*[^;"\']+;?/i', '', $html ) : '';
+			return is_string( $html ) ? trim( $html ) : '';
+		}
+
+		$el->removeAttribute( 'data-nexus-ve-hover' );
+		if ( $el->hasAttribute( 'style' ) ) {
+			$style = (string) $el->getAttribute( 'style' );
+			$style = preg_replace( '/\s*outline(-offset)?:\s*[^;]+;?/i', '', $style );
+			$style = trim( preg_replace( '/\s+/', ' ', (string) $style ) );
+			if ( '' === $style ) {
+				$el->removeAttribute( 'style' );
+			} else {
+				$el->setAttribute( 'style', $style );
+			}
+		}
+
+		$owner = $el->ownerDocument;
+		if ( $owner instanceof \DOMDocument ) {
+			$out = $owner->saveHTML( $el );
+			return is_string( $out ) ? trim( $out ) : $html;
+		}
+
+		return $html;
+	}
+
+	/**
 	 * Visual Editor: updates a matching element in post_content using DOMDocument.
 	 *
 	 * Match strategy:
@@ -1018,6 +1058,7 @@ final class Rest_Api {
 		if ( '' === $original_html ) {
 			return new \WP_Error( 'nexus_ls_ve_bad_html', 'Missing originalHtml.', array( 'status' => 400 ) );
 		}
+		$original_html = $this->ve_normalize_client_outer_html( $original_html );
 
 		$attrs = $request->get_param( 'attributes' );
 		$attrs = is_array( $attrs ) ? $attrs : array();
