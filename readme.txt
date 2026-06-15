@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,12 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 == Changelog ==
 
+= 1.0.4 =
+* Popups & Email Automation: fix admin screens freezing after navigation (SPA route guards and modal overlay cleanup).
+* Popups Main Heading Editor: reliable TinyMCE loading via wp-tinymce dependency; purge stray #mce-modal-blocker overlays.
+* Settings toggles: glider animation and layout fixes in compiled admin assets.
+* Activities store and public tracker/popup scripts: stability improvements aligned with admin fixes.
+
 = 1.0.3 =
 * WordPress.org Plugin Review: load scripts/styles via wp_enqueue (popup, livechat, client gateway, access gate).
 * Security: access gate nonce verification, webhook payload sanitization, PDF writes under uploads plugin subfolder.
@@ -141,6 +147,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 * Initial scaffold: custom database tables, REST bootstrap, admin build tooling.
 
 == Upgrade Notice ==
+
+= 1.0.4 =
+Fixes Popups and Email Automation screen freezes, TinyMCE heading editor issues, and settings toggle glider behavior.
 
 = 1.0.3 =
 WordPress.org review compliance, security hardening, and Plugin Check packaging fixes.

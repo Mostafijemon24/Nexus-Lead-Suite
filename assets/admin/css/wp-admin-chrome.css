@@ -228,3 +228,59 @@ body[class*="page_nexus-lead-suite"] .wrap {
 	text-transform: none;
 	letter-spacing: normal;
 }
+
+/* Nexus admin — hide stray TinyMCE overlays unless a real dialog is open */
+body[class*="nexus-lead-suite"]:not(.nls-mce-dialog-open) #mce-modal-blocker,
+body[class*="nexus-lead-suite"]:not(.nls-mce-dialog-open) .mce-blocker,
+body[class*="nexus-lead-suite"]:not(.nls-mce-dialog-open) .tox-dialog__backdrop {
+	display: none !important;
+	pointer-events: none !important;
+	visibility: hidden !important;
+}
+
+/* Main Heading Editor — TinyMCE inside popup builder card (classic editor chrome) */
+#nexus-ls-admin-root .nls-heading-mce-wrap {
+	display: flex;
+	flex-direction: column;
+	min-height: 170px;
+	background: #fff;
+}
+
+#nexus-ls-admin-root .nls-heading-mce-wrap .mce-tinymce,
+#nexus-ls-admin-root .nls-heading-mce-wrap .tox-tinymce {
+	border: none !important;
+	box-shadow: none !important;
+	background: transparent !important;
+}
+
+#nexus-ls-admin-root .nls-heading-mce-wrap .mce-toolbar-grp,
+#nexus-ls-admin-root .nls-heading-mce-wrap .tox-toolbar-overlord,
+#nexus-ls-admin-root .nls-heading-mce-wrap .mce-top-part .mce-toolbar,
+#nexus-ls-admin-root .nls-heading-mce-wrap .tox-editor-header {
+	display: none !important;
+}
+
+#nexus-ls-admin-root .nls-heading-mce-wrap .mce-edit-area,
+#nexus-ls-admin-root .nls-heading-mce-wrap .tox-edit-area {
+	border: none !important;
+}
+
+#nexus-ls-admin-root .nls-heading-mce-wrap .mce-statusbar,
+#nexus-ls-admin-root .nls-heading-mce-wrap .tox-statusbar {
+	display: none !important;
+}
+
+#nexus-ls-admin-root .nls-heading-mce-wrap .mce-edit-area iframe,
+#nexus-ls-admin-root .nls-heading-mce-wrap .tox-edit-area__iframe {
+	min-height: 170px !important;
+}
+
+#nexus-ls-admin-root .nls-heading-mce-ta {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	pointer-events: none;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+}

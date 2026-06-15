@@ -164,10 +164,8 @@ final class Admin_App {
 		wp_enqueue_style( 'dashicons' );
 		$this->enqueue_admin_chrome_styles();
 
-		// Load TinyMCE core so the React heading editor can call window.tinymce.init() directly.
-		// We deliberately avoid wp_enqueue_editor() because it outputs conflicting
-		// initialization JavaScript (via _WP_Editors::editor_js) for editors that
-		// don't yet exist in the DOM, which can break the React SPA.
+		// Popups Main Heading Editor uses TinyMCE; stray #mce-modal-blocker overlays are
+		// neutralized in wp-admin-chrome.css and purged from assets/admin/js/main.js.
 		wp_enqueue_script( 'wp-tinymce' );
 
 		// Dev mode (optional): define('NEXUS_LS_VITE_DEV', true) in wp-config.php.
@@ -193,7 +191,7 @@ final class Admin_App {
 			wp_enqueue_script(
 				'nexus-ls-admin-fallback',
 				esc_url( NEXUS_LS_PLUGIN_URL . 'assets/admin/js/main.js' ),
-				array(),
+				array( 'wp-tinymce' ),
 				$fallback_js_ver,
 				true
 			);
@@ -242,7 +240,7 @@ final class Admin_App {
 		wp_enqueue_script(
 			'nexus-ls-admin',
 			esc_url( NEXUS_LS_PLUGIN_URL . 'assets/admin/' . $js_rel ),
-			array(),
+			array( 'wp-tinymce' ),
 			$js_ver,
 			true
 		);
