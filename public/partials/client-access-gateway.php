@@ -78,7 +78,7 @@ $nexus_ls_ca_tab_labels = array(
 	<title><?php echo esc_html( $nexus_ls_ca_site_title ); ?> — <?php esc_html_e( 'Activity report', 'nexus-lead-suite' ); ?></title>
 	<?php wp_head(); ?>
 </head>
-<body>
+<body class="nexus-ls-client-gateway">
 	<div class="wrap">
 		<header class="report-header">
 			<?php if ( '' !== $nexus_ls_ca_report_logo ) : ?>

@@ -6,6 +6,11 @@
 		return;
 	}
 
+	function veGlobalFontStack() {
+		var f = ( cfg.globalFont && String( cfg.globalFont ).trim() ) || 'Inter';
+		return "'" + f.replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" ) + "', sans-serif";
+	}
+
 	var __classGroups = []; // Optional; kept for future compatibility.
 
 	function isEditorUi( node ) {
@@ -59,18 +64,28 @@
 
 	var raf = 0;
 	var last = null;
-	var lastOutline = '';
-	var lastOutlineOffset = '';
+
+	( function injectVeHoverStyle() {
+		try {
+			if ( document.getElementById( 'nexus-ls-ve-hover-style' ) ) {
+				return;
+			}
+			var styleEl = document.createElement( 'style' );
+			styleEl.id = 'nexus-ls-ve-hover-style';
+			styleEl.textContent =
+				'[data-nexus-ve-hover]{outline:2px solid #4f46e5!important;outline-offset:2px!important}';
+			( document.head || document.documentElement ).appendChild( styleEl );
+		} catch ( e ) {}
+	} )();
 
 	function clearOutline() {
 		if ( ! last ) return;
 		try {
-			last.style.outline = lastOutline || '';
-			last.style.outlineOffset = lastOutlineOffset || '';
+			last.removeAttribute( 'data-nexus-ve-hover' );
+			last.style.outline = '';
+			last.style.outlineOffset = '';
 		} catch ( e ) {}
 		last = null;
-		lastOutline = '';
-		lastOutlineOffset = '';
 	}
 
 	function applyOutline( node ) {
@@ -78,11 +93,50 @@
 		clearOutline();
 		last = node;
 		try {
-			lastOutline = node.style.outline || '';
-			lastOutlineOffset = node.style.outlineOffset || '';
-			node.style.outline = '2px solid #4f46e5';
-			node.style.outlineOffset = '2px';
+			node.setAttribute( 'data-nexus-ve-hover', '1' );
 		} catch ( e ) {}
+	}
+
+	/**
+	 * Snapshot outerHTML without Visual Editor hover artifacts (inline outline / data attrs).
+	 * Those are added on hover/click and break server-side post_content matching.
+	 *
+	 * @param {Element} el Target element.
+	 * @return {string}
+	 */
+	function snapshotOuterHtml( el ) {
+		if ( ! el || ! el.outerHTML ) {
+			return '';
+		}
+		var hadHover = false;
+		var prevOutline = '';
+		var prevOutlineOffset = '';
+		try {
+			hadHover = el.getAttribute && el.getAttribute( 'data-nexus-ve-hover' ) === '1';
+			if ( hadHover ) {
+				el.removeAttribute( 'data-nexus-ve-hover' );
+			}
+			prevOutline = el.style.outline || '';
+			prevOutlineOffset = el.style.outlineOffset || '';
+			el.style.outline = '';
+			el.style.outlineOffset = '';
+			var html = el.outerHTML;
+			el.style.outline = prevOutline;
+			el.style.outlineOffset = prevOutlineOffset;
+			if ( hadHover ) {
+				el.setAttribute( 'data-nexus-ve-hover', '1' );
+			}
+			return html;
+		} catch ( e ) {
+			try {
+				if ( hadHover ) {
+					el.setAttribute( 'data-nexus-ve-hover', '1' );
+				}
+				el.style.outline = prevOutline;
+				el.style.outlineOffset = prevOutlineOffset;
+			} catch ( ex ) {}
+			return el.outerHTML;
+		}
 	}
 
 	function pickHoverTarget( x, y ) {
@@ -124,6 +178,7 @@
 		if ( ! React ) return;
 
 		var createElement = React.createElement;
+		var Fragment = React.Fragment;
 		var useEffect = React.useEffect;
 		var useMemo = React.useMemo;
 		var useRef = React.useRef;
@@ -166,6 +221,8 @@
 			var [ cssId, setCssId ] = useState( initial.cssId || '' );
 			var [ link, setLink ] = useState( initial.link || '' );
 			var [ status, setStatus ] = useState( '' );
+			var [ successOpen, setSuccessOpen ] = useState( false );
+			var [ successMessage, setSuccessMessage ] = useState( '' );
 			var [ busy, setBusy ] = useState( false );
 			var customInputRef = useRef( null );
 
@@ -278,8 +335,12 @@
 			}, [] );
 
 			var css = useMemo( function () {
+				var fontStack = veGlobalFontStack();
 				return (
 					'' +
+					'.nexus-ve,.nexus-ve *,.nexus-ve-successBackdrop,.nexus-ve-successBackdrop *{font-family:' +
+					fontStack +
+					'!important}' +
 					'.nexus-ve *{box-sizing:border-box}' +
 					'.nexus-ve input.nexus-ve-input{width:100%;height:46px;border:1px solid ' +
 					ui.border +
@@ -351,8 +412,16 @@
 					ui.bgSubtle +
 					'}' +
 					'.nexus-ve .nexus-ve-status{margin:0;font-size:12px;line-height:1.45;font-weight:600}' +
-					'.nexus-ve .nexus-ve-statusOk{color:#059669}' +
-					'.nexus-ve .nexus-ve-statusErr{color:#b91c1c}'
+					'.nexus-ve .nexus-ve-statusErr{color:#b91c1c}' +
+					'.nexus-ve-successBackdrop{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.5);padding:16px;box-sizing:border-box}' +
+					'.nexus-ve-successCard{width:100%;max-width:28rem;overflow:hidden;border-radius:24px;border:1px solid #f1f5f9;background:#fff;box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}' +
+					'.nexus-ve-successBody{padding:32px 32px 24px;text-align:center}' +
+					'.nexus-ve-successIconWrap{margin:0 auto;display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:999px;background:#ecfdf5;color:#10b981}' +
+					'.nexus-ve-successTitle{margin:20px 0 0;font-size:20px;font-weight:800;color:#0f172a;line-height:1.25}' +
+					'.nexus-ve-successMsg{margin:8px 0 0;font-size:14px;line-height:1.625;color:#64748b;white-space:pre-wrap;word-break:break-word}' +
+					'.nexus-ve-successFoot{padding:0 32px 32px}' +
+					'.nexus-ve-successDismiss{width:100%;border:0;border-radius:16px;background:#0f172a;color:#fff;padding:16px;font-size:14px;font-weight:800;cursor:pointer;transition:background .15s ease}' +
+					'.nexus-ve-successDismiss:hover{background:#000}'
 				);
 			}, [ ui ] );
 
@@ -380,7 +449,7 @@
 					borderRadius: ui.radius + 'px',
 					boxShadow: ui.shadow,
 					overflow: 'hidden',
-					fontFamily: 'system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif',
+					fontFamily: veGlobalFontStack(),
 					backdropFilter: 'blur(10px)',
 				};
 			}, [ anchor.x, anchor.y, ui ] );
@@ -391,6 +460,10 @@
 				try {
 					wp.element.unmountComponentAtNode( root );
 				} catch ( e ) {}
+			}
+
+			function dismissSuccess() {
+				setSuccessOpen( false );
 			}
 
 			useEffect( function () {
@@ -448,10 +521,12 @@
 
 				setBusy( true );
 				setStatus( '' );
+				setSuccessOpen( false );
 
 				var originalHtml = '';
 				try {
-					originalHtml = target.__nexusVeOriginalOuterHTML || target.outerHTML;
+					originalHtml =
+						target.__nexusVeOriginalOuterHTML || snapshotOuterHtml( target ) || target.outerHTML;
 				} catch ( e ) {}
 
 				var extra = String( customClass || '' ).trim();
@@ -540,10 +615,15 @@
 						return;
 					}
 					if ( json && json.data && json.data.mode === 'post_meta' ) {
-						setStatus( 'Saved (page patch). Reload without the editor to confirm for visitors.' );
+						setSuccessMessage(
+							'Saved (page patch). Reload without the editor to confirm for visitors.'
+						);
 					} else {
-						setStatus( 'Saved successfully.' );
+						setSuccessMessage(
+							'Your settings have been successfully updated. All changes are now live.'
+						);
 					}
+					setSuccessOpen( true );
 				} catch ( e ) {
 					setStatus( 'Failed to save.' );
 				} finally {
@@ -590,7 +670,72 @@
 				)
 			);
 
+			var successCard = successOpen
+				? createElement(
+					'div',
+					{
+						key: 'success',
+						className: 'nexus-ve-successBackdrop',
+						role: 'dialog',
+						'aria-modal': 'true',
+						'aria-labelledby': 'nexus-ve-success-title',
+						onMouseDown: function ( e ) {
+							if ( e.target === e.currentTarget ) {
+								dismissSuccess();
+							}
+						},
+					},
+					createElement(
+						'div',
+						{ className: 'nexus-ve-successCard' },
+						[
+							createElement(
+								'div',
+								{ key: 'body', className: 'nexus-ve-successBody' },
+								[
+									createElement(
+										'div',
+										{ key: 'ico', className: 'nexus-ve-successIconWrap' },
+										veSvgIcon(
+											[ 'M21.801 10A10 10 0 1 1 17 3.335', 'm9 11 3 3L22 4' ],
+											{ size: 28 }
+										)
+									),
+									createElement(
+										'h3',
+										{ key: 't', id: 'nexus-ve-success-title', className: 'nexus-ve-successTitle' },
+										'Success!'
+									),
+									createElement(
+										'p',
+										{ key: 'm', className: 'nexus-ve-successMsg' },
+										successMessage ||
+											'Your settings have been successfully updated. All changes are now live.'
+									),
+								]
+							),
+							createElement(
+								'div',
+								{ key: 'ft', className: 'nexus-ve-successFoot' },
+								createElement(
+									'button',
+									{
+										type: 'button',
+										className: 'nexus-ve-successDismiss',
+										onClick: dismissSuccess,
+									},
+									'Dismiss'
+								)
+							),
+						]
+					)
+				)
+				: null;
+
 			return createElement(
+				Fragment,
+				null,
+				createElement(
 				'div',
 				{ className: 'nexus-ve', style: style, role: 'dialog', 'aria-modal': 'true' },
 				createElement( 'style', { key: 'css', dangerouslySetInnerHTML: { __html: css } } ),
@@ -789,8 +934,7 @@
 								'p',
 								{
 									key: 'st',
-									className:
-										'nexus-ve-status ' + ( status.indexOf( 'Saved' ) === 0 ? 'nexus-ve-statusOk' : 'nexus-ve-statusErr' ),
+									className: 'nexus-ve-status nexus-ve-statusErr',
 								},
 								status
 							)
@@ -813,6 +957,8 @@
 						),
 					]
 				)
+			),
+				successCard
 			);
 		}
 
@@ -829,9 +975,23 @@
 
 		if ( ! last.__nexusVeOriginalOuterHTML ) {
 			try {
-				last.__nexusVeOriginalOuterHTML = last.outerHTML;
+				last.__nexusVeOriginalOuterHTML = snapshotOuterHtml( last );
 			} catch ( ex ) {}
 		}
+
+		var initialLink = '';
+		try {
+			var linkNode = last;
+			if ( linkNode && String( linkNode.tagName || '' ).toLowerCase() !== 'a' && linkNode.parentElement ) {
+				var linkPa = linkNode.parentElement;
+				if ( String( linkPa.tagName || '' ).toLowerCase() === 'a' && linkPa.children.length === 1 ) {
+					linkNode = linkPa;
+				}
+			}
+			if ( linkNode && String( linkNode.tagName || '' ).toLowerCase() === 'a' && linkNode.getAttribute ) {
+				initialLink = linkNode.getAttribute( 'href' ) || '';
+			}
+		} catch ( ex2 ) {}
 
 		mountMenu( {
 			target: last,
@@ -839,10 +999,7 @@
 			initial: {
 				cssClass: last.getAttribute ? last.getAttribute( 'class' ) || '' : '',
 				cssId: last.getAttribute ? last.getAttribute( 'id' ) || '' : '',
-				link:
-					last.tagName && String( last.tagName ).toLowerCase() === 'a' && last.getAttribute
-						? last.getAttribute( 'href' ) || ''
-						: '',
+				link: initialLink,
 			},
 		} );
 	}
