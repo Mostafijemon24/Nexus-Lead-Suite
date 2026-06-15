@@ -40,6 +40,47 @@ final class Popup_Form_Render_Context {
 }
 
 /**
+ * Sanitizes popup body HTML for storage while keeping shortcodes intact.
+ *
+ * wp_kses_post() alone strips bracket shortcodes (e.g. [nexus_ls_form id="…"]).
+ *
+ * @param string $content Raw popup body from admin.
+ * @return string
+ */
+function sanitize_popup_body_for_storage( string $content ): string {
+	if ( '' === $content ) {
+		return '';
+	}
+
+	$placeholders = array();
+	$index        = 0;
+
+	$protected = preg_replace_callback(
+		'/\[[\/]?[a-zA-Z0-9_\-]+[^\]]*\]/',
+		static function ( array $matches ) use ( &$placeholders, &$index ): string {
+			$key                 = '%%NLS_POPUP_SC_' . $index . '%%';
+			$placeholders[ $key ] = $matches[0];
+			++$index;
+
+			return $key;
+		},
+		$content
+	);
+
+	if ( ! is_string( $protected ) ) {
+		$protected = $content;
+	}
+
+	$sanitized = wp_kses_post( $protected );
+
+	if ( ! empty( $placeholders ) ) {
+		$sanitized = strtr( $sanitized, $placeholders );
+	}
+
+	return (string) preg_replace( '#<\s*script\b[^>]*>.*?</\s*script\s*>#is', '', $sanitized );
+}
+
+/**
  * Forminator skips full markup unless "preview" unless page-builder preview is detected;
  * REST/admin simulator is neither, so force preview for shortcode rendering only.
  * If output is still empty, run the_content pipeline once (blocks/embeds/other hooks).
