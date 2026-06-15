@@ -334,6 +334,7 @@ final class Admin_App {
 				'adminAjaxUrl'      => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
 				'popupPreviewNonce' => wp_create_nonce( 'nexus_ls_popup_preview' ),
 				'pluginUrl'         => esc_url_raw( NEXUS_LS_PLUGIN_URL ),
+				'pluginVersion'     => NEXUS_LS_VERSION,
 				'siteUrl'           => esc_url_raw( home_url( '/' ) ),
 				'siteTitle'         => get_bloginfo( 'name' ),
 				'formsPayload'      => $this->get_forms_payload_for_boot(),
