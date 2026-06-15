@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,30 @@ The admin experience is a modern single-page app (React + Vite, shipped as compi
 * Modular architecture designed for performance and security.
 * Admin tools built as a modern single-page experience.
 * Public-facing scripts use vanilla JavaScript only (no front-end framework bloat).
+
+== External services ==
+
+This plugin can optionally connect to third-party anti-spam services when you enable them in the form builder or settings:
+
+= Google reCAPTCHA =
+
+When reCAPTCHA is enabled on a form, the visitor's browser loads Google's reCAPTCHA script and sends a response token to your WordPress site on form submit. Your server then sends that token (and your site/secret keys) to Google's verification API to confirm the submission is not automated spam.
+
+* Service: Google reCAPTCHA (Google LLC)
+* Data sent: reCAPTCHA response token, site key, secret key (server-side), and the visitor IP address as required by Google's API
+* Terms of Service: https://policies.google.com/terms
+* Privacy Policy: https://policies.google.com/privacy
+
+= Cloudflare Turnstile =
+
+When Turnstile is enabled on a form, the visitor's browser loads Cloudflare's Turnstile widget and sends a response token to your WordPress site on form submit. Your server then sends that token (and your site/secret keys) to Cloudflare's siteverify endpoint to validate the submission.
+
+* Service: Cloudflare Turnstile (Cloudflare, Inc.)
+* Data sent: Turnstile response token, site key, secret key (server-side), and the visitor IP address as required by Cloudflare's API
+* Terms of Service: https://www.cloudflare.com/website-terms/
+* Privacy Policy: https://www.cloudflare.com/privacypolicy/
+
+No data is sent to these services unless you configure and enable them. Webhook URLs you add in settings are separate endpoints you control; the plugin POSTs sanitized form submission payloads only to URLs you provide.
 
 == Source Code ==
 
@@ -80,6 +104,13 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 == Changelog ==
 
+= 1.0.3 =
+* WordPress.org Plugin Review: load scripts/styles via wp_enqueue (popup, livechat, client gateway, access gate).
+* Security: access gate nonce verification, webhook payload sanitization, PDF writes under uploads plugin subfolder.
+* Prefix cleanup: unified nexus_ls_* option keys with legacy migration; nexus_ls_form shortcode (smart_trigger_form alias retained).
+* readme.txt: External services disclosure for Google reCAPTCHA and Cloudflare Turnstile.
+* Plugin Check: removed disallowed hidden/compressed/markdown artifacts from distribution; Vite manifest at assets/admin/vite-manifest.json.
+
 = 1.0.2 =
 * Events: Email Template dropdown uses full available width in the admin UI (CSS fix).
 * Activities: Visual Editor toggle restored so you can enable/disable front-end visual editing from the Activities screen.
@@ -110,6 +141,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 * Initial scaffold: custom database tables, REST bootstrap, admin build tooling.
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+WordPress.org review compliance, security hardening, and Plugin Check packaging fixes.
 
 = 1.0.2 =
 Fixes Events email template dropdown layout, restores the Activities Visual Editor toggle, and shows an accurate dynamic version label in the admin sidebar.

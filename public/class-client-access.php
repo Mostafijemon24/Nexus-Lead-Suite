@@ -252,6 +252,15 @@ final class Client_Access {
 			$nexus_ls_ca_report_logo_max_px = max( 100, min( 1000, (int) $gen_opt['reportLogoPdfMax'] ) );
 		}
 
+		self::enqueue_gateway_assets(
+			$nexus_ls_ca_rest_pdf,
+			$token,
+			$tab,
+			$date_from,
+			$date_to,
+			$search_q
+		);
+
 		$partial = NEXUS_LS_PLUGIN_DIR . 'public/partials/client-access-gateway.php';
 		if ( file_exists( $partial ) ) {
 			require $partial;
@@ -262,5 +271,59 @@ final class Client_Access {
 		}
 
 		exit;
+	}
+
+	/**
+	 * Enqueues styles/scripts for the token-gated client report gateway.
+	 *
+	 * @param string $rest_pdf REST PDF endpoint URL.
+	 * @param string $token    Access token.
+	 * @param string $tab      Active tab filter.
+	 * @param string $date_from From date (Y-m-d).
+	 * @param string $date_to   To date (Y-m-d).
+	 * @param string $search    Search query.
+	 * @return void
+	 */
+	public static function enqueue_gateway_assets(
+		string $rest_pdf,
+		string $token,
+		string $tab,
+		string $date_from,
+		string $date_to,
+		string $search
+	): void {
+		$css_path = NEXUS_LS_PLUGIN_DIR . 'public/css/client-access-gateway.css';
+		$js_path  = NEXUS_LS_PLUGIN_DIR . 'public/js/client-access-gateway.js';
+		$css_ver  = file_exists( $css_path ) ? (string) filemtime( $css_path ) : NEXUS_LS_VERSION;
+		$js_ver   = file_exists( $js_path ) ? (string) filemtime( $js_path ) : NEXUS_LS_VERSION;
+
+		wp_enqueue_style(
+			'nexus-ls-client-access-gateway',
+			esc_url( NEXUS_LS_PLUGIN_URL . 'public/css/client-access-gateway.css' ),
+			array(),
+			$css_ver
+		);
+
+		wp_enqueue_script(
+			'nexus-ls-client-access-gateway',
+			esc_url( NEXUS_LS_PLUGIN_URL . 'public/js/client-access-gateway.js' ),
+			array(),
+			$js_ver,
+			true
+		);
+
+		wp_localize_script(
+			'nexus-ls-client-access-gateway',
+			'nexusLsClientPdfCfg',
+			array(
+				'pdfUrl'   => esc_url_raw( $rest_pdf ),
+				'token'    => sanitize_text_field( $token ),
+				'tab'      => sanitize_text_field( $tab ),
+				'dateFrom' => sanitize_text_field( $date_from ),
+				'dateTo'   => sanitize_text_field( $date_to ),
+				'search'   => sanitize_text_field( $search ),
+				'errorMsg' => __( 'Could not generate PDF.', 'nexus-lead-suite' ),
+			)
+		);
 	}
 }

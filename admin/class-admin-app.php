@@ -390,7 +390,10 @@ final class Admin_App {
 	 * @return array<string,mixed>
 	 */
 	private function get_forms_payload_for_boot(): array {
-		$raw = get_option( 'step_forms_builder_v0', '' );
+		$raw = get_option( 'nexus_ls_forms_builder_v0', null );
+		if ( null === $raw ) {
+			$raw = get_option( 'step_forms_builder_v0', '' );
+		}
 
 		return Forms_Payload_Codec::decode_mixed_for_scan( $raw );
 	}
@@ -401,7 +404,7 @@ final class Admin_App {
 	 * @return array<string, mixed>|WP_Error
 	 */
 	private function read_vite_manifest() {
-		$path = NEXUS_LS_PLUGIN_DIR . 'assets/admin/.vite/manifest.json';
+		$path = NEXUS_LS_PLUGIN_DIR . 'assets/admin/vite-manifest.json';
 		if ( ! file_exists( $path ) ) {
 			return new WP_Error( 'nexus_ls_manifest_missing', 'manifest missing' );
 		}

@@ -258,7 +258,7 @@
 			return;
 		}
 		var fd = new FormData();
-		fd.append( 'action', 'nexus_trigger_notify' );
+		fd.append( 'action', 'nexus_ls_trigger_notify' );
 		fd.append( 'nonce', cfg.notifyNonce || '' );
 		fd.append( 'trigger_id', trigId );
 		fd.append( 'notify_label', notifyLabel || trigId );

@@ -1,6 +1,6 @@
 <?php
 /**
- * Encode / decode form builder payload stored in {@see step_forms_builder_v0}.
+ * Encode / decode form builder payload stored in {@see nexus_ls_forms_builder_v0}.
  *
  * @package Nexus_Lead_Suite
  */
