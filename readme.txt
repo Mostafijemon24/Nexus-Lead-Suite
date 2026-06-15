@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,16 @@ All-in-one lead generation and user analytics for WordPress, with a fast admin e
 
 == Description ==
 
-Nexus Lead Suite helps you capture Leads, record Interactions, manage Submissions, and review Analytics from one place.
+Nexus Lead Suite is a high-performance WordPress plugin for agencies and site owners who need lead capture, on-site engagement, and actionable analytics without slowing down the front end.
+
+From a single admin hub you can:
+
+* Build and manage lead forms, popup campaigns, and automated email templates tied to visitor events.
+* Review the Activities timeline—clicks, submissions, mail status, and popup triggers—with export to PDF for reporting.
+* Configure button-class rules (`popup:`, `mail:`, `notify:`) and use the Visual Editor on Activities to inspect and tune front-end behavior safely.
+* Track interactions in custom database tables while keeping public scripts lightweight (vanilla JavaScript only on the front end).
+
+The admin experience is a modern single-page app (React + Vite, shipped as compiled assets) with modular PHP under the hood for REST APIs, mail delivery, and secure data storage.
 
 * Modular architecture designed for performance and security.
 * Admin tools built as a modern single-page experience.
@@ -71,6 +80,12 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 == Changelog ==
 
+= 1.0.2 =
+* Events: Email Template dropdown uses full available width in the admin UI (CSS fix).
+* Activities: Visual Editor toggle restored so you can enable/disable front-end visual editing from the Activities screen.
+* Admin sidebar: version label now reads dynamically as "Ver X.X.X Nexus" from the plugin version constant (`NEXUS_LS_VERSION`).
+* Includes compiled admin bundle updates for the above UI fixes.
+
 = 1.0.1 =
 * Admin UI redesign across dashboard, settings, popups, emails, and sidebar navigation.
 * Save confirmation and settings polish; delete actions persist correctly for popups and emails.
@@ -95,6 +110,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 * Initial scaffold: custom database tables, REST bootstrap, admin build tooling.
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+Fixes Events email template dropdown layout, restores the Activities Visual Editor toggle, and shows an accurate dynamic version label in the admin sidebar.
 
 = 1.0.1 =
 Admin UI refresh, save/delete reliability improvements, and Activities PDF export fix.
