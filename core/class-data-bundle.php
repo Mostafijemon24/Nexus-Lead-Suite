@@ -56,9 +56,9 @@ final class Data_Bundle {
 		'nexus_ls_migrate_auto_popup_off_v1',
 		'nexus_ls_migrate_livechat_off_v1',
 		'nexus_ls_general_settings_v1',
-		'step_forms_builder_v0',
-		'step_recaptcha_keys_v0',
-		'step_turnstile_keys_v0',
+		'nexus_ls_forms_builder_v0',
+		'nexus_ls_recaptcha_keys_v0',
+		'nexus_ls_turnstile_keys_v0',
 		'nexus_ls_menu_items_v1',
 		'nexus_ls_popups_v1',
 		'nexus_ls_email_templates_v1',
@@ -102,11 +102,11 @@ final class Data_Bundle {
 
 		$options_for_media = $options;
 		$options_out       = $options;
-		if ( array_key_exists( 'step_forms_builder_v0', $options_for_media ) && null !== $options_for_media['step_forms_builder_v0'] ) {
-			$options_for_media['step_forms_builder_v0'] = Forms_Payload_Codec::decode_mixed_for_scan( $options_for_media['step_forms_builder_v0'] );
+		if ( array_key_exists( 'nexus_ls_forms_builder_v0', $options_for_media ) && null !== $options_for_media['nexus_ls_forms_builder_v0'] ) {
+			$options_for_media['nexus_ls_forms_builder_v0'] = Forms_Payload_Codec::decode_mixed_for_scan( $options_for_media['nexus_ls_forms_builder_v0'] );
 		}
-		if ( array_key_exists( 'step_forms_builder_v0', $options_out ) && null !== $options_out['step_forms_builder_v0'] ) {
-			$options_out['step_forms_builder_v0'] = Forms_Payload_Codec::decode_mixed_for_scan( $options_out['step_forms_builder_v0'] );
+		if ( array_key_exists( 'nexus_ls_forms_builder_v0', $options_out ) && null !== $options_out['nexus_ls_forms_builder_v0'] ) {
+			$options_out['nexus_ls_forms_builder_v0'] = Forms_Payload_Codec::decode_mixed_for_scan( $options_out['nexus_ls_forms_builder_v0'] );
 		}
 
 		$bundle = array(
@@ -781,8 +781,8 @@ final class Data_Bundle {
 			);
 		}
 
-		if ( array_key_exists( 'step_forms_builder_v0', $opts ) && null !== $opts['step_forms_builder_v0'] ) {
-			$opts['step_forms_builder_v0'] = Forms_Payload_Codec::decode_mixed_for_scan( $opts['step_forms_builder_v0'] );
+		if ( array_key_exists( 'nexus_ls_forms_builder_v0', $opts ) && null !== $opts['nexus_ls_forms_builder_v0'] ) {
+			$opts['nexus_ls_forms_builder_v0'] = Forms_Payload_Codec::decode_mixed_for_scan( $opts['nexus_ls_forms_builder_v0'] );
 		}
 
 		$opts      = self::deep_apply_url_map( $opts, $url_map );
@@ -794,7 +794,7 @@ final class Data_Bundle {
 				delete_option( $key );
 				continue;
 			}
-			if ( 'step_forms_builder_v0' === $key ) {
+			if ( 'nexus_ls_forms_builder_v0' === $key ) {
 				$val = Forms_Payload_Codec::encode_mixed_for_storage( $val );
 			}
 			update_option( $key, $val, false );
@@ -924,8 +924,7 @@ final class Data_Bundle {
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/image.php';
-		// wp_insert_attachment() and related media helpers (not loaded on every REST request).
-		require_once ABSPATH . 'wp-admin/includes/media.php';
+		// wp_insert_attachment() and wp_generate_attachment_metadata() (admin includes; not loaded on every REST request).
 
 		$map       = array();
 		$upload    = wp_upload_dir();

@@ -27,9 +27,9 @@ final class Rest_Api {
 	/**
 	 * Forms option key (base64 + rawurlencode JSON).
 	 */
-	private const FORMS_OPTION_KEY = 'step_forms_builder_v0';
-	private const RECAPTCHA_OPTION_KEY = 'step_recaptcha_keys_v0';
-	private const TURNSTILE_OPTION_KEY = 'step_turnstile_keys_v0';
+	private const FORMS_OPTION_KEY = 'nexus_ls_forms_builder_v0';
+	private const RECAPTCHA_OPTION_KEY = 'nexus_ls_recaptcha_keys_v0';
+	private const TURNSTILE_OPTION_KEY = 'nexus_ls_turnstile_keys_v0';
 	private const MENU_ITEMS_OPTION_KEY = 'nexus_ls_menu_items_v1';
 	private const POPUPS_OPTION_KEY = 'nexus_ls_popups_v1';
 	private const EMAIL_TEMPLATES_OPTION_KEY = 'nexus_ls_email_templates_v1';
@@ -1853,7 +1853,7 @@ final class Rest_Api {
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';
-		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/image.php';
 
 		$mimes = array(
 			'jpg|jpeg|jpe' => 'image/jpeg',
@@ -3874,11 +3874,14 @@ final class Rest_Api {
 			);
 
 			$uploads = wp_upload_dir();
-			if ( empty( $uploads['path'] ) || empty( $uploads['url'] ) ) {
+			if ( empty( $uploads['basedir'] ) || empty( $uploads['baseurl'] ) ) {
 				return new \WP_Error( 'nexus_ls_uploads_unavailable', 'Uploads directory unavailable.' );
 			}
 
-			$dir = (string) $uploads['path'];
+			$subdir   = dirname( NEXUS_LS_PLUGIN_BASENAME );
+			$dir      = trailingslashit( (string) $uploads['basedir'] ) . $subdir;
+			$url_base = trailingslashit( (string) $uploads['baseurl'] ) . $subdir;
+
 			if ( ! file_exists( $dir ) ) {
 				$made = wp_mkdir_p( $dir );
 				if ( ! $made ) {
@@ -3898,10 +3901,10 @@ final class Rest_Api {
 
 			$filename = 'nexus-activities-report-' . gmdate( 'Ymd-His' ) . '-' . wp_generate_password( 6, false, false ) . '.pdf';
 			$path     = trailingslashit( $dir ) . $filename;
-			$url      = trailingslashit( (string) $uploads['url'] ) . $filename;
+			$url      = trailingslashit( $url_base ) . $filename;
 
-			$written = file_put_contents( $path, $pdf_bytes, LOCK_EX );
-			if ( false === $written || $written < 10 ) {
+			$written = $wp_filesystem->put_contents( $path, $pdf_bytes, FS_CHMOD_FILE );
+			if ( ! $written || strlen( $pdf_bytes ) < 10 ) {
 				return new \WP_Error( 'nexus_ls_pdf_write_failed', 'Failed to write PDF.' );
 			}
 

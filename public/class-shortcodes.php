@@ -24,7 +24,7 @@ final class Shortcodes {
 	/**
 	 * Forms option key.
 	 */
-	private const FORMS_OPTION_KEY = 'step_forms_builder_v0';
+	private const FORMS_OPTION_KEY = 'nexus_ls_forms_builder_v0';
 
 	/**
 	 * General settings option key.
@@ -40,14 +40,14 @@ final class Shortcodes {
 	/**
 	 * Saved keys (same option names as REST API).
 	 */
-	private const RECAPTCHA_OPTION_KEY = 'step_recaptcha_keys_v0';
+	private const RECAPTCHA_OPTION_KEY = 'nexus_ls_recaptcha_keys_v0';
 
 	/**
 	 * reCAPTCHA v3 action name (must match JS execute() and siteverify response).
 	 */
 	private const RECAPTCHA_V3_ACTION = 'nexus_ls_form_submit';
 
-	private const TURNSTILE_OPTION_KEY = 'step_turnstile_keys_v0';
+	private const TURNSTILE_OPTION_KEY = 'nexus_ls_turnstile_keys_v0';
 
 	/**
 	 * Whether current request rendered a form.
@@ -116,8 +116,8 @@ final class Shortcodes {
 		add_action( 'wp_footer', array( $this, 'render_bottom_nav' ), 20 );
 		add_action( 'wp_footer', array( $this, 'render_livechat_widget' ), 25 );
 		// AJAX: notification email trigger (both logged-in and guest visitors).
-		add_action( 'wp_ajax_nexus_trigger_notify', array( $this, 'handle_trigger_notify' ) );
-		add_action( 'wp_ajax_nopriv_nexus_trigger_notify', array( $this, 'handle_trigger_notify' ) );
+		add_action( 'wp_ajax_nexus_ls_trigger_notify', array( $this, 'handle_trigger_notify' ) );
+		add_action( 'wp_ajax_nopriv_nexus_ls_trigger_notify', array( $this, 'handle_trigger_notify' ) );
 		// AJAX: Nexus form builder submissions (guest + logged-in).
 		add_action( 'wp_ajax_nexus_ls_submit_form', array( $this, 'handle_form_submit_ajax' ) );
 		add_action( 'wp_ajax_nopriv_nexus_ls_submit_form', array( $this, 'handle_form_submit_ajax' ) );
@@ -237,7 +237,7 @@ final class Shortcodes {
 	 */
 	public function handle_trigger_notify(): void {
 		// Verify nonce sent from frontend.
-		if ( ! check_ajax_referer( 'nexus_trigger_notify', 'nonce', false ) ) {
+		if ( ! check_ajax_referer( 'nexus_ls_trigger_notify', 'nonce', false ) ) {
 			wp_send_json_error( array( 'message' => 'Invalid nonce.' ), 403 );
 			return;
 		}
@@ -463,6 +463,7 @@ final class Shortcodes {
 		if ( ! empty( $webhook_urls ) ) {
 			$hook_body = apply_filters( 'nexus_ls_form_webhook_payload', $db_payload, $form_id, $form );
 			if ( is_array( $hook_body ) ) {
+				$hook_body = $this->sanitize_webhook_payload( $hook_body );
 				add_action(
 					'shutdown',
 					static function () use ( $webhook_urls, $hook_body ): void {
@@ -1263,6 +1264,10 @@ final class Shortcodes {
 			if ( ! is_string( $key ) ) {
 				continue;
 			}
+			$key = sanitize_text_field( $key );
+			if ( '' === $key ) {
+				continue;
+			}
 			if ( in_array( $key, $skip, true ) || str_starts_with( $key, '_' ) ) {
 				continue;
 			}
@@ -1407,6 +1412,10 @@ final class Shortcodes {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- called only from nonce-verified AJAX handler.
 		foreach ( $_POST as $key => $value ) {
 			if ( ! is_string( $key ) ) {
+				continue;
+			}
+			$key = sanitize_text_field( $key );
+			if ( '' === $key ) {
 				continue;
 			}
 			$value = wp_unslash( $value );
@@ -1593,6 +1602,8 @@ final class Shortcodes {
 	 * @return void
 	 */
 	public function register_shortcodes(): void {
+		add_shortcode( 'nexus_ls_form', array( $this, 'render_form_shortcode' ) );
+		/** Legacy alias; {@see render_form_shortcode()} — prefer `[nexus_ls_form]`. */
 		add_shortcode( 'smart_trigger_form', array( $this, 'render_form_shortcode' ) );
 	}
 
@@ -1616,7 +1627,7 @@ final class Shortcodes {
 		}
 
 		$content = (string) $post->post_content;
-		if ( '' === $content || false === strpos( $content, 'smart_trigger_form' ) ) {
+		if ( '' === $content || ( false === strpos( $content, 'smart_trigger_form' ) && false === strpos( $content, 'nexus_ls_form' ) ) ) {
 			return;
 		}
 
@@ -1631,7 +1642,7 @@ final class Shortcodes {
 	 * @return void
 	 */
 	private function queue_forminator_meta_from_shortcode_content( string $content ): void {
-		if ( ! preg_match_all( '/\\[\\s*smart_trigger_form\\b([^\\]]*)\\]/i', $content, $blocks, PREG_SET_ORDER ) ) {
+		if ( ! preg_match_all( '/\\[\\s*(?:smart_trigger_form|nexus_ls_form)\\b([^\\]]*)\\]/i', $content, $blocks, PREG_SET_ORDER ) ) {
 			return;
 		}
 
@@ -1723,13 +1734,15 @@ final class Shortcodes {
 
 	/**
 	 * Formerly enqueued popup overlay CSS via wp_add_inline_style.
-	 * CSS is now output directly inside render_popups() as a <style> tag
-	 * to guarantee delivery on all themes/setups.
+	 * Registers handles used by {@see render_popups()} and {@see render_livechat_widget()}.
 	 *
 	 * @return void
 	 */
 	public function enqueue_popup_styles(): void {
-		// No-op: CSS is now bundled directly in render_popups().
+		wp_register_style( 'nexus-ls-popup-overlay', false, array(), NEXUS_LS_VERSION );
+		wp_register_script( 'nexus-ls-popup-overlay', false, array(), NEXUS_LS_VERSION, true );
+		wp_register_style( 'nexus-ls-livechat-widget', false, array(), NEXUS_LS_VERSION );
+		wp_register_script( 'nexus-ls-livechat-widget', false, array(), NEXUS_LS_VERSION, true );
 	}
 
 	/**
@@ -1757,10 +1770,8 @@ final class Shortcodes {
 		$auto_popup_on   = is_array( $general ) ? (bool) ( $general['enableAutoPopup'] ?? false ) : false;
 		$auto_popup_forms = is_array( $general ) ? $this->get_auto_popup_default_form_ids( $general ) : array();
 
-		/* ── Output CSS directly so it is guaranteed to reach the browser ── */
-		?>
-		<style id="nexus-popup-css">
-		/* Nexus Lead Suite – Popup Overlay */
+		/* ── Popup overlay CSS (wp_enqueue inline) ── */
+		$popup_css = '/* Nexus Lead Suite – Popup Overlay */
 		.nexus-popup-overlay{display:none;position:fixed;inset:0;z-index:999999;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:16px;overflow-y:auto;box-sizing:border-box;}
 		.nexus-popup-overlay.nexus-popup--open{display:flex;}
 		.nexus-popup{position:relative;width:100%;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.28);animation:nexus-pop-in .22s ease;box-sizing:border-box;}
@@ -1773,7 +1784,6 @@ final class Shortcodes {
 		.nexus-popup__sub{margin-top:6px;opacity:.85;font-size:.875em;}
 		.nexus-popup__body{word-break:break-word;box-sizing:border-box;text-align:start;}
 		.nexus-popup__body *{max-width:100%;}
-		/* Shortcode form inside modal: strip inner "card" (theme form rules + ultra-wide shadow). */
 		.nexus-popup-overlay .nexus-popup__body .nexus-st-form,
 		.nexus-popup__body .nexus-st-form{border:none!important;box-shadow:none!important;outline:none!important;background:transparent!important;}
 		.nexus-popup-overlay .nexus-popup__body .nexus-st-form>form.nexus-st-form__body,
@@ -1782,15 +1792,12 @@ final class Shortcodes {
 			border:none!important;box-shadow:none!important;outline:none!important;background:transparent!important;
 			padding:0!important;margin:0!important;border-radius:0!important;
 		}
-		/* Form success/error card: hide title bar + floating close so only the message card shows */
 		.nexus-popup-overlay.nexus-popup-overlay--form-result .nexus-popup__header,
 		.nexus-popup-overlay.nexus-popup-overlay--form-result .nexus-popup__close{display:none!important;}
-		/* Embedded Smart Trigger forms: Popup Appearance → button width (%). Colour comes from --nexus-st-btn (mapped in PHP). */
 		.nexus-popup-overlay .nexus-st-form .nexus-st-actions{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;gap:10px!important;box-sizing:border-box!important;}
 		.nexus-popup-overlay .nexus-st-form .nexus-st-actions .nexus-st-btn{box-sizing:border-box!important;width:var(--nexus-popup-form-btn-w,100%)!important;max-width:100%!important;flex:0 1 auto!important;min-width:0!important;}
-		@media(max-width:480px){.nexus-popup{border-radius:12px!important;}.nexus-popup__header,.nexus-popup__body{padding:18px!important;}}
-		</style>
-		<?php
+		@media(max-width:480px){.nexus-popup{border-radius:12px!important;}.nexus-popup__header,.nexus-popup__body{padding:18px!important;}}';
+		$this->enqueue_footer_inline_style( 'nexus-ls-popup-overlay', $popup_css );
 
 		/* ── Render each popup overlay ───────────────────────── */
 		foreach ( $popups as $popup ) {
@@ -1866,7 +1873,7 @@ final class Shortcodes {
 					if ( ! is_array( $prep_form ) || ! $this->is_form_published_for_frontend( $prep_form ) ) {
 						continue;
 					}
-					$prepend .= sprintf( '[smart_trigger_form id="%s"]', esc_attr( $fid ) ) . "\n\n";
+					$prepend .= sprintf( '[nexus_ls_form id="%s"]', esc_attr( $fid ) ) . "\n\n";
 				}
 				$content_for_render = $prepend . $content_for_render;
 			}
@@ -1961,8 +1968,8 @@ final class Shortcodes {
 		 * hasn't fully parsed the document yet.
 		 * ─────────────────────────────────────────────────────── */
 		$auto_popup_js = $auto_popup_on ? 'true' : 'false';
+		ob_start();
 		?>
-		<script id="nexus-popup-js">
 		(function(){
 			'use strict';
 
@@ -2100,8 +2107,9 @@ final class Shortcodes {
 				nexusInitPopups();
 			}
 		})();
-		</script>
 		<?php
+		$popup_js = (string) ob_get_clean();
+		$this->enqueue_footer_inline_script( 'nexus-ls-popup-overlay', $popup_js );
 	}
 
 	/**
@@ -2656,7 +2664,7 @@ final class Shortcodes {
 				'nexusLsPopupBridgeCfg',
 				array(
 					'ajaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
-					'notifyNonce' => wp_create_nonce( 'nexus_trigger_notify' ),
+					'notifyNonce' => wp_create_nonce( 'nexus_ls_trigger_notify' ),
 					'popupClassMap'  => $pair_maps['popup'] ?? array(),
 					'notifyClassMap' => $pair_maps['notify'] ?? array(),
 				)
@@ -2835,13 +2843,14 @@ final class Shortcodes {
 	 * @param array<string,mixed> $atts Attributes.
 	 * @return string
 	 */
-	public function render_form_shortcode( $atts ): string {
-		$atts = shortcode_atts(
+	public function render_form_shortcode( $atts, $content = '', $tag = '' ): string {
+		$sc_tag = is_string( $tag ) && '' !== $tag ? $tag : 'nexus_ls_form';
+		$atts   = shortcode_atts(
 			array(
 				'id' => '',
 			),
 			is_array( $atts ) ? $atts : array(),
-			'smart_trigger_form'
+			$sc_tag
 		);
 
 		$form_id = sanitize_text_field( (string) ( $atts['id'] ?? '' ) );
@@ -3804,7 +3813,7 @@ final class Shortcodes {
 			if ( str_starts_with( $btn1_val, 'form:' ) ) {
 				$form_id = sanitize_text_field( substr( $btn1_val, 5 ) );
 				if ( '' !== $form_id ) {
-					$inline_popup_html = do_shortcode( sprintf( '[smart_trigger_form id="%s"]', esc_attr( $form_id ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					$inline_popup_html = do_shortcode( sprintf( '[nexus_ls_form id="%s"]', esc_attr( $form_id ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 				if ( '' === trim( (string) $inline_popup_html ) ) {
 					$inline_popup_html = '<p class="nexus-chat-inline-popup-missing">' . esc_html__( 'Selected form was not found. Pick another form under Settings → Livechat.', 'nexus-lead-suite' ) . '</p>';
@@ -3849,8 +3858,8 @@ final class Shortcodes {
 			$chat_padding,
 			$chat_radius
 		);
+		ob_start();
 		?>
-		<style id="nexus-chat-css">
 		/* ── Nexus Lead Suite — Livechat Widget ── */
 		.nexus-chat-widget{position:fixed;bottom:24px;z-index:99997;display:flex;flex-direction:column;align-items:flex-end;gap:12px;<?php echo esc_attr( $float_css ); ?>font-family:'<?php echo esc_attr( $font ); ?>',sans-serif;}
 		.nexus-chat-widget.nexus-chat--left{align-items:flex-start;}
@@ -3970,7 +3979,10 @@ final class Shortcodes {
 		.nexus-chat-panel__body,.nexus-chat-panel__btns{padding-left:12px;padding-right:12px;}
 		.nexus-chat-inline-popup-body{padding-left:12px;padding-right:12px;}
 		}
-		</style>
+		<?php
+		$chat_css = (string) ob_get_clean();
+		$this->enqueue_footer_inline_style( 'nexus-ls-livechat-widget', $chat_css );
+		?>
 
 		<div class="nexus-chat-widget<?php echo esc_attr( $align_cls ); ?>" id="nexus-chat-widget" aria-live="polite">
 
@@ -4125,7 +4137,9 @@ final class Shortcodes {
 			</button>
 
 		</div>
-		<script id="nexus-chat-js">
+		<?php
+		ob_start();
+		?>
 		(function(){
 			'use strict';
 
@@ -4212,8 +4226,9 @@ final class Shortcodes {
 				if(e.key==='Escape' && panel.classList.contains('nexus-chat--open')){ closeChat(); }
 			});
 		})();
-		</script>
 		<?php
+		$chat_js = (string) ob_get_clean();
+		$this->enqueue_footer_inline_script( 'nexus-ls-livechat-widget', $chat_js );
 	}
 
 	/**
@@ -4263,6 +4278,64 @@ final class Shortcodes {
 			);
 		}
 		echo '</div>';
+	}
+
+	/**
+	 * Enqueues inline CSS in the footer via wp_add_inline_style().
+	 *
+	 * @param string $handle Registered style handle.
+	 * @param string $css    CSS rules (no `<style>` wrapper).
+	 * @return void
+	 */
+	private function enqueue_footer_inline_style( string $handle, string $css ): void {
+		if ( ! wp_style_is( $handle, 'registered' ) ) {
+			wp_register_style( $handle, false, array(), NEXUS_LS_VERSION );
+		}
+		wp_enqueue_style( $handle );
+		wp_add_inline_style( $handle, $css );
+	}
+
+	/**
+	 * Enqueues inline JS in the footer via wp_add_inline_script().
+	 *
+	 * @param string        $handle Registered script handle.
+	 * @param string        $js     JavaScript source (no `<script>` wrapper).
+	 * @param array<string> $deps   Optional script dependencies.
+	 * @return void
+	 */
+	private function enqueue_footer_inline_script( string $handle, string $js, array $deps = array() ): void {
+		if ( ! wp_script_is( $handle, 'registered' ) ) {
+			wp_register_script( $handle, false, $deps, NEXUS_LS_VERSION, true );
+		}
+		wp_enqueue_script( $handle );
+		wp_add_inline_script( $handle, $js );
+	}
+
+	/**
+	 * Recursively sanitizes webhook JSON payloads before outbound HTTP POST.
+	 *
+	 * @param array<string,mixed> $payload Raw payload.
+	 * @return array<string,mixed>
+	 */
+	private function sanitize_webhook_payload( array $payload ): array {
+		$sanitized = array();
+		foreach ( $payload as $key => $value ) {
+			$safe_key = sanitize_text_field( (string) $key );
+			if ( '' === $safe_key ) {
+				continue;
+			}
+			if ( is_array( $value ) ) {
+				$sanitized[ $safe_key ] = $this->sanitize_webhook_payload( $value );
+			} elseif ( is_bool( $value ) ) {
+				$sanitized[ $safe_key ] = $value;
+			} elseif ( is_int( $value ) || is_float( $value ) ) {
+				$sanitized[ $safe_key ] = $value;
+			} else {
+				$sanitized[ $safe_key ] = sanitize_textarea_field( (string) $value );
+			}
+		}
+
+		return $sanitized;
 	}
 }
 

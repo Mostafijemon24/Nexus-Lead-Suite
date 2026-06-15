@@ -85,7 +85,17 @@ final class Access_Gate {
 			return false;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is optional; password is still required.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return false;
+		}
+
+		$nonce = isset( $_POST['nexus_ls_gate_nonce'] )
+			? sanitize_text_field( wp_unslash( (string) $_POST['nexus_ls_gate_nonce'] ) )
+			: '';
+		if ( '' === $nonce || ! wp_verify_nonce( $nonce, 'nexus_ls_gate_unlock' ) ) {
+			return false;
+		}
+
 		$pass = isset( $_POST['nexus_ls_gate_password'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['nexus_ls_gate_password'] ) ) : '';
 		if ( '' === $pass ) {
 			return false;
@@ -109,17 +119,23 @@ final class Access_Gate {
 	 */
 	public static function render_lock_screen_and_exit( string $title, string $message = '' ) {
 		nocache_headers();
-
-		$html  = '<!doctype html><html><head><meta charset="utf-8">';
-		$html .= '<meta name="viewport" content="width=device-width, initial-scale=1">';
-		$html .= '<title>' . esc_html( $title ) . '</title>';
-		$html .= '</head><body style="margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f3f4f6;">';
-		$html .= '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;">';
-		$html .= self::render_inline_lock_form_html( $title, $message );
-		$html .= '</div></body></html>';
+		self::enqueue_password_toggle_script();
 
 		// wp_die prints inside wp-admin with extra chrome; we want a consistent lightweight lock.
-		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fully escaped above.
+		?><!doctype html><html><head><meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title><?php echo esc_html( $title ); ?></title>
+		<?php wp_head(); ?>
+		</head><body style="margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f3f4f6;">
+		<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;">
+		<?php
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- form HTML escaped in render_inline_lock_form_html().
+		echo self::render_inline_lock_form_html( $title, $message );
+		?>
+		</div>
+		<?php wp_footer(); ?>
+		</body></html>
+		<?php
 		exit;
 	}
 
@@ -148,7 +164,7 @@ final class Access_Gate {
 		$id_on    = 'nexus-ls-gate-eye-on';
 		$id_off   = 'nexus-ls-gate-eye-off';
 
-		$html  = '<div style="' . esc_attr( $wrap_style ) . '">';
+		$html  = '<div style="' . esc_attr( $wrap_style ) . '" data-nexus-ls-gate="1">';
 		$html .= '<div style="' . esc_attr( $pad ) . '">';
 		$html .= '<div style="margin:0 auto 14px;height:56px;width:56px;border-radius:999px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;color:#0f172a;">' . $lock_svg . '</div>';
 		$html .= '<h1 style="margin:0;text-align:center;font-size:18px;line-height:1.2;font-weight:900;color:#0f172a;">' . esc_html( $title ) . '</h1>';
@@ -158,20 +174,75 @@ final class Access_Gate {
 		$html .= wp_nonce_field( 'nexus_ls_gate_unlock', 'nexus_ls_gate_nonce', true, false );
 		$html .= '<label for="' . esc_attr( $id_input ) . '" style="display:block;margin:0 0 8px;font-size:13px;font-weight:800;color:#334155;">' . esc_html__( 'Password', 'nexus-lead-suite' ) . '</label>';
 		$html .= '<div style="position:relative;">';
-		$html .= '<input id="' . esc_attr( $id_input ) . '" type="password" name="nexus_ls_gate_password" autocomplete="current-password" inputmode="numeric" style="width:100%;height:44px;padding:0 44px 0 14px;border:1px solid #e2e8f0;border-radius:16px;background:#f8fafc;color:#0f172a;font-size:14px;outline:none;box-sizing:border-box;" />';
-		$html .= '<button id="' . esc_attr( $id_btn ) . '" type="button" aria-label="' . esc_attr__( 'Show password', 'nexus-lead-suite' ) . '" style="position:absolute;top:50%;right:10px;transform:translateY(-50%);height:32px;width:32px;border:0;background:transparent;border-radius:10px;cursor:pointer;color:#64748b;display:flex;align-items:center;justify-content:center;">';
-		$html .= '<span id="' . esc_attr( $id_on ) . '">' . $eye_svg . '</span>';
-		$html .= '<span id="' . esc_attr( $id_off ) . '" style="display:none;">' . $eye_off . '</span>';
+		$html .= '<input id="' . esc_attr( $id_input ) . '" data-nexus-ls-gate-pass="1" type="password" name="nexus_ls_gate_password" autocomplete="current-password" inputmode="numeric" style="width:100%;height:44px;padding:0 44px 0 14px;border:1px solid #e2e8f0;border-radius:16px;background:#f8fafc;color:#0f172a;font-size:14px;outline:none;box-sizing:border-box;" />';
+		$html .= '<button id="' . esc_attr( $id_btn ) . '" data-nexus-ls-gate-toggle="1" type="button" data-label-show="' . esc_attr__( 'Show password', 'nexus-lead-suite' ) . '" data-label-hide="' . esc_attr__( 'Hide password', 'nexus-lead-suite' ) . '" aria-label="' . esc_attr__( 'Show password', 'nexus-lead-suite' ) . '" style="position:absolute;top:50%;right:10px;transform:translateY(-50%);height:32px;width:32px;border:0;background:transparent;border-radius:10px;cursor:pointer;color:#64748b;display:flex;align-items:center;justify-content:center;">';
+		$html .= '<span id="' . esc_attr( $id_on ) . '" data-nexus-ls-gate-eye-on="1">' . $eye_svg . '</span>';
+		$html .= '<span id="' . esc_attr( $id_off ) . '" data-nexus-ls-gate-eye-off="1" style="display:none;">' . $eye_off . '</span>';
 		$html .= '</button>';
 		$html .= '</div>';
 		$html .= '<button type="submit" style="margin-top:14px;width:100%;height:48px;border:0;border-radius:18px;background:#0f172a;color:#fff;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 18px 40px rgba(2,6,23,.18);">' . esc_html__( 'Unlock', 'nexus-lead-suite' ) . '</button>';
 		$html .= '</form>';
 		$html .= '</div>';
 
-		$html .= '<script>(function(){var i=document.getElementById(' . wp_json_encode( $id_input ) . ');var b=document.getElementById(' . wp_json_encode( $id_btn ) . ');var on=document.getElementById(' . wp_json_encode( $id_on ) . ');var off=document.getElementById(' . wp_json_encode( $id_off ) . ');if(!i||!b||!on||!off){return;}b.addEventListener("click",function(){var show=i.type==="password";i.type=show?"text":"password";on.style.display=show?"none":"inline";off.style.display=show?"inline":"none";b.setAttribute("aria-label",show?"Hide password":"Show password");});})();</script>';
-		$html .= '</div>';
-
 		return $html;
+	}
+
+	/**
+	 * Enqueues the password visibility toggle for gate forms.
+	 *
+	 * @return void
+	 */
+	public static function enqueue_password_toggle_script(): void {
+		$path = NEXUS_LS_PLUGIN_DIR . 'public/js/access-gate-password-toggle.js';
+		$ver  = file_exists( $path ) ? (string) filemtime( $path ) : NEXUS_LS_VERSION;
+
+		wp_enqueue_script(
+			'nexus-ls-access-gate',
+			esc_url( NEXUS_LS_PLUGIN_URL . 'public/js/access-gate-password-toggle.js' ),
+			array(),
+			$ver,
+			true
+		);
+	}
+
+	/**
+	 * Enqueues gate assets on Nexus admin screens via admin_enqueue_scripts.
+	 *
+	 * @return void
+	 */
+	public static function maybe_enqueue_admin_assets(): void {
+		if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['page'] ) ) : '';
+		if ( '' === $page || ! self::is_nexus_admin_page_slug( $page ) ) {
+			return;
+		}
+
+		if ( ! self::is_unlocked() ) {
+			self::enqueue_password_toggle_script();
+		}
+	}
+
+	/**
+	 * Whether a wp-admin page slug belongs to this plugin.
+	 *
+	 * @param string $page Sanitized page query arg.
+	 * @return bool
+	 */
+	public static function is_nexus_admin_page_slug( string $page ): bool {
+		$slugs = array(
+			'nexus-lead-suite',
+			'nexus-lead-suite-menus',
+			'nexus-lead-suite-popups',
+			'nexus-lead-suite-emails',
+			'nexus-lead-suite-forms',
+			'nexus-lead-suite-settings',
+		);
+
+		return in_array( $page, $slugs, true );
 	}
 
 	/**

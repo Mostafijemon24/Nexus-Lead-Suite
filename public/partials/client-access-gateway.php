@@ -76,40 +76,7 @@ $nexus_ls_ca_tab_labels = array(
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex,nofollow">
 	<title><?php echo esc_html( $nexus_ls_ca_site_title ); ?> — <?php esc_html_e( 'Activity report', 'nexus-lead-suite' ); ?></title>
-	<style>
-		:root { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #0f172a; background: #f1f5f9; }
-		body { margin: 0; padding: 1.25rem; }
-		.wrap { max-width: 1200px; margin: 0 auto; }
-		.report-header { text-align: center; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; }
-		.report-header__logo { display: block; margin: 0 auto 1rem; width: auto; height: auto; object-fit: contain; }
-		.report-header h1 { font-size: 1.35rem; margin: 0 0 .35rem; font-weight: 700; }
-		.report-header .sub { color: #64748b; font-size: .875rem; margin: 0 auto; max-width: 42rem; line-height: 1.45; }
-		.toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: flex-end; margin-bottom: 1rem; background: #fff; padding: 1rem; border-radius: .75rem; border: 1px solid #e2e8f0; }
-		.toolbar label { display: flex; flex-direction: column; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #64748b; gap: .25rem; }
-		.toolbar input[type="text"], .toolbar input[type="date"], .toolbar input[type="search"] { padding: .45rem .55rem; border: 1px solid #cbd5e1; border-radius: .5rem; font-size: .875rem; min-width: 8rem; }
-		.tabs { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .75rem; justify-content: center; }
-		.tabs a { display: inline-block; padding: .4rem .85rem; border-radius: 999px; font-size: .78rem; font-weight: 700; text-decoration: none; border: 1px solid #e2e8f0; background: #fff; color: #475569; }
-		.tabs a.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
-		.btn { cursor: pointer; border: none; border-radius: .5rem; padding: .55rem 1rem; font-weight: 700; font-size: .8rem; }
-		.btn-pdf { background: #4f46e5; color: #fff; }
-		.btn-pdf:disabled { opacity: .55; cursor: wait; }
-		.nexus-ls-client-pdf-msg { flex: 1 1 100%; margin: 0; padding: .5rem 0 0; font-size: .875rem; font-weight: 600; color: #b91c1c; }
-		.nexus-ls-client-pdf-msg[hidden] { display: none !important; }
-		table { width: 100%; border-collapse: collapse; background: #fff; border-radius: .75rem; overflow: hidden; border: 1px solid #e2e8f0; font-size: .82rem; }
-		th { text-align: left; background: #f8fafc; color: #64748b; font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; padding: .65rem .75rem; border-bottom: 1px solid #e2e8f0; }
-		td { padding: .65rem .75rem; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
-		tr:last-child td { border-bottom: none; }
-		.badge { display: inline-block; padding: .15rem .45rem; border-radius: .35rem; font-size: .68rem; font-weight: 700; }
-		.b-forms { background: #dbeafe; color: #1d4ed8; }
-		.b-calls { background: #dcfce7; color: #15803d; }
-		.b-consult { background: #ede9fe; color: #6d28d9; }
-		.b-interactions { background: #fef3c7; color: #b45309; }
-		.m-sent { color: #15803d; font-weight: 600; }
-		.m-fail { color: #b91c1c; font-weight: 600; }
-		.m-na { color: #64748b; font-weight: 600; }
-		.url { word-break: break-all; color: #2563eb; text-decoration: none; }
-		.empty { padding: 2rem; text-align: center; color: #64748b; background: #fff; border-radius: .75rem; border: 1px dashed #cbd5e1; }
-	</style>
+	<?php wp_head(); ?>
 </head>
 <body>
 	<div class="wrap">
@@ -211,60 +178,6 @@ $nexus_ls_ca_tab_labels = array(
 			</table>
 		<?php endif; ?>
 	</div>
-
-	<script>
-	(function () {
-		var btn = document.getElementById('nexus-ls-client-pdf');
-		var msgEl = document.getElementById('nexus-ls-client-pdf-msg');
-		if (!btn) return;
-		var cfg = <?php echo wp_json_encode( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON for strict script payload.
-			array(
-				'pdfUrl'   => $nexus_ls_ca_rest_pdf,
-				'token'    => $nexus_ls_ca_token,
-				'tab'      => $nexus_ls_ca_tab,
-				'dateFrom' => $nexus_ls_ca_date_from,
-				'dateTo'   => $nexus_ls_ca_date_to,
-				'search'   => $nexus_ls_ca_search,
-			)
-		); ?>;
-		btn.addEventListener('click', function () {
-			if (msgEl) {
-				msgEl.textContent = '';
-				msgEl.setAttribute('hidden', '');
-			}
-			btn.disabled = true;
-			fetch(cfg.pdfUrl, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'omit',
-				body: JSON.stringify({
-					token: cfg.token,
-					tab: cfg.tab,
-					dateFrom: cfg.dateFrom,
-					dateTo: cfg.dateTo,
-					search: cfg.search
-				})
-			}).then(function (res) { return res.json().then(function (j) { return { res: res, j: j }; }); })
-				.then(function (x) {
-					var pdf = x.j && x.j.data && x.j.data.pdf_url;
-					if (!x.res.ok || !pdf) {
-						if (msgEl) {
-							msgEl.textContent = (x.j && x.j.message) ? String(x.j.message) : <?php echo wp_json_encode( __( 'Could not generate PDF.', 'nexus-lead-suite' ) ); ?>;
-							msgEl.removeAttribute('hidden');
-						}
-						return;
-					}
-					window.open(pdf, '_blank', 'noopener,noreferrer');
-				})
-				.catch(function () {
-					if (msgEl) {
-						msgEl.textContent = <?php echo wp_json_encode( __( 'Could not generate PDF.', 'nexus-lead-suite' ) ); ?>;
-						msgEl.removeAttribute('hidden');
-					}
-				})
-				.then(function () { btn.disabled = false; });
-		});
-	})();
-	</script>
+	<?php wp_footer(); ?>
 </body>
 </html>

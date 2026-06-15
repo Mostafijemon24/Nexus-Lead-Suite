@@ -32,6 +32,7 @@ RELEASE_NOTES_*
 /menu-items.json
 /popups.json
 /nexus-lead-suite-*.zip
+/preview.html
 
 # Release tooling
 /scripts

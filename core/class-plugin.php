@@ -31,6 +31,7 @@ final class Plugin {
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'plugins_loaded', array( $this, 'init_mailer' ) );
 		add_action( 'wp_logout', array( $this, 'clear_gate_on_logout' ) );
+		add_action( 'plugins_loaded', array( $this, 'migrate_legacy_step_option_keys_once' ), 25 );
 		add_action( 'plugins_loaded', array( $this, 'migrate_legacy_nav_client_toggle_defaults_once' ), 30 );
 		add_action( 'plugins_loaded', array( $this, 'migrate_enable_auto_popup_off_once' ), 35 );
 		add_action( 'plugins_loaded', array( $this, 'migrate_enable_livechat_off_once' ), 36 );
@@ -44,6 +45,7 @@ final class Plugin {
 		add_action( 'init', array( $this, 'schedule_form_submissions_purge' ), 25 );
 		add_action( 'nexus_ls_purge_form_submissions', array( \Nexus_Lead_Suite\Core\Form_Submissions_Store::class, 'purge_expired' ) );
 		add_action( 'admin_init', array( $this, 'maybe_gate_admin_pages' ), 0 );
+		add_action( 'admin_enqueue_scripts', array( \Nexus_Lead_Suite\Core\Access_Gate::class, 'maybe_enqueue_admin_assets' ) );
 		add_action( 'init', array( $this, 'init_admin' ) );
 		add_action( 'init', array( $this, 'init_public' ) );
 	}
@@ -73,19 +75,7 @@ final class Plugin {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['page'] ) ) : '';
-		if ( '' === $page ) {
-			return;
-		}
-
-		$slugs = array(
-			'nexus-lead-suite',
-			'nexus-lead-suite-menus',
-			'nexus-lead-suite-popups',
-			'nexus-lead-suite-emails',
-			'nexus-lead-suite-forms',
-			'nexus-lead-suite-settings',
-		);
-		if ( ! in_array( $page, $slugs, true ) ) {
+		if ( '' === $page || ! \Nexus_Lead_Suite\Core\Access_Gate::is_nexus_admin_page_slug( $page ) ) {
 			return;
 		}
 
@@ -192,6 +182,35 @@ final class Plugin {
 		\Nexus_Lead_Suite\Public\Client_Access::sync_rewrite_rules();
 		flush_rewrite_rules( false );
 		update_option( 'nexus_ls_ca_rw_ok', '1', false );
+	}
+
+	/**
+	 * One-time: rename legacy `step_*` option keys to the `nexus_ls_*` prefix.
+	 *
+	 * @return void
+	 */
+	public function migrate_legacy_step_option_keys_once(): void {
+		if ( '1' === get_option( 'nexus_ls_migrate_step_option_keys_v1', '' ) ) {
+			return;
+		}
+
+		$map = array(
+			'step_forms_builder_v0'   => 'nexus_ls_forms_builder_v0',
+			'step_recaptcha_keys_v0'  => 'nexus_ls_recaptcha_keys_v0',
+			'step_turnstile_keys_v0'  => 'nexus_ls_turnstile_keys_v0',
+		);
+
+		foreach ( $map as $legacy_key => $new_key ) {
+			if ( null !== get_option( $new_key, null ) ) {
+				continue;
+			}
+			$legacy_val = get_option( $legacy_key, null );
+			if ( null !== $legacy_val ) {
+				update_option( $new_key, $legacy_val, false );
+			}
+		}
+
+		update_option( 'nexus_ls_migrate_step_option_keys_v1', '1', false );
 	}
 
 	/**
