@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,6 +102,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 1. Dashboard (coming soon)
 
+= 1.0.8 =
+* Email Automation Builder: fix save crash (use latest templates ref instead of stale state; avoids "Cannot read properties of undefined (reading 'map')").
+
 = 1.0.7 =
 * Menu Items: Popup event id (manual click) dropdown selection now saves (eventName + popup:url sync, save ref fix).
 
@@ -156,6 +159,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 = 0.1.0 =
 * Initial scaffold: custom database tables, REST bootstrap, admin build tooling.
+
+= 1.0.8 =
+Email Automation Builder save fix (map error on save).
 
 = 1.0.7 =
 Menu Items: manual click popup event dropdown now saves correctly.

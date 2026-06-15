@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
 	Activity,
 	Calendar,
@@ -122,6 +122,12 @@ const TAGS = [
 
 export function EmailsPage() {
 	const [ templates, setTemplates ] = useState( [] );
+	const templatesRef = useRef( templates );
+
+	useEffect( () => {
+		templatesRef.current = templates;
+	}, [ templates ] );
+
 	const [ activeId, setActiveId ] = useState( null );
 	const [ recipientInput, setRecipientInput ] = useState( '' );
 	const [ copied, setCopied ] = useState( false );
@@ -209,6 +215,7 @@ export function EmailsPage() {
 
 	const save = async () => {
 		setStatus( ( s ) => ( { ...s, saving: true, error: '' } ) );
+		const currentTemplates = Array.isArray( templatesRef.current ) ? templatesRef.current : [];
 		try {
 			const res = await fetch( getPluginRestUrl( 'nexus-lead-suite/v1/emails/templates' ), {
 				method: 'POST',
@@ -216,7 +223,7 @@ export function EmailsPage() {
 				headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
 				body: JSON.stringify( {
 					contentEncoding: 'base64',
-					templates: templates.map( ( tpl ) => ( {
+					templates: currentTemplates.map( ( tpl ) => ( {
 						...tpl,
 						content: encodeUtf8Base64( tpl?.content || '' ),
 					} ) ),
