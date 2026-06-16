@@ -164,6 +164,7 @@ final class Admin_App {
 		wp_enqueue_style( 'dashicons' );
 		$this->enqueue_admin_chrome_styles();
 		$this->enqueue_admin_global_font();
+		$this->maybe_enqueue_popup_simulator_form_styles( $page );
 
 		// Popups Main Heading Editor uses TinyMCE; stray #mce-modal-blocker overlays are
 		// neutralized in wp-admin-chrome.css and purged from assets/admin/js/main.js.
@@ -356,6 +357,31 @@ final class Admin_App {
 				'globalFont'        => $global_font,
 				'globalFontWeights' => $global_weights,
 			)
+		);
+	}
+
+	/**
+	 * Enqueues front-end form CSS for the Pop-Up Simulator preview (popups admin only).
+	 *
+	 * @param string $page Admin page slug from {@see $_GET['page']}.
+	 * @return void
+	 */
+	private function maybe_enqueue_popup_simulator_form_styles( string $page ): void {
+		$submenu_routes = $this->get_submenu_routes();
+		if ( ( $submenu_routes[ $page ] ?? '' ) !== 'popups' ) {
+			return;
+		}
+
+		$forms_css_path = NEXUS_LS_PLUGIN_DIR . 'public/css/forms-runtime.css';
+		if ( ! file_exists( $forms_css_path ) ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'nexus-ls-forms-runtime-preview',
+			esc_url( NEXUS_LS_PLUGIN_URL . 'public/css/forms-runtime.css' ),
+			array(),
+			(string) filemtime( $forms_css_path )
 		);
 	}
 
