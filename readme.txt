@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.9
+Stable tag: 1.0.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,6 +102,13 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 1. Dashboard (coming soon)
 
+= 1.0.10 =
+* Popups: Pop-Up Simulator preview (React portal, live heading/body sync, desktop/tablet/mobile frame).
+* Settings: full site backup export via REST (`/settings/full-export`) — menu items, popups, emails, forms, settings, activities, and optional embedded media.
+* Settings: full restore import via REST (`/settings/full-import`) with loading overlay and success confirmation card.
+* Settings: fix import loader crash (`Cannot read properties of null (reading 'key')`).
+* Data bundle: export manifest (`bundle_manifest`) summarizing included sections and counts.
+
 = 1.0.9 =
 * Visual Editor: fix save reliability (hover outline / snapshotOuterHtml).
 * Visual Editor: save success card modal after successful publish.
@@ -166,6 +173,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 
 = 0.1.0 =
 * Initial scaffold: custom database tables, REST bootstrap, admin build tooling.
+
+= 1.0.10 =
+Pop-Up Simulator preview, full REST export/import with import UX fixes, and bundle export manifest.
 
 = 1.0.9 =
 Visual Editor save fixes, success card modal, live chat footer priority, and global font coverage improvements.

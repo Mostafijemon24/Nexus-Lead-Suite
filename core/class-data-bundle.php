@@ -116,6 +116,7 @@ final class Data_Bundle {
 			'exported_at'            => gmdate( 'c' ),
 			'source_site_url'        => home_url( '/' ),
 			'export_uploads_baseurl' => (string) ( $upload['baseurl'] ?? '' ),
+			'bundle_manifest'        => self::build_bundle_manifest( $options_out, $tables ),
 			'options'                => $options_out,
 			// Any other wp_options rows for this plugin not in OPTION_KEYS (future-safe).
 			'extra_options'          => self::safe_collect_orphan_plugin_options(),
@@ -135,6 +136,98 @@ final class Data_Bundle {
 
 			return $bundle;
 		}
+	}
+
+	/**
+	 * Human-readable index of major data sections included in the export (for inspection / tooling).
+	 *
+	 * @param array<string,mixed>                          $options Options snapshot.
+	 * @param array<string,array<int,array<string,mixed>>> $tables  Tables snapshot.
+	 * @return array<string,mixed>
+	 */
+	private static function build_bundle_manifest( array $options, array $tables ): array {
+		$has = static function ( string $key ) use ( $options ): bool {
+			return array_key_exists( $key, $options ) && null !== $options[ $key ];
+		};
+
+		$forms_count = 0;
+		if ( $has( 'nexus_ls_forms_builder_v0' ) ) {
+			$forms_payload = $options['nexus_ls_forms_builder_v0'];
+			if ( is_array( $forms_payload ) && isset( $forms_payload['forms'] ) && is_array( $forms_payload['forms'] ) ) {
+				$forms_count = count( $forms_payload['forms'] );
+			}
+		}
+
+		$menu_count = 0;
+		if ( $has( 'nexus_ls_menu_items_v1' ) ) {
+			$menu = $options['nexus_ls_menu_items_v1'];
+			if ( is_array( $menu ) ) {
+				if ( isset( $menu['groups'] ) && is_array( $menu['groups'] ) ) {
+					$menu_count = count( $menu['groups'] );
+				} else {
+					$menu_count = count( $menu );
+				}
+			}
+		}
+
+		$popup_count = $has( 'nexus_ls_popups_v1' ) && is_array( $options['nexus_ls_popups_v1'] )
+			? count( $options['nexus_ls_popups_v1'] )
+			: 0;
+
+		$email_count = 0;
+		if ( $has( 'nexus_ls_email_templates_v1' ) && is_array( $options['nexus_ls_email_templates_v1'] ) ) {
+			$email_count = count( $options['nexus_ls_email_templates_v1'] );
+		} elseif ( $has( 'nexus_ls_email_templates' ) && is_array( $options['nexus_ls_email_templates'] ) ) {
+			$email_count = count( $options['nexus_ls_email_templates'] );
+		}
+
+		return array(
+			'sections' => array(
+				'settings'    => array(
+					'option_key' => 'nexus_ls_general_settings_v1',
+					'included'   => $has( 'nexus_ls_general_settings_v1' ),
+				),
+				'menu_items'  => array(
+					'option_key' => 'nexus_ls_menu_items_v1',
+					'included'   => $has( 'nexus_ls_menu_items_v1' ),
+					'count'      => $menu_count,
+				),
+				'popups'      => array(
+					'option_key' => 'nexus_ls_popups_v1',
+					'included'   => $has( 'nexus_ls_popups_v1' ),
+					'count'      => $popup_count,
+				),
+				'emails'      => array(
+					'option_key' => 'nexus_ls_email_templates_v1',
+					'included'   => $has( 'nexus_ls_email_templates_v1' ) || $has( 'nexus_ls_email_templates' ),
+					'count'      => $email_count,
+				),
+				'forms'       => array(
+					'option_key' => 'nexus_ls_forms_builder_v0',
+					'included'   => $has( 'nexus_ls_forms_builder_v0' ),
+					'count'      => $forms_count,
+				),
+				'smtp'        => array(
+					'option_key' => 'nexus_ls_smtp_settings',
+					'included'   => $has( 'nexus_ls_smtp_settings' ),
+				),
+				'captcha'     => array(
+					'recaptcha_option_key' => 'nexus_ls_recaptcha_keys_v0',
+					'turnstile_option_key' => 'nexus_ls_turnstile_keys_v0',
+					'included'             => $has( 'nexus_ls_recaptcha_keys_v0' ) || $has( 'nexus_ls_turnstile_keys_v0' ),
+				),
+				'activities'  => array(
+					'table'    => 'interactions',
+					'included' => ! empty( $tables['interactions'] ),
+					'count'    => isset( $tables['interactions'] ) && is_array( $tables['interactions'] ) ? count( $tables['interactions'] ) : 0,
+				),
+				'submissions' => array(
+					'table'    => 'submissions',
+					'included' => ! empty( $tables['submissions'] ),
+					'count'    => isset( $tables['submissions'] ) && is_array( $tables['submissions'] ) ? count( $tables['submissions'] ) : 0,
+				),
+			),
+		);
 	}
 
 	/**
