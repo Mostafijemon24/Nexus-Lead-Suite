@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.11
+Stable tag: 1.0.12
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,7 +102,7 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 
 1. Dashboard (coming soon)
 
-= 1.0.11 =
+= 1.0.12 =
 * Security: all dynamic output is escaped via wp_kses() with a form-aware allowlist, so forms, popups, SVG icons and data-* attributes keep working while scripts are stripped; removed an unused wp-admin core-file include.
 * i18n: restored the text domain to the plugin slug (nexus-lead-suite) as required by WordPress.
 * Internal: unified all plugin-owned identifiers (functions, hooks, options, REST namespace, CSS classes/variables, JS objects, data attributes) under a single prefix; admin app updated to match.
