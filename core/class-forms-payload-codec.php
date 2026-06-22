@@ -1,13 +1,13 @@
 <?php
 /**
- * Encode / decode form builder payload stored in {@see nexus_ls_forms_builder_v0}.
+ * Encode / decode form builder payload stored in {@see nexulesuite_forms_builder_v0}.
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite;
+namespace nexulesuite_;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {

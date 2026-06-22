@@ -1,22 +1,22 @@
 /**
  * Flush Nexus admin SPA against the WP admin menu (removes default #wpcontent gap).
  */
-body.toplevel_page_nexus-lead-suite #wpcontent,
-body[class*="page_nexus-lead-suite"] #wpcontent {
+body.toplevel_page_nexulesuite_ #wpcontent,
+body[class*="page_nexulesuite_"] #wpcontent {
 	padding-left: 0;
 }
 
-body.toplevel_page_nexus-lead-suite #wpbody-content,
-body[class*="page_nexus-lead-suite"] #wpbody-content {
+body.toplevel_page_nexulesuite_ #wpbody-content,
+body[class*="page_nexulesuite_"] #wpbody-content {
 	padding: 0;
 }
 
-body.toplevel_page_nexus-lead-suite .wrap,
-body[class*="page_nexus-lead-suite"] .wrap {
+body.toplevel_page_nexulesuite_ .wrap,
+body[class*="page_nexulesuite_"] .wrap {
 	margin: 0;
 }
 
-#nexus-ls-admin-root {
+#nexulesuite_admin-root {
 	margin: 0;
 	padding: 0;
 	width: 100%;
@@ -26,66 +26,66 @@ body[class*="page_nexus-lead-suite"] .wrap {
 /**
  * Plugin shell + sidebar — transparent, synced with WP admin color scheme.
  */
-#nexus-ls-admin-root .nexus-ls-admin-app,
-#nexus-ls-admin-root > .flex.min-h-screen,
-#nexus-ls-admin-root .bg-\[\#070b14\] {
+#nexulesuite_admin-root .nexulesuite_admin-app,
+#nexulesuite_admin-root > .flex.min-h-screen,
+#nexulesuite_admin-root .bg-\[\#070b14\] {
 	background: transparent;
 }
 
-#nexus-ls-admin-root .nexus-ls-admin-sidebar,
-#nexus-ls-admin-root aside[aria-label="Nexus Lead Suite navigation"] {
+#nexulesuite_admin-root .nexulesuite_admin-sidebar,
+#nexulesuite_admin-root aside[aria-label="Nexus Lead Suite navigation"] {
 	background: transparent;
 	border-right-color: #dcdcde;
 	color: #50575e;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-divider,
-#nexus-ls-admin-root aside .border-sidebar-border {
+#nexulesuite_admin-root .nexulesuite_sidebar-divider,
+#nexulesuite_admin-root aside .border-sidebar-border {
 	border-color: #dcdcde;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-logo,
-#nexus-ls-admin-root aside [aria-hidden="true"].rounded-xl {
+#nexulesuite_admin-root .nexulesuite_sidebar-logo,
+#nexulesuite_admin-root aside [aria-hidden="true"].rounded-xl {
 	background-color: var(--wp-admin-theme-color, #2271b1);
 	box-shadow: none;
 	color: #fff;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-brand,
-#nexus-ls-admin-root aside .nexus-ls-sidebar-brand {
+#nexulesuite_admin-root .nexulesuite_sidebar-brand,
+#nexulesuite_admin-root aside .nexulesuite_sidebar-brand {
 	color: #1d2327;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-brand:hover,
-#nexus-ls-admin-root aside button.rounded-lg:hover {
+#nexulesuite_admin-root .nexulesuite_sidebar-brand:hover,
+#nexulesuite_admin-root aside button.rounded-lg:hover {
 	background-color: #f0f0f1;
 	color: #1d2327;
 }
 
 /* Hide legacy dropdown chevron next to "Nexus". */
-#nexus-ls-admin-root aside button[aria-haspopup="true"] svg {
+#nexulesuite_admin-root aside button[aria-haspopup="true"] svg {
 	display: none;
 }
 
-#nexus-ls-admin-root #nexus-ls-sidebar-nav {
+#nexulesuite_admin-root #nexulesuite_sidebar-nav {
 	min-height: 0;
 	overflow-y: auto;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-footer,
-#nexus-ls-admin-root aside > div:last-child {
+#nexulesuite_admin-root .nexulesuite_sidebar-footer,
+#nexulesuite_admin-root aside > div:last-child {
 	position: relative;
 	z-index: 2;
 	flex-shrink: 0;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-collapse svg,
-#nexus-ls-admin-root aside > div:last-child button svg {
+#nexulesuite_admin-root .nexulesuite_sidebar-collapse svg,
+#nexulesuite_admin-root aside > div:last-child button svg {
 	pointer-events: none;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-link,
-#nexus-ls-admin-root aside nav a {
+#nexulesuite_admin-root .nexulesuite_sidebar-link,
+#nexulesuite_admin-root aside nav a {
 	color: #334155;
 	text-decoration: none;
 	border: 1px solid transparent;
@@ -97,17 +97,17 @@ body[class*="page_nexus-lead-suite"] .wrap {
 		border-color 0.18s ease;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-link:hover,
-#nexus-ls-admin-root aside nav a:hover {
+#nexulesuite_admin-root .nexulesuite_sidebar-link:hover,
+#nexulesuite_admin-root aside nav a:hover {
 	background-color: #f8fafc;
 	border-color: #e2e8f0;
 	border-left-color: #a5b4fc;
 	color: #1e293b;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-link.is-active,
-#nexus-ls-admin-root .nexus-ls-sidebar-link[aria-current="page"],
-#nexus-ls-admin-root aside nav a[aria-current="page"] {
+#nexulesuite_admin-root .nexulesuite_sidebar-link.is-active,
+#nexulesuite_admin-root .nexulesuite_sidebar-link[aria-current="page"],
+#nexulesuite_admin-root aside nav a[aria-current="page"] {
 	background-color: #eef2ff;
 	border-color: #c7d2fe;
 	border-left-color: #4f46e5;
@@ -116,66 +116,66 @@ body[class*="page_nexus-lead-suite"] .wrap {
 	box-shadow: none;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-link.is-active:hover,
-#nexus-ls-admin-root .nexus-ls-sidebar-link[aria-current="page"]:hover,
-#nexus-ls-admin-root aside nav a[aria-current="page"]:hover {
+#nexulesuite_admin-root .nexulesuite_sidebar-link.is-active:hover,
+#nexulesuite_admin-root .nexulesuite_sidebar-link[aria-current="page"]:hover,
+#nexulesuite_admin-root aside nav a[aria-current="page"]:hover {
 	background-color: #eef2ff;
 	border-color: #c7d2fe;
 	border-left-color: #4f46e5;
 	color: #4338ca;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-link.is-active svg,
-#nexus-ls-admin-root .nexus-ls-sidebar-link[aria-current="page"] svg,
-#nexus-ls-admin-root aside nav a[aria-current="page"] svg {
+#nexulesuite_admin-root .nexulesuite_sidebar-link.is-active svg,
+#nexulesuite_admin-root .nexulesuite_sidebar-link[aria-current="page"] svg,
+#nexulesuite_admin-root aside nav a[aria-current="page"] svg {
 	color: #4338ca;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-collapse,
-#nexus-ls-admin-root aside > div:last-child button {
+#nexulesuite_admin-root .nexulesuite_sidebar-collapse,
+#nexulesuite_admin-root aside > div:last-child button {
 	color: #646970;
 }
 
-#nexus-ls-admin-root .nexus-ls-sidebar-collapse:hover,
-#nexus-ls-admin-root aside > div:last-child button:hover {
+#nexulesuite_admin-root .nexulesuite_sidebar-collapse:hover,
+#nexulesuite_admin-root aside > div:last-child button:hover {
 	background-color: #f0f0f1;
 	color: #1d2327;
 }
 
 /* Override legacy dark Tailwind sidebar utilities in the compiled bundle. */
-#nexus-ls-admin-root .bg-sidebar {
+#nexulesuite_admin-root .bg-sidebar {
 	background-color: transparent;
 }
 
-#nexus-ls-admin-root .bg-sidebar-active {
+#nexulesuite_admin-root .bg-sidebar-active {
 	background-color: var(--wp-admin-theme-color, #2271b1);
 }
 
-#nexus-ls-admin-root aside .text-white {
+#nexulesuite_admin-root aside .text-white {
 	color: #1d2327;
 }
 
-#nexus-ls-admin-root aside nav a.text-white,
-#nexus-ls-admin-root aside nav a[aria-current="page"].text-white {
+#nexulesuite_admin-root aside nav a.text-white,
+#nexulesuite_admin-root aside nav a[aria-current="page"].text-white {
 	color: #fff;
 }
 
-#nexus-ls-admin-root aside .text-slate-400 {
+#nexulesuite_admin-root aside .text-slate-400 {
 	color: #646970;
 }
 
-#nexus-ls-admin-root aside .text-slate-200,
-#nexus-ls-admin-root aside .hover\:text-slate-200:hover {
+#nexulesuite_admin-root aside .text-slate-200,
+#nexulesuite_admin-root aside .hover\:text-slate-200:hover {
 	color: #1d2327;
 }
 
-#nexus-ls-admin-root aside .hover\:bg-white\/\[0\.06\]:hover,
-#nexus-ls-admin-root aside .hover\:bg-white\/5:hover {
+#nexulesuite_admin-root aside .hover\:bg-white\/\[0\.06\]:hover,
+#nexulesuite_admin-root aside .hover\:bg-white\/5:hover {
 	background-color: #f0f0f1;
 }
 
 /* Form Builder — field picker (WP admin button styles can hide SVG / lowercase text) */
-#nexus-ls-admin-root .nexus-ls-field-picker-icon {
+#nexulesuite_admin-root .nexulesuite_field-picker-icon {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -184,9 +184,9 @@ body[class*="page_nexus-lead-suite"] .wrap {
 	color: #475569;
 }
 
-#nexus-ls-admin-root .nexus-ls-field-picker-icon svg,
-#nexus-ls-admin-root button .nexus-ls-field-picker-icon svg,
-#nexus-ls-admin-root .nexus-ls-field-picker-modal > div:first-child button svg {
+#nexulesuite_admin-root .nexulesuite_field-picker-icon svg,
+#nexulesuite_admin-root button .nexulesuite_field-picker-icon svg,
+#nexulesuite_admin-root .nexulesuite_field-picker-modal > div:first-child button svg {
 	display: block !important;
 	width: 1.5rem !important;
 	height: 1.5rem !important;
@@ -200,13 +200,13 @@ body[class*="page_nexus-lead-suite"] .wrap {
 	visibility: visible !important;
 }
 
-#nexus-ls-admin-root .nexus-ls-field-picker-search-icon {
+#nexulesuite_admin-root .nexulesuite_field-picker-search-icon {
 	z-index: 2;
 	pointer-events: none;
 	color: #9ca3af;
 }
 
-#nexus-ls-admin-root .nexus-ls-field-picker-search-icon svg {
+#nexulesuite_admin-root .nexulesuite_field-picker-search-icon svg {
 	display: block;
 	width: 1.125rem;
 	height: 1.125rem;
@@ -218,64 +218,64 @@ body[class*="page_nexus-lead-suite"] .wrap {
 	fill: none;
 }
 
-#nexus-ls-admin-root .nexus-ls-field-picker-search-input {
+#nexulesuite_admin-root .nexulesuite_field-picker-search-input {
 	position: relative;
 	z-index: 1;
 	padding-left: 2.5rem !important;
 }
 
-#nexus-ls-admin-root .nexus-ls-field-picker-modal button {
+#nexulesuite_admin-root .nexulesuite_field-picker-modal button {
 	text-transform: none;
 	letter-spacing: normal;
 }
 
 /* Nexus admin — hide stray TinyMCE overlays unless a real dialog is open */
-body[class*="nexus-lead-suite"]:not(.nls-mce-dialog-open) #mce-modal-blocker,
-body[class*="nexus-lead-suite"]:not(.nls-mce-dialog-open) .mce-blocker,
-body[class*="nexus-lead-suite"]:not(.nls-mce-dialog-open) .tox-dialog__backdrop {
+body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) #mce-modal-blocker,
+body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) .mce-blocker,
+body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) .tox-dialog__backdrop {
 	display: none !important;
 	pointer-events: none !important;
 	visibility: hidden !important;
 }
 
 /* Main Heading Editor — TinyMCE inside popup builder card (classic editor chrome) */
-#nexus-ls-admin-root .nls-heading-mce-wrap {
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap {
 	display: flex;
 	flex-direction: column;
 	min-height: 170px;
 	background: #fff;
 }
 
-#nexus-ls-admin-root .nls-heading-mce-wrap .mce-tinymce,
-#nexus-ls-admin-root .nls-heading-mce-wrap .tox-tinymce {
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-tinymce,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-tinymce {
 	border: none !important;
 	box-shadow: none !important;
 	background: transparent !important;
 }
 
-#nexus-ls-admin-root .nls-heading-mce-wrap .mce-toolbar-grp,
-#nexus-ls-admin-root .nls-heading-mce-wrap .tox-toolbar-overlord,
-#nexus-ls-admin-root .nls-heading-mce-wrap .mce-top-part .mce-toolbar,
-#nexus-ls-admin-root .nls-heading-mce-wrap .tox-editor-header {
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-toolbar-grp,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-toolbar-overlord,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-top-part .mce-toolbar,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-editor-header {
 	display: none !important;
 }
 
-#nexus-ls-admin-root .nls-heading-mce-wrap .mce-edit-area,
-#nexus-ls-admin-root .nls-heading-mce-wrap .tox-edit-area {
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-edit-area,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-edit-area {
 	border: none !important;
 }
 
-#nexus-ls-admin-root .nls-heading-mce-wrap .mce-statusbar,
-#nexus-ls-admin-root .nls-heading-mce-wrap .tox-statusbar {
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-statusbar,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-statusbar {
 	display: none !important;
 }
 
-#nexus-ls-admin-root .nls-heading-mce-wrap .mce-edit-area iframe,
-#nexus-ls-admin-root .nls-heading-mce-wrap .tox-edit-area__iframe {
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-edit-area iframe,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-edit-area__iframe {
 	min-height: 170px !important;
 }
 
-#nexus-ls-admin-root .nls-heading-mce-ta {
+#nexulesuite_admin-root .nexulesuite_heading-mce-ta {
 	position: absolute;
 	width: 1px;
 	height: 1px;

@@ -189,7 +189,7 @@ function ReferenceConditionsEditor( {
 	rules,
 	match,
 	summaryContext = 'group',
-	secSubClassName = 'nls-gd-sec-sub',
+	secSubClassName = 'nexulesuite_gd-sec-sub',
 } ) {
 	const segRef = useRef( null );
 	const orRef = useRef( null );
@@ -223,7 +223,7 @@ function ReferenceConditionsEditor( {
 
 		if ( def.slugKey ) {
 			return (
-				<div className="nls-gd-cond-panel">
+				<div className="nexulesuite_gd-cond-panel">
 					<div className="pick-list">
 						{ ( conditionMeta.postTypes || [] ).map( ( pt ) => {
 							const slugs = Array.isArray( rule?.slugs ) ? rule.slugs : [];
@@ -256,7 +256,7 @@ function ReferenceConditionsEditor( {
 
 		if ( def.taxonomy === 'category' ) {
 			return (
-				<div className="nls-gd-cond-panel">
+				<div className="nexulesuite_gd-cond-panel">
 					<div className="pick-list">
 						{ ( conditionMeta.categories || [] ).map( ( cat ) => {
 							const ids = Array.isArray( rule?.ids ) ? rule.ids : [];
@@ -289,7 +289,7 @@ function ReferenceConditionsEditor( {
 
 		if ( def.taxonomy === 'tag' ) {
 			return (
-				<div className="nls-gd-cond-panel">
+				<div className="nexulesuite_gd-cond-panel">
 					<div className="pick-list">
 						{ ( conditionMeta.tags || [] ).map( ( tag ) => {
 							const ids = Array.isArray( rule?.ids ) ? rule.ids : [];
@@ -322,7 +322,7 @@ function ReferenceConditionsEditor( {
 
 		if ( def.searchTypes && onSearchContent ) {
 			return (
-				<div className="nls-gd-cond-panel">
+				<div className="nexulesuite_gd-cond-panel">
 					<input
 						type="search"
 						placeholder={ RULE_REF_PLACEHOLDERS[ def.type ] || `Search ${ def.label.toLowerCase() }…` }
@@ -366,9 +366,9 @@ function ReferenceConditionsEditor( {
 		<>
 			{ description ? <p className={ secSubClassName }>{ description }</p> : null }
 
-			<div className="nls-gd-mode-bar">
+			<div className="nexulesuite_gd-mode-bar">
 				<span className="ml">Match mode</span>
-				<div className="nls-gd-seg" ref={ segRef } role="tablist" aria-label="Match mode">
+				<div className="nexulesuite_gd-seg" ref={ segRef } role="tablist" aria-label="Match mode">
 					<span className="glider" />
 					<button
 						ref={ orRef }
@@ -393,14 +393,14 @@ function ReferenceConditionsEditor( {
 				</div>
 			</div>
 
-			<div className="nls-gd-cond-grid">
+			<div className="nexulesuite_gd-cond-grid">
 				{ RULE_DEFS.map( ( def ) => {
 					const active = rules.some( ( r ) => r.type === def.type );
 					const rule = rules.find( ( r ) => r.type === def.type );
 					return (
-						<div key={ def.type } className={ `nls-gd-cond${ active ? ' on' : '' }` }>
+						<div key={ def.type } className={ `nexulesuite_gd-cond${ active ? ' on' : '' }` }>
 							<div
-								className="nls-gd-cond-top"
+								className="nexulesuite_gd-cond-top"
 								role="button"
 								tabIndex={ 0 }
 								onClick={ () => toggleRule( def.type, ! active ) }
@@ -411,7 +411,7 @@ function ReferenceConditionsEditor( {
 									}
 								} }
 							>
-								<span className="nls-gd-cbox">
+								<span className="nexulesuite_gd-cbox">
 									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5">
 										<path d="M5 13l4 4L19 7" />
 									</svg>
@@ -430,7 +430,7 @@ function ReferenceConditionsEditor( {
 				} ) }
 			</div>
 
-			<div className="nls-gd-summary">
+			<div className="nexulesuite_gd-summary">
 				<span className="si">
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 						<path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z" />
@@ -524,7 +524,7 @@ export function DisplayConditionsEditor( {
 				rules={ rules }
 				match={ match }
 				summaryContext={ variant === 'popup-reference' ? 'popup' : 'group' }
-				secSubClassName={ variant === 'popup-reference' ? 'nls-pop-sec-sub' : 'nls-gd-sec-sub' }
+				secSubClassName={ variant === 'popup-reference' ? 'nexulesuite_pop-sec-sub' : 'nexulesuite_gd-sec-sub' }
 			/>
 		);
 	}

@@ -2,12 +2,12 @@
 /**
  * Shared global font helpers (Settings → globalFont).
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite\Core;
+namespace nexulesuite_\Core;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,14 +15,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Loads Google Fonts and injects --nexus-ls-font for plugin UI surfaces.
+ * Loads Google Fonts and injects --nexulesuite_font for plugin UI surfaces.
  */
 final class Global_Font {
 
 	/**
 	 * Option key for general settings.
 	 */
-	private const SETTINGS_OPTION_KEY = 'nexus_ls_general_settings_v1';
+	private const SETTINGS_OPTION_KEY = 'nexulesuite_general_settings_v1';
 
 	/**
 	 * Default font family.
@@ -134,7 +134,7 @@ final class Global_Font {
 	 */
 	public static function get_css_var_root_rule(): string {
 		$font = self::get_saved_font();
-		return ':root { --nexus-ls-font: ' . self::get_font_stack( $font ) . '; }';
+		return ':root { --nexulesuite_font: ' . self::get_font_stack( $font ) . '; }';
 	}
 
 	/**
@@ -143,12 +143,12 @@ final class Global_Font {
 	 * @return string
 	 */
 	public static function get_frontend_font_rules(): string {
-		return '.nexus-st-form, .nexus-st-form * { font-family: var(--nexus-ls-font) !important; }' . "\n"
-			. '.nexus-popup-overlay, .nexus-popup-overlay *, .nexus-popup, .nexus-popup * { font-family: var(--nexus-ls-font) !important; }' . "\n"
-			. '.nexus-menu-widget, .nexus-menu-widget * { font-family: var(--nexus-ls-font) !important; }' . "\n"
-			. '.nexus-chat-widget, .nexus-chat-widget * { font-family: var(--nexus-ls-font) !important; }' . "\n"
-			. '#nexus-ls-ve-root, #nexus-ls-ve-root *, .nexus-ve, .nexus-ve *, .nexus-ve-successBackdrop, .nexus-ve-successBackdrop * { font-family: var(--nexus-ls-font) !important; }' . "\n"
-			. '.nexus-ls-client-gateway, .nexus-ls-client-gateway * { font-family: var(--nexus-ls-font) !important; }';
+		return '.nexulesuite_st-form, .nexulesuite_st-form * { font-family: var(--nexulesuite_font) !important; }' . "\n"
+			. '.nexulesuite_popup-overlay, .nexulesuite_popup-overlay *, .nexulesuite_popup, .nexulesuite_popup * { font-family: var(--nexulesuite_font) !important; }' . "\n"
+			. '.nexulesuite_menu-widget, .nexulesuite_menu-widget * { font-family: var(--nexulesuite_font) !important; }' . "\n"
+			. '.nexulesuite_chat-widget, .nexulesuite_chat-widget * { font-family: var(--nexulesuite_font) !important; }' . "\n"
+			. '#nexulesuite_ve-root, #nexulesuite_ve-root *, .nexulesuite_ve, .nexulesuite_ve *, .nexulesuite_ve-successBackdrop, .nexulesuite_ve-successBackdrop * { font-family: var(--nexulesuite_font) !important; }' . "\n"
+			. '.nexulesuite_client-gateway, .nexulesuite_client-gateway * { font-family: var(--nexulesuite_font) !important; }';
 	}
 
 	/**
@@ -157,7 +157,7 @@ final class Global_Font {
 	 * @return string
 	 */
 	public static function get_admin_font_rules(): string {
-		return '.nexus-ls-admin-app, .nexus-ls-admin-app *:not(.dashicons):not([class*="dashicons"]) { font-family: var(--nexus-ls-font) !important; }';
+		return '.nexulesuite_admin-app, .nexulesuite_admin-app *:not(.dashicons):not([class*="dashicons"]) { font-family: var(--nexulesuite_font) !important; }';
 	}
 
 	/**
@@ -177,13 +177,13 @@ final class Global_Font {
 		$gf_url  = 'https://fonts.googleapis.com/css2?family=' . rawurlencode( $font ) . ':wght@' . $weights . '&display=swap';
 
 		wp_enqueue_style(
-			'nexus-ls-global-font',
+			'nexulesuite_global-font',
 			esc_url( $gf_url ),
 			array(),
 			null // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 		);
 
-		$css = ':root { --nexus-ls-font: ' . self::get_font_stack( $font ) . '; }' . "\n";
+		$css = ':root { --nexulesuite_font: ' . self::get_font_stack( $font ) . '; }' . "\n";
 
 		if ( is_admin() ) {
 			$css .= self::get_admin_font_rules();
@@ -191,7 +191,7 @@ final class Global_Font {
 			$css .= self::get_frontend_font_rules();
 		}
 
-		wp_add_inline_style( 'nexus-ls-global-font', $css );
+		wp_add_inline_style( 'nexulesuite_global-font', $css );
 
 		return $css;
 	}

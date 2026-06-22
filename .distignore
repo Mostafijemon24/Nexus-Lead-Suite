@@ -42,3 +42,6 @@ RELEASE_NOTES_*
 .DS_Store
 Thumbs.db
 *.log
+
+# One-time dev DB migration (not part of the plugin)
+/migrate-prefix-data.sql

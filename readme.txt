@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.10
+Stable tag: 1.0.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,11 +69,11 @@ To rebuild the admin assets from source:
 3. Build for production: `npm run build`
 4. Output is written to `assets/admin/js/main.js` and `assets/admin/css/main.css` (see `admin/vite.config.js`).
 
-For local development with hot reload, run `npm run dev` and add `define( 'NEXUS_LS_VITE_DEV', true );` to `wp-config.php` (see `admin/class-admin-app.php`).
+For local development with hot reload, run `npm run dev` and add `define( 'nexulesuite_VITE_DEV', true );` to `wp-config.php` (see `admin/class-admin-app.php`).
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/nexus-lead-suite` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/nexulesuite_` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Use the Nexus Lead Suite menu in the admin area to configure the plugin.
 
@@ -89,18 +89,24 @@ By default, uninstalling leaves the database tables and options in place so acci
 
 To remove everything on uninstall:
 
-1. While the plugin is still active, run: `wp option update nexus_ls_erase_on_uninstall 1` (or set the same option to `1` in the database), **or**
-2. Add to `wp-config.php` before deleting the plugin: `define( 'NEXUS_LS_UNINSTALL_DELETE_DATA', true );`
+1. While the plugin is still active, run: `wp option update nexulesuite_erase_on_uninstall 1` (or set the same option to `1` in the database), **or**
+2. Add to `wp-config.php` before deleting the plugin: `define( 'nexulesuite_UNINSTALL_DELETE_DATA', true );`
 
 Then delete the plugin from the Plugins screen. On multisite, if any site has the option set to `1`, all sites in the network are cleaned when the plugin is removed network-wide.
 
 == Data removal ==
 
-The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`, `wp_nexus_ls_submissions`), plugin options (forms, settings, SMTP, migrations, etc.), and transients whose names start with `nexus_ls_`. Uploaded media files are not deleted automatically.
+The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactions`, `wp_nexulesuite_submissions`), plugin options (forms, settings, SMTP, migrations, etc.), and transients whose names start with `nexulesuite_`. Uploaded media files are not deleted automatically.
 
 == Screenshots ==
 
 1. Dashboard (coming soon)
+
+= 1.0.11 =
+* Security: all dynamic output is escaped via wp_kses() with a form-aware allowlist, so forms, popups, SVG icons and data-* attributes keep working while scripts are stripped; removed an unused wp-admin core-file include.
+* i18n: restored the text domain to the plugin slug (nexus-lead-suite) as required by WordPress.
+* Internal: unified all plugin-owned identifiers (functions, hooks, options, REST namespace, CSS classes/variables, JS objects, data attributes) under a single prefix; admin app updated to match.
+* Plugin Check / WordPress.org: resolved TextDomainMismatch and EscapeOutput.OutputNotEscaped findings.
 
 = 1.0.10 =
 * Popups: Pop-Up Simulator preview (React portal, live heading/body sync, desktop/tablet/mobile frame).
@@ -141,14 +147,14 @@ The optional uninstall cleanup removes custom tables (`wp_nexus_ls_interactions`
 = 1.0.3 =
 * WordPress.org Plugin Review: load scripts/styles via wp_enqueue (popup, livechat, client gateway, access gate).
 * Security: access gate nonce verification, webhook payload sanitization, PDF writes under uploads plugin subfolder.
-* Prefix cleanup: unified nexus_ls_* option keys with legacy migration; nexus_ls_form shortcode (smart_trigger_form alias retained).
+* Prefix cleanup: unified nexulesuite_* option keys with legacy migration; nexulesuite_form shortcode (nexulesuite_form alias retained).
 * readme.txt: External services disclosure for Google reCAPTCHA and Cloudflare Turnstile.
 * Plugin Check: removed disallowed hidden/compressed/markdown artifacts from distribution; Vite manifest at assets/admin/vite-manifest.json.
 
 = 1.0.2 =
 * Events: Email Template dropdown uses full available width in the admin UI (CSS fix).
 * Activities: Visual Editor toggle restored so you can enable/disable front-end visual editing from the Activities screen.
-* Admin sidebar: version label now reads dynamically as "Ver X.X.X Nexus" from the plugin version constant (`NEXUS_LS_VERSION`).
+* Admin sidebar: version label now reads dynamically as "Ver X.X.X Nexus" from the plugin version constant (`nexulesuite_VERSION`).
 * Includes compiled admin bundle updates for the above UI fixes.
 
 = 1.0.1 =

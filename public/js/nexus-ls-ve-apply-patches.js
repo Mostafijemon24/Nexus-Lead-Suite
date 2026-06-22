@@ -1,15 +1,15 @@
-/* global nexusLsVePatches */
+/* global nexulesuite_VePatches */
 ( function () {
 	'use strict';
 
-	var list = typeof nexusLsVePatches !== 'undefined' && nexusLsVePatches ? nexusLsVePatches : [];
+	var list = typeof nexulesuite_VePatches !== 'undefined' && nexulesuite_VePatches ? nexulesuite_VePatches : [];
 	if ( ! list.length ) {
 		return;
 	}
 
 	function ensureStopProp( a ) {
-		if ( a.getAttribute( 'data-nexus-ve-stop-prop' ) ) return;
-		a.setAttribute( 'data-nexus-ve-stop-prop', '1' );
+		if ( a.getAttribute( 'data-nexulesuite_ve-stop-prop' ) ) return;
+		a.setAttribute( 'data-nexulesuite_ve-stop-prop', '1' );
 		a.addEventListener( 'click', function ( e ) {
 			e.stopPropagation();
 		} );
@@ -77,7 +77,7 @@
 			a.setAttribute( 'href', href );
 			a.setAttribute( 'rel', 'noopener' );
 			a.setAttribute( 'target', '_self' );
-			a.setAttribute( 'data-nexus-ve-wrap', '1' );
+			a.setAttribute( 'data-nexulesuite_ve-wrap', '1' );
 			ensureStopProp( a );
 			el.parentNode.insertBefore( a, el );
 			a.appendChild( el );

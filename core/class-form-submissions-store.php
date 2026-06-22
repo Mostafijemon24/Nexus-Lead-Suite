@@ -2,15 +2,15 @@
 /**
  * Form submission records (short retention) + outbound CRM/webhook dispatch.
  *
- * Table: {@see Activator::install_tables()} `*_nexus_ls_submissions`.
+ * Table: {@see Activator::install_tables()} `*_nexulesuite_submissions`.
  * Payload JSON includes an `entry` object: field label => value (all submitted data).
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite\Core;
+namespace nexulesuite_\Core;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -34,14 +34,14 @@ final class Form_Submissions_Store {
 	public static function table(): string {
 		global $wpdb;
 
-		return $wpdb->prefix . 'nexus_ls_submissions';
+		return $wpdb->prefix . 'nexulesuite_submissions';
 	}
 
 	/**
 	 * @return int Retention window in days (filterable).
 	 */
 	public static function retention_days(): int {
-		$d = (int) apply_filters( 'nexus_ls_submission_retention_days', self::RETENTION_DAYS );
+		$d = (int) apply_filters( 'nexulesuite_submission_retention_days', self::RETENTION_DAYS );
 
 		return max( 1, min( 365, $d ) );
 	}
@@ -140,7 +140,7 @@ final class Form_Submissions_Store {
 					'blocking' => false,
 					'headers'  => array(
 						'Content-Type' => 'application/json; charset=utf-8',
-						'User-Agent'   => 'NexusLeadSuite/' . ( defined( 'NEXUS_LS_VERSION' ) ? NEXUS_LS_VERSION : '1' ) . '; ' . home_url( '/' ),
+						'User-Agent'   => 'nexulesuite_LeadSuite/' . ( defined( 'nexulesuite_VERSION' ) ? nexulesuite_VERSION : '1' ) . '; ' . home_url( '/' ),
 					),
 					'body'     => $body,
 				)

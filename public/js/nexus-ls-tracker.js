@@ -1,18 +1,18 @@
 /**
  * Lightweight site-wide behaviour tracker for Nexus Activities (scroll, exit intent, clicks, etc.).
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 (function () {
 	'use strict';
 
 	// Prevent double-init if the script is enqueued twice.
-	if ( window.__nexusLsTrackerInit ) {
+	if ( window.__nexulesuite_TrackerInit ) {
 		return;
 	}
-	window.__nexusLsTrackerInit = true;
+	window.__nexulesuite_TrackerInit = true;
 
-	var cfg = window.nexusLsTrackCfg || {};
+	var cfg = window.nexulesuite_TrackCfg || {};
 	var q = [];
 	var marks = Array.isArray( cfg.scrollMarks ) ? cfg.scrollMarks : [ 25, 50, 75, 90, 100 ];
 
@@ -33,7 +33,7 @@
 		} ).catch( function () {} );
 	}
 
-	var api = window.NexusLsTrack || {};
+	var api = window.nexulesuite_Track || {};
 	api.push = function ( ev ) {
 		if ( ! ev || ! ev.type ) {
 			return;
@@ -51,7 +51,7 @@
 		}
 	};
 	api.flush = flush;
-	window.NexusLsTrack = api;
+	window.nexulesuite_Track = api;
 
 	setInterval( flush, 4500 );
 	document.addEventListener( 'visibilitychange', function () {
@@ -63,7 +63,7 @@
 
 	/* ── Scroll depth milestones (once per tab session) ── */
 	marks.forEach( function ( pct ) {
-		var k = 'nexus_ls_sd_' + pct;
+		var k = 'nexulesuite_sd_' + pct;
 		try {
 			if ( sessionStorage.getItem( k ) ) {
 				return;
@@ -108,7 +108,7 @@
 
 	/* ── Exit intent (desktop, once per tab session) ── */
 	(function () {
-		var k = 'nexus_ls_ex';
+		var k = 'nexulesuite_ex';
 		try {
 			if ( sessionStorage.getItem( k ) ) {
 				return;
@@ -135,7 +135,7 @@
 	})();
 
 	function zoneOf( el ) {
-		if ( el.closest( '.nexus-popup-overlay' ) ) {
+		if ( el.closest( '.nexulesuite_popup-overlay' ) ) {
 			return 'popup';
 		}
 		var foot = document.querySelector(
@@ -256,18 +256,18 @@
 		/*
 		 * Email notify taps log trigger_notify server-side; skip duplicate click_phone / click_mailto rows.
 		 */
-		function nexasTriggerIsEmailNotify( node ) {
-			var trig = node && node.closest ? node.closest( '[data-nexas-trigger]' ) : null;
+		function nexulesuite_TriggerIsEmailNotify( node ) {
+			var trig = node && node.closest ? node.closest( '[data-nexulesuite_trigger]' ) : null;
 			if ( trig ) {
-				var raw = String( trig.getAttribute( 'data-nexas-trigger' ) || '' ).trim();
+				var raw = String( trig.getAttribute( 'data-nexulesuite_trigger' ) || '' ).trim();
 				if ( raw.indexOf( ',' ) !== -1 ) {
 					return true;
 				}
 			}
 
 			var notifyMap =
-				window.nexusLsPopupBridgeCfg && window.nexusLsPopupBridgeCfg.notifyClassMap
-					? window.nexusLsPopupBridgeCfg.notifyClassMap
+				window.nexulesuite_PopupBridgeCfg && window.nexulesuite_PopupBridgeCfg.notifyClassMap
+					? window.nexulesuite_PopupBridgeCfg.notifyClassMap
 					: null;
 			if ( ! notifyMap || ! node ) {
 				return false;
@@ -295,13 +295,13 @@
 		}
 
 		if ( href.indexOf( 'tel:' ) === 0 ) {
-			if ( ! nexasTriggerIsEmailNotify( el ) ) {
+			if ( ! nexulesuite_TriggerIsEmailNotify( el ) ) {
 				api.push( { type: 'click_phone', meta: { label: lab, href: href, zone: zone } } );
 			}
 			return;
 		}
 		if ( href.indexOf( 'mailto:' ) === 0 ) {
-			if ( ! nexasTriggerIsEmailNotify( el ) ) {
+			if ( ! nexulesuite_TriggerIsEmailNotify( el ) ) {
 				api.push( { type: 'click_mailto', meta: { label: lab, href: href, zone: zone } } );
 			}
 			return;
@@ -312,7 +312,7 @@
 			return;
 		}
 
-		if ( el.closest( '.nexus-popup__close' ) ) {
+		if ( el.closest( '.nexulesuite_popup__close' ) ) {
 			return;
 		}
 

@@ -2,12 +2,12 @@
 /**
  * Temporary client reporting URL (token + rewrite / plain query fallback).
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite\Public;
+namespace nexulesuite_\Public;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,11 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Client_Access {
 
-	public const QUERY_VAR = 'nexus_ls_client_report';
+	public const QUERY_VAR = 'nexulesuite_client_report';
 
-	private const SETTINGS_OPTION = 'nexus_ls_general_settings_v1';
+	private const SETTINGS_OPTION = 'nexulesuite_general_settings_v1';
 
-	private const TRANSIENT_PREFIX = 'nexus_ls_ca_';
+	private const TRANSIENT_PREFIX = 'nexulesuite_ca_';
 
 	/**
 	 * Registers hooks.
@@ -197,7 +197,7 @@ final class Client_Access {
 		status_header( 200 );
 		nocache_headers();
 
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-activities-store.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-activities-store.php';
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Filter-only GET params on token-gated URL.
 		$tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['tab'] ) ) : 'all';
@@ -217,43 +217,43 @@ final class Client_Access {
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
-		$db_rows = \Nexus_Lead_Suite\Core\Activities_Store::fetch_report_rows( $tab, $date_from, $date_to, $search_q );
+		$db_rows = \nexulesuite_\Core\Activities_Store::fetch_report_rows( $tab, $date_from, $date_to, $search_q );
 		$rows    = array();
 		foreach ( $db_rows as $row ) {
-			$rows[] = \Nexus_Lead_Suite\Core\Activities_Store::map_db_row_to_activity( $row );
+			$rows[] = \nexulesuite_\Core\Activities_Store::map_db_row_to_activity( $row );
 		}
 
-		$nexus_ls_ca_token      = $token;
-		$nexus_ls_ca_tab        = $tab;
-		$nexus_ls_ca_date_from  = $date_from;
-		$nexus_ls_ca_date_to    = $date_to;
-		$nexus_ls_ca_search     = $search_q;
-		$nexus_ls_ca_rows       = $rows;
-		$nexus_ls_ca_site_title = get_bloginfo( 'name' );
-		$nexus_ls_ca_rest_pdf   = esc_url_raw( rest_url( 'nexus-lead-suite/v1/reports/activities/pdf' ) );
+		$nexulesuite_ca_token      = $token;
+		$nexulesuite_ca_tab        = $tab;
+		$nexulesuite_ca_date_from  = $date_from;
+		$nexulesuite_ca_date_to    = $date_to;
+		$nexulesuite_ca_search     = $search_q;
+		$nexulesuite_ca_rows       = $rows;
+		$nexulesuite_ca_site_title = get_bloginfo( 'name' );
+		$nexulesuite_ca_rest_pdf   = esc_url_raw( rest_url( 'nexulesuite_/v1/reports/activities/pdf' ) );
 
-		$nexus_ls_ca_report_logo = '';
+		$nexulesuite_ca_report_logo = '';
 		$gen_opt                 = get_option( self::SETTINGS_OPTION, array() );
 		if ( is_array( $gen_opt ) && ! empty( $gen_opt['reportLogo'] ) ) {
-			$nexus_ls_ca_report_logo = esc_url_raw( (string) $gen_opt['reportLogo'] );
+			$nexulesuite_ca_report_logo = esc_url_raw( (string) $gen_opt['reportLogo'] );
 		}
-		if ( '' === $nexus_ls_ca_report_logo ) {
+		if ( '' === $nexulesuite_ca_report_logo ) {
 			$custom_logo_id = (int) get_theme_mod( 'custom_logo', 0 );
 			if ( $custom_logo_id > 0 ) {
 				$url = wp_get_attachment_image_url( $custom_logo_id, 'full' );
 				if ( is_string( $url ) && '' !== $url ) {
-					$nexus_ls_ca_report_logo = esc_url_raw( $url );
+					$nexulesuite_ca_report_logo = esc_url_raw( $url );
 				}
 			}
 		}
 
-		$nexus_ls_ca_report_logo_max_px = 400;
+		$nexulesuite_ca_report_logo_max_px = 400;
 		if ( is_array( $gen_opt ) && isset( $gen_opt['reportLogoPdfMax'] ) ) {
-			$nexus_ls_ca_report_logo_max_px = max( 100, min( 1000, (int) $gen_opt['reportLogoPdfMax'] ) );
+			$nexulesuite_ca_report_logo_max_px = max( 100, min( 1000, (int) $gen_opt['reportLogoPdfMax'] ) );
 		}
 
 		self::enqueue_gateway_assets(
-			$nexus_ls_ca_rest_pdf,
+			$nexulesuite_ca_rest_pdf,
 			$token,
 			$tab,
 			$date_from,
@@ -261,7 +261,7 @@ final class Client_Access {
 			$search_q
 		);
 
-		$partial = NEXUS_LS_PLUGIN_DIR . 'public/partials/client-access-gateway.php';
+		$partial = nexulesuite_PLUGIN_DIR . 'public/partials/client-access-gateway.php';
 		if ( file_exists( $partial ) ) {
 			require $partial;
 		} else {
@@ -292,32 +292,32 @@ final class Client_Access {
 		string $date_to,
 		string $search
 	): void {
-		$css_path = NEXUS_LS_PLUGIN_DIR . 'public/css/client-access-gateway.css';
-		$js_path  = NEXUS_LS_PLUGIN_DIR . 'public/js/client-access-gateway.js';
-		$css_ver  = file_exists( $css_path ) ? (string) filemtime( $css_path ) : NEXUS_LS_VERSION;
-		$js_ver   = file_exists( $js_path ) ? (string) filemtime( $js_path ) : NEXUS_LS_VERSION;
+		$css_path = nexulesuite_PLUGIN_DIR . 'public/css/client-access-gateway.css';
+		$js_path  = nexulesuite_PLUGIN_DIR . 'public/js/client-access-gateway.js';
+		$css_ver  = file_exists( $css_path ) ? (string) filemtime( $css_path ) : nexulesuite_VERSION;
+		$js_ver   = file_exists( $js_path ) ? (string) filemtime( $js_path ) : nexulesuite_VERSION;
 
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-global-font.php';
-		\Nexus_Lead_Suite\Core\Global_Font::enqueue( 'nexus-ls-global-font' );
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-global-font.php';
+		\nexulesuite_\Core\Global_Font::enqueue( 'nexulesuite_global-font' );
 
 		wp_enqueue_style(
-			'nexus-ls-client-access-gateway',
-			esc_url( NEXUS_LS_PLUGIN_URL . 'public/css/client-access-gateway.css' ),
-			array( 'nexus-ls-global-font' ),
+			'nexulesuite_client-access-gateway',
+			esc_url( nexulesuite_PLUGIN_URL . 'public/css/client-access-gateway.css' ),
+			array( 'nexulesuite_global-font' ),
 			$css_ver
 		);
 
 		wp_enqueue_script(
-			'nexus-ls-client-access-gateway',
-			esc_url( NEXUS_LS_PLUGIN_URL . 'public/js/client-access-gateway.js' ),
+			'nexulesuite_client-access-gateway',
+			esc_url( nexulesuite_PLUGIN_URL . 'public/js/client-access-gateway.js' ),
 			array(),
 			$js_ver,
 			true
 		);
 
 		wp_localize_script(
-			'nexus-ls-client-access-gateway',
-			'nexusLsClientPdfCfg',
+			'nexulesuite_client-access-gateway',
+			'nexulesuite_ClientPdfCfg',
 			array(
 				'pdfUrl'   => esc_url_raw( $rest_pdf ),
 				'token'    => sanitize_text_field( $token ),

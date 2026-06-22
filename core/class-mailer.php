@@ -2,12 +2,12 @@
 /**
  * SMTP mailer integration for wp_mail() (optional).
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite;
+namespace nexulesuite_;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -22,7 +22,7 @@ final class Mailer {
 	/**
 	 * Option key for SMTP settings.
 	 */
-	public const OPTION_KEY = 'nexus_ls_smtp_settings';
+	public const OPTION_KEY = 'nexulesuite_smtp_settings';
 
 	/**
 	 * Registers hooks.
@@ -57,29 +57,29 @@ final class Mailer {
 			'from_name'  => isset( $opt['from_name'] ) ? (string) $opt['from_name'] : '',
 		);
 
-		if ( defined( 'NEXUS_LS_SMTP_ENABLED' ) ) {
-			$settings['enabled'] = (bool) NEXUS_LS_SMTP_ENABLED;
+		if ( defined( 'nexulesuite_SMTP_ENABLED' ) ) {
+			$settings['enabled'] = (bool) nexulesuite_SMTP_ENABLED;
 		}
-		if ( defined( 'NEXUS_LS_SMTP_HOST' ) ) {
-			$settings['host'] = (string) NEXUS_LS_SMTP_HOST;
+		if ( defined( 'nexulesuite_SMTP_HOST' ) ) {
+			$settings['host'] = (string) nexulesuite_SMTP_HOST;
 		}
-		if ( defined( 'NEXUS_LS_SMTP_PORT' ) ) {
-			$settings['port'] = (int) NEXUS_LS_SMTP_PORT;
+		if ( defined( 'nexulesuite_SMTP_PORT' ) ) {
+			$settings['port'] = (int) nexulesuite_SMTP_PORT;
 		}
-		if ( defined( 'NEXUS_LS_SMTP_SECURE' ) ) {
-			$settings['secure'] = (string) NEXUS_LS_SMTP_SECURE;
+		if ( defined( 'nexulesuite_SMTP_SECURE' ) ) {
+			$settings['secure'] = (string) nexulesuite_SMTP_SECURE;
 		}
-		if ( defined( 'NEXUS_LS_SMTP_USER' ) ) {
-			$settings['username'] = (string) NEXUS_LS_SMTP_USER;
+		if ( defined( 'nexulesuite_SMTP_USER' ) ) {
+			$settings['username'] = (string) nexulesuite_SMTP_USER;
 		}
-		if ( defined( 'NEXUS_LS_SMTP_PASS' ) ) {
-			$settings['password'] = (string) NEXUS_LS_SMTP_PASS;
+		if ( defined( 'nexulesuite_SMTP_PASS' ) ) {
+			$settings['password'] = (string) nexulesuite_SMTP_PASS;
 		}
-		if ( defined( 'NEXUS_LS_SMTP_FROM_EMAIL' ) ) {
-			$settings['from_email'] = (string) NEXUS_LS_SMTP_FROM_EMAIL;
+		if ( defined( 'nexulesuite_SMTP_FROM_EMAIL' ) ) {
+			$settings['from_email'] = (string) nexulesuite_SMTP_FROM_EMAIL;
 		}
-		if ( defined( 'NEXUS_LS_SMTP_FROM_NAME' ) ) {
-			$settings['from_name'] = (string) NEXUS_LS_SMTP_FROM_NAME;
+		if ( defined( 'nexulesuite_SMTP_FROM_NAME' ) ) {
+			$settings['from_name'] = (string) nexulesuite_SMTP_FROM_NAME;
 		}
 
 		$settings['host']       = sanitize_text_field( $settings['host'] );

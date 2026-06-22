@@ -6,12 +6,12 @@
  * - Generates PDFs with basic text, optional logo, and simple tables (activities report may span pages).
  * - Intended for lightweight admin reports.
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite;
+namespace nexulesuite_;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {

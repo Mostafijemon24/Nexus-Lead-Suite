@@ -2,12 +2,12 @@
 /**
  * Core plugin orchestrator.
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite;
+namespace nexulesuite_;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -25,7 +25,7 @@ final class Plugin {
 	 * @return void
 	 */
 	public function run(): void {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-access-gate.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-access-gate.php';
 
 		add_filter( 'rest_json_encode_options', array( $this, 'rest_json_encode_options' ), 10, 2 );
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
@@ -43,9 +43,9 @@ final class Plugin {
 		add_action( 'rest_api_init', array( $this, 'bootstrap_rest_api' ), 0 );
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'init', array( $this, 'schedule_form_submissions_purge' ), 25 );
-		add_action( 'nexus_ls_purge_form_submissions', array( \Nexus_Lead_Suite\Core\Form_Submissions_Store::class, 'purge_expired' ) );
+		add_action( 'nexulesuite_purge_form_submissions', array( \nexulesuite_\Core\Form_Submissions_Store::class, 'purge_expired' ) );
 		add_action( 'admin_init', array( $this, 'maybe_gate_admin_pages' ), 0 );
-		add_action( 'admin_enqueue_scripts', array( \Nexus_Lead_Suite\Core\Access_Gate::class, 'maybe_enqueue_admin_assets' ) );
+		add_action( 'admin_enqueue_scripts', array( \nexulesuite_\Core\Access_Gate::class, 'maybe_enqueue_admin_assets' ) );
 		add_action( 'init', array( $this, 'init_admin' ) );
 		add_action( 'init', array( $this, 'init_public' ) );
 	}
@@ -56,7 +56,7 @@ final class Plugin {
 	 * @return void
 	 */
 	public function clear_gate_on_logout(): void {
-		\Nexus_Lead_Suite\Core\Access_Gate::clear_unlock_cookie();
+		\nexulesuite_\Core\Access_Gate::clear_unlock_cookie();
 	}
 
 	/**
@@ -75,19 +75,19 @@ final class Plugin {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['page'] ) ) : '';
-		if ( '' === $page || ! \Nexus_Lead_Suite\Core\Access_Gate::is_nexus_admin_page_slug( $page ) ) {
+		if ( '' === $page || ! \nexulesuite_\Core\Access_Gate::is_nexulesuite_admin_page_slug( $page ) ) {
 			return;
 		}
 
-		if ( \Nexus_Lead_Suite\Core\Access_Gate::maybe_handle_unlock_post() ) {
+		if ( \nexulesuite_\Core\Access_Gate::maybe_handle_unlock_post() ) {
 			return;
 		}
 
-		if ( ! \Nexus_Lead_Suite\Core\Access_Gate::is_unlocked() ) {
-			\Nexus_Lead_Suite\Core\Access_Gate::render_lock_screen_and_exit(
+		if ( ! \nexulesuite_\Core\Access_Gate::is_unlocked() ) {
+			\nexulesuite_\Core\Access_Gate::render_lock_screen_and_exit(
 				__( 'Nexus Lead Suite — Locked', 'nexus-lead-suite' ),
 				// phpcs:ignore WordPress.Security.NonceVerification.Missing -- display-only wrong-password hint; Access_Gate validates POST.
-				isset( $_POST['nexus_ls_gate_password'] ) ? __( 'Wrong password.', 'nexus-lead-suite' ) : ''
+				isset( $_POST['nexulesuite_gate_password'] ) ? __( 'Wrong password.', 'nexus-lead-suite' ) : ''
 			);
 		}
 	}
@@ -102,7 +102,7 @@ final class Plugin {
 	public function rest_json_encode_options( int $options, $request ): int {
 		if ( $request instanceof \WP_REST_Request ) {
 			$route = (string) $request->get_route();
-			if ( strpos( $route, '/nexus-lead-suite/v1/' ) !== 0 ) {
+			if ( strpos( $route, '/nexulesuite_/v1/' ) !== 0 ) {
 				return $options;
 			}
 		}
@@ -124,7 +124,7 @@ final class Plugin {
 		load_plugin_textdomain(
 			'nexus-lead-suite',
 			false,
-			dirname( NEXUS_LS_PLUGIN_BASENAME ) . '/languages'
+			dirname( nexulesuite_PLUGIN_BASENAME ) . '/languages'
 		);
 	}
 
@@ -138,7 +138,7 @@ final class Plugin {
 	}
 
 	/**
-	 * Daily cleanup for short-retention form submission rows (`*_nexus_ls_submissions`).
+	 * Daily cleanup for short-retention form submission rows (`*_nexulesuite_submissions`).
 	 *
 	 * @return void
 	 */
@@ -146,8 +146,8 @@ final class Plugin {
 		if ( wp_installing() ) {
 			return;
 		}
-		if ( ! wp_next_scheduled( 'nexus_ls_purge_form_submissions' ) ) {
-			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'nexus_ls_purge_form_submissions' );
+		if ( ! wp_next_scheduled( 'nexulesuite_purge_form_submissions' ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'nexulesuite_purge_form_submissions' );
 		}
 	}
 
@@ -163,8 +163,8 @@ final class Plugin {
 		}
 		$did = true;
 
-		require_once NEXUS_LS_PLUGIN_DIR . 'api/class-rest-api.php';
-		$rest = new \Nexus_Lead_Suite\Api\Rest_Api();
+		require_once nexulesuite_PLUGIN_DIR . 'api/class-rest-api.php';
+		$rest = new \nexulesuite_\Api\Rest_Api();
 		$rest->register_routes();
 	}
 
@@ -174,30 +174,30 @@ final class Plugin {
 	 * @return void
 	 */
 	private function bootstrap_client_access_rewrites_once(): void {
-		if ( '1' === get_option( 'nexus_ls_ca_rw_ok', '' ) ) {
+		if ( '1' === get_option( 'nexulesuite_ca_rw_ok', '' ) ) {
 			return;
 		}
 
-		require_once NEXUS_LS_PLUGIN_DIR . 'public/class-client-access.php';
-		\Nexus_Lead_Suite\Public\Client_Access::sync_rewrite_rules();
+		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
+		\nexulesuite_\Public\Client_Access::sync_rewrite_rules();
 		flush_rewrite_rules( false );
-		update_option( 'nexus_ls_ca_rw_ok', '1', false );
+		update_option( 'nexulesuite_ca_rw_ok', '1', false );
 	}
 
 	/**
-	 * One-time: rename legacy `step_*` option keys to the `nexus_ls_*` prefix.
+	 * One-time: rename legacy `step_*` option keys to the `nexulesuite_*` prefix.
 	 *
 	 * @return void
 	 */
 	public function migrate_legacy_step_option_keys_once(): void {
-		if ( '1' === get_option( 'nexus_ls_migrate_step_option_keys_v1', '' ) ) {
+		if ( '1' === get_option( 'nexulesuite_migrate_step_option_keys_v1', '' ) ) {
 			return;
 		}
 
 		$map = array(
-			'step_forms_builder_v0'   => 'nexus_ls_forms_builder_v0',
-			'step_recaptcha_keys_v0'  => 'nexus_ls_recaptcha_keys_v0',
-			'step_turnstile_keys_v0'  => 'nexus_ls_turnstile_keys_v0',
+			'step_forms_builder_v0'   => 'nexulesuite_forms_builder_v0',
+			'step_recaptcha_keys_v0'  => 'nexulesuite_recaptcha_keys_v0',
+			'step_turnstile_keys_v0'  => 'nexulesuite_turnstile_keys_v0',
 		);
 
 		foreach ( $map as $legacy_key => $new_key ) {
@@ -210,7 +210,7 @@ final class Plugin {
 			}
 		}
 
-		update_option( 'nexus_ls_migrate_step_option_keys_v1', '1', false );
+		update_option( 'nexulesuite_migrate_step_option_keys_v1', '1', false );
 	}
 
 	/**
@@ -221,11 +221,11 @@ final class Plugin {
 	 * @return void
 	 */
 	public function migrate_legacy_nav_client_toggle_defaults_once(): void {
-		if ( '1' === get_option( 'nexus_ls_migrate_nav_client_off_v3', '' ) ) {
+		if ( '1' === get_option( 'nexulesuite_migrate_nav_client_off_v3', '' ) ) {
 			return;
 		}
 
-		$key          = 'nexus_ls_general_settings_v1';
+		$key          = 'nexulesuite_general_settings_v1';
 		$data         = get_option( $key, null );
 		$looks_legacy = false;
 
@@ -238,7 +238,7 @@ final class Plugin {
 		}
 
 		if ( ! $looks_legacy ) {
-			update_option( 'nexus_ls_migrate_nav_client_off_v3', '1', false );
+			update_option( 'nexulesuite_migrate_nav_client_off_v3', '1', false );
 			return;
 		}
 
@@ -248,12 +248,12 @@ final class Plugin {
 		update_option( $key, $data, false );
 
 		if ( $had_client ) {
-			require_once NEXUS_LS_PLUGIN_DIR . 'public/class-client-access.php';
-			\Nexus_Lead_Suite\Public\Client_Access::sync_rewrite_rules();
+			require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
+			\nexulesuite_\Public\Client_Access::sync_rewrite_rules();
 			flush_rewrite_rules( false );
 		}
 
-		update_option( 'nexus_ls_migrate_nav_client_off_v3', '1', false );
+		update_option( 'nexulesuite_migrate_nav_client_off_v3', '1', false );
 	}
 
 	/**
@@ -262,15 +262,15 @@ final class Plugin {
 	 * @return void
 	 */
 	public function migrate_enable_auto_popup_off_once(): void {
-		if ( '1' === get_option( 'nexus_ls_migrate_auto_popup_off_v1', '' ) ) {
+		if ( '1' === get_option( 'nexulesuite_migrate_auto_popup_off_v1', '' ) ) {
 			return;
 		}
 
-		$key = 'nexus_ls_general_settings_v1';
+		$key = 'nexulesuite_general_settings_v1';
 		$row = get_option( $key, null );
 
 		if ( ! is_array( $row ) ) {
-			update_option( 'nexus_ls_migrate_auto_popup_off_v1', '1', false );
+			update_option( 'nexulesuite_migrate_auto_popup_off_v1', '1', false );
 			return;
 		}
 
@@ -279,7 +279,7 @@ final class Plugin {
 			update_option( $key, $row, false );
 		}
 
-		update_option( 'nexus_ls_migrate_auto_popup_off_v1', '1', false );
+		update_option( 'nexulesuite_migrate_auto_popup_off_v1', '1', false );
 	}
 
 	/**
@@ -288,15 +288,15 @@ final class Plugin {
 	 * @return void
 	 */
 	public function migrate_enable_livechat_off_once(): void {
-		if ( '1' === get_option( 'nexus_ls_migrate_livechat_off_v1', '' ) ) {
+		if ( '1' === get_option( 'nexulesuite_migrate_livechat_off_v1', '' ) ) {
 			return;
 		}
 
-		$key = 'nexus_ls_general_settings_v1';
+		$key = 'nexulesuite_general_settings_v1';
 		$row = get_option( $key, null );
 
 		if ( ! is_array( $row ) ) {
-			update_option( 'nexus_ls_migrate_livechat_off_v1', '1', false );
+			update_option( 'nexulesuite_migrate_livechat_off_v1', '1', false );
 			return;
 		}
 
@@ -305,7 +305,7 @@ final class Plugin {
 			update_option( $key, $row, false );
 		}
 
-		update_option( 'nexus_ls_migrate_livechat_off_v1', '1', false );
+		update_option( 'nexulesuite_migrate_livechat_off_v1', '1', false );
 	}
 
 	/**
@@ -314,8 +314,8 @@ final class Plugin {
 	 * @return void
 	 */
 	public function migrate_menu_items_groups_once(): void {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-menu-items-payload.php';
-		\Nexus_Lead_Suite\Core\Menu_Items_Payload::maybe_migrate_legacy_option();
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-menu-items-payload.php';
+		\nexulesuite_\Core\Menu_Items_Payload::maybe_migrate_legacy_option();
 	}
 
 	/**
@@ -324,8 +324,8 @@ final class Plugin {
 	 * @return void
 	 */
 	public function init_mailer(): void {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-mailer.php';
-		$mailer = new \Nexus_Lead_Suite\Mailer();
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-mailer.php';
+		$mailer = new \nexulesuite_\Mailer();
 		$mailer->register_hooks();
 	}
 
@@ -339,11 +339,11 @@ final class Plugin {
 			return;
 		}
 
-		require_once NEXUS_LS_PLUGIN_DIR . 'admin/class-admin-app.php';
-		require_once NEXUS_LS_PLUGIN_DIR . 'admin/class-plugin-list-links.php';
-		$admin = new \Nexus_Lead_Suite\Admin\Admin_App();
+		require_once nexulesuite_PLUGIN_DIR . 'admin/class-admin-app.php';
+		require_once nexulesuite_PLUGIN_DIR . 'admin/class-plugin-list-links.php';
+		$admin = new \nexulesuite_\Admin\Admin_App();
 		$admin->register_hooks();
-		$plugin_links = new \Nexus_Lead_Suite\Admin\Plugin_List_Links();
+		$plugin_links = new \nexulesuite_\Admin\Plugin_List_Links();
 		$plugin_links->register_hooks();
 	}
 
@@ -353,14 +353,14 @@ final class Plugin {
 	 * @return void
 	 */
 	public function init_public(): void {
-		require_once NEXUS_LS_PLUGIN_DIR . 'public/class-client-access.php';
-		$client_access = new \Nexus_Lead_Suite\Public\Client_Access();
+		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
+		$client_access = new \nexulesuite_\Public\Client_Access();
 		$client_access->register_hooks();
 
 		if ( $this->should_load_shortcodes_module() ) {
-			require_once NEXUS_LS_PLUGIN_DIR . 'public/class-forminator-ui-bridge.php';
-			require_once NEXUS_LS_PLUGIN_DIR . 'public/class-shortcodes.php';
-			$shortcodes = new \Nexus_Lead_Suite\Public\Shortcodes();
+			require_once nexulesuite_PLUGIN_DIR . 'public/class-forminator-ui-bridge.php';
+			require_once nexulesuite_PLUGIN_DIR . 'public/class-shortcodes.php';
+			$shortcodes = new \nexulesuite_\Public\Shortcodes();
 			$shortcodes->register_hooks();
 		}
 	}
@@ -389,6 +389,6 @@ final class Plugin {
 		 *
 		 * @param bool $load Default heuristic result.
 		 */
-		return (bool) apply_filters( 'nexus_ls_load_shortcodes_module', $load );
+		return (bool) apply_filters( 'nexulesuite_load_shortcodes_module', $load );
 	}
 }

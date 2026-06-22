@@ -41,7 +41,7 @@ function TabButton( { active, children, onClick } ) {
 		<button
 			type="button"
 			onClick={ onClick }
-			className={ `nls-act-tab${ active ? ' is-active' : '' }` }
+			className={ `nexulesuite_act-tab${ active ? ' is-active' : '' }` }
 		>
 			{ children }
 		</button>
@@ -58,7 +58,7 @@ function Badge( { tone, children } ) {
 		slate: 'is-slate',
 	};
 	return (
-		<span className={ `nls-act-badge ${ tones[ tone ] || tones.slate }` }>
+		<span className={ `nexulesuite_act-badge ${ tones[ tone ] || tones.slate }` }>
 			{ children }
 		</span>
 	);
@@ -91,7 +91,7 @@ function getMailStatus( row ) {
 }
 
 function getRest() {
-	const admin = window.nexusLsAdmin || {};
+	const admin = window.nexulesuite_Admin || {};
 	return {
 		restUrl: admin.restUrl || '',
 		nonce: admin.nonce || '',
@@ -116,7 +116,7 @@ function ActivitiesReportModal( { open, onClose, filters } ) {
 		const controller = new AbortController();
 		( async () => {
 			try {
-				const response = await fetch( `${ restUrl }nexus-lead-suite/v1/emails/templates`, {
+				const response = await fetch( `${ restUrl }nexulesuite_/v1/emails/templates`, {
 					headers: { 'X-WP-Nonce': nonce },
 					credentials: 'same-origin',
 					signal: controller.signal,
@@ -168,7 +168,7 @@ function ActivitiesReportModal( { open, onClose, filters } ) {
 		}
 		setGenerating( true );
 		try {
-			const response = await fetch( `${ restUrl }nexus-lead-suite/v1/reports/activities/pdf`, {
+			const response = await fetch( `${ restUrl }nexulesuite_/v1/reports/activities/pdf`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -224,7 +224,7 @@ function ActivitiesReportModal( { open, onClose, filters } ) {
 		}
 		setSending( true );
 		try {
-			const response = await fetch( `${ restUrl }nexus-lead-suite/v1/reports/activities/email`, {
+			const response = await fetch( `${ restUrl }nexulesuite_/v1/reports/activities/email`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -283,20 +283,20 @@ function ActivitiesReportModal( { open, onClose, filters } ) {
 				message={ modal.message }
 				onDismiss={ () => setModal( ( state ) => ( { ...state, open: false } ) ) }
 			/>
-			<div className="nls-act-modal">
+			<div className="nexulesuite_act-modal">
 				<button
 					type="button"
-					className="nls-act-modal-backdrop"
+					className="nexulesuite_act-modal-backdrop"
 					aria-label="Close modal"
 					onClick={ onClose }
 				/>
-				<div className="nls-act-modal-panel" role="dialog" aria-modal="true" aria-labelledby="nls-act-report-title">
-					<div className="nls-act-modal-head">
+				<div className="nexulesuite_act-modal-panel" role="dialog" aria-modal="true" aria-labelledby="nexulesuite_act-report-title">
+					<div className="nexulesuite_act-modal-head">
 						<div>
-							<h2 id="nls-act-report-title" className="nls-act-modal-title">
+							<h2 id="nexulesuite_act-report-title" className="nexulesuite_act-modal-title">
 								Activities Report
 							</h2>
-							<p className="nls-act-modal-date">
+							<p className="nexulesuite_act-modal-date">
 								{ new Date().toLocaleDateString( undefined, {
 									year: 'numeric',
 									month: 'short',
@@ -307,67 +307,67 @@ function ActivitiesReportModal( { open, onClose, filters } ) {
 						<button
 							type="button"
 							onClick={ onClose }
-							className="nls-act-modal-close"
+							className="nexulesuite_act-modal-close"
 							aria-label="Close"
 						>
 							<X className="h-5 w-5" />
 						</button>
 					</div>
 
-					<div className="nls-act-modal-body">
+					<div className="nexulesuite_act-modal-body">
 						<button
 							type="button"
 							onClick={ previewPdf }
 							disabled={ generating }
-							className="nls-act-btn-primary nls-act-btn-primary--block"
+							className="nexulesuite_act-btn-primary nexulesuite_act-btn-primary--block"
 						>
 							{ generating ? 'Generating…' : 'Preview PDF Report' }
 						</button>
 
-						<div className="nls-act-modal-divider" />
+						<div className="nexulesuite_act-modal-divider" />
 
-						<h3 className="nls-act-modal-subtitle">Share via Email</h3>
+						<h3 className="nexulesuite_act-modal-subtitle">Share via Email</h3>
 
-						<div className="nls-act-modal-fields">
+						<div className="nexulesuite_act-modal-fields">
 							<div>
-								<label className="nls-act-field-label" htmlFor="nls-act-custom-message">
+								<label className="nexulesuite_act-field-label" htmlFor="nexulesuite_act-custom-message">
 									Custom Message (Optional)
 								</label>
 								<textarea
-									id="nls-act-custom-message"
+									id="nexulesuite_act-custom-message"
 									value={ customMessage }
 									onChange={ ( event ) => setCustomMessage( event.target.value ) }
 									rows={ 3 }
 									placeholder="Add a personal message to include in the email..."
-									className="nls-act-textarea"
+									className="nexulesuite_act-textarea"
 								/>
 							</div>
 
 							<div>
-								<label className="nls-act-field-label" htmlFor="nls-act-custom-emails">
+								<label className="nexulesuite_act-field-label" htmlFor="nexulesuite_act-custom-emails">
 									Custom Email Addresses
 								</label>
 								<input
-									id="nls-act-custom-emails"
+									id="nexulesuite_act-custom-emails"
 									value={ customEmails }
 									onChange={ ( event ) => setCustomEmails( event.target.value ) }
 									placeholder="Enter email addresses separated by commas"
-									className="nls-act-input"
+									className="nexulesuite_act-input"
 								/>
 							</div>
 
 							<div>
-								<p className="nls-act-field-label">Or Select from Email Settings:</p>
-								<div className="nls-act-recipient-box">
-									<p className="nls-act-recipient-site">{ siteTitle }</p>
-									<div className="nls-act-recipient-list">
+								<p className="nexulesuite_act-field-label">Or Select from Email Settings:</p>
+								<div className="nexulesuite_act-recipient-box">
+									<p className="nexulesuite_act-recipient-site">{ siteTitle }</p>
+									<div className="nexulesuite_act-recipient-list">
 										{ savedRecipients.length === 0 ? (
-											<p className="nls-act-recipient-empty">
+											<p className="nexulesuite_act-recipient-empty">
 												No saved email recipients yet. Save Emails settings first.
 											</p>
 										) : (
 											savedRecipients.map( ( email ) => (
-												<label key={ email } className="nls-act-recipient-item">
+												<label key={ email } className="nexulesuite_act-recipient-item">
 													<input
 														type="checkbox"
 														checked={ !! selectedRecipients[ email ] }
@@ -384,20 +384,20 @@ function ActivitiesReportModal( { open, onClose, filters } ) {
 										) }
 									</div>
 								</div>
-								<p className="nls-act-recipient-count">{ selectedCount } recipients selected</p>
+								<p className="nexulesuite_act-recipient-count">{ selectedCount } recipients selected</p>
 							</div>
 						</div>
 					</div>
 
-					<div className="nls-act-modal-foot">
-						<button type="button" onClick={ onClose } className="nls-act-btn-secondary">
+					<div className="nexulesuite_act-modal-foot">
+						<button type="button" onClick={ onClose } className="nexulesuite_act-btn-secondary">
 							Cancel
 						</button>
 						<button
 							type="button"
 							onClick={ sendEmail }
 							disabled={ sending }
-							className="nls-act-btn-primary"
+							className="nexulesuite_act-btn-primary"
 						>
 							{ sending ? 'Sending…' : 'Send Email' }
 						</button>
@@ -441,7 +441,7 @@ export function ActivitiesPage() {
 					search: debouncedSearch,
 				} );
 				const response = await fetch(
-					`${ restUrl }nexus-lead-suite/v1/reports/activities/list?${ params }`,
+					`${ restUrl }nexulesuite_/v1/reports/activities/list?${ params }`,
 					{
 						headers: { 'X-WP-Nonce': nonce },
 						credentials: 'same-origin',
@@ -485,7 +485,7 @@ export function ActivitiesPage() {
 		setClearing( true );
 		try {
 			const { restUrl, nonce } = getRest();
-			const response = await fetch( `${ restUrl }nexus-lead-suite/v1/reports/activities/clear`, {
+			const response = await fetch( `${ restUrl }nexulesuite_/v1/reports/activities/clear`, {
 				method: 'POST',
 				headers: { 'X-WP-Nonce': nonce },
 				credentials: 'same-origin',
@@ -533,14 +533,14 @@ export function ActivitiesPage() {
 			icon={ <Activity size={ 18 } /> }
 			footer={ <AdminStickyFooter /> }
 			headerRight={
-				<div className="nls-act-search">
+				<div className="nexulesuite_act-search">
 					<input
 						value={ search }
 						onChange={ ( event ) => setSearch( event.target.value ) }
 						placeholder="Search..."
-						className="nls-act-search-input"
+						className="nexulesuite_act-search-input"
 					/>
-					<span className="nls-act-search-ico" aria-hidden="true">
+					<span className="nexulesuite_act-search-ico" aria-hidden="true">
 						<Search size={ 16 } />
 					</span>
 				</div>
@@ -565,23 +565,23 @@ export function ActivitiesPage() {
 				} }
 			/>
 
-			<div className="nls-activities-wrap">
-				<div className="nls-act-card">
-					<section className="nls-act-section is-first">
-						<div className="nls-act-sec-head">
-							<span className="nls-act-sec-ico" aria-hidden="true">
+			<div className="nexulesuite_activities-wrap">
+				<div className="nexulesuite_act-card">
+					<section className="nexulesuite_act-section is-first">
+						<div className="nexulesuite_act-sec-head">
+							<span className="nexulesuite_act-sec-ico" aria-hidden="true">
 								<Activity size={ 16 } />
 							</span>
 							<div>
-								<span className="nls-act-sec-title">Activity Log</span>
-								<p className="nls-act-sec-desc">
+								<span className="nexulesuite_act-sec-title">Activity Log</span>
+								<p className="nexulesuite_act-sec-desc">
 									Filter by type, date range, or keyword. Export a PDF report or share it by email.
 								</p>
 							</div>
 						</div>
 
-						<div className="nls-act-toolbar">
-							<div className="nls-act-tabs">
+						<div className="nexulesuite_act-toolbar">
+							<div className="nexulesuite_act-tabs">
 								{ TABS.map( ( item ) => (
 									<TabButton
 										key={ item.id }
@@ -593,8 +593,8 @@ export function ActivitiesPage() {
 								) ) }
 							</div>
 
-							<div className="nls-act-filters">
-								<label className="nls-act-date">
+							<div className="nexulesuite_act-filters">
+								<label className="nexulesuite_act-date">
 									<span>From:</span>
 									<input
 										type="date"
@@ -602,7 +602,7 @@ export function ActivitiesPage() {
 										onChange={ ( event ) => setDateFrom( event.target.value ) }
 									/>
 								</label>
-								<label className="nls-act-date">
+								<label className="nexulesuite_act-date">
 									<span>To:</span>
 									<input
 										type="date"
@@ -610,17 +610,17 @@ export function ActivitiesPage() {
 										onChange={ ( event ) => setDateTo( event.target.value ) }
 									/>
 								</label>
-								<button type="button" onClick={ resetFilters } className="nls-act-btn-ghost">
+								<button type="button" onClick={ resetFilters } className="nexulesuite_act-btn-ghost">
 									Clear
 								</button>
 								{ loading ? (
-									<span className="nls-act-updating">Updating…</span>
+									<span className="nexulesuite_act-updating">Updating…</span>
 								) : null }
-								<span className="nls-act-filter-divider" aria-hidden="true" />
+								<span className="nexulesuite_act-filter-divider" aria-hidden="true" />
 								<button
 									type="button"
 									onClick={ () => setPdfOpen( true ) }
-									className="nls-act-btn-pdf"
+									className="nexulesuite_act-btn-pdf"
 								>
 									<PdfIcon className="h-3.5 w-3.5" />
 									<span className="hidden sm:inline">Report PDF</span>
@@ -630,7 +630,7 @@ export function ActivitiesPage() {
 									type="button"
 									onClick={ clearAll }
 									disabled={ clearing }
-									className="nls-act-btn-danger"
+									className="nexulesuite_act-btn-danger"
 								>
 									<Trash2 className="h-3.5 w-3.5" />
 									<span className="hidden sm:inline">{ clearing ? 'Clearing…' : 'Clear All' }</span>
@@ -640,9 +640,9 @@ export function ActivitiesPage() {
 						</div>
 					</section>
 
-					<section className="nls-act-section">
-						<div className="nls-act-table-wrap">
-							<table className="nls-act-table">
+					<section className="nexulesuite_act-section">
+						<div className="nexulesuite_act-table-wrap">
+							<table className="nexulesuite_act-table">
 								<thead>
 									<tr>
 										<th>Action Name</th>
@@ -650,14 +650,14 @@ export function ActivitiesPage() {
 										<th>Purpose</th>
 										<th>Interaction</th>
 										<th>Date/Time</th>
-										<th className="nls-act-col-mail">Mail Status</th>
+										<th className="nexulesuite_act-col-mail">Mail Status</th>
 										<th>Reference</th>
 									</tr>
 								</thead>
 								<tbody>
 									{ loading && rows.length === 0 ? (
 										<tr>
-											<td colSpan={ 7 } className="nls-act-empty">
+											<td colSpan={ 7 } className="nexulesuite_act-empty">
 												Loading activities…
 											</td>
 										</tr>
@@ -682,22 +682,22 @@ export function ActivitiesPage() {
 															: 'red';
 												return (
 													<tr key={ row.id }>
-														<td className="nls-act-cell-strong">{ row.actionName }</td>
+														<td className="nexulesuite_act-cell-strong">{ row.actionName }</td>
 														<td>
 															{ row.pageUrl ? (
 																<a
 																	href={ row.pageUrl }
 																	target="_blank"
 																	rel="noopener noreferrer"
-																	className="nls-act-link"
+																	className="nexulesuite_act-link"
 																>
 																	<span className="truncate">{ row.pageUrl }</span>
-																	<span className="nls-act-link-ico" aria-hidden="true">
+																	<span className="nexulesuite_act-link-ico" aria-hidden="true">
 																		↗
 																	</span>
 																</a>
 															) : (
-																<span className="nls-act-muted">—</span>
+																<span className="nexulesuite_act-muted">—</span>
 															) }
 														</td>
 														<td>
@@ -705,16 +705,16 @@ export function ActivitiesPage() {
 														</td>
 														<td>{ row.context }</td>
 														<td>{ row.dateTime }</td>
-														<td className="nls-act-col-mail">
+														<td className="nexulesuite_act-col-mail">
 															<Badge tone={ mailTone }>{ getMailStatus( row ) }</Badge>
 														</td>
-														<td className="nls-act-ref">{ row.id }</td>
+														<td className="nexulesuite_act-ref">{ row.id }</td>
 													</tr>
 												);
 											} ) }
 											{ ! loading && rows.length === 0 ? (
 												<tr>
-													<td colSpan={ 7 } className="nls-act-empty">
+													<td colSpan={ 7 } className="nexulesuite_act-empty">
 														{ error || 'No activities found.' }
 													</td>
 												</tr>

@@ -209,17 +209,17 @@ export function PopupsPage() {
 		async function boot() {
 			setStatus( { loading: true, saving: false, error: '' } );
 			try {
-				const base = window?.nexusLsAdmin?.restUrl || '/wp-json/';
+				const base = window?.nexulesuite_Admin?.restUrl || '/wp-json/';
 				const [ popRes, metaRes ] = await Promise.all( [
-					fetch( `${ base }nexus-lead-suite/v1/popups`, {
+					fetch( `${ base }nexulesuite_/v1/popups`, {
 						method: 'GET',
 						credentials: 'same-origin',
-						headers: { 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
+						headers: { 'X-WP-Nonce': window?.nexulesuite_Admin?.nonce || '' },
 					} ),
-					fetch( `${ base }nexus-lead-suite/v1/menu-items/condition-meta`, {
+					fetch( `${ base }nexulesuite_/v1/menu-items/condition-meta`, {
 						method: 'GET',
 						credentials: 'same-origin',
-						headers: { 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
+						headers: { 'X-WP-Nonce': window?.nexulesuite_Admin?.nonce || '' },
 					} ),
 				] );
 				const json = await popRes.json();
@@ -299,11 +299,11 @@ export function PopupsPage() {
 	const searchContent = async ( key, types, query ) => {
 		setContentSearch( ( s ) => ( { ...s, [ key ]: { loading: true, results: s[ key ]?.results || [] } } ) );
 		try {
-			const base = window?.nexusLsAdmin?.restUrl || '/wp-json/';
+			const base = window?.nexulesuite_Admin?.restUrl || '/wp-json/';
 			const params = new URLSearchParams( { search: query, types } );
-			const res = await fetch( `${ base }nexus-lead-suite/v1/menu-items/content-search?${ params }`, {
+			const res = await fetch( `${ base }nexulesuite_/v1/menu-items/content-search?${ params }`, {
 				credentials: 'same-origin',
-				headers: { 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
+				headers: { 'X-WP-Nonce': window?.nexulesuite_Admin?.nonce || '' },
 			} );
 			const json = await res.json();
 			const results = Array.isArray( json?.data?.results ) ? json.data.results : [];
@@ -321,11 +321,11 @@ export function PopupsPage() {
 	const saveAll = async () => {
 		setStatus( ( s ) => ( { ...s, saving: true, error: '' } ) );
 		try {
-			const base = window?.nexusLsAdmin?.restUrl || '/wp-json/';
-			const res = await fetch( `${ base }nexus-lead-suite/v1/popups`, {
+			const base = window?.nexulesuite_Admin?.restUrl || '/wp-json/';
+			const res = await fetch( `${ base }nexulesuite_/v1/popups`, {
 				method: 'POST',
 				credentials: 'same-origin',
-				headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
+				headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': window?.nexulesuite_Admin?.nonce || '' },
 				body: JSON.stringify( { popups } ),
 			} );
 			const json = await res.json();
@@ -425,21 +425,21 @@ export function PopupsPage() {
 
 					{/* Settings Canvas */}
 					<main className="flex-1 overflow-y-auto p-8" style={ { background: '#f4f5f8' } }>
-						<div className="nls-popups-editor-wrap max-w-[1080px] mx-auto pb-20">
+						<div className="nexulesuite_popups-editor-wrap max-w-[1080px] mx-auto pb-20">
 							{ status.error ? (
 								<div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{ status.error }</div>
 							) : null }
 
-							<div className="nls-pop-card">
-								<section className="nls-pop-section is-first">
-									<div className="nls-pop-sec-head">
-										<span className="nls-pop-sec-ico">
+							<div className="nexulesuite_pop-card">
+								<section className="nexulesuite_pop-section is-first">
+									<div className="nexulesuite_pop-sec-head">
+										<span className="nexulesuite_pop-sec-ico">
 											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 												<rect x="3" y="4" width="18" height="16" rx="2" />
 												<path d="M3 9h18M9 9v11" />
 											</svg>
 										</span>
-										<span className="nls-pop-sec-title">Identity &amp; Core Structure</span>
+										<span className="nexulesuite_pop-sec-title">Identity &amp; Core Structure</span>
 									</div>
 
 									<div className="id-row">
@@ -475,14 +475,14 @@ export function PopupsPage() {
 									</div>
 								</section>
 
-								<section className="nls-pop-section">
-									<div className="nls-pop-sec-head">
-										<span className="nls-pop-sec-ico pink">
+								<section className="nexulesuite_pop-section">
+									<div className="nexulesuite_pop-sec-head">
+										<span className="nexulesuite_pop-sec-ico pink">
 											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 												<path d="M6 4v16M18 4v16M6 12h12M4 4h4M16 4h4M4 20h4M16 20h4" />
 											</svg>
 										</span>
-										<span className="nls-pop-sec-title">Main Heading Editor</span>
+										<span className="nexulesuite_pop-sec-title">Main Heading Editor</span>
 									</div>
 									<PopupHeadingEditor
 										heading={ activePopup?.heading || '' }
@@ -491,14 +491,14 @@ export function PopupsPage() {
 									/>
 								</section>
 
-								<section className="nls-pop-section">
-									<div className="nls-pop-sec-head">
-										<span className="nls-pop-sec-ico">
+								<section className="nexulesuite_pop-section">
+									<div className="nexulesuite_pop-sec-head">
+										<span className="nexulesuite_pop-sec-ico">
 											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 												<path d="M4 7h16M4 12h12M4 17h8" />
 											</svg>
 										</span>
-										<span className="nls-pop-sec-title">Sub Heading Text</span>
+										<span className="nexulesuite_pop-sec-title">Sub Heading Text</span>
 									</div>
 									<input
 										type="text"
@@ -509,9 +509,9 @@ export function PopupsPage() {
 									/>
 								</section>
 
-								<section className="nls-pop-section">
-									<div className="nls-pop-sec-head">
-										<span className="nls-pop-sec-ico">
+								<section className="nexulesuite_pop-section">
+									<div className="nexulesuite_pop-sec-head">
+										<span className="nexulesuite_pop-sec-ico">
 											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 												<circle cx="13.5" cy="6.5" r="2.5" />
 												<circle cx="6.5" cy="12" r="2.5" />
@@ -519,7 +519,7 @@ export function PopupsPage() {
 												<path d="M3 21c2-4 4-6 8-7" />
 											</svg>
 										</span>
-										<span className="nls-pop-sec-title">Visual Styling &amp; Area Controls</span>
+										<span className="nexulesuite_pop-sec-title">Visual Styling &amp; Area Controls</span>
 									</div>
 
 									<div className="color-row5">
@@ -573,14 +573,14 @@ export function PopupsPage() {
 									</div>
 								</section>
 
-								<section className="nls-pop-section">
-									<div className="nls-pop-sec-head dense">
-										<span className="nls-pop-sec-ico">
+								<section className="nexulesuite_pop-section">
+									<div className="nexulesuite_pop-sec-head dense">
+										<span className="nexulesuite_pop-sec-ico">
 											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 												<path d="M4 6h16M7 12h10M10 18h4" />
 											</svg>
 										</span>
-										<span className="nls-pop-sec-title">Display Conditions</span>
+										<span className="nexulesuite_pop-sec-title">Display Conditions</span>
 									</div>
 									<DisplayConditionsEditor
 										variant="popup-reference"
@@ -594,31 +594,31 @@ export function PopupsPage() {
 									/>
 								</section>
 
-								<section className="nls-pop-section">
-									<div className="nls-pop-sec-head dense">
-										<span className="nls-pop-sec-ico pink">
+								<section className="nexulesuite_pop-section">
+									<div className="nexulesuite_pop-sec-head dense">
+										<span className="nexulesuite_pop-sec-ico pink">
 											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 												<path d="M13 2L4 14h6l-1 8 9-12h-6z" />
 											</svg>
 										</span>
-										<span className="nls-pop-sec-title">Advanced Automation Logic</span>
-										<span className="nls-pop-sec-pill">
+										<span className="nexulesuite_pop-sec-title">Advanced Automation Logic</span>
+										<span className="nexulesuite_pop-sec-pill">
 											{ ( activePopup?.logic || [] ).length } trigger{ ( activePopup?.logic || [] ).length !== 1 ? 's' : '' }
 										</span>
 									</div>
-									<p className="nls-pop-sec-sub">When the popup fires. Add multiple triggers to fire on whichever happens first.</p>
+									<p className="nexulesuite_pop-sec-sub">When the popup fires. Add multiple triggers to fire on whichever happens first.</p>
 
-									<div className="nls-pop-logic-list">
+									<div className="nexulesuite_pop-logic-list">
 										{ ( activePopup?.logic || [] ).map( ( rule, idx ) => (
-											<div key={ rule.id } className="nls-pop-logic-row">
-												<div className="nls-pop-logic-top">
+											<div key={ rule.id } className="nexulesuite_pop-logic-row">
+												<div className="nexulesuite_pop-logic-top">
 													<span className="ln">{ idx + 1 }</span>
 													<span className="lt">Trigger { idx + 1 }</span>
 													{ ( activePopup?.logic || [] ).length > 1 ? (
 														<button
 															type="button"
 															onClick={ () => removeRule( rule.id ) }
-															className="nls-pop-icon-btn danger"
+															className="nexulesuite_pop-icon-btn danger"
 															aria-label="Remove trigger"
 														>
 															<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -627,8 +627,8 @@ export function PopupsPage() {
 														</button>
 													) : null }
 												</div>
-												<div className="nls-pop-logic-grid">
-													<div className="nls-pop-field">
+												<div className="nexulesuite_pop-logic-grid">
+													<div className="nexulesuite_pop-field">
 														<label>Event</label>
 														<select
 															value={ rule.trigger }
@@ -641,7 +641,7 @@ export function PopupsPage() {
 														</select>
 													</div>
 
-													<div className="nls-pop-field" style={ { display: rule.trigger === 'timer' ? '' : 'none' } }>
+													<div className="nexulesuite_pop-field" style={ { display: rule.trigger === 'timer' ? '' : 'none' } }>
 														<label>Delay (sec)</label>
 														<input
 															type="number"
@@ -651,7 +651,7 @@ export function PopupsPage() {
 														/>
 													</div>
 
-													<div className="nls-pop-field" style={ { display: rule.trigger === 'scroll' ? '' : 'none' } }>
+													<div className="nexulesuite_pop-field" style={ { display: rule.trigger === 'scroll' ? '' : 'none' } }>
 														<label>Scroll depth (%)</label>
 														<input
 															type="number"
@@ -666,7 +666,7 @@ export function PopupsPage() {
 										) ) }
 									</div>
 
-									<button type="button" onClick={ addRule } className="nls-pop-add-dash">
+									<button type="button" onClick={ addRule } className="nexulesuite_pop-add-dash">
 										<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
 											<path d="M12 5v14M5 12h14" />
 										</svg>
@@ -674,15 +674,15 @@ export function PopupsPage() {
 									</button>
 								</section>
 
-								<section className="nls-pop-section">
-									<div className="nls-pop-sec-head dense">
-										<span className="nls-pop-sec-ico">
+								<section className="nexulesuite_pop-section">
+									<div className="nexulesuite_pop-sec-head dense">
+										<span className="nexulesuite_pop-sec-ico">
 											<Code size={ 16 } strokeWidth={ 2 } />
 										</span>
-										<span className="nls-pop-sec-title">Popup Body (HTML / Shortcode)</span>
+										<span className="nexulesuite_pop-sec-title">Popup Body (HTML / Shortcode)</span>
 									</div>
 									<p className="content-hint">
-										Put the form you want here (e.g. <code>[smart_trigger_form id="…"]</code>). If this box has any content, Settings → Default Nexus forms (ordered list) are <b>not</b> prepended — you will not get duplicate forms. Leave it empty only if you rely on those global defaults for timer/scroll/exit.
+										Put the form you want here (e.g. <code>[nexulesuite_form id="…"]</code>). If this box has any content, Settings → Default Nexus forms (ordered list) are <b>not</b> prepended — you will not get duplicate forms. Leave it empty only if you rely on those global defaults for timer/scroll/exit.
 									</p>
 									<textarea
 										className="content-code"

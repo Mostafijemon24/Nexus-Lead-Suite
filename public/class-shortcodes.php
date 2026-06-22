@@ -2,12 +2,12 @@
 /**
  * Frontend shortcodes renderer for Nexus Lead Suite forms.
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite\Public;
+namespace nexulesuite_\Public;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,37 +17,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Registers and renders form shortcodes.
  *
- * The plugin skips loading this class on typical wp-admin HTML requests (see `nexus_ls_load_shortcodes_module` filter).
+ * The plugin skips loading this class on typical wp-admin HTML requests (see `nexulesuite_load_shortcodes_module` filter).
  */
 final class Shortcodes {
 
 	/**
 	 * Forms option key.
 	 */
-	private const FORMS_OPTION_KEY = 'nexus_ls_forms_builder_v0';
+	private const FORMS_OPTION_KEY = 'nexulesuite_forms_builder_v0';
 
 	/**
 	 * General settings option key.
 	 */
-	private const GENERAL_SETTINGS_OPTION_KEY = 'nexus_ls_general_settings_v1';
+	private const GENERAL_SETTINGS_OPTION_KEY = 'nexulesuite_general_settings_v1';
 
 	/**
 	 * Anti-spam honeypot: text field hidden from users; bots often fill it.
 	 * Name is stable for server check and JS draft exclusion.
 	 */
-	private const HONEYPOT_FIELD_NAME = 'nexus_ls_hp_website';
+	private const HONEYPOT_FIELD_NAME = 'nexulesuite_hp_website';
 
 	/**
 	 * Saved keys (same option names as REST API).
 	 */
-	private const RECAPTCHA_OPTION_KEY = 'nexus_ls_recaptcha_keys_v0';
+	private const RECAPTCHA_OPTION_KEY = 'nexulesuite_recaptcha_keys_v0';
 
 	/**
 	 * reCAPTCHA v3 action name (must match JS execute() and siteverify response).
 	 */
-	private const RECAPTCHA_V3_ACTION = 'nexus_ls_form_submit';
+	private const RECAPTCHA_V3_ACTION = 'nexulesuite_form_submit';
 
-	private const TURNSTILE_OPTION_KEY = 'nexus_ls_turnstile_keys_v0';
+	private const TURNSTILE_OPTION_KEY = 'nexulesuite_turnstile_keys_v0';
 
 	/**
 	 * Whether current request rendered a form.
@@ -73,17 +73,17 @@ final class Shortcodes {
 	/**
 	 * Menu items option key.
 	 */
-	private const MENU_ITEMS_OPTION_KEY = 'nexus_ls_menu_items_v1';
+	private const MENU_ITEMS_OPTION_KEY = 'nexulesuite_menu_items_v1';
 
 	/**
 	 * Popups option key.
 	 */
-	private const POPUPS_OPTION_KEY = 'nexus_ls_popups_v1';
+	private const POPUPS_OPTION_KEY = 'nexulesuite_popups_v1';
 
 	/**
 	 * Saved email templates (same key as REST / Emails admin).
 	 */
-	private const EMAIL_TEMPLATES_OPTION_KEY = 'nexus_ls_email_templates_v1';
+	private const EMAIL_TEMPLATES_OPTION_KEY = 'nexulesuite_email_templates_v1';
 
 	/**
 	 * Hooks.
@@ -115,16 +115,16 @@ final class Shortcodes {
 		add_action( 'wp_footer', array( $this, 'render_popups' ), 12 );
 		/*
 		 * After popups (inline popup targets) but before wp_print_footer_scripts (~20)
-		 * so nexus-ls-livechat-widget inline CSS/JS are actually printed.
+		 * so nexulesuite_livechat-widget inline CSS/JS are actually printed.
 		 */
 		add_action( 'wp_footer', array( $this, 'render_livechat_widget' ), 15 );
 		add_action( 'wp_footer', array( $this, 'render_bottom_nav' ), 20 );
 		// AJAX: notification email trigger (both logged-in and guest visitors).
-		add_action( 'wp_ajax_nexus_ls_trigger_notify', array( $this, 'handle_trigger_notify' ) );
-		add_action( 'wp_ajax_nopriv_nexus_ls_trigger_notify', array( $this, 'handle_trigger_notify' ) );
+		add_action( 'wp_ajax_nexulesuite_trigger_notify', array( $this, 'handle_trigger_notify' ) );
+		add_action( 'wp_ajax_nopriv_nexulesuite_trigger_notify', array( $this, 'handle_trigger_notify' ) );
 		// AJAX: Nexus form builder submissions (guest + logged-in).
-		add_action( 'wp_ajax_nexus_ls_submit_form', array( $this, 'handle_form_submit_ajax' ) );
-		add_action( 'wp_ajax_nopriv_nexus_ls_submit_form', array( $this, 'handle_form_submit_ajax' ) );
+		add_action( 'wp_ajax_nexulesuite_submit_form', array( $this, 'handle_form_submit_ajax' ) );
+		add_action( 'wp_ajax_nopriv_nexulesuite_submit_form', array( $this, 'handle_form_submit_ajax' ) );
 	}
 
 	/**
@@ -144,7 +144,7 @@ final class Shortcodes {
 		}
 
 		// Opt-in cookie set from the admin Visual Editor toggle.
-		$cookie = isset( $_COOKIE['nexus_ls_ve'] ) ? sanitize_text_field( wp_unslash( (string) $_COOKIE['nexus_ls_ve'] ) ) : '';
+		$cookie = isset( $_COOKIE['nexulesuite_ve'] ) ? sanitize_text_field( wp_unslash( (string) $_COOKIE['nexulesuite_ve'] ) ) : '';
 		if ( '1' !== $cookie ) {
 			return;
 		}
@@ -161,30 +161,30 @@ final class Shortcodes {
 			return;
 		}
 
-		$path = NEXUS_LS_PLUGIN_DIR . 'public/js/nexus-ls-visual-editor.js';
-		$ver  = file_exists( $path ) ? (string) filemtime( $path ) : NEXUS_LS_VERSION;
+		$path = nexulesuite_PLUGIN_DIR . 'public/js/nexus-ls-visual-editor.js';
+		$ver  = file_exists( $path ) ? (string) filemtime( $path ) : nexulesuite_VERSION;
 
 		wp_enqueue_script(
-			'nexus-ls-visual-editor',
-			esc_url( NEXUS_LS_PLUGIN_URL . 'public/js/nexus-ls-visual-editor.js' ),
+			'nexulesuite_visual-editor',
+			esc_url( nexulesuite_PLUGIN_URL . 'public/js/nexus-ls-visual-editor.js' ),
 			array( 'wp-element' ),
 			$ver,
 			true
 		);
 
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-global-font.php';
-		\Nexus_Lead_Suite\Core\Global_Font::enqueue( 'nexus-ls-global-font' );
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-global-font.php';
+		\nexulesuite_\Core\Global_Font::enqueue( 'nexulesuite_global-font' );
 
 		wp_localize_script(
-			'nexus-ls-visual-editor',
-			'nexusLsVeCfg',
+			'nexulesuite_visual-editor',
+			'nexulesuite_VeCfg',
 			array(
 				'restUrl'  => esc_url_raw( rest_url() ),
 				'nonce'    => wp_create_nonce( 'wp_rest' ),
 				'postId'   => $post_id,
-				'endpoint' => esc_url_raw( rest_url( 'nexus-lead-suite/v1/visual-editor/update' ) ),
+				'endpoint' => esc_url_raw( rest_url( 'nexulesuite_/v1/visual-editor/update' ) ),
 				'activityButtonClasses' => (string) ( ( get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() )['activityButtonClasses'] ?? '' ) ),
-				'globalFont' => \Nexus_Lead_Suite\Core\Global_Font::get_saved_font(),
+				'globalFont' => \nexulesuite_\Core\Global_Font::get_saved_font(),
 			)
 		);
 	}
@@ -209,43 +209,43 @@ final class Shortcodes {
 			return;
 		}
 
-		$patches = get_post_meta( $post_id, '_nexus_ls_ve_dom_patches', true );
+		$patches = get_post_meta( $post_id, '_nexulesuite_ve_dom_patches', true );
 		if ( ! is_array( $patches ) || array() === $patches ) {
 			return;
 		}
 
 		$list = array_values( $patches );
-		$path = NEXUS_LS_PLUGIN_DIR . 'public/js/nexus-ls-ve-apply-patches.js';
-		$ver  = file_exists( $path ) ? (string) filemtime( $path ) : NEXUS_LS_VERSION;
+		$path = nexulesuite_PLUGIN_DIR . 'public/js/nexus-ls-ve-apply-patches.js';
+		$ver  = file_exists( $path ) ? (string) filemtime( $path ) : nexulesuite_VERSION;
 
-		$bridge_path = NEXUS_LS_PLUGIN_DIR . 'public/js/nexus-ls-popup-bridge.js';
-		$deps        = file_exists( $bridge_path ) ? array( 'nexus-ls-popup-bridge' ) : array();
+		$bridge_path = nexulesuite_PLUGIN_DIR . 'public/js/nexus-ls-popup-bridge.js';
+		$deps        = file_exists( $bridge_path ) ? array( 'nexulesuite_popup-bridge' ) : array();
 
 		wp_enqueue_script(
-			'nexus-ls-ve-apply-patches',
-			esc_url( NEXUS_LS_PLUGIN_URL . 'public/js/nexus-ls-ve-apply-patches.js' ),
+			'nexulesuite_ve-apply-patches',
+			esc_url( nexulesuite_PLUGIN_URL . 'public/js/nexus-ls-ve-apply-patches.js' ),
 			$deps,
 			$ver,
 			true
 		);
 
 		wp_localize_script(
-			'nexus-ls-ve-apply-patches',
-			'nexusLsVePatches',
+			'nexulesuite_ve-apply-patches',
+			'nexulesuite_VePatches',
 			$list
 		);
 	}
 
 	/**
 	 * AJAX handler: sends a notification email when a comma-trigger fires on the frontend.
-	 * Trigger format: data-nexas-trigger="popup-event-id, notify-label"
+	 * Trigger format: data-nexulesuite_trigger="popup-event-id, notify-label"
 	 * The "notify-label" (second value after the comma) is used as the email subject tag.
 	 *
 	 * @return void
 	 */
 	public function handle_trigger_notify(): void {
 		// Verify nonce sent from frontend.
-		if ( ! check_ajax_referer( 'nexus_ls_trigger_notify', 'nonce', false ) ) {
+		if ( ! check_ajax_referer( 'nexulesuite_trigger_notify', 'nonce', false ) ) {
 			wp_send_json_error( array( 'message' => 'Invalid nonce.' ), 403 );
 			return;
 		}
@@ -309,8 +309,8 @@ final class Shortcodes {
 		}
 
 		try {
-			require_once NEXUS_LS_PLUGIN_DIR . 'core/class-activities-store.php';
-			\Nexus_Lead_Suite\Core\Activities_Store::record_interaction(
+			require_once nexulesuite_PLUGIN_DIR . 'core/class-activities-store.php';
+			\nexulesuite_\Core\Activities_Store::record_interaction(
 				'trigger_notify',
 				$trigger_id,
 				$page_url,
@@ -328,12 +328,12 @@ final class Shortcodes {
 	}
 
 	/**
-	 * AJAX handler for `[smart_trigger_form]` submissions from the frontend.
+	 * AJAX handler for `[nexulesuite_form]` submissions from the frontend.
 	 *
 	 * @return void
 	 */
 	public function handle_form_submit_ajax(): void {
-		if ( ! check_ajax_referer( 'nexus_ls_form_submit', 'nexus_ls_form_nonce', false ) ) {
+		if ( ! check_ajax_referer( 'nexulesuite_form_submit', 'nexulesuite_form_nonce', false ) ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid session. Please reload the page.', 'nexus-lead-suite' ) ), 403 );
 			return;
 		}
@@ -355,7 +355,7 @@ final class Shortcodes {
 			}
 		}
 
-		$form_id = isset( $_POST['nexus_ls_form_id'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['nexus_ls_form_id'] ) ) : '';
+		$form_id = isset( $_POST['nexulesuite_form_id'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['nexulesuite_form_id'] ) ) : '';
 		if ( '' === $form_id ) {
 			wp_send_json_error( array( 'message' => __( 'Missing form.', 'nexus-lead-suite' ) ) );
 			return;
@@ -384,7 +384,7 @@ final class Shortcodes {
 		$form_name  = isset( $form['name'] ) ? sanitize_text_field( (string) $form['name'] ) : $form_id;
 		$site_name  = get_bloginfo( 'name' );
 		$subject    = sprintf( '[%s] %s', $site_name, $form_name );
-		$page_url   = esc_url_raw( wp_unslash( (string) ( $_POST['_nexus_page_url'] ?? '' ) ) );
+		$page_url   = esc_url_raw( wp_unslash( (string) ( $_POST['_nexulesuite_page_url'] ?? '' ) ) );
 		$body       = $this->build_form_submission_notice_html(
 			(string) $site_name,
 			$form_name,
@@ -417,8 +417,8 @@ final class Shortcodes {
 		}
 
 		$popup_ev = '';
-		if ( isset( $_POST['nexus_ls_form_context'] ) ) {
-			$ctx_raw = sanitize_text_field( wp_unslash( (string) $_POST['nexus_ls_form_context'] ) );
+		if ( isset( $_POST['nexulesuite_form_context'] ) ) {
+			$ctx_raw = sanitize_text_field( wp_unslash( (string) $_POST['nexulesuite_form_context'] ) );
 			if ( preg_match( '/^popup:(.+)$/u', $ctx_raw, $mm ) ) {
 				$popup_ev = sanitize_text_field( trim( $mm[1] ) );
 				if ( strlen( $popup_ev ) > 120 ) {
@@ -433,7 +433,7 @@ final class Shortcodes {
 		}
 
 		$payload_base = array(
-			'event'                              => 'nexus_ls.form_submission',
+			'event'                              => 'nexulesuite_ls.form_submission',
 			'site'                               => array(
 				'name' => $site_name,
 				'url'  => home_url( '/' ),
@@ -445,8 +445,8 @@ final class Shortcodes {
 			'submitted_at_gmt'                   => current_time( 'mysql', true ),
 			'page_url'                           => $page_url,
 			'popup_event'                        => $popup_ev,
-			\Nexus_Lead_Suite\Core\Form_Submissions_Store::PAYLOAD_ENTRY_KEY => $entry_fields,
-			'retention_days'                     => \Nexus_Lead_Suite\Core\Form_Submissions_Store::retention_days(),
+			\nexulesuite_\Core\Form_Submissions_Store::PAYLOAD_ENTRY_KEY => $entry_fields,
+			'retention_days'                     => \nexulesuite_\Core\Form_Submissions_Store::retention_days(),
 		);
 
 		$sent = false;
@@ -461,21 +461,21 @@ final class Shortcodes {
 			array( 'mail_sent' => $sent )
 		);
 		try {
-			require_once NEXUS_LS_PLUGIN_DIR . 'core/class-form-submissions-store.php';
-			\Nexus_Lead_Suite\Core\Form_Submissions_Store::insert( $form_id, $db_payload );
+			require_once nexulesuite_PLUGIN_DIR . 'core/class-form-submissions-store.php';
+			\nexulesuite_\Core\Form_Submissions_Store::insert( $form_id, $db_payload );
 		} catch ( \Throwable $e ) {
 			// Submission store must not block email UX.
 		}
 
 		$webhook_urls = $this->collect_submission_webhook_urls( $form );
 		if ( ! empty( $webhook_urls ) ) {
-			$hook_body = apply_filters( 'nexus_ls_form_webhook_payload', $db_payload, $form_id, $form );
+			$hook_body = apply_filters( 'nexulesuite_form_webhook_payload', $db_payload, $form_id, $form );
 			if ( is_array( $hook_body ) ) {
 				$hook_body = $this->sanitize_webhook_payload( $hook_body );
 				add_action(
 					'shutdown',
 					static function () use ( $webhook_urls, $hook_body ): void {
-						\Nexus_Lead_Suite\Core\Form_Submissions_Store::dispatch_webhooks( $webhook_urls, $hook_body );
+						\nexulesuite_\Core\Form_Submissions_Store::dispatch_webhooks( $webhook_urls, $hook_body );
 					},
 					9999
 				);
@@ -483,8 +483,8 @@ final class Shortcodes {
 		}
 
 		try {
-			require_once NEXUS_LS_PLUGIN_DIR . 'core/class-activities-store.php';
-			\Nexus_Lead_Suite\Core\Activities_Store::record_form_submission(
+			require_once nexulesuite_PLUGIN_DIR . 'core/class-activities-store.php';
+			\nexulesuite_\Core\Activities_Store::record_form_submission(
 				$form_id,
 				$form_name,
 				$page_url,
@@ -803,7 +803,7 @@ final class Shortcodes {
 	private function read_email_templates_from_storage(): array {
 		$templates = get_option( self::EMAIL_TEMPLATES_OPTION_KEY, null );
 		if ( null === $templates ) {
-			$templates = get_option( 'nexus_ls_email_templates', array() );
+			$templates = get_option( 'nexulesuite_email_templates', array() );
 		}
 
 		return is_array( $templates ) ? $templates : array();
@@ -1256,12 +1256,12 @@ final class Shortcodes {
 	private function collect_form_submission_display_rows( array $form ): array {
 		$meta_map = $this->build_form_field_post_meta_map( $form );
 		$skip      = array(
-			'nexus_ls_form_nonce',
-			'nexus_ls_form_id',
-			'nexus_ls_form_context',
+			'nexulesuite_form_nonce',
+			'nexulesuite_form_id',
+			'nexulesuite_form_context',
 			'action',
 			'_wp_http_referer',
-			'_nexus_page_url',
+			'_nexulesuite_page_url',
 			self::HONEYPOT_FIELD_NAME,
 		);
 		$skip_like = array( 'g-recaptcha-response', 'h-captcha-response', 'cf-turnstile-response' );
@@ -1522,7 +1522,7 @@ final class Shortcodes {
 	/**
 	 * True when Popup Body has no user-supplied content (whitespace-only counts as empty).
 	 * Only then may the global "Auto Popup Form" from Settings be prepended for timer/scroll/exit
-	 * popups. If the merchant pastes any HTML or a shortcode (including `[smart_trigger_form …]`),
+	 * popups. If the merchant pastes any HTML or a shortcode (including `[nexulesuite_form …]`),
 	 * that field is non-empty — we never prepend, so only the chosen shortcode/body is shown.
 	 *
 	 * @param string $content Raw popup body from storage.
@@ -1572,7 +1572,7 @@ final class Shortcodes {
 			if ( '' === $buf ) {
 				continue;
 			}
-			$discard = \Nexus_Lead_Suite\expand_popup_body_shortcodes( $buf );
+			$discard = \nexulesuite_\expand_popup_body_shortcodes( $buf );
 			unset( $discard );
 		}
 	}
@@ -1610,9 +1610,7 @@ final class Shortcodes {
 	 * @return void
 	 */
 	public function register_shortcodes(): void {
-		add_shortcode( 'nexus_ls_form', array( $this, 'render_form_shortcode' ) );
-		/** Legacy alias; {@see render_form_shortcode()} — prefer `[nexus_ls_form]`. */
-		add_shortcode( 'smart_trigger_form', array( $this, 'render_form_shortcode' ) );
+		add_shortcode( 'nexulesuite_form', array( $this, 'render_form_shortcode' ) );
 	}
 
 	/**
@@ -1635,7 +1633,7 @@ final class Shortcodes {
 		}
 
 		$content = (string) $post->post_content;
-		if ( '' === $content || ( false === strpos( $content, 'smart_trigger_form' ) && false === strpos( $content, 'nexus_ls_form' ) ) ) {
+		if ( '' === $content || false === strpos( $content, 'nexulesuite_form' ) ) {
 			return;
 		}
 
@@ -1650,7 +1648,7 @@ final class Shortcodes {
 	 * @return void
 	 */
 	private function queue_forminator_meta_from_shortcode_content( string $content ): void {
-		if ( ! preg_match_all( '/\\[\\s*(?:smart_trigger_form|nexus_ls_form)\\b([^\\]]*)\\]/i', $content, $blocks, PREG_SET_ORDER ) ) {
+		if ( ! preg_match_all( '/\\[\\s*nexulesuite_form\\b([^\\]]*)\\]/i', $content, $blocks, PREG_SET_ORDER ) ) {
 			return;
 		}
 
@@ -1747,10 +1745,10 @@ final class Shortcodes {
 	 * @return void
 	 */
 	public function enqueue_popup_styles(): void {
-		wp_register_style( 'nexus-ls-popup-overlay', false, array(), NEXUS_LS_VERSION );
-		wp_register_script( 'nexus-ls-popup-overlay', false, array(), NEXUS_LS_VERSION, true );
-		wp_register_style( 'nexus-ls-livechat-widget', false, array(), NEXUS_LS_VERSION );
-		wp_register_script( 'nexus-ls-livechat-widget', false, array(), NEXUS_LS_VERSION, true );
+		wp_register_style( 'nexulesuite_popup-overlay', false, array(), nexulesuite_VERSION );
+		wp_register_script( 'nexulesuite_popup-overlay', false, array(), nexulesuite_VERSION, true );
+		wp_register_style( 'nexulesuite_livechat-widget', false, array(), nexulesuite_VERSION );
+		wp_register_script( 'nexulesuite_livechat-widget', false, array(), nexulesuite_VERSION, true );
 	}
 
 	/**
@@ -1773,46 +1771,46 @@ final class Shortcodes {
 
 		/* Read the global "Enable Auto Popup" setting.
 		 * When false, timer / scroll / exit-intent triggers are suppressed;
-		 * only Manual Click (data-nexas-trigger button) still works. */
+		 * only Manual Click (data-nexulesuite_trigger button) still works. */
 		$general       = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
 		$auto_popup_on   = is_array( $general ) ? (bool) ( $general['enableAutoPopup'] ?? false ) : false;
 		$auto_popup_forms = is_array( $general ) ? $this->get_auto_popup_default_form_ids( $general ) : array();
 
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-global-font.php';
-		\Nexus_Lead_Suite\Core\Global_Font::enqueue( 'nexus-ls-global-font' );
-		$popup_font_stack = \Nexus_Lead_Suite\Core\Global_Font::get_font_stack(
-			\Nexus_Lead_Suite\Core\Global_Font::get_saved_font()
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-global-font.php';
+		\nexulesuite_\Core\Global_Font::enqueue( 'nexulesuite_global-font' );
+		$popup_font_stack = \nexulesuite_\Core\Global_Font::get_font_stack(
+			\nexulesuite_\Core\Global_Font::get_saved_font()
 		);
 
 		/* ── Popup overlay CSS (wp_enqueue inline) ── */
 		$popup_css = '/* Nexus Lead Suite – Popup Overlay */
-		.nexus-popup-overlay,.nexus-popup-overlay .nexus-popup,.nexus-popup-overlay .nexus-popup *{font-family:' . $popup_font_stack . '!important;}
-		.nexus-popup-overlay{display:none;position:fixed;inset:0;z-index:999999;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:16px;overflow-y:auto;box-sizing:border-box;}
-		.nexus-popup-overlay.nexus-popup--open{display:flex;}
-		.nexus-popup{position:relative;width:100%;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.28);animation:nexus-pop-in .22s ease;box-sizing:border-box;}
-		@keyframes nexus-pop-in{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-		.nexus-popup__close{position:absolute;top:10px;right:10px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;line-height:1;z-index:2;border-radius:50%;transition:opacity .2s,transform .25s cubic-bezier(.34,1.56,.64,1);}
-		.nexus-popup__close:hover{opacity:.9;transform:rotate(90deg) scale(1.1);}
-		.nexus-popup__close:active{transform:rotate(90deg) scale(0.95);}
-		.nexus-popup__header{word-break:break-word;box-sizing:border-box;}
-		.nexus-popup__heading{margin:0;line-height:1.3;}
-		.nexus-popup__sub{margin-top:6px;opacity:.85;font-size:.875em;}
-		.nexus-popup__body{word-break:break-word;box-sizing:border-box;text-align:start;}
-		.nexus-popup__body *{max-width:100%;}
-		.nexus-popup-overlay .nexus-popup__body .nexus-st-form,
-		.nexus-popup__body .nexus-st-form{border:none!important;box-shadow:none!important;outline:none!important;background:transparent!important;}
-		.nexus-popup-overlay .nexus-popup__body .nexus-st-form>form.nexus-st-form__body,
-		.nexus-popup__body .nexus-st-form>form.nexus-st-form__body,
-		.nexus-popup__body form.nexus-st-form__body{
+		.nexulesuite_popup-overlay,.nexulesuite_popup-overlay .nexulesuite_popup,.nexulesuite_popup-overlay .nexulesuite_popup *{font-family:' . $popup_font_stack . '!important;}
+		.nexulesuite_popup-overlay{display:none;position:fixed;inset:0;z-index:999999;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:16px;overflow-y:auto;box-sizing:border-box;}
+		.nexulesuite_popup-overlay.nexulesuite_popup--open{display:flex;}
+		.nexulesuite_popup{position:relative;width:100%;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.28);animation:nexulesuite_pop-in .22s ease;box-sizing:border-box;}
+		@keyframes nexulesuite_pop-in{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+		.nexulesuite_popup__close{position:absolute;top:10px;right:10px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;line-height:1;z-index:2;border-radius:50%;transition:opacity .2s,transform .25s cubic-bezier(.34,1.56,.64,1);}
+		.nexulesuite_popup__close:hover{opacity:.9;transform:rotate(90deg) scale(1.1);}
+		.nexulesuite_popup__close:active{transform:rotate(90deg) scale(0.95);}
+		.nexulesuite_popup__header{word-break:break-word;box-sizing:border-box;}
+		.nexulesuite_popup__heading{margin:0;line-height:1.3;}
+		.nexulesuite_popup__sub{margin-top:6px;opacity:.85;font-size:.875em;}
+		.nexulesuite_popup__body{word-break:break-word;box-sizing:border-box;text-align:start;}
+		.nexulesuite_popup__body *{max-width:100%;}
+		.nexulesuite_popup-overlay .nexulesuite_popup__body .nexulesuite_st-form,
+		.nexulesuite_popup__body .nexulesuite_st-form{border:none!important;box-shadow:none!important;outline:none!important;background:transparent!important;}
+		.nexulesuite_popup-overlay .nexulesuite_popup__body .nexulesuite_st-form>form.nexulesuite_st-form__body,
+		.nexulesuite_popup__body .nexulesuite_st-form>form.nexulesuite_st-form__body,
+		.nexulesuite_popup__body form.nexulesuite_st-form__body{
 			border:none!important;box-shadow:none!important;outline:none!important;background:transparent!important;
 			padding:0!important;margin:0!important;border-radius:0!important;
 		}
-		.nexus-popup-overlay.nexus-popup-overlay--form-result .nexus-popup__header,
-		.nexus-popup-overlay.nexus-popup-overlay--form-result .nexus-popup__close{display:none!important;}
-		.nexus-popup-overlay .nexus-st-form .nexus-st-actions{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;gap:10px!important;box-sizing:border-box!important;}
-		.nexus-popup-overlay .nexus-st-form .nexus-st-actions .nexus-st-btn{box-sizing:border-box!important;width:var(--nexus-popup-form-btn-w,100%)!important;max-width:100%!important;flex:0 1 auto!important;min-width:0!important;}
-		@media(max-width:480px){.nexus-popup{border-radius:12px!important;}.nexus-popup__header,.nexus-popup__body{padding:18px!important;}}';
-		$this->enqueue_footer_inline_style( 'nexus-ls-popup-overlay', $popup_css );
+		.nexulesuite_popup-overlay.nexulesuite_popup-overlay--form-result .nexulesuite_popup__header,
+		.nexulesuite_popup-overlay.nexulesuite_popup-overlay--form-result .nexulesuite_popup__close{display:none!important;}
+		.nexulesuite_popup-overlay .nexulesuite_st-form .nexulesuite_st-actions{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;gap:10px!important;box-sizing:border-box!important;}
+		.nexulesuite_popup-overlay .nexulesuite_st-form .nexulesuite_st-actions .nexulesuite_st-btn{box-sizing:border-box!important;width:var(--nexulesuite_popup-form-btn-w,100%)!important;max-width:100%!important;flex:0 1 auto!important;min-width:0!important;}
+		@media(max-width:480px){.nexulesuite_popup{border-radius:12px!important;}.nexulesuite_popup__header,.nexulesuite_popup__body{padding:18px!important;}}';
+		$this->enqueue_footer_inline_style( 'nexulesuite_popup-overlay', $popup_css );
 
 		/* ── Render each popup overlay ───────────────────────── */
 		foreach ( $popups as $popup ) {
@@ -1888,23 +1886,23 @@ final class Shortcodes {
 					if ( ! is_array( $prep_form ) || ! $this->is_form_published_for_frontend( $prep_form ) ) {
 						continue;
 					}
-					$prepend .= sprintf( '[nexus_ls_form id="%s"]', esc_attr( $fid ) ) . "\n\n";
+					$prepend .= sprintf( '[nexulesuite_form id="%s"]', esc_attr( $fid ) ) . "\n\n";
 				}
 				$content_for_render = $prepend . $content_for_render;
 			}
 
 			/* Render shortcodes so embedded forms display correctly (second pass for nested). */
 			$body_for_codes   = $this->sanitize_popup_body_before_shortcode( $content_for_render );
-			$rendered_content = \Nexus_Lead_Suite\expand_popup_body_shortcodes( $body_for_codes );
+			$rendered_content = \nexulesuite_\expand_popup_body_shortcodes( $body_for_codes );
 
 			$overlay_css_vars = sprintf(
-				'--nexus-popup-form-btn-w:%d%%;--nexus-popup-form-btn:%s;',
+				'--nexulesuite_popup-form-btn-w:%d%%;--nexulesuite_popup-form-btn:%s;',
 				$btn_width,
 				$btn_color
 			);
 
 			printf(
-				'<div class="nexus-popup-overlay" id="nexus-pop-%s" style="%s" data-popup-id="%s" data-event="%s" data-logic="%s" aria-hidden="true" aria-modal="true" role="dialog">',
+				'<div class="nexulesuite_popup-overlay" id="nexulesuite_pop-%s" style="%s" data-popup-id="%s" data-event="%s" data-logic="%s" aria-hidden="true" aria-modal="true" role="dialog">',
 				esc_attr( $popup_id ),
 				esc_attr( $overlay_css_vars ),
 				esc_attr( $popup_id ),
@@ -1913,14 +1911,14 @@ final class Shortcodes {
 			);
 
 			printf(
-				'<div class="nexus-popup" style="max-width:%dpx;border-radius:%dpx;">',
+				'<div class="nexulesuite_popup" style="max-width:%dpx;border-radius:%dpx;">',
 				absint( $width ),
 				absint( $radius )
 			);
 
 			/* Close button */
 			printf(
-				'<button type="button" class="nexus-popup__close" aria-label="%s" style="background:%s;color:%s;width:%dpx;height:%dpx;font-size:%dpx;">&#x2715;</button>',
+				'<button type="button" class="nexulesuite_popup__close" aria-label="%s" style="background:%s;color:%s;width:%dpx;height:%dpx;font-size:%dpx;">&#x2715;</button>',
 				esc_attr__( 'Close', 'nexus-lead-suite' ),
 				esc_attr( $close_bg ),
 				esc_attr( $close_col ),
@@ -1931,13 +1929,13 @@ final class Shortcodes {
 
 			/* Header */
 			printf(
-				'<div class="nexus-popup__header" style="background:%s;color:%s;padding:%dpx;text-align:%s;">',
+				'<div class="nexulesuite_popup__header" style="background:%s;color:%s;padding:%dpx;text-align:%s;">',
 				esc_attr( $heading_bg ),
 				esc_attr( $heading_tc ),
 				absint( $padding ),
 				esc_attr( $align )
 			);
-			printf( '<div class="nexus-popup__heading" style="font-size:%dpx;">', absint( $heading_fs ) );
+			printf( '<div class="nexulesuite_popup__heading" style="font-size:%dpx;">', absint( $heading_fs ) );
 			// Convert legacy <font color="..."> tags to <span style="color:..."> so inline-style
 			// specificity [1,0,0,0] always beats any theme CSS color rules.
 			$heading_html = preg_replace_callback(
@@ -1959,25 +1957,26 @@ final class Shortcodes {
 			$heading_html = str_ireplace( '</font>', '</span>', (string) $heading_html );
 			// Strip TinyMCE inline font-family so Settings → globalFont wins (livechat uses explicit stack).
 			$heading_html = preg_replace( '/\s*font-family\s*:\s*[^;"\']+(!important)?\s*;?/i', '', (string) $heading_html );
-			echo $heading_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized above via wp_kses_post + controlled regex
+			echo wp_kses_post( $heading_html );
 			echo '</div>';
 			if ( '' !== $sub ) {
-				echo '<div class="nexus-popup__sub">' . esc_html( $sub ) . '</div>';
+				echo '<div class="nexulesuite_popup__sub">' . esc_html( $sub ) . '</div>';
 			}
 			echo '</div>';
 
 			/* Body */
 			/* Body: do not set text-align — it would inherit into embedded forms (labels/placeholders). */
 			printf(
-				'<div class="nexus-popup__body" style="background:%s;padding:%dpx;">',
+				'<div class="nexulesuite_popup__body" style="background:%s;padding:%dpx;">',
 				esc_attr( $body_bg ),
 				absint( $padding )
 			);
-			echo $rendered_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_shortcode() output (see expand_popup_body_shortcodes()); shortcode callbacks (incl. third-party Forminator + captcha) escape their own markup. The popup body is sanitized on save via sanitize_popup_body_for_storage() (wp_kses_post + <script> strip).
+			echo $rendered_content;
 			echo '</div>';
 
-			echo '</div>'; // .nexus-popup
-			echo '</div>'; // .nexus-popup-overlay
+			echo '</div>'; // .nexulesuite_popup
+			echo '</div>'; // .nexulesuite_popup-overlay
 		}
 
 		/* ── Inline JS runtime ─────────────────────────────────
@@ -1985,25 +1984,24 @@ final class Shortcodes {
 		 * Wraps in a readyState guard so it works even if the browser
 		 * hasn't fully parsed the document yet.
 		 * ─────────────────────────────────────────────────────── */
-		$auto_popup_js = $auto_popup_on ? 'true' : 'false';
 		ob_start();
 		?>
 		(function(){
 			'use strict';
 
 			/* PHP-injected: when false, auto triggers (timer/scroll/exit) are blocked. */
-			var nexusAutoPopupEnabled = <?php echo $auto_popup_js; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- boolean literal. ?>;
+			var nexulesuite_AutoPopupEnabled = <?php echo wp_json_encode( (bool) $auto_popup_on ); ?>;
 
-			function nexusInitPopups(){
+			function nexulesuite_InitPopups(){
 
 				/* Reset form result UI when closing popup (ESC, backdrop, X). */
-				window.nexusLsResetPopupFormResult = function(overlay){
-					if(!overlay||!overlay.classList||!overlay.classList.contains('nexus-popup-overlay')) return;
-					overlay.classList.remove('nexus-popup-overlay--form-result');
-					var roots = overlay.querySelectorAll('.nexus-st-form');
+				window.nexulesuite_ResetPopupFormResult = function(overlay){
+					if(!overlay||!overlay.classList||!overlay.classList.contains('nexulesuite_popup-overlay')) return;
+					overlay.classList.remove('nexulesuite_popup-overlay--form-result');
+					var roots = overlay.querySelectorAll('.nexulesuite_st-form');
 					roots.forEach(function(root){
-						root.classList.remove('nexus-st-form--sent');
-						root.querySelectorAll('.nexus-st-form-result-card').forEach(function(node){
+						root.classList.remove('nexulesuite_st-form--sent');
+						root.querySelectorAll('.nexulesuite_st-form-result-card').forEach(function(node){
 							if(node.parentNode){ node.parentNode.removeChild(node); }
 						});
 					});
@@ -2011,32 +2009,32 @@ final class Shortcodes {
 
 				/* ── open / close (shared with site-wide bridge script) ── */
 				function openPopup(el, autoTrigger){
-					if(window.NexusLsPopupUi&&typeof window.NexusLsPopupUi.open==='function'){
+					if(window.nexulesuite_PopupUi&&typeof window.nexulesuite_PopupUi.open==='function'){
 						if(autoTrigger){
-							window.NexusLsPopupUi.open(el,{source:'auto',autoTrigger:autoTrigger});
+							window.nexulesuite_PopupUi.open(el,{source:'auto',autoTrigger:autoTrigger});
 						}else{
-							window.NexusLsPopupUi.open(el);
+							window.nexulesuite_PopupUi.open(el);
 						}
 						return;
 					}
-					if(el.classList.contains('nexus-popup--open')) return;
-					el.classList.add('nexus-popup--open');
+					if(el.classList.contains('nexulesuite_popup--open')) return;
+					el.classList.add('nexulesuite_popup--open');
 					el.setAttribute('aria-hidden','false');
 					document.body.style.overflow='hidden';
 				}
 				function closePopup(el){
-					if(window.NexusLsPopupUi&&typeof window.NexusLsPopupUi.close==='function'){
-						window.NexusLsPopupUi.close(el);
+					if(window.nexulesuite_PopupUi&&typeof window.nexulesuite_PopupUi.close==='function'){
+						window.nexulesuite_PopupUi.close(el);
 						return;
 					}
-					el.classList.remove('nexus-popup--open');
+					el.classList.remove('nexulesuite_popup--open');
 					el.setAttribute('aria-hidden','true');
 					document.body.style.overflow='';
-					if(typeof window.nexusLsResetPopupFormResult==='function'){ window.nexusLsResetPopupFormResult(el); }
+					if(typeof window.nexulesuite_ResetPopupFormResult==='function'){ window.nexulesuite_ResetPopupFormResult(el); }
 				}
 
 				/* ── attach triggers to every overlay ─────────── */
-				var overlays = document.querySelectorAll('.nexus-popup-overlay');
+				var overlays = document.querySelectorAll('.nexulesuite_popup-overlay');
 				overlays.forEach(function(overlay){
 
 					/* close on backdrop click */
@@ -2045,7 +2043,7 @@ final class Shortcodes {
 					});
 
 					/* close button */
-					var closeBtn = overlay.querySelector('.nexus-popup__close');
+					var closeBtn = overlay.querySelector('.nexulesuite_popup__close');
 					if(closeBtn){
 						closeBtn.addEventListener('click',function(){ closePopup(overlay); });
 					}
@@ -2063,13 +2061,13 @@ final class Shortcodes {
 						/* ── Time Delay trigger ──────────────────── */
 						if(type==='timer'){
 							/* Blocked when Enable Auto Popup is OFF in Settings */
-							if(!nexusAutoPopupEnabled) return;
+							if(!nexulesuite_AutoPopupEnabled) return;
 							setTimeout(function(){ openPopup(overlay,'timer'); }, delay * 1000);
 
 						/* ── Scroll Depth trigger ────────────────── */
 						} else if(type==='scroll'){
 							/* Blocked when Enable Auto Popup is OFF in Settings */
-							if(!nexusAutoPopupEnabled) return;
+							if(!nexulesuite_AutoPopupEnabled) return;
 							(function(){
 								var fired=false;
 								function onScroll(){
@@ -2088,7 +2086,7 @@ final class Shortcodes {
 						/* ── Exit Intent trigger ─────────────────── */
 						} else if(type==='exit'){
 							/* Blocked when Enable Auto Popup is OFF in Settings */
-							if(!nexusAutoPopupEnabled) return;
+							if(!nexulesuite_AutoPopupEnabled) return;
 							(function(){
 								var fired=false;
 								function onLeave(e){
@@ -2120,14 +2118,14 @@ final class Shortcodes {
 
 			/* Run immediately if DOM is ready, otherwise wait. */
 			if(document.readyState==='loading'){
-				document.addEventListener('DOMContentLoaded', nexusInitPopups);
+				document.addEventListener('DOMContentLoaded', nexulesuite_InitPopups);
 			} else {
-				nexusInitPopups();
+				nexulesuite_InitPopups();
 			}
 		})();
 		<?php
 		$popup_js = (string) ob_get_clean();
-		$this->enqueue_footer_inline_script( 'nexus-ls-popup-overlay', $popup_js );
+		$this->enqueue_footer_inline_script( 'nexulesuite_popup-overlay', $popup_js );
 	}
 
 	/**
@@ -2137,8 +2135,8 @@ final class Shortcodes {
 	 * @return void
 	 */
 	public function enqueue_global_font(): void {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-global-font.php';
-		\Nexus_Lead_Suite\Core\Global_Font::enqueue( 'nexus-ls-global-font' );
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-global-font.php';
+		\nexulesuite_\Core\Global_Font::enqueue( 'nexulesuite_global-font' );
 	}
 
 	/**
@@ -2154,9 +2152,9 @@ final class Shortcodes {
 	 * @return array<int,array<string,mixed>>
 	 */
 	private function filter_popups_for_current_request( array $popups ): array {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-menu-group-resolver.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-menu-group-resolver.php';
 
-		$resolver = new \Nexus_Lead_Suite\Core\Menu_Group_Resolver();
+		$resolver = new \nexulesuite_\Core\Menu_Group_Resolver();
 		$out      = array();
 
 		foreach ( $popups as $popup ) {
@@ -2191,10 +2189,10 @@ final class Shortcodes {
 	 * @return array{ groups: array<int,mixed>, globalFontSize: int }
 	 */
 	private function get_menu_items_payload(): array {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-menu-items-payload.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-menu-items-payload.php';
 
 		$stored = get_option( self::MENU_ITEMS_OPTION_KEY, array() );
-		return \Nexus_Lead_Suite\Core\Menu_Items_Payload::normalize_stored( $stored );
+		return \nexulesuite_\Core\Menu_Items_Payload::normalize_stored( $stored );
 	}
 
 	/**
@@ -2203,14 +2201,14 @@ final class Shortcodes {
 	 * @return array<int,array<string,mixed>>
 	 */
 	private function get_active_menu_buttons(): array {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-menu-group-resolver.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-menu-group-resolver.php';
 
 		$payload = $this->get_menu_items_payload();
 		$groups  = isset( $payload['groups'] ) && is_array( $payload['groups'] )
 			? $payload['groups']
 			: array();
 
-		$resolver = new \Nexus_Lead_Suite\Core\Menu_Group_Resolver();
+		$resolver = new \nexulesuite_\Core\Menu_Group_Resolver();
 		return $resolver->get_buttons_for_request( $groups );
 	}
 
@@ -2228,12 +2226,12 @@ final class Shortcodes {
 		}
 
 		// Register a dummy handle so we can attach inline CSS cleanly.
-		wp_register_style( 'nexus-ls-bottom-nav', false, array(), NEXUS_LS_VERSION ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-		wp_enqueue_style( 'nexus-ls-bottom-nav' );
+		wp_register_style( 'nexulesuite_bottom-nav', false, array(), nexulesuite_VERSION ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+		wp_enqueue_style( 'nexulesuite_bottom-nav' );
 
 		$css = '
 /* Nexus Bottom Navigation Bar (mobile + tablet only) */
-.nexus-bottom-nav {
+.nexulesuite_bottom-nav {
   display: none;
   position: fixed;
   bottom: 0;
@@ -2247,26 +2245,26 @@ final class Shortcodes {
   padding-bottom: max(8px, env(safe-area-inset-bottom));
 }
 @media (max-width: 1023px) {
-  .nexus-bottom-nav { display: block; }
+  .nexulesuite_bottom-nav { display: block; }
 }
-.nexus-bottom-nav__inner {
+.nexulesuite_bottom-nav__inner {
   container-type: inline-size;
-  --nexus-nav-gap: 4px;
-  --nexus-nav-fs-min: 10px;
-  --nexus-nav-fs-max: ' . $global_fs . 'px;
+  --nexulesuite_nav-gap: 4px;
+  --nexulesuite_nav-fs-min: 10px;
+  --nexulesuite_nav-fs-max: ' . $global_fs . 'px;
   /* 280px viewport − 12px padding each side */
-  --nexus-nav-inner-min: 256px;
-  --nexus-nav-inner-max: 700px;
+  --nexulesuite_nav-inner-min: 256px;
+  --nexulesuite_nav-inner-max: 700px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: var(--nexus-nav-gap);
+  gap: var(--nexulesuite_nav-gap);
   justify-content: flex-start;
   align-items: stretch;
   width: 100%;
   max-width: 100%;
 }
-.nexus-bottom-nav__btn {
+.nexulesuite_bottom-nav__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2280,44 +2278,44 @@ final class Shortcodes {
   white-space: nowrap;
   overflow: visible;
   font-size: clamp(
-    var(--nexus-nav-fs-min),
+    var(--nexulesuite_nav-fs-min),
     calc(
-      var(--nexus-nav-fs-min)
-      + (100cqw - var(--nexus-nav-inner-min))
-      * (var(--nexus-nav-fs-max) - var(--nexus-nav-fs-min))
-      / (var(--nexus-nav-inner-max) - var(--nexus-nav-inner-min))
+      var(--nexulesuite_nav-fs-min)
+      + (100cqw - var(--nexulesuite_nav-inner-min))
+      * (var(--nexulesuite_nav-fs-max) - var(--nexulesuite_nav-fs-min))
+      / (var(--nexulesuite_nav-inner-max) - var(--nexulesuite_nav-inner-min))
     ),
-    var(--nexus-nav-fs-max)
+    var(--nexulesuite_nav-fs-max)
   );
   transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease, opacity 0.18s ease;
 }
 /* Inline: grow to fill each row; wrap only when content no longer fits */
-.nexus-bottom-nav__btn--inline {
+.nexulesuite_bottom-nav__btn--inline {
   flex: 1 1 0%;
   min-width: max-content;
   max-width: 100%;
 }
-.nexus-bottom-nav__btn--inline span {
+.nexulesuite_bottom-nav__btn--inline span {
   overflow: visible;
 }
 /* Block: always own full-width row */
-.nexus-bottom-nav__btn--block {
+.nexulesuite_bottom-nav__btn--block {
   flex: 0 0 100%;
   width: 100%;
   max-width: 100%;
 }
-.nexus-bottom-nav__btn svg {
+.nexulesuite_bottom-nav__btn svg {
   flex-shrink: 0;
   width: 1.2em;
   height: 1.2em;
 }
-.nexus-bottom-nav__btn--lift:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
-.nexus-bottom-nav__btn--scale:hover { transform: scale(1.05); }
-.nexus-bottom-nav__btn--glow:hover { box-shadow: 0 0 20px rgba(99,102,241,0.55); }
-.nexus-bottom-nav__btn--darken:hover { filter: brightness(0.88); }
-.nexus-bottom-nav__btn--shake:hover { animation: nexus-nav-shake 0.4s ease; }
-.nexus-bottom-nav__btn--rotate:hover { transform: rotate(3deg); }
-@keyframes nexus-nav-shake {
+.nexulesuite_bottom-nav__btn--lift:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+.nexulesuite_bottom-nav__btn--scale:hover { transform: scale(1.05); }
+.nexulesuite_bottom-nav__btn--glow:hover { box-shadow: 0 0 20px rgba(99,102,241,0.55); }
+.nexulesuite_bottom-nav__btn--darken:hover { filter: brightness(0.88); }
+.nexulesuite_bottom-nav__btn--shake:hover { animation: nexulesuite_nav-shake 0.4s ease; }
+.nexulesuite_bottom-nav__btn--rotate:hover { transform: rotate(3deg); }
+@keyframes nexulesuite_nav-shake {
   0%,100% { transform: translateX(0); }
   20% { transform: translateX(-4px); }
   40% { transform: translateX(4px); }
@@ -2325,7 +2323,7 @@ final class Shortcodes {
   80% { transform: translateX(3px); }
 }
 ';
-		wp_add_inline_style( 'nexus-ls-bottom-nav', $css );
+		wp_add_inline_style( 'nexulesuite_bottom-nav', $css );
 	}
 
 	/**
@@ -2346,8 +2344,8 @@ final class Shortcodes {
 			return;
 		}
 
-		echo '<nav class="nexus-bottom-nav nexus-menu-widget" aria-label="' . esc_attr__( 'Site Navigation', 'nexus-lead-suite' ) . '">';
-		echo '<div class="nexus-bottom-nav__inner">';
+		echo '<nav class="nexulesuite_bottom-nav nexulesuite_menu-widget" aria-label="' . esc_attr__( 'Site Navigation', 'nexus-lead-suite' ) . '">';
+		echo '<div class="nexulesuite_bottom-nav__inner">';
 
 		foreach ( $items as $idx => $btn ) {
 			if ( ! is_array( $btn ) ) {
@@ -2372,10 +2370,10 @@ final class Shortcodes {
 			if ( ! in_array( $display_mode, array( 'inline', 'block' ), true ) ) {
 				$display_mode = 'inline';
 			}
-			$mode_class = 'block' === $display_mode ? ' nexus-bottom-nav__btn--block' : ' nexus-bottom-nav__btn--inline';
+			$mode_class = 'block' === $display_mode ? ' nexulesuite_bottom-nav__btn--block' : ' nexulesuite_bottom-nav__btn--inline';
 
 			$allowed_effects = array( 'lift', 'scale', 'glow', 'darken', 'shake', 'rotate' );
-			$hover_class     = in_array( $hover_effect, $allowed_effects, true ) ? ' nexus-bottom-nav__btn--' . $hover_effect : '';
+			$hover_class     = in_array( $hover_effect, $allowed_effects, true ) ? ' nexulesuite_bottom-nav__btn--' . $hover_effect : '';
 
 			$inline_style = sprintf(
 				'background-color:%s;color:%s;padding:%dpx %dpx;border-radius:%dpx;',
@@ -2399,7 +2397,7 @@ final class Shortcodes {
 				? $label
 				: __( 'Menu item', 'nexus-lead-suite' );
 			$trigger_first = '' !== $event_name ? $event_name : ( 'nav-' . $btn_row_id );
-			$trigger_attr    = ' data-nexas-trigger="' . esc_attr( $trigger_first . ',' . $notify_label ) . '"';
+			$trigger_attr    = ' data-nexulesuite_trigger="' . esc_attr( $trigger_first . ',' . $notify_label ) . '"';
 
 			/*
 			 * esc_url() strips non-allowed schemes; "popup:id" becomes "" and breaks <a href=""> click handling.
@@ -2413,20 +2411,21 @@ final class Shortcodes {
 				}
 			}
 
-			printf(
-				'<a href="%s"%s%s class="nexus-bottom-nav__btn%s%s%s" style="%s">',
+			$nav_btn_open = sprintf(
+				'<a href="%s"%s%s class="nexulesuite_bottom-nav__btn%s%s%s" style="%s">',
 				esc_url( $href_attr ),
 				$css_id ? ' id="' . esc_attr( $css_id ) . '"' : '',
-				$trigger_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already escaped above.
+				$trigger_attr,
 				esc_attr( $mode_class ),
 				esc_attr( $hover_class ),
 				$css_class ? ' ' . esc_attr( $css_class ) : '',
 				esc_attr( $inline_style )
 			);
+			echo wp_kses( $nav_btn_open, \nexulesuite_\allowed_form_html() );
 
 			$svg = $this->get_nav_icon_svg( $icon_key );
 			if ( '' !== $svg ) {
-				echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG is hardcoded, not user input.
+				echo wp_kses( $svg, \nexulesuite_\allowed_form_html() );
 			}
 
 			if ( '' !== $label ) {
@@ -2474,10 +2473,10 @@ final class Shortcodes {
 			return;
 		}
 
-		$js_path  = NEXUS_LS_PLUGIN_DIR . 'public/js/forms-runtime.js';
-		$css_path = NEXUS_LS_PLUGIN_DIR . 'public/css/forms-runtime.css';
-		$js_ver   = file_exists( $js_path ) ? (string) filemtime( $js_path ) : NEXUS_LS_VERSION;
-		$css_ver  = file_exists( $css_path ) ? (string) filemtime( $css_path ) : NEXUS_LS_VERSION;
+		$js_path  = nexulesuite_PLUGIN_DIR . 'public/js/forms-runtime.js';
+		$css_path = nexulesuite_PLUGIN_DIR . 'public/css/forms-runtime.css';
+		$js_ver   = file_exists( $js_path ) ? (string) filemtime( $js_path ) : nexulesuite_VERSION;
+		$css_ver  = file_exists( $css_path ) ? (string) filemtime( $css_path ) : nexulesuite_VERSION;
 
 		$rec       = $this->get_recaptcha_integration_settings();
 		$ts_keys   = $this->get_saved_captcha_keys( self::TURNSTILE_OPTION_KEY );
@@ -2490,12 +2489,12 @@ final class Shortcodes {
 			$recaptcha_js_url = ( 'v3' === $rec['apiVersion'] )
 				? 'https://www.google.com/recaptcha/api.js?render=' . rawurlencode( $rec_site )
 				: 'https://www.google.com/recaptcha/api.js?render=explicit';
-			wp_register_script( 'nexus-ls-recaptcha', false, array(), NEXUS_LS_VERSION, true );
-			wp_enqueue_script( 'nexus-ls-recaptcha' );
+			wp_register_script( 'nexulesuite_recaptcha', false, array(), nexulesuite_VERSION, true );
+			wp_enqueue_script( 'nexulesuite_recaptcha' );
 			add_filter(
 				'script_loader_src',
 				static function ( $src, $handle ) use ( $recaptcha_js_url ) {
-					if ( 'nexus-ls-recaptcha' === $handle ) {
+					if ( 'nexulesuite_recaptcha' === $handle ) {
 						return $recaptcha_js_url;
 					}
 					return $src;
@@ -2503,17 +2502,17 @@ final class Shortcodes {
 				10,
 				2
 			);
-			wp_script_add_data( 'nexus-ls-recaptcha', 'strategy', 'defer' );
-			$script_deps[] = 'nexus-ls-recaptcha';
+			wp_script_add_data( 'nexulesuite_recaptcha', 'strategy', 'defer' );
+			$script_deps[] = 'nexulesuite_recaptcha';
 		}
 
 		if ( '' !== $ts_site ) {
-			wp_register_script( 'nexus-ls-turnstile', false, array(), NEXUS_LS_VERSION, true );
-			wp_enqueue_script( 'nexus-ls-turnstile' );
+			wp_register_script( 'nexulesuite_turnstile', false, array(), nexulesuite_VERSION, true );
+			wp_enqueue_script( 'nexulesuite_turnstile' );
 			add_filter(
 				'script_loader_src',
 				static function ( $src, $handle ) {
-					if ( 'nexus-ls-turnstile' === $handle ) {
+					if ( 'nexulesuite_turnstile' === $handle ) {
 						return 'https://challenges.cloudflare.com/turnstile/v0/api.js';
 					}
 					return $src;
@@ -2521,31 +2520,31 @@ final class Shortcodes {
 				10,
 				2
 			);
-			wp_script_add_data( 'nexus-ls-turnstile', 'strategy', 'defer' );
-			$script_deps[] = 'nexus-ls-turnstile';
+			wp_script_add_data( 'nexulesuite_turnstile', 'strategy', 'defer' );
+			$script_deps[] = 'nexulesuite_turnstile';
 		}
 
 		wp_enqueue_style(
-			'nexus-ls-forms-runtime',
-			esc_url( NEXUS_LS_PLUGIN_URL . 'public/css/forms-runtime.css' ),
+			'nexulesuite_forms-runtime',
+			esc_url( nexulesuite_PLUGIN_URL . 'public/css/forms-runtime.css' ),
 			array(),
 			$css_ver
 		);
 
 		wp_enqueue_script(
-			'nexus-ls-forms-runtime',
-			esc_url( NEXUS_LS_PLUGIN_URL . 'public/js/forms-runtime.js' ),
+			'nexulesuite_forms-runtime',
+			esc_url( nexulesuite_PLUGIN_URL . 'public/js/forms-runtime.js' ),
 			$script_deps,
 			$js_ver,
 			true
 		);
 
 		wp_localize_script(
-			'nexus-ls-forms-runtime',
-			'nexusLsForms',
+			'nexulesuite_forms-runtime',
+			'nexulesuite_Forms',
 			array(
 				'ajaxUrl'             => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
-				'action'              => 'nexus_ls_submit_form',
+				'action'              => 'nexulesuite_submit_form',
 				'thankYouMessage'     => __( 'Thank you! Your message has been sent.', 'nexus-lead-suite' ),
 				'smtpSetupMessage'    => __( 'Please set up your SMTP properly.', 'nexus-lead-suite' ),
 				'resultSuccessTitle'  => __( 'Success!', 'nexus-lead-suite' ),
@@ -2576,7 +2575,7 @@ final class Shortcodes {
 			return;
 		}
 
-		$bridge_path = NEXUS_LS_PLUGIN_DIR . 'public/js/nexus-ls-popup-bridge.js';
+		$bridge_path = nexulesuite_PLUGIN_DIR . 'public/js/nexus-ls-popup-bridge.js';
 		if ( file_exists( $bridge_path ) ) {
 			$general = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
 			$raw_map = is_array( $general ) ? (string) ( $general['activityButtonClasses'] ?? '' ) : '';
@@ -2584,25 +2583,25 @@ final class Shortcodes {
 
 			$bver = (string) filemtime( $bridge_path );
 			wp_enqueue_script(
-				'nexus-ls-popup-bridge',
-				esc_url( NEXUS_LS_PLUGIN_URL . 'public/js/nexus-ls-popup-bridge.js' ),
+				'nexulesuite_popup-bridge',
+				esc_url( nexulesuite_PLUGIN_URL . 'public/js/nexus-ls-popup-bridge.js' ),
 				array(),
 				$bver,
 				true
 			);
 			wp_localize_script(
-				'nexus-ls-popup-bridge',
-				'nexusLsPopupBridgeCfg',
+				'nexulesuite_popup-bridge',
+				'nexulesuite_PopupBridgeCfg',
 				array(
 					'ajaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
-					'notifyNonce' => wp_create_nonce( 'nexus_ls_trigger_notify' ),
+					'notifyNonce' => wp_create_nonce( 'nexulesuite_trigger_notify' ),
 					'popupClassMap'  => $pair_maps['popup'] ?? array(),
 					'notifyClassMap' => $pair_maps['notify'] ?? array(),
 				)
 			);
 		}
 
-		$path = NEXUS_LS_PLUGIN_DIR . 'public/js/nexus-ls-tracker.js';
+		$path = nexulesuite_PLUGIN_DIR . 'public/js/nexus-ls-tracker.js';
 		if ( ! file_exists( $path ) ) {
 			return;
 		}
@@ -2610,19 +2609,19 @@ final class Shortcodes {
 		$ver = (string) filemtime( $path );
 
 		wp_enqueue_script(
-			'nexus-ls-activity-tracker',
-			esc_url( NEXUS_LS_PLUGIN_URL . 'public/js/nexus-ls-tracker.js' ),
-			file_exists( $bridge_path ) ? array( 'nexus-ls-popup-bridge' ) : array(),
+			'nexulesuite_activity-tracker',
+			esc_url( nexulesuite_PLUGIN_URL . 'public/js/nexus-ls-tracker.js' ),
+			file_exists( $bridge_path ) ? array( 'nexulesuite_popup-bridge' ) : array(),
 			$ver,
 			true
 		);
 
 		wp_localize_script(
-			'nexus-ls-activity-tracker',
-			'nexusLsTrackCfg',
+			'nexulesuite_activity-tracker',
+			'nexulesuite_TrackCfg',
 			array(
-				'endpoint'    => esc_url_raw( rest_url( 'nexus-lead-suite/v1/track/events' ) ),
-				'nonce'       => wp_create_nonce( 'nexus_ls_track' ),
+				'endpoint'    => esc_url_raw( rest_url( 'nexulesuite_/v1/track/events' ) ),
+				'nonce'       => wp_create_nonce( 'nexulesuite_track' ),
 				// Logged-in visitors need wp_rest nonce header or WP returns 403 before our callback.
 				'restNonce'   => wp_create_nonce( 'wp_rest' ),
 				'scrollMarks' => array( 25, 50, 75, 90, 100 ),
@@ -2775,7 +2774,7 @@ final class Shortcodes {
 	 * @return string
 	 */
 	public function render_form_shortcode( $atts, $content = '', $tag = '' ): string {
-		$sc_tag = is_string( $tag ) && '' !== $tag ? $tag : 'nexus_ls_form';
+		$sc_tag = is_string( $tag ) && '' !== $tag ? $tag : 'nexulesuite_form';
 		$atts   = shortcode_atts(
 			array(
 				'id' => '',
@@ -2890,7 +2889,7 @@ final class Shortcodes {
 		/* Stepper default: same as button color on pages; neutral when inside popup (button color comes from Popup Appearance). */
 		$step_col = sanitize_hex_color( (string) ( $styling['stepperColor'] ?? '' ) ) ?: '';
 		if ( '' === $step_col ) {
-			$step_col = \Nexus_Lead_Suite\Popup_Form_Render_Context::is_active() ? '#525252' : $btn_col;
+			$step_col = \nexulesuite_\Popup_Form_Render_Context::is_active() ? '#525252' : $btn_col;
 		}
 
 		// Global field appearance (single source of truth across all forms/modules).
@@ -2911,22 +2910,22 @@ final class Shortcodes {
 
 		/*
 		 * Button color: Form Builder value everywhere except inside popup body, where Popups → Appearance
-		 * drives `--nexus-popup-form-btn` on the overlay (see expand_popup_body_shortcodes + render_popups).
+		 * drives `--nexulesuite_popup-form-btn` on the overlay (see expand_popup_body_shortcodes + render_popups).
 		 */
-		$btn_var = \Nexus_Lead_Suite\Popup_Form_Render_Context::is_active()
-			? '--nexus-st-btn: var(--nexus-popup-form-btn,#2563eb);'
-			: '--nexus-st-btn:' . $btn_col . ';';
+		$btn_var = \nexulesuite_\Popup_Form_Render_Context::is_active()
+			? '--nexulesuite_st-btn: var(--nexulesuite_popup-form-btn,#2563eb);'
+			: '--nexulesuite_st-btn:' . $btn_col . ';';
 
-		$form_vars = '--nexus-st-form-bg:' . $form_bg . ';'
-			. '--nexus-st-form-text:' . $form_txt . ';'
+		$form_vars = '--nexulesuite_st-form-bg:' . $form_bg . ';'
+			. '--nexulesuite_st-form-text:' . $form_txt . ';'
 			. $btn_var
-			. '--nexus-st-stepper:' . $step_col . ';'
-			. ( '' !== $field_text ? '--nexus-st-form-field-text:' . $field_text . ';' : '' )
-			. ( '' !== $ph_color ? '--nexus-st-form-placeholder:' . $ph_color . ';' : '' )
-			. ( '' !== $border_col ? '--nexus-st-form-field-border-color:' . $border_col . ';' : '' )
-			. '--nexus-st-form-field-border-style:' . $border_st . ';'
-			. '--nexus-st-form-field-border-width:' . $border_w . 'px;'
-			. '--nexus-st-form-field-radius:' . $radius . 'px;';
+			. '--nexulesuite_st-stepper:' . $step_col . ';'
+			. ( '' !== $field_text ? '--nexulesuite_st-form-field-text:' . $field_text . ';' : '' )
+			. ( '' !== $ph_color ? '--nexulesuite_st-form-placeholder:' . $ph_color . ';' : '' )
+			. ( '' !== $border_col ? '--nexulesuite_st-form-field-border-color:' . $border_col . ';' : '' )
+			. '--nexulesuite_st-form-field-border-style:' . $border_st . ';'
+			. '--nexulesuite_st-form-field-border-width:' . $border_w . 'px;'
+			. '--nexulesuite_st-form-field-radius:' . $radius . 'px;';
 		$steps    = isset( $form['steps'] ) && is_array( $form['steps'] ) ? $form['steps'] : array();
 		if ( empty( $steps ) ) {
 			$steps = array(
@@ -2943,14 +2942,14 @@ final class Shortcodes {
 		ob_start();
 		$step_count = count( $steps );
 		?>
-		<div class="nexus-st-form nexus-st-form--minimal <?php echo esc_attr( $fui_root ); ?>" style="<?php echo esc_attr( $form_vars ); ?>" data-form-id="<?php echo esc_attr( $form_id ); ?>" data-form-type="<?php echo esc_attr( $is_multi ? 'multi' : 'simple' ); ?>" data-submit-text="<?php echo esc_attr( (string) ( $form['submitBtnText'] ?? 'Submit' ) ); ?>">
-			<form class="nexus-st-form__body forminator-custom-form" method="post" enctype="multipart/form-data">
-				<?php wp_nonce_field( 'nexus_ls_form_submit', 'nexus_ls_form_nonce' ); ?>
-				<input type="hidden" name="nexus_ls_form_id" value="<?php echo esc_attr( $form_id ); ?>" />
+		<div class="nexulesuite_st-form nexulesuite_st-form--minimal <?php echo esc_attr( $fui_root ); ?>" style="<?php echo esc_attr( $form_vars ); ?>" data-form-id="<?php echo esc_attr( $form_id ); ?>" data-form-type="<?php echo esc_attr( $is_multi ? 'multi' : 'simple' ); ?>" data-submit-text="<?php echo esc_attr( (string) ( $form['submitBtnText'] ?? 'Submit' ) ); ?>">
+			<form class="nexulesuite_st-form__body forminator-custom-form" method="post" enctype="multipart/form-data">
+				<?php wp_nonce_field( 'nexulesuite_form_submit', 'nexulesuite_form_nonce' ); ?>
+				<input type="hidden" name="nexulesuite_form_id" value="<?php echo esc_attr( $form_id ); ?>" />
 				<?php
-				$hp_id = 'nexus-ls-hp-' . substr( hash( 'sha256', $form_id . '|' . (string) wp_parse_url( home_url(), PHP_URL_HOST ) ), 0, 16 );
+				$hp_id = 'nexulesuite_hp-' . substr( hash( 'sha256', $form_id . '|' . (string) wp_parse_url( home_url(), PHP_URL_HOST ) ), 0, 16 );
 				?>
-				<div class="nexus-st-hp" aria-hidden="true">
+				<div class="nexulesuite_st-hp" aria-hidden="true">
 					<label for="<?php echo esc_attr( $hp_id ); ?>"><?php esc_html_e( 'Website', 'nexus-lead-suite' ); ?></label>
 					<input
 						type="text"
@@ -2964,7 +2963,7 @@ final class Shortcodes {
 
 				<?php if ( $is_multi && $step_count > 1 ) : ?>
 					<div
-						class="nexus-st-progress"
+						class="nexulesuite_st-progress"
 						data-total-steps="<?php echo esc_attr( (string) $step_count ); ?>"
 						role="progressbar"
 						aria-valuemin="1"
@@ -2972,12 +2971,12 @@ final class Shortcodes {
 						aria-valuenow="1"
 						aria-label="<?php echo esc_attr( sprintf( /* translators: 1: current step, 2: total steps */ __( 'Form step %1$d of %2$d', 'nexus-lead-suite' ), 1, $step_count ) ); ?>"
 					>
-						<div class="nexus-st-progress__track" aria-hidden="true">
-							<div class="nexus-st-progress__fill" style="width: <?php echo esc_attr( (string) round( 100 / $step_count, 4 ) ); ?>%;"></div>
+						<div class="nexulesuite_st-progress__track" aria-hidden="true">
+							<div class="nexulesuite_st-progress__fill" style="width: <?php echo esc_attr( (string) round( 100 / $step_count, 4 ) ); ?>%;"></div>
 						</div>
-						<div class="nexus-st-progress__dots" aria-hidden="true">
+						<div class="nexulesuite_st-progress__dots" aria-hidden="true">
 							<?php foreach ( $steps as $didx => $_step ) : ?>
-								<span class="nexus-st-progress__dot<?php echo 0 === (int) $didx ? ' nexus-st-progress__dot--active' : ''; ?>" data-step-dot="<?php echo esc_attr( (string) $didx ); ?>"></span>
+								<span class="nexulesuite_st-progress__dot<?php echo 0 === (int) $didx ? ' nexulesuite_st-progress__dot--active' : ''; ?>" data-step-dot="<?php echo esc_attr( (string) $didx ); ?>"></span>
 							<?php endforeach; ?>
 						</div>
 					</div>
@@ -2987,19 +2986,19 @@ final class Shortcodes {
 					<?php
 					$blocks = is_array( $step ) && isset( $step['fields'] ) && is_array( $step['fields'] ) ? $step['fields'] : array();
 					?>
-					<section class="nexus-st-step" data-step-index="<?php echo esc_attr( (string) $idx ); ?>" <?php echo ( $idx === 0 ? '' : 'hidden' ); ?>>
-						<div class="nexus-st-grid forminator-row">
+					<section class="nexulesuite_st-step" data-step-index="<?php echo esc_attr( (string) $idx ); ?>" <?php echo ( $idx === 0 ? '' : 'hidden' ); ?>>
+						<div class="nexulesuite_st-grid forminator-row">
 							<?php $this->render_blocks( $blocks ); ?>
 						</div>
 					</section>
 				<?php endforeach; ?>
 
-				<div class="nexus-st-actions" <?php echo ( $is_multi ? '' : 'data-single="1"' ); ?>>
+				<div class="nexulesuite_st-actions" <?php echo ( $is_multi ? '' : 'data-single="1"' ); ?>>
 					<?php if ( $is_multi ) : ?>
-						<button type="button" class="nexus-st-btn nexus-st-btn--secondary forminator-button" data-action="prev">Previous</button>
-						<button type="button" class="nexus-st-btn nexus-st-btn--primary forminator-button" data-action="next">Next</button>
+						<button type="button" class="nexulesuite_st-btn nexulesuite_st-btn--secondary forminator-button" data-action="prev">Previous</button>
+						<button type="button" class="nexulesuite_st-btn nexulesuite_st-btn--primary forminator-button" data-action="next">Next</button>
 					<?php else : ?>
-						<button type="submit" class="nexus-st-btn nexus-st-btn--primary forminator-button"><?php echo esc_html( (string) ( $form['submitBtnText'] ?? 'Submit' ) ); ?></button>
+						<button type="submit" class="nexulesuite_st-btn nexulesuite_st-btn--primary forminator-button"><?php echo esc_html( (string) ( $form['submitBtnText'] ?? 'Submit' ) ); ?></button>
 					<?php endif; ?>
 				</div>
 			</form>
@@ -3048,10 +3047,10 @@ final class Shortcodes {
 		$cols   = max( 1, min( 4, $cols ) );
 		$items  = isset( $layout['items'] ) && is_array( $layout['items'] ) ? $layout['items'] : array();
 
-		echo '<div class="nexus-st-layout nexus-st-layout--cols-' . esc_attr( (string) $cols ) . ' forminator-row">';
+		echo '<div class="nexulesuite_st-layout nexulesuite_st-layout--cols-' . esc_attr( (string) $cols ) . ' forminator-row">';
 		for ( $i = 0; $i < $cols; $i++ ) {
 			$col_items = isset( $items[ $i ] ) && is_array( $items[ $i ] ) ? $items[ $i ] : array();
-			echo '<div class="nexus-st-layout__col">';
+			echo '<div class="nexulesuite_st-layout__col">';
 			$this->render_blocks( $col_items );
 			echo '</div>';
 		}
@@ -3101,7 +3100,8 @@ final class Shortcodes {
 			return '';
 		}
 
-		return ' ' . $attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- hardcoded at internal call sites only.
+		// Returned fragment is always assembled into a wp_kses()'d element by the caller.
+		return ' ' . $attrs;
 	}
 
 	/**
@@ -3110,7 +3110,7 @@ final class Shortcodes {
 	 * @return string
 	 */
 	private function floating_input_dom_id(): string {
-		return 'nexus-st-inp-' . str_replace( '.', '', uniqid( '', true ) );
+		return 'nexulesuite_st-inp-' . str_replace( '.', '', uniqid( '', true ) );
 	}
 
 	/**
@@ -3122,35 +3122,29 @@ final class Shortcodes {
 	 * @param string $label       Field label.
 	 * @param bool   $show_label  Label visibility setting.
 	 * @param bool   $required    Required.
-	 * @param string              $extra_attrs Optional raw HTML attributes (trusted; e.g. data-nexus-mask).
+	 * @param string              $extra_attrs Optional raw HTML attributes (trusted; e.g. data-nexulesuite_mask).
 	 * @return void
 	 */
 	private function render_float_text_input( string $name, string $type, string $placeholder, string $label, bool $show_label, bool $required, string $extra_attrs = '' ): void {
 		$extra   = $this->format_trusted_input_attrs( $extra_attrs );
 		$caption = $this->floating_caption( $placeholder, $label, $show_label );
+		$req     = $required ? ' required' : '';
 		if ( '' === $caption ) {
-			echo '<input class="nexus-st-input forminator-input" type="' . esc_attr( $type ) . '" name="' . esc_attr( $name ) . '" placeholder="' . esc_attr( $placeholder ) . '"';
-			if ( $required ) {
-				echo ' required';
-			}
-			echo $extra . ' />'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $extra from format_trusted_input_attrs().
+			$html = '<input class="nexulesuite_st-input forminator-input" type="' . esc_attr( $type ) . '" name="' . esc_attr( $name ) . '" placeholder="' . esc_attr( $placeholder ) . '"' . $req . $extra . ' />';
+			echo wp_kses( $html, \nexulesuite_\allowed_form_html() );
 			return;
 		}
 
-		$id = $this->floating_input_dom_id();
-		echo '<div class="nexus-st-float-wrap">';
-		echo '<input id="' . esc_attr( $id ) . '" class="nexus-st-input forminator-input" type="' . esc_attr( $type ) . '" name="' . esc_attr( $name ) . '"';
-		echo $this->floating_nbsp_placeholder_attr(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied in method.
-		if ( $required ) {
-			echo ' required';
-		}
-		echo $extra . ' />'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $extra from format_trusted_input_attrs().
-		printf(
-			'<label class="nexus-st-float-label" for="%s">%s%s</label></div>',
+		$id    = $this->floating_input_dom_id();
+		$html  = '<div class="nexulesuite_st-float-wrap">';
+		$html .= '<input id="' . esc_attr( $id ) . '" class="nexulesuite_st-input forminator-input" type="' . esc_attr( $type ) . '" name="' . esc_attr( $name ) . '"' . $this->floating_nbsp_placeholder_attr() . $req . $extra . ' />';
+		$html .= sprintf(
+			'<label class="nexulesuite_st-float-label" for="%s">%s%s</label></div>',
 			esc_attr( $id ),
 			esc_html( $caption ),
-			$required ? '<span class="nexus-st-req">*</span>' : ''
+			$required ? '<span class="nexulesuite_st-req">*</span>' : ''
 		);
+		echo wp_kses( $html, \nexulesuite_\allowed_form_html() );
 	}
 
 	/**
@@ -3165,29 +3159,23 @@ final class Shortcodes {
 	 */
 	private function render_float_textarea( string $name, string $placeholder, string $label, bool $show_label, bool $required ): void {
 		$caption = $this->floating_caption( $placeholder, $label, $show_label );
+		$req     = $required ? ' required' : '';
 		if ( '' === $caption ) {
-			echo '<textarea class="nexus-st-textarea forminator-input" name="' . esc_attr( $name ) . '" placeholder="' . esc_attr( $placeholder ) . '"';
-			if ( $required ) {
-				echo ' required';
-			}
-			echo '></textarea>';
+			$html = '<textarea class="nexulesuite_st-textarea forminator-input" name="' . esc_attr( $name ) . '" placeholder="' . esc_attr( $placeholder ) . '"' . $req . '></textarea>';
+			echo wp_kses( $html, \nexulesuite_\allowed_form_html() );
 			return;
 		}
 
-		$id = $this->floating_input_dom_id();
-		echo '<div class="nexus-st-float-wrap nexus-st-float-wrap--textarea">';
-		echo '<textarea id="' . esc_attr( $id ) . '" class="nexus-st-textarea forminator-input" name="' . esc_attr( $name ) . '"';
-		echo $this->floating_nbsp_placeholder_attr(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied in method.
-		if ( $required ) {
-			echo ' required';
-		}
-		echo '></textarea>';
-		printf(
-			'<label class="nexus-st-float-label" for="%s">%s%s</label></div>',
+		$id    = $this->floating_input_dom_id();
+		$html  = '<div class="nexulesuite_st-float-wrap nexulesuite_st-float-wrap--textarea">';
+		$html .= '<textarea id="' . esc_attr( $id ) . '" class="nexulesuite_st-textarea forminator-input" name="' . esc_attr( $name ) . '"' . $this->floating_nbsp_placeholder_attr() . $req . '></textarea>';
+		$html .= sprintf(
+			'<label class="nexulesuite_st-float-label" for="%s">%s%s</label></div>',
 			esc_attr( $id ),
 			esc_html( $caption ),
-			$required ? '<span class="nexus-st-req">*</span>' : ''
+			$required ? '<span class="nexulesuite_st-req">*</span>' : ''
 		);
+		echo wp_kses( $html, \nexulesuite_\allowed_form_html() );
 	}
 
 	/**
@@ -3248,19 +3236,19 @@ final class Shortcodes {
 		}
 
 		$decl = array(
-			'--nexus-st-form-field-bg:' . $bg,
-			'--nexus-st-form-field-text:' . $tc,
-			'--nexus-st-form-field-border-color:' . $bc,
-			'--nexus-st-form-field-border-width:' . $bwidth . 'px',
-			'--nexus-st-form-field-radius:' . $radius . 'px',
-			'--nexus-st-field-inner-pad:' . $pad . 'px',
-			'--nexus-st-field-inner-pad-x:' . $pad . 'px',
-			'--nexus-st-field-font-size:' . $fsize . 'px',
-			'--nexus-st-field-font-weight:' . $fweight,
+			'--nexulesuite_st-form-field-bg:' . $bg,
+			'--nexulesuite_st-form-field-text:' . $tc,
+			'--nexulesuite_st-form-field-border-color:' . $bc,
+			'--nexulesuite_st-form-field-border-width:' . $bwidth . 'px',
+			'--nexulesuite_st-form-field-radius:' . $radius . 'px',
+			'--nexulesuite_st-field-inner-pad:' . $pad . 'px',
+			'--nexulesuite_st-field-inner-pad-x:' . $pad . 'px',
+			'--nexulesuite_st-field-font-size:' . $fsize . 'px',
+			'--nexulesuite_st-field-font-weight:' . $fweight,
 		);
 
 		return array(
-			'class_suffix' => ' nexus-st-field--custom-appearance',
+			'class_suffix' => ' nexulesuite_st-field--custom-appearance',
 			'inline_style' => implode( ';', $decl ),
 		);
 	}
@@ -3308,9 +3296,9 @@ final class Shortcodes {
 		$use_floating_layout = in_array( $module_id, array( 'name', 'address' ), true )
 			|| ( ! in_array( $module_id, $modules_never_single_float, true ) && '' !== $float_caption );
 
-		$field_class = 'nexus-st-field forminator-field' . ( $use_floating_layout ? ' nexus-st-field--floating' : '' );
+		$field_class = 'nexulesuite_st-field forminator-field' . ( $use_floating_layout ? ' nexulesuite_st-field--floating' : '' );
 		if ( $show_label ) {
-			$field_class .= ' nexus-st-field--show-label';
+			$field_class .= ' nexulesuite_st-field--show-label';
 		}
 
 		$appearance   = $this->get_field_custom_appearance( $settings );
@@ -3328,11 +3316,11 @@ final class Shortcodes {
 		echo '>';
 
 		if ( 'terms-conditions' !== $module_id && $show_label && '' !== $label ) {
-			echo '<label class="nexus-st-field__label forminator-label">' . esc_html( $label ) . ( $required ? '<span class="nexus-st-req">*</span>' : '' ) . '</label>';
+			echo '<label class="nexulesuite_st-field__label forminator-label">' . esc_html( $label ) . ( $required ? '<span class="nexulesuite_st-req">*</span>' : '' ) . '</label>';
 		}
 
 		if ( '' !== $field_help && 'terms-conditions' !== $module_id ) {
-			echo '<p class="nexus-st-field__help forminator-description">' . esc_html( $field_help ) . '</p>';
+			echo '<p class="nexulesuite_st-field__help forminator-description">' . esc_html( $field_help ) . '</p>';
 		}
 
 		switch ( $module_id ) {
@@ -3351,7 +3339,7 @@ final class Shortcodes {
 					$label,
 					$show_label,
 					$required,
-					'data-nexus-mask="us-phone" inputmode="tel" autocomplete="tel"'
+					'data-nexulesuite_mask="us-phone" inputmode="tel" autocomplete="tel"'
 				);
 				break;
 			case 'textarea':
@@ -3383,7 +3371,7 @@ final class Shortcodes {
 						'label' => $disp,
 					);
 				}
-				echo '<select class="nexus-st-select forminator-input" name="' . esc_attr( $name ) . '"' . ( $required ? ' required' : '' ) . '>';
+				echo '<select class="nexulesuite_st-select forminator-input" name="' . esc_attr( $name ) . '"' . ( $required ? ' required' : '' ) . '>';
 				if ( array() === $built ) {
 					echo '<option value="">' . esc_html__( 'No choices configured', 'nexus-lead-suite' ) . '</option>';
 				} else {
@@ -3402,7 +3390,7 @@ final class Shortcodes {
 			case 'checkbox':
 				$options = isset( $settings['options'] ) && is_array( $settings['options'] ) ? $settings['options'] : array();
 				$inline  = isset( $settings['optionLayout'] ) && 'inline' === (string) $settings['optionLayout'];
-				echo '<div class="nexus-st-options' . ( $inline ? ' nexus-st-options--inline' : '' ) . '">';
+				echo '<div class="nexulesuite_st-options' . ( $inline ? ' nexulesuite_st-options--inline' : '' ) . '">';
 				foreach ( $options as $idx => $opt ) {
 					if ( ! is_array( $opt ) ) {
 						continue;
@@ -3410,7 +3398,7 @@ final class Shortcodes {
 					$opt_label = isset( $opt['label'] ) ? sanitize_text_field( (string) $opt['label'] ) : '';
 					$opt_value = isset( $opt['value'] ) ? sanitize_text_field( (string) $opt['value'] ) : $opt_label;
 					$opt_id    = $name . '_' . (int) $idx;
-					echo '<label class="nexus-st-option" for="' . esc_attr( $opt_id ) . '">';
+					echo '<label class="nexulesuite_st-option" for="' . esc_attr( $opt_id ) . '">';
 					echo '<input id="' . esc_attr( $opt_id ) . '" type="' . esc_attr( $module_id ) . '" name="' . esc_attr( $name ) . ( 'checkbox' === $module_id ? '[]' : '' ) . '" value="' . esc_attr( $opt_value ) . '"' . ( $required ? ' required' : '' ) . ' />';
 					echo '<span>' . esc_html( $opt_label !== '' ? $opt_label : $opt_value ) . '</span>';
 					echo '</label>';
@@ -3435,19 +3423,19 @@ final class Shortcodes {
 					$label,
 					$show_label,
 					$required,
-					'data-nexus-mask="date-mdy" inputmode="numeric" maxlength="10" autocomplete="bday"'
+					'data-nexulesuite_mask="date-mdy" inputmode="numeric" maxlength="10" autocomplete="bday"'
 				);
 				break;
 			case 'time':
 				printf(
-					'<input class="nexus-st-input forminator-input" type="time" name="%s"%s />',
+					'<input class="nexulesuite_st-input forminator-input" type="time" name="%s"%s />',
 					esc_attr( $name ),
 					$required ? ' required' : ''
 				);
 				break;
 			case 'date-time':
 				printf(
-					'<input class="nexus-st-input forminator-input" type="datetime-local" name="%s"%s />',
+					'<input class="nexulesuite_st-input forminator-input" type="datetime-local" name="%s"%s />',
 					esc_attr( $name ),
 					$required ? ' required' : ''
 				);
@@ -3455,14 +3443,14 @@ final class Shortcodes {
 		case 'file-upload':
 			$file_label = '' !== $placeholder ? esc_html( $placeholder ) : esc_html__( 'Choose file…', 'nexus-lead-suite' );
 			printf(
-				'<div class="nexus-st-file-wrap">
-					<span class="nexus-st-file-btn">
+				'<div class="nexulesuite_st-file-wrap">
+					<span class="nexulesuite_st-file-btn">
 						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
 						Upload
 					</span>
-					<span class="nexus-st-file-name" data-default="%s">%s</span>
-					<input class="nexus-st-input forminator-input" type="file" name="%s"%s
-						onchange="(function(i){var n=i.closest(\'.nexus-st-file-wrap\').querySelector(\'.nexus-st-file-name\');n.textContent=i.files[0]?i.files[0].name:n.dataset.default;})(this)" />
+					<span class="nexulesuite_st-file-name" data-default="%s">%s</span>
+					<input class="nexulesuite_st-input forminator-input" type="file" name="%s"%s
+						onchange="(function(i){var n=i.closest(\'.nexulesuite_st-file-wrap\').querySelector(\'.nexulesuite_st-file-name\');n.textContent=i.files[0]?i.files[0].name:n.dataset.default;})(this)" />
 				</div>',
 				esc_attr( $file_label ),
 				esc_html( $file_label ),
@@ -3480,18 +3468,18 @@ final class Shortcodes {
 				if ( '' === $html ) {
 					$html = 'Yes, I agree with the <a href="#" target="_blank" rel="noopener noreferrer">privacy policy</a> and <a href="#" target="_blank" rel="noopener noreferrer">terms and conditions</a>.';
 				}
-				echo '<label class="nexus-st-consent">';
+				echo '<label class="nexulesuite_st-consent">';
 				echo '<input type="checkbox" name="' . esc_attr( $name ) . '" value="1"' . ( $required ? ' required' : '' ) . ' />';
 				echo '<span>' . wp_kses_post( $html ) . '</span>';
 				echo '</label>';
 				break;
 			case 'recaptcha':
 				$rec_fb = $this->get_recaptcha_integration_settings();
-				$v3_mod = ( 'v3' === $rec_fb['apiVersion'] ) ? ' nexus-st-captcha--recaptcha-v3' : '';
-				echo '<div class="nexus-st-captcha nexus-st-captcha--recaptcha' . esc_attr( $v3_mod ) . '" aria-label="reCAPTCHA"></div>';
+				$v3_mod = ( 'v3' === $rec_fb['apiVersion'] ) ? ' nexulesuite_st-captcha--recaptcha-v3' : '';
+				echo '<div class="nexulesuite_st-captcha nexulesuite_st-captcha--recaptcha' . esc_attr( $v3_mod ) . '" aria-label="reCAPTCHA"></div>';
 				break;
 			case 'cloudflare':
-				echo '<div class="nexus-st-captcha nexus-st-captcha--turnstile" aria-label="Turnstile"></div>';
+				echo '<div class="nexulesuite_st-captcha nexulesuite_st-captcha--turnstile" aria-label="Turnstile"></div>';
 				break;
 			default:
 				$this->render_float_text_input( $name, 'text', $placeholder, $label, $show_label, $required );
@@ -3527,7 +3515,7 @@ final class Shortcodes {
 		}
 
 		$cols = count( $enabled_keys ) === 2 ? 2 : 1;
-		echo '<div class="nexus-st-compound nexus-st-compound--' . esc_attr( (string) $cols ) . '">';
+		echo '<div class="nexulesuite_st-compound nexulesuite_st-compound--' . esc_attr( (string) $cols ) . '">';
 		foreach ( $order as $key => $fallback ) {
 			$part = isset( $parts[ $key ] ) && is_array( $parts[ $key ] ) ? $parts[ $key ] : array();
 			$enabled = isset( $part['enabled'] ) ? (bool) $part['enabled'] : ( 'first' === $key || 'last' === $key );
@@ -3540,20 +3528,16 @@ final class Shortcodes {
 			if ( '' === $caption ) {
 				continue;
 			}
-			$id = $this->floating_input_dom_id();
-			echo '<div class="nexus-st-float-wrap">';
-			echo '<input id="' . esc_attr( $id ) . '" class="nexus-st-input forminator-input" type="text" name="' . esc_attr( $base_name ) . '[' . esc_attr( $key ) . ']"';
-			echo $this->floating_nbsp_placeholder_attr(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied in method.
-			if ( $sub_req ) {
-				echo ' required';
-			}
-			echo ' />';
-			printf(
-				'<label class="nexus-st-float-label" for="%s">%s%s</label></div>',
+			$id    = $this->floating_input_dom_id();
+			$html  = '<div class="nexulesuite_st-float-wrap">';
+			$html .= '<input id="' . esc_attr( $id ) . '" class="nexulesuite_st-input forminator-input" type="text" name="' . esc_attr( $base_name ) . '[' . esc_attr( $key ) . ']"' . $this->floating_nbsp_placeholder_attr() . ( $sub_req ? ' required' : '' ) . ' />';
+			$html .= sprintf(
+				'<label class="nexulesuite_st-float-label" for="%s">%s%s</label></div>',
 				esc_attr( $id ),
 				esc_html( $caption ),
-				$sub_req ? '<span class="nexus-st-req">*</span>' : ''
+				$sub_req ? '<span class="nexulesuite_st-req">*</span>' : ''
 			);
+			echo wp_kses( $html, \nexulesuite_\allowed_form_html() );
 		}
 		echo '</div>';
 	}
@@ -3679,14 +3663,8 @@ final class Shortcodes {
 		$chat_content = sanitize_textarea_field( (string) ( $opt['chatContent'] ?? '' ) );
 		/* Avatar / bubble image: attachment URL or legacy data URI (must match sanitizer on save). */
 		$btn_raw_img = trim( (string) ( $opt['chatButtonImage'] ?? '' ) );
-		$btn_image   = '';
-		if ( '' !== $btn_raw_img ) {
-			if ( preg_match( '#^data:image/(jpeg|jpg|png|gif|webp);base64,#i', $btn_raw_img ) ) {
-				$btn_image = esc_attr( $btn_raw_img );
-			} else {
-				$btn_image = esc_url( $btn_raw_img );
-			}
-		}
+		// Raw value; escaped at output (esc_attr for data: image URIs, esc_url for normal URLs).
+		$btn_image = $btn_raw_img;
 		$chat_side = ( 'left' === sanitize_text_field( (string) ( $opt['chatAlign'] ?? 'right' ) ) ) ? 'left' : 'right';
 		$chat_padding = max( 4, min( 40, (int) ( $opt['chatPadding']            ?? 12 ) ) );
 		$chat_radius  = max( 0, min( 50, (int) ( $opt['chatBorderRadius']       ?? 12 ) ) );
@@ -3744,10 +3722,10 @@ final class Shortcodes {
 			if ( str_starts_with( $btn1_val, 'form:' ) ) {
 				$form_id = sanitize_text_field( substr( $btn1_val, 5 ) );
 				if ( '' !== $form_id ) {
-					$inline_popup_html = do_shortcode( sprintf( '[nexus_ls_form id="%s"]', esc_attr( $form_id ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					$inline_popup_html = do_shortcode( sprintf( '[nexulesuite_form id="%s"]', esc_attr( $form_id ) ) );
 				}
 				if ( '' === trim( (string) $inline_popup_html ) ) {
-					$inline_popup_html = '<p class="nexus-chat-inline-popup-missing">' . esc_html__( 'Selected form was not found. Pick another form under Settings → Livechat.', 'nexus-lead-suite' ) . '</p>';
+					$inline_popup_html = '<p class="nexulesuite_chat-inline-popup-missing">' . esc_html__( 'Selected form was not found. Pick another form under Settings → Livechat.', 'nexus-lead-suite' ) . '</p>';
 				}
 			} else {
 				$p_inline = $this->find_popup_by_event_or_id( $btn1_val );
@@ -3755,24 +3733,25 @@ final class Shortcodes {
 					$c_in = isset( $p_inline['content'] ) ? (string) $p_inline['content'] : '';
 					ob_start();
 					if ( '' !== trim( $c_in ) ) {
-						echo do_shortcode( wp_kses_post( $c_in ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_shortcode() output; shortcode callbacks escape their own markup. Input is pre-sanitized with wp_kses_post().
+						echo do_shortcode( wp_kses_post( $c_in ) );
 					} else {
-						echo '<p class="nexus-chat-inline-popup-missing">' . esc_html__( 'This popup has no body content yet. Add content under Nexus → Popups.', 'nexus-lead-suite' ) . '</p>';
+						echo '<p class="nexulesuite_chat-inline-popup-missing">' . esc_html__( 'This popup has no body content yet. Add content under Nexus → Popups.', 'nexus-lead-suite' ) . '</p>';
 					}
 					$inline_popup_html = (string) ob_get_clean();
 				} else {
-					$inline_popup_html = '<p class="nexus-chat-inline-popup-missing">' . esc_html__( 'Selected popup was not found. Pick another popup under Settings → Livechat.', 'nexus-lead-suite' ) . '</p>';
+					$inline_popup_html = '<p class="nexulesuite_chat-inline-popup-missing">' . esc_html__( 'Selected popup was not found. Pick another popup under Settings → Livechat.', 'nexus-lead-suite' ) . '</p>';
 				}
 			}
 		}
 
 		/* ── Widget dock: left or right edge of the viewport ── */
 		$float_css = ( 'left' === $chat_side ) ? 'left:20px;right:auto;' : 'right:20px;left:auto;';
-		$align_cls = ( 'left' === $chat_side ) ? ' nexus-chat--left' : '';
+		$align_cls = ( 'left' === $chat_side ) ? ' nexulesuite_chat--left' : '';
 
 		/* ── Hover CSS class ── */
 		$allowed_hover = array( 'lift', 'scale', 'glow', 'shake', 'rotate', 'darken' );
-		$hover_cls     = in_array( $hover_effect, $allowed_hover, true ) ? 'nexus-chat-btn--' . $hover_effect : '';
+		$hover_cls     = in_array( $hover_effect, $allowed_hover, true ) ? 'nexulesuite_chat-btn--' . $hover_effect : '';
 
 		/* ── Shared inline style for action buttons ── */
 		$btn_style      = sprintf(
@@ -3792,165 +3771,165 @@ final class Shortcodes {
 		ob_start();
 		?>
 		/* ── Nexus Lead Suite — Livechat Widget ── */
-		.nexus-chat-widget{position:fixed;bottom:24px;z-index:99997;display:flex;flex-direction:column;align-items:flex-end;gap:12px;<?php echo esc_attr( $float_css ); ?>font-family:'<?php echo esc_attr( $font ); ?>',sans-serif;}
-		.nexus-chat-widget.nexus-chat--left{align-items:flex-start;}
+		.nexulesuite_chat-widget{position:fixed;bottom:24px;z-index:99997;display:flex;flex-direction:column;align-items:flex-end;gap:12px;<?php echo esc_attr( $float_css ); ?>font-family:'<?php echo esc_attr( $font ); ?>',sans-serif;}
+		.nexulesuite_chat-widget.nexulesuite_chat--left{align-items:flex-start;}
 
 		/* Panel — taller default home view; compact height when inline form is open (no dead space below short forms). */
-		.nexus-chat-panel{display:none;width:420px;min-height:560px;background:<?php echo esc_attr( $chat_bubble_bg ); ?>;border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.2);overflow:hidden;flex-direction:column;}
-		.nexus-chat-panel.nexus-chat-panel--inline-form{min-height:0;}
-		.nexus-chat-panel.nexus-chat--open{display:flex;animation:nexus-chat-pop-in .22s ease;}
-		@keyframes nexus-chat-pop-in{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+		.nexulesuite_chat-panel{display:none;width:420px;min-height:560px;background:<?php echo esc_attr( $chat_bubble_bg ); ?>;border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.2);overflow:hidden;flex-direction:column;}
+		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form{min-height:0;}
+		.nexulesuite_chat-panel.nexulesuite_chat--open{display:flex;animation:nexulesuite_chat-pop-in .22s ease;}
+		@keyframes nexulesuite_chat-pop-in{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 
 		/* Header — extra vertical padding reads as taller chrome */
-		.nexus-chat-panel__head{display:flex;align-items:center;gap:14px;padding:26px 22px 22px;background:<?php echo esc_attr( $btn_bg ); ?>;flex-shrink:0;}
-		.nexus-chat-panel__avatar{width:54px;height:54px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(255,255,255,.35);}
-		.nexus-chat-panel__avatar img{width:54px;height:54px;border-radius:50%;object-fit:cover;display:block;}
-		.nexus-chat-panel__avatar svg{width:26px;height:26px;fill:none;stroke:<?php echo esc_attr( $btn_text_col ); ?>;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-		.nexus-chat-panel__info{flex:1;min-width:0;}
-		.nexus-chat-panel__title{font-size:15px;font-weight:700;color:<?php echo esc_attr( $btn_text_col ); ?>;margin:0;padding:0;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-		.nexus-chat-panel__badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:<?php echo esc_attr( $btn_text_col ); ?>;opacity:.85;margin:0;margin-top:5px;line-height:1.2;display:flex;align-items:center;gap:6px;}
+		.nexulesuite_chat-panel__head{display:flex;align-items:center;gap:14px;padding:26px 22px 22px;background:<?php echo esc_attr( $btn_bg ); ?>;flex-shrink:0;}
+		.nexulesuite_chat-panel__avatar{width:54px;height:54px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(255,255,255,.35);}
+		.nexulesuite_chat-panel__avatar img{width:54px;height:54px;border-radius:50%;object-fit:cover;display:block;}
+		.nexulesuite_chat-panel__avatar svg{width:26px;height:26px;fill:none;stroke:<?php echo esc_attr( $btn_text_col ); ?>;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-panel__info{flex:1;min-width:0;}
+		.nexulesuite_chat-panel__title{font-size:15px;font-weight:700;color:<?php echo esc_attr( $btn_text_col ); ?>;margin:0;padding:0;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+		.nexulesuite_chat-panel__badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:<?php echo esc_attr( $btn_text_col ); ?>;opacity:.85;margin:0;margin-top:5px;line-height:1.2;display:flex;align-items:center;gap:6px;}
 		/* Online indicator dot (badge + trigger) */
-		.nexus-chat-online-dot{width:9px;height:9px;border-radius:999px;flex:0 0 auto;display:inline-block;background:<?php echo esc_attr( $chat_online_dot ); ?>;box-shadow:0 0 0 2px rgba(255,255,255,.22),0 0 16px color-mix(in srgb, <?php echo esc_attr( $chat_online_dot ); ?>, transparent 15%),0 0 36px color-mix(in srgb, <?php echo esc_attr( $chat_online_dot ); ?>, transparent 45%);animation:nexus-chat-online-blink 1.05s ease-in-out infinite;position:relative;z-index:2;}
-		@keyframes nexus-chat-online-blink{0%,100%{transform:scale(.92);opacity:.75;filter:saturate(1.2) brightness(1.05)}50%{transform:scale(1.12);opacity:1;filter:saturate(1.55) brightness(1.25);box-shadow:0 0 0 2px rgba(255,255,255,.35),0 0 18px rgba(0,255,106,.95),0 0 44px rgba(0,255,106,.75)}}
-		@media (prefers-reduced-motion: reduce){.nexus-chat-online-dot{animation:none}}
-		.nexus-chat-panel__close{background:rgba(0,0,0,.15);border:none;color:<?php echo esc_attr( $btn_text_col ); ?>;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;flex-shrink:0;transition:background .2s,transform .25s cubic-bezier(.34,1.56,.64,1);}
-		.nexus-chat-panel__close:hover{background:rgba(0,0,0,.28);transform:rotate(90deg) scale(1.1);}
+		.nexulesuite_chat-online-dot{width:9px;height:9px;border-radius:999px;flex:0 0 auto;display:inline-block;background:<?php echo esc_attr( $chat_online_dot ); ?>;box-shadow:0 0 0 2px rgba(255,255,255,.22),0 0 16px color-mix(in srgb, <?php echo esc_attr( $chat_online_dot ); ?>, transparent 15%),0 0 36px color-mix(in srgb, <?php echo esc_attr( $chat_online_dot ); ?>, transparent 45%);animation:nexulesuite_chat-online-blink 1.05s ease-in-out infinite;position:relative;z-index:2;}
+		@keyframes nexulesuite_chat-online-blink{0%,100%{transform:scale(.92);opacity:.75;filter:saturate(1.2) brightness(1.05)}50%{transform:scale(1.12);opacity:1;filter:saturate(1.55) brightness(1.25);box-shadow:0 0 0 2px rgba(255,255,255,.35),0 0 18px rgba(0,255,106,.95),0 0 44px rgba(0,255,106,.75)}}
+		@media (prefers-reduced-motion: reduce){.nexulesuite_chat-online-dot{animation:none}}
+		.nexulesuite_chat-panel__close{background:rgba(0,0,0,.15);border:none;color:<?php echo esc_attr( $btn_text_col ); ?>;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;flex-shrink:0;transition:background .2s,transform .25s cubic-bezier(.34,1.56,.64,1);}
+		.nexulesuite_chat-panel__close:hover{background:rgba(0,0,0,.28);transform:rotate(90deg) scale(1.1);}
 
 		/* Body — expanded content zone */
-		.nexus-chat-panel__body{flex:1 1 auto;padding:26px 24px;background:#f8fafc;font-size:14px;color:#475569;line-height:1.65;border-bottom:1px solid #f1f5f9;min-height:96px;}
+		.nexulesuite_chat-panel__body{flex:1 1 auto;padding:26px 24px;background:#f8fafc;font-size:14px;color:#475569;line-height:1.65;border-bottom:1px solid #f1f5f9;min-height:96px;}
 
 		/* Buttons area */
-		.nexus-chat-panel__btns{padding:18px 22px 22px;display:flex;flex-direction:column;gap:10px;background:<?php echo esc_attr( $chat_bubble_bg ); ?>;flex-shrink:0;}
-		.nexus-chat-panel__btns a,
-		.nexus-chat-panel__btns button{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none !important;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border:none;line-height:1.3;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
-		.nexus-chat-panel__btns-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-		.nexus-chat-panel__btns-row a,
-		.nexus-chat-panel__btns-row button{display:flex;align-items:center;justify-content:center;}
+		.nexulesuite_chat-panel__btns{padding:18px 22px 22px;display:flex;flex-direction:column;gap:10px;background:<?php echo esc_attr( $chat_bubble_bg ); ?>;flex-shrink:0;}
+		.nexulesuite_chat-panel__btns a,
+		.nexulesuite_chat-panel__btns button{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none !important;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border:none;line-height:1.3;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
+		.nexulesuite_chat-panel__btns-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+		.nexulesuite_chat-panel__btns-row a,
+		.nexulesuite_chat-panel__btns-row button{display:flex;align-items:center;justify-content:center;}
 
 		/* ── Inline Form View ── */
-		.nexus-chat-form-view{display:none;flex-direction:column;background:<?php echo esc_attr( $chat_bubble_bg ); ?>;flex:1 1 auto;min-height:0;}
-		.nexus-chat-panel.nexus-chat-panel--inline-form .nexus-chat-form-view{flex:0 1 auto;}
-		.nexus-chat-form-view.nexus-chat-form--active{display:flex;animation:nexus-chat-pop-in .2s ease;}
-		.nexus-chat-form-view__head{display:flex;align-items:center;gap:14px;padding:22px 20px;background:<?php echo esc_attr( $btn_bg ); ?>;border-bottom:1px solid rgba(255,255,255,.15);flex-shrink:0;}
-		.nexus-chat-form-view__back{background:rgba(0,0,0,.15);border:none;color:<?php echo esc_attr( $btn_text_col ); ?>;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;flex-shrink:0;transition:background .2s;}
-		.nexus-chat-form-view__back:hover{background:rgba(0,0,0,.28);}
-		.nexus-chat-form-view__avatar{width:48px;height:48px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(255,255,255,.35);}
-		.nexus-chat-form-view__avatar img{width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;}
-		.nexus-chat-form-view__avatar svg{width:24px;height:24px;fill:none;stroke:<?php echo esc_attr( $btn_text_col ); ?>;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-		.nexus-chat-form-view__info{flex:1;min-width:0;}
-		.nexus-chat-form-view__heading{font-size:15px;font-weight:700;color:<?php echo esc_attr( $btn_text_col ); ?>;margin:0;padding:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-		.nexus-chat-inline-popup-body{flex:1 1 auto;max-height:min(72vh,560px);overflow-y:auto;padding:18px 20px 22px;background:#fff;}
-		.nexus-chat-panel.nexus-chat-panel--inline-form .nexus-chat-inline-popup-body{flex:0 1 auto;}
-		.nexus-chat-inline-popup-body .nexus-st-form{margin:0;border:none!important;box-shadow:none!important;background:transparent!important;}
-		.nexus-chat-inline-popup-body .nexus-st-form>form.nexus-st-form__body,
-		.nexus-chat-inline-popup-body form.nexus-st-form__body{
+		.nexulesuite_chat-form-view{display:none;flex-direction:column;background:<?php echo esc_attr( $chat_bubble_bg ); ?>;flex:1 1 auto;min-height:0;}
+		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form .nexulesuite_chat-form-view{flex:0 1 auto;}
+		.nexulesuite_chat-form-view.nexulesuite_chat-form--active{display:flex;animation:nexulesuite_chat-pop-in .2s ease;}
+		.nexulesuite_chat-form-view__head{display:flex;align-items:center;gap:14px;padding:22px 20px;background:<?php echo esc_attr( $btn_bg ); ?>;border-bottom:1px solid rgba(255,255,255,.15);flex-shrink:0;}
+		.nexulesuite_chat-form-view__back{background:rgba(0,0,0,.15);border:none;color:<?php echo esc_attr( $btn_text_col ); ?>;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;flex-shrink:0;transition:background .2s;}
+		.nexulesuite_chat-form-view__back:hover{background:rgba(0,0,0,.28);}
+		.nexulesuite_chat-form-view__avatar{width:48px;height:48px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(255,255,255,.35);}
+		.nexulesuite_chat-form-view__avatar img{width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;}
+		.nexulesuite_chat-form-view__avatar svg{width:24px;height:24px;fill:none;stroke:<?php echo esc_attr( $btn_text_col ); ?>;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-form-view__info{flex:1;min-width:0;}
+		.nexulesuite_chat-form-view__heading{font-size:15px;font-weight:700;color:<?php echo esc_attr( $btn_text_col ); ?>;margin:0;padding:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+		.nexulesuite_chat-inline-popup-body{flex:1 1 auto;max-height:min(72vh,560px);overflow-y:auto;padding:18px 20px 22px;background:#fff;}
+		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form .nexulesuite_chat-inline-popup-body{flex:0 1 auto;}
+		.nexulesuite_chat-inline-popup-body .nexulesuite_st-form{margin:0;border:none!important;box-shadow:none!important;background:transparent!important;}
+		.nexulesuite_chat-inline-popup-body .nexulesuite_st-form>form.nexulesuite_st-form__body,
+		.nexulesuite_chat-inline-popup-body form.nexulesuite_st-form__body{
 			border:none!important;box-shadow:none!important;outline:none!important;background:transparent!important;
 			padding:0!important;margin:0!important;border-radius:0!important;
 		}
-		.nexus-chat-inline-popup-missing{font-size:12px;color:#b45309;margin:0;line-height:1.5;}
+		.nexulesuite_chat-inline-popup-missing{font-size:12px;color:#b45309;margin:0;line-height:1.5;}
 
 		/* Floating trigger bubble — matches larger panel presence */
-		.nexus-chat-trigger{width:66px;height:66px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(0,0,0,.2);background:<?php echo esc_attr( $btn_bg ); ?>;overflow:hidden;position:relative;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
-		.nexus-chat-trigger svg{width:26px;height:26px;fill:none;stroke:<?php echo esc_attr( $btn_text_col ); ?>;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1;}
-		.nexus-chat-trigger .nexus-chat-online-dot{position:absolute;right:10px;top:10px;z-index:3;}
+		.nexulesuite_chat-trigger{width:66px;height:66px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(0,0,0,.2);background:<?php echo esc_attr( $btn_bg ); ?>;overflow:hidden;position:relative;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
+		.nexulesuite_chat-trigger svg{width:26px;height:26px;fill:none;stroke:<?php echo esc_attr( $btn_text_col ); ?>;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1;}
+		.nexulesuite_chat-trigger .nexulesuite_chat-online-dot{position:absolute;right:10px;top:10px;z-index:3;}
 
 		/* Hover effects */
-		.nexus-chat-btn--lift:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.22);}
-		.nexus-chat-btn--scale:hover{transform:scale(1.1);}
-		.nexus-chat-btn--glow:hover{box-shadow:0 0 24px <?php echo esc_attr( $btn_bg ); ?>,0 6px 24px rgba(0,0,0,.18);}
-		.nexus-chat-btn--darken:hover{filter:brightness(.85);}
-		.nexus-chat-btn--shake:hover{animation:nexus-chat-shake .4s ease;}
-		.nexus-chat-btn--rotate:hover{transform:rotate(6deg) scale(1.05);}
-		@keyframes nexus-chat-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
-		.nexus-chat-panel__btns a.nexus-chat-btn--lift:hover,
-		.nexus-chat-panel__btns button.nexus-chat-btn--lift:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.18);}
-		.nexus-chat-panel__btns a.nexus-chat-btn--scale:hover,
-		.nexus-chat-panel__btns button.nexus-chat-btn--scale:hover{transform:scale(1.04);}
-		.nexus-chat-panel__btns a.nexus-chat-btn--glow:hover,
-		.nexus-chat-panel__btns button.nexus-chat-btn--glow:hover{box-shadow:0 0 18px <?php echo esc_attr( $btn_bg ); ?>;}
-		.nexus-chat-panel__btns a.nexus-chat-btn--darken:hover,
-		.nexus-chat-panel__btns button.nexus-chat-btn--darken:hover{filter:brightness(.88);}
+		.nexulesuite_chat-btn--lift:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.22);}
+		.nexulesuite_chat-btn--scale:hover{transform:scale(1.1);}
+		.nexulesuite_chat-btn--glow:hover{box-shadow:0 0 24px <?php echo esc_attr( $btn_bg ); ?>,0 6px 24px rgba(0,0,0,.18);}
+		.nexulesuite_chat-btn--darken:hover{filter:brightness(.85);}
+		.nexulesuite_chat-btn--shake:hover{animation:nexulesuite_chat-shake .4s ease;}
+		.nexulesuite_chat-btn--rotate:hover{transform:rotate(6deg) scale(1.05);}
+		@keyframes nexulesuite_chat-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+		.nexulesuite_chat-panel__btns a.nexulesuite_chat-btn--lift:hover,
+		.nexulesuite_chat-panel__btns button.nexulesuite_chat-btn--lift:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.18);}
+		.nexulesuite_chat-panel__btns a.nexulesuite_chat-btn--scale:hover,
+		.nexulesuite_chat-panel__btns button.nexulesuite_chat-btn--scale:hover{transform:scale(1.04);}
+		.nexulesuite_chat-panel__btns a.nexulesuite_chat-btn--glow:hover,
+		.nexulesuite_chat-panel__btns button.nexulesuite_chat-btn--glow:hover{box-shadow:0 0 18px <?php echo esc_attr( $btn_bg ); ?>;}
+		.nexulesuite_chat-panel__btns a.nexulesuite_chat-btn--darken:hover,
+		.nexulesuite_chat-panel__btns button.nexulesuite_chat-btn--darken:hover{filter:brightness(.88);}
 
 		/* Mobile / tablet: responsive panel (min usable ~320px wide), viewport-capped height, internal scroll */
 		@media (max-width: 1023px){
-		.nexus-chat-widget{bottom:calc(100px + env(safe-area-inset-bottom,0px));z-index:999998;}
-		.nexus-chat-widget:not(.nexus-chat--left){right:max(14px,env(safe-area-inset-right,0px));left:auto;}
-		.nexus-chat-widget.nexus-chat--left{left:max(14px,env(safe-area-inset-left,0px));right:auto;}
-		.nexus-chat-trigger{width:54px;height:54px;}
-		.nexus-chat-trigger svg{width:22px;height:22px;}
-		.nexus-chat-trigger .nexus-chat-online-dot{right:8px;top:8px;width:8px;height:8px;}
+		.nexulesuite_chat-widget{bottom:calc(100px + env(safe-area-inset-bottom,0px));z-index:999998;}
+		.nexulesuite_chat-widget:not(.nexulesuite_chat--left){right:max(14px,env(safe-area-inset-right,0px));left:auto;}
+		.nexulesuite_chat-widget.nexulesuite_chat--left{left:max(14px,env(safe-area-inset-left,0px));right:auto;}
+		.nexulesuite_chat-trigger{width:54px;height:54px;}
+		.nexulesuite_chat-trigger svg{width:22px;height:22px;}
+		.nexulesuite_chat-trigger .nexulesuite_chat-online-dot{right:8px;top:8px;width:8px;height:8px;}
 		/* Panel fits narrow screens (320px+); max height clears trigger + sticky nav + safe areas */
-		.nexus-chat-panel{
+		.nexulesuite_chat-panel{
 			box-sizing:border-box;width:min(420px,calc(100vw - 24px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));min-width:0;
 			min-height:0;
 			max-height:min(640px,calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 164px));
 			max-height:min(640px,calc(100svh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 164px));
 			overflow:hidden;
 		}
-		.nexus-chat-panel.nexus-chat-panel--inline-form .nexus-chat-form-view.nexus-chat-form--active{flex:1 1 auto;min-height:0;overflow:hidden;}
-		.nexus-chat-panel.nexus-chat-panel--inline-form .nexus-chat-inline-popup-body{
+		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form .nexulesuite_chat-form-view.nexulesuite_chat-form--active{flex:1 1 auto;min-height:0;overflow:hidden;}
+		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form .nexulesuite_chat-inline-popup-body{
 			flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px 16px;
 		}
-		.nexus-chat-panel__head{padding:18px 16px 16px;gap:12px;}
-		.nexus-chat-panel__avatar,.nexus-chat-panel__avatar img{width:46px;height:46px;}
-		.nexus-chat-panel__avatar svg{width:22px;height:22px;}
-		.nexus-chat-panel__title{font-size:14px;}
-		.nexus-chat-panel__body{min-height:0;flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 16px;}
-		.nexus-chat-panel__btns{padding:14px 16px 16px;}
-		.nexus-chat-form-view{min-height:0;}
-		.nexus-chat-form-view__head{padding:16px 14px;gap:12px;}
-		.nexus-chat-form-view__avatar,.nexus-chat-form-view__avatar img{width:44px;height:44px;}
-		.nexus-chat-form-view__avatar svg{width:22px;height:22px;}
-		.nexus-chat-form-view__heading{font-size:14px;}
+		.nexulesuite_chat-panel__head{padding:18px 16px 16px;gap:12px;}
+		.nexulesuite_chat-panel__avatar,.nexulesuite_chat-panel__avatar img{width:46px;height:46px;}
+		.nexulesuite_chat-panel__avatar svg{width:22px;height:22px;}
+		.nexulesuite_chat-panel__title{font-size:14px;}
+		.nexulesuite_chat-panel__body{min-height:0;flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 16px;}
+		.nexulesuite_chat-panel__btns{padding:14px 16px 16px;}
+		.nexulesuite_chat-form-view{min-height:0;}
+		.nexulesuite_chat-form-view__head{padding:16px 14px;gap:12px;}
+		.nexulesuite_chat-form-view__avatar,.nexulesuite_chat-form-view__avatar img{width:44px;height:44px;}
+		.nexulesuite_chat-form-view__avatar svg{width:22px;height:22px;}
+		.nexulesuite_chat-form-view__heading{font-size:14px;}
 		}
 		/* Very small phones: tighter chrome, keep ≥~296px content width at 320 CSS px viewport */
 		@media (max-width: 360px){
-		.nexus-chat-panel{width:min(420px,calc(100vw - 16px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));}
-		.nexus-chat-panel__head{padding:16px 12px 14px;}
-		.nexus-chat-panel__body,.nexus-chat-panel__btns{padding-left:12px;padding-right:12px;}
-		.nexus-chat-inline-popup-body{padding-left:12px;padding-right:12px;}
+		.nexulesuite_chat-panel{width:min(420px,calc(100vw - 16px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));}
+		.nexulesuite_chat-panel__head{padding:16px 12px 14px;}
+		.nexulesuite_chat-panel__body,.nexulesuite_chat-panel__btns{padding-left:12px;padding-right:12px;}
+		.nexulesuite_chat-inline-popup-body{padding-left:12px;padding-right:12px;}
 		}
 		<?php
 		$chat_css = (string) ob_get_clean();
-		$this->enqueue_footer_inline_style( 'nexus-ls-livechat-widget', $chat_css );
+		$this->enqueue_footer_inline_style( 'nexulesuite_livechat-widget', $chat_css );
 		?>
 
-		<div class="nexus-chat-widget<?php echo esc_attr( $align_cls ); ?>" id="nexus-chat-widget" aria-live="polite">
+		<div class="nexulesuite_chat-widget<?php echo esc_attr( $align_cls ); ?>" id="nexulesuite_chat-widget" aria-live="polite">
 
 			<?php /* ── Chat panel (hidden until bubble clicked) ── */ ?>
-			<div class="nexus-chat-panel" id="nexus-chat-panel" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr( $chat_title ); ?>">
+			<div class="nexulesuite_chat-panel" id="nexulesuite_chat-panel" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr( $chat_title ); ?>">
 
 				<?php /* ─ Header ─ */ ?>
-				<div class="nexus-chat-panel__head">
-					<div class="nexus-chat-panel__avatar">
+				<div class="nexulesuite_chat-panel__head">
+					<div class="nexulesuite_chat-panel__avatar">
 						<?php if ( '' !== $btn_image ) : ?>
-							<img src="<?php echo $btn_image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url() or esc_attr() applied above. ?>" alt="<?php echo esc_attr( $chat_title ); ?>" />
+							<img src="<?php echo preg_match( '#^data:image/(jpeg|jpg|png|gif|webp);base64,#i', $btn_image ) ? esc_attr( $btn_image ) : esc_url( $btn_image ); ?>" alt="<?php echo esc_attr( $chat_title ); ?>" />
 						<?php else : ?>
 							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M21 16c0 1.1-.9 2-2 2H7l-4 4V6a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>
 						<?php endif; ?>
 					</div>
-					<div class="nexus-chat-panel__info">
-						<p class="nexus-chat-panel__title"><?php echo esc_html( $chat_title ); ?></p>
+					<div class="nexulesuite_chat-panel__info">
+						<p class="nexulesuite_chat-panel__title"><?php echo esc_html( $chat_title ); ?></p>
 						<?php if ( '' !== $chat_badge ) : ?>
-							<p class="nexus-chat-panel__badge"><span class="nexus-chat-online-dot" aria-hidden="true"></span><?php echo esc_html( $chat_badge ); ?></p>
+							<p class="nexulesuite_chat-panel__badge"><span class="nexulesuite_chat-online-dot" aria-hidden="true"></span><?php echo esc_html( $chat_badge ); ?></p>
 						<?php endif; ?>
 					</div>
-					<button type="button" class="nexus-chat-panel__close" id="nexus-chat-close" aria-label="<?php esc_attr_e( 'Close chat', 'nexus-lead-suite' ); ?>">&#x2715;</button>
+					<button type="button" class="nexulesuite_chat-panel__close" id="nexulesuite_chat-close" aria-label="<?php esc_attr_e( 'Close chat', 'nexus-lead-suite' ); ?>">&#x2715;</button>
 				</div>
 
 				<?php /* ─ Greeting ─ */ ?>
 				<?php if ( '' !== $chat_content ) : ?>
-					<div class="nexus-chat-panel__body"><?php echo esc_html( $chat_content ); ?></div>
+					<div class="nexulesuite_chat-panel__body"><?php echo esc_html( $chat_content ); ?></div>
 				<?php endif; ?>
 
 				<?php /* ─ Action Buttons ─ */ ?>
 				<?php if ( $has_any_action_btn ) : ?>
-					<div class="nexus-chat-panel__btns">
+					<div class="nexulesuite_chat-panel__btns">
 
 						<?php
 						/*
 						 * Button 1: If type = popup → "Open inline form" inside the chat widget.
-						 *            Use data-nexus-chat-open-form attribute to distinguish.
+						 *            Use data-nexulesuite_chat-open-form attribute to distinguish.
 						 * Buttons 2 & 3: If type = popup → open external nexus popup overlay.
 						 */
 						?>
@@ -3961,7 +3940,7 @@ final class Shortcodes {
 								<button type="button"
 									class="<?php echo esc_attr( $hover_cls ); ?>"
 									style="<?php echo esc_attr( $btn_style ); ?>"
-									data-nexus-chat-open-form="1">
+									data-nexulesuite_chat-open-form="1">
 									<?php echo esc_html( $btn1_label ); ?>
 								</button>
 							<?php else : ?>
@@ -3971,7 +3950,7 @@ final class Shortcodes {
 								<a href="<?php echo esc_url( $btn1_val, $href_protocols ); ?>"
 									class="<?php echo esc_attr( $hover_cls ); ?>"
 									style="<?php echo esc_attr( $btn_style ); ?>"
-									data-nexas-trigger="<?php echo esc_attr( $chat_ntfy_1 ); ?>">
+									data-nexulesuite_trigger="<?php echo esc_attr( $chat_ntfy_1 ); ?>">
 									<?php echo esc_html( $btn1_label ); ?>
 								</a>
 							<?php endif; ?>
@@ -3979,13 +3958,13 @@ final class Shortcodes {
 
 						<?php /* Buttons 2 + 3 — side-by-side grid (only render when at least one exists) */ ?>
 						<?php if ( $btn2_has_action || $btn3_has_action ) : ?>
-							<div class="nexus-chat-panel__btns-row">
+							<div class="nexulesuite_chat-panel__btns-row">
 								<?php if ( $btn2_has_action ) : ?>
 									<?php if ( 'popup' === $btn2_type ) : ?>
 										<button type="button"
 											class="<?php echo esc_attr( $hover_cls ); ?>"
 											style="<?php echo esc_attr( $btn_style_muted ); ?>"
-											data-nexus-chat-popup="<?php echo esc_attr( $btn2_val ); ?>">
+											data-nexulesuite_chat-popup="<?php echo esc_attr( $btn2_val ); ?>">
 											<?php echo esc_html( $btn2_label ); ?>
 										</button>
 									<?php else : ?>
@@ -3995,7 +3974,7 @@ final class Shortcodes {
 										<a href="<?php echo esc_url( $btn2_val, $href_protocols ); ?>"
 											class="<?php echo esc_attr( $hover_cls ); ?>"
 											style="<?php echo esc_attr( $btn_style_muted ); ?>"
-											data-nexas-trigger="<?php echo esc_attr( $chat_ntfy_2 ); ?>">
+											data-nexulesuite_trigger="<?php echo esc_attr( $chat_ntfy_2 ); ?>">
 											<?php echo esc_html( $btn2_label ); ?>
 										</a>
 									<?php endif; ?>
@@ -4006,7 +3985,7 @@ final class Shortcodes {
 										<button type="button"
 											class="<?php echo esc_attr( $hover_cls ); ?>"
 											style="<?php echo esc_attr( $btn_style_muted ); ?>"
-											data-nexus-chat-popup="<?php echo esc_attr( $btn3_val ); ?>">
+											data-nexulesuite_chat-popup="<?php echo esc_attr( $btn3_val ); ?>">
 											<?php echo esc_html( $btn3_label ); ?>
 										</button>
 									<?php else : ?>
@@ -4016,7 +3995,7 @@ final class Shortcodes {
 										<a href="<?php echo esc_url( $btn3_val, $href_protocols ); ?>"
 											class="<?php echo esc_attr( $hover_cls ); ?>"
 											style="<?php echo esc_attr( $btn_style_muted ); ?>"
-											data-nexas-trigger="<?php echo esc_attr( $chat_ntfy_3 ); ?>">
+											data-nexulesuite_trigger="<?php echo esc_attr( $chat_ntfy_3 ); ?>">
 											<?php echo esc_html( $btn3_label ); ?>
 										</a>
 									<?php endif; ?>
@@ -4029,25 +4008,25 @@ final class Shortcodes {
 
 				<?php /* ── Inline view: selected Popup content (shortcodes rendered), same as Popups builder ── */ ?>
 				<?php if ( $has_inline_popup_btn ) : ?>
-					<div class="nexus-chat-form-view" id="nexus-chat-form-view" aria-label="<?php echo esc_attr( $chat_title ); ?>">
+					<div class="nexulesuite_chat-form-view" id="nexulesuite_chat-form-view" aria-label="<?php echo esc_attr( $chat_title ); ?>">
 
-					<div class="nexus-chat-form-view__head">
-						<button type="button" class="nexus-chat-form-view__back" id="nexus-chat-form-back" aria-label="<?php esc_attr_e( 'Back', 'nexus-lead-suite' ); ?>">&#8592;</button>
-						<div class="nexus-chat-form-view__avatar">
+					<div class="nexulesuite_chat-form-view__head">
+						<button type="button" class="nexulesuite_chat-form-view__back" id="nexulesuite_chat-form-back" aria-label="<?php esc_attr_e( 'Back', 'nexus-lead-suite' ); ?>">&#8592;</button>
+						<div class="nexulesuite_chat-form-view__avatar">
 							<?php if ( '' !== $btn_image ) : ?>
-								<img src="<?php echo $btn_image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url() or esc_attr() applied above. ?>" alt="" />
+								<img src="<?php echo preg_match( '#^data:image/(jpeg|jpg|png|gif|webp);base64,#i', $btn_image ) ? esc_attr( $btn_image ) : esc_url( $btn_image ); ?>" alt="" />
 							<?php else : ?>
 								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M21 16c0 1.1-.9 2-2 2H7l-4 4V6a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>
 							<?php endif; ?>
 						</div>
-						<div class="nexus-chat-form-view__info">
-							<p class="nexus-chat-form-view__heading"><?php echo esc_html( $chat_title ); ?></p>
+						<div class="nexulesuite_chat-form-view__info">
+							<p class="nexulesuite_chat-form-view__heading"><?php echo esc_html( $chat_title ); ?></p>
 						</div>
 					</div>
 
-					<div class="nexus-chat-inline-popup-body" id="nexus-chat-inline-popup-body">
+					<div class="nexulesuite_chat-inline-popup-body" id="nexulesuite_chat-inline-popup-body">
 						<?php
-						echo $inline_popup_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built via esc_html / shortcodes above.
+						echo wp_kses( $inline_popup_html, \nexulesuite_\allowed_form_html() );
 						?>
 					</div>
 
@@ -4058,12 +4037,12 @@ final class Shortcodes {
 
 			<?php /* ── Floating trigger bubble ── */ ?>
 			<button type="button"
-				class="nexus-chat-trigger <?php echo esc_attr( $hover_cls ); ?>"
-				id="nexus-chat-trigger"
+				class="nexulesuite_chat-trigger <?php echo esc_attr( $hover_cls ); ?>"
+				id="nexulesuite_chat-trigger"
 				aria-expanded="false"
-				aria-controls="nexus-chat-panel"
+				aria-controls="nexulesuite_chat-panel"
 				aria-label="<?php esc_attr_e( 'Open chat', 'nexus-lead-suite' ); ?>">
-				<span class="nexus-chat-online-dot" aria-hidden="true"></span>
+				<span class="nexulesuite_chat-online-dot" aria-hidden="true"></span>
 				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M21 16c0 1.1-.9 2-2 2H7l-4 4V6a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>
 			</button>
 
@@ -4074,48 +4053,48 @@ final class Shortcodes {
 		(function(){
 			'use strict';
 
-			var trigger    = document.getElementById('nexus-chat-trigger');
-			var panel      = document.getElementById('nexus-chat-panel');
-			var closeBtn   = document.getElementById('nexus-chat-close');
-			var formView   = document.getElementById('nexus-chat-form-view');
-			var formBack   = document.getElementById('nexus-chat-form-back');
+			var trigger    = document.getElementById('nexulesuite_chat-trigger');
+			var panel      = document.getElementById('nexulesuite_chat-panel');
+			var closeBtn   = document.getElementById('nexulesuite_chat-close');
+			var formView   = document.getElementById('nexulesuite_chat-form-view');
+			var formBack   = document.getElementById('nexulesuite_chat-form-back');
 
 			if(!trigger||!panel) return;
 
 			/* ── Open / close chat panel ── */
 			function openChat(){
-				panel.classList.add('nexus-chat--open');
+				panel.classList.add('nexulesuite_chat--open');
 				trigger.setAttribute('aria-expanded','true');
 			}
 			function closeChat(){
-				panel.classList.remove('nexus-chat--open');
+				panel.classList.remove('nexulesuite_chat--open');
 				trigger.setAttribute('aria-expanded','false');
 				/* also reset to main view when closing */
 				showMainView();
 			}
 			trigger.addEventListener('click', function(){
-				panel.classList.contains('nexus-chat--open') ? closeChat() : openChat();
+				panel.classList.contains('nexulesuite_chat--open') ? closeChat() : openChat();
 			});
 			if(closeBtn){ closeBtn.addEventListener('click', closeChat); }
 
 			/* ── Main view ↔ Inline form view ── */
-			var mainView = panel.querySelector('.nexus-chat-panel__head') ? panel : null;
+			var mainView = panel.querySelector('.nexulesuite_chat-panel__head') ? panel : null;
 
 			function showFormView(){
 				if(!formView) return;
 				/* hide all sibling sections except formView */
-				['.nexus-chat-panel__head','.nexus-chat-panel__body','.nexus-chat-panel__btns'].forEach(function(sel){
+				['.nexulesuite_chat-panel__head','.nexulesuite_chat-panel__body','.nexulesuite_chat-panel__btns'].forEach(function(sel){
 					var el = panel.querySelector(sel);
 					if(el) el.style.display='none';
 				});
-				panel.classList.add('nexus-chat-panel--inline-form');
-				formView.classList.add('nexus-chat-form--active');
+				panel.classList.add('nexulesuite_chat-panel--inline-form');
+				formView.classList.add('nexulesuite_chat-form--active');
 			}
 			function showMainView(){
 				if(!formView) return;
-				panel.classList.remove('nexus-chat-panel--inline-form');
-				formView.classList.remove('nexus-chat-form--active');
-				['.nexus-chat-panel__head','.nexus-chat-panel__body','.nexus-chat-panel__btns'].forEach(function(sel){
+				panel.classList.remove('nexulesuite_chat-panel--inline-form');
+				formView.classList.remove('nexulesuite_chat-form--active');
+				['.nexulesuite_chat-panel__head','.nexulesuite_chat-panel__body','.nexulesuite_chat-panel__btns'].forEach(function(sel){
 					var el = panel.querySelector(sel);
 					if(el) el.style.display='';
 				});
@@ -4124,29 +4103,29 @@ final class Shortcodes {
 			/* Back button inside form view */
 			if(formBack){ formBack.addEventListener('click', showMainView); }
 
-			/* ── Button 1: open inline form (data-nexus-chat-open-form) ── */
-			var openFormBtns = panel.querySelectorAll('[data-nexus-chat-open-form]');
+			/* ── Button 1: open inline form (data-nexulesuite_chat-open-form) ── */
+			var openFormBtns = panel.querySelectorAll('[data-nexulesuite_chat-open-form]');
 			openFormBtns.forEach(function(btn){
 				btn.addEventListener('click', showFormView);
 			});
 
-			/* ── Buttons 2 & 3: open external nexus popup (data-nexus-chat-popup) ── */
-			var popupBtns = panel.querySelectorAll('[data-nexus-chat-popup]');
+			/* ── Buttons 2 & 3: open external nexus popup (data-nexulesuite_chat-popup) ── */
+			var popupBtns = panel.querySelectorAll('[data-nexulesuite_chat-popup]');
 			popupBtns.forEach(function(btn){
 				btn.addEventListener('click', function(ev){
 					ev.preventDefault();
-					var evName = (btn.getAttribute('data-nexus-chat-popup') || '').trim();
+					var evName = (btn.getAttribute('data-nexulesuite_chat-popup') || '').trim();
 					closeChat();
 					if(!evName) return;
-					var nexusPopup = (window.NexusLsPopupUi && typeof window.NexusLsPopupUi.findOverlayByEventId === 'function')
-						? window.NexusLsPopupUi.findOverlayByEventId(evName)
+					var nexulesuite_Popup = (window.nexulesuite_PopupUi && typeof window.nexulesuite_PopupUi.findOverlayByEventId === 'function')
+						? window.nexulesuite_PopupUi.findOverlayByEventId(evName)
 						: null;
-					if(!nexusPopup) return;
-					if(window.NexusLsPopupUi && typeof window.NexusLsPopupUi.open === 'function'){
-						window.NexusLsPopupUi.open(nexusPopup);
+					if(!nexulesuite_Popup) return;
+					if(window.nexulesuite_PopupUi && typeof window.nexulesuite_PopupUi.open === 'function'){
+						window.nexulesuite_PopupUi.open(nexulesuite_Popup);
 					} else {
-						nexusPopup.classList.add('nexus-popup--open');
-						nexusPopup.setAttribute('aria-hidden','false');
+						nexulesuite_Popup.classList.add('nexulesuite_popup--open');
+						nexulesuite_Popup.setAttribute('aria-hidden','false');
 						document.body.style.overflow='hidden';
 					}
 				});
@@ -4154,12 +4133,12 @@ final class Shortcodes {
 
 			/* ESC key */
 			document.addEventListener('keydown', function(e){
-				if(e.key==='Escape' && panel.classList.contains('nexus-chat--open')){ closeChat(); }
+				if(e.key==='Escape' && panel.classList.contains('nexulesuite_chat--open')){ closeChat(); }
 			});
 		})();
 		<?php
 		$chat_js = (string) ob_get_clean();
-		$this->enqueue_footer_inline_script( 'nexus-ls-livechat-widget', $chat_js );
+		$this->enqueue_footer_inline_script( 'nexulesuite_livechat-widget', $chat_js );
 	}
 
 	/**
@@ -4180,7 +4159,7 @@ final class Shortcodes {
 			'country'  => 'Country',
 		);
 
-		echo '<div class="nexus-st-compound nexus-st-compound--2">';
+		echo '<div class="nexulesuite_st-compound nexulesuite_st-compound--2">';
 		foreach ( $order as $key => $fallback ) {
 			$part = isset( $parts[ $key ] ) && is_array( $parts[ $key ] ) ? $parts[ $key ] : array();
 			$enabled = isset( $part['enabled'] ) ? (bool) $part['enabled'] : true;
@@ -4194,19 +4173,15 @@ final class Shortcodes {
 			}
 			$id      = $this->floating_input_dom_id();
 			$sub_req = $required && 'address1' === $key;
-			echo '<div class="nexus-st-float-wrap">';
-			echo '<input id="' . esc_attr( $id ) . '" class="nexus-st-input forminator-input" type="text" name="' . esc_attr( $base_name ) . '[' . esc_attr( $key ) . ']"';
-			echo $this->floating_nbsp_placeholder_attr(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied in method.
-			if ( $sub_req ) {
-				echo ' required';
-			}
-			echo ' />';
-			printf(
-				'<label class="nexus-st-float-label" for="%s">%s%s</label></div>',
+			$html    = '<div class="nexulesuite_st-float-wrap">';
+			$html   .= '<input id="' . esc_attr( $id ) . '" class="nexulesuite_st-input forminator-input" type="text" name="' . esc_attr( $base_name ) . '[' . esc_attr( $key ) . ']"' . $this->floating_nbsp_placeholder_attr() . ( $sub_req ? ' required' : '' ) . ' />';
+			$html   .= sprintf(
+				'<label class="nexulesuite_st-float-label" for="%s">%s%s</label></div>',
 				esc_attr( $id ),
 				esc_html( $caption ),
-				$sub_req ? '<span class="nexus-st-req">*</span>' : ''
+				$sub_req ? '<span class="nexulesuite_st-req">*</span>' : ''
 			);
+			echo wp_kses( $html, \nexulesuite_\allowed_form_html() );
 		}
 		echo '</div>';
 	}
@@ -4220,7 +4195,7 @@ final class Shortcodes {
 	 */
 	private function enqueue_footer_inline_style( string $handle, string $css ): void {
 		if ( ! wp_style_is( $handle, 'registered' ) ) {
-			wp_register_style( $handle, false, array(), NEXUS_LS_VERSION );
+			wp_register_style( $handle, false, array(), nexulesuite_VERSION );
 		}
 		wp_enqueue_style( $handle );
 		wp_add_inline_style( $handle, $css );
@@ -4236,7 +4211,7 @@ final class Shortcodes {
 	 */
 	private function enqueue_footer_inline_script( string $handle, string $js, array $deps = array() ): void {
 		if ( ! wp_script_is( $handle, 'registered' ) ) {
-			wp_register_script( $handle, false, $deps, NEXUS_LS_VERSION, true );
+			wp_register_script( $handle, false, $deps, nexulesuite_VERSION, true );
 		}
 		wp_enqueue_script( $handle );
 		wp_add_inline_script( $handle, $js );

@@ -1,7 +1,7 @@
 ( function () {
 	'use strict';
 
-	var cfg = window.nexusLsVeCfg || {};
+	var cfg = window.nexulesuite_VeCfg || {};
 	if ( ! cfg || ! cfg.endpoint || ! ( window.wp && wp.element ) ) {
 		return;
 	}
@@ -16,8 +16,8 @@
 	function isEditorUi( node ) {
 		if ( ! node ) return false;
 		try {
-			if ( node.id === 'nexus-ls-ve-root' ) return true;
-			if ( node.closest && node.closest( '#nexus-ls-ve-root' ) ) return true;
+			if ( node.id === 'nexulesuite_ve-root' ) return true;
+			if ( node.closest && node.closest( '#nexulesuite_ve-root' ) ) return true;
 		} catch ( e ) {}
 		return false;
 	}
@@ -55,8 +55,8 @@
 	}
 
 	function ensureStopProp( a ) {
-		if ( a.getAttribute( 'data-nexus-ve-stop-prop' ) ) return;
-		a.setAttribute( 'data-nexus-ve-stop-prop', '1' );
+		if ( a.getAttribute( 'data-nexulesuite_ve-stop-prop' ) ) return;
+		a.setAttribute( 'data-nexulesuite_ve-stop-prop', '1' );
 		a.addEventListener( 'click', function ( e ) {
 			e.stopPropagation();
 		} );
@@ -67,13 +67,13 @@
 
 	( function injectVeHoverStyle() {
 		try {
-			if ( document.getElementById( 'nexus-ls-ve-hover-style' ) ) {
+			if ( document.getElementById( 'nexulesuite_ve-hover-style' ) ) {
 				return;
 			}
 			var styleEl = document.createElement( 'style' );
-			styleEl.id = 'nexus-ls-ve-hover-style';
+			styleEl.id = 'nexulesuite_ve-hover-style';
 			styleEl.textContent =
-				'[data-nexus-ve-hover]{outline:2px solid #4f46e5!important;outline-offset:2px!important}';
+				'[data-nexulesuite_ve-hover]{outline:2px solid #4f46e5!important;outline-offset:2px!important}';
 			( document.head || document.documentElement ).appendChild( styleEl );
 		} catch ( e ) {}
 	} )();
@@ -81,7 +81,7 @@
 	function clearOutline() {
 		if ( ! last ) return;
 		try {
-			last.removeAttribute( 'data-nexus-ve-hover' );
+			last.removeAttribute( 'data-nexulesuite_ve-hover' );
 			last.style.outline = '';
 			last.style.outlineOffset = '';
 		} catch ( e ) {}
@@ -93,7 +93,7 @@
 		clearOutline();
 		last = node;
 		try {
-			node.setAttribute( 'data-nexus-ve-hover', '1' );
+			node.setAttribute( 'data-nexulesuite_ve-hover', '1' );
 		} catch ( e ) {}
 	}
 
@@ -112,9 +112,9 @@
 		var prevOutline = '';
 		var prevOutlineOffset = '';
 		try {
-			hadHover = el.getAttribute && el.getAttribute( 'data-nexus-ve-hover' ) === '1';
+			hadHover = el.getAttribute && el.getAttribute( 'data-nexulesuite_ve-hover' ) === '1';
 			if ( hadHover ) {
-				el.removeAttribute( 'data-nexus-ve-hover' );
+				el.removeAttribute( 'data-nexulesuite_ve-hover' );
 			}
 			prevOutline = el.style.outline || '';
 			prevOutlineOffset = el.style.outlineOffset || '';
@@ -124,13 +124,13 @@
 			el.style.outline = prevOutline;
 			el.style.outlineOffset = prevOutlineOffset;
 			if ( hadHover ) {
-				el.setAttribute( 'data-nexus-ve-hover', '1' );
+				el.setAttribute( 'data-nexulesuite_ve-hover', '1' );
 			}
 			return html;
 		} catch ( e ) {
 			try {
 				if ( hadHover ) {
-					el.setAttribute( 'data-nexus-ve-hover', '1' );
+					el.setAttribute( 'data-nexulesuite_ve-hover', '1' );
 				}
 				el.style.outline = prevOutline;
 				el.style.outlineOffset = prevOutlineOffset;
@@ -158,10 +158,10 @@
 	}
 
 	function ensureRoot() {
-		var root = document.getElementById( 'nexus-ls-ve-root' );
+		var root = document.getElementById( 'nexulesuite_ve-root' );
 		if ( root ) return root;
 		root = document.createElement( 'div' );
-		root.id = 'nexus-ls-ve-root';
+		root.id = 'nexulesuite_ve-root';
 		root.style.position = 'fixed';
 		root.style.zIndex = '2147483647';
 		root.style.left = '0';
@@ -338,90 +338,90 @@
 				var fontStack = veGlobalFontStack();
 				return (
 					'' +
-					'.nexus-ve,.nexus-ve *,.nexus-ve-successBackdrop,.nexus-ve-successBackdrop *{font-family:' +
+					'.nexulesuite_ve,.nexulesuite_ve *,.nexulesuite_ve-successBackdrop,.nexulesuite_ve-successBackdrop *{font-family:' +
 					fontStack +
 					'!important}' +
-					'.nexus-ve *{box-sizing:border-box}' +
-					'.nexus-ve input.nexus-ve-input{width:100%;height:46px;border:1px solid ' +
+					'.nexulesuite_ve *{box-sizing:border-box}' +
+					'.nexulesuite_ve input.nexulesuite_ve-input{width:100%;height:46px;border:1px solid ' +
 					ui.border +
 					';border-radius:' +
 					ui.radiusSm +
 					'px;padding:0 14px;background:' +
 					ui.bgSubtle +
 					';outline:none;font-size:13px;color:#475569;box-shadow:none;transition:border-color .15s ease,box-shadow .15s ease}' +
-					'.nexus-ve input.nexus-ve-input::placeholder{color:#cbd5e1}' +
-					'.nexus-ve input.nexus-ve-input:focus{border-color:' +
+					'.nexulesuite_ve input.nexulesuite_ve-input::placeholder{color:#cbd5e1}' +
+					'.nexulesuite_ve input.nexulesuite_ve-input:focus{border-color:' +
 					ui.indigoText +
 					';box-shadow:0 0 0 4px rgba(79,70,229,.12)}' +
-					'.nexus-ve .nexus-ve-header{padding:20px 22px 18px;border-bottom:1px solid ' +
+					'.nexulesuite_ve .nexulesuite_ve-header{padding:20px 22px 18px;border-bottom:1px solid ' +
 					ui.borderSoft +
 					';background:linear-gradient(180deg,#ffffff 0%,' +
 					ui.bgSoft +
 					' 100%)}' +
-					'.nexus-ve .nexus-ve-h1{margin:0;font-size:20px;font-weight:800;color:#1e293b;letter-spacing:-.02em}' +
-					'.nexus-ve .nexus-ve-metaRow{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}' +
-					'.nexus-ve .nexus-ve-chipIndigo{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;background:' +
+					'.nexulesuite_ve .nexulesuite_ve-h1{margin:0;font-size:20px;font-weight:800;color:#1e293b;letter-spacing:-.02em}' +
+					'.nexulesuite_ve .nexulesuite_ve-metaRow{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}' +
+					'.nexulesuite_ve .nexulesuite_ve-chipIndigo{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;background:' +
 					ui.indigoBg +
 					';color:' +
 					ui.indigoText +
 					';font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}' +
-					'.nexus-ve .nexus-ve-selectedHint{font-size:12px;color:#94a3b8;font-weight:600;font-style:italic}' +
-					'.nexus-ve .nexus-ve-closeBtn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:0;border-radius:999px;background:transparent;color:#94a3b8;cursor:pointer;transition:background .15s ease,color .15s ease}' +
-					'.nexus-ve .nexus-ve-closeBtn:hover{background:#f1f5f9;color:#64748b}' +
-					'.nexus-ve .nexus-ve-body{padding:22px;display:flex;flex-direction:column;gap:22px;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch}' +
-					'.nexus-ve .nexus-ve-fieldLbl{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:13px;font-weight:700;color:#334155}' +
-					'.nexus-ve .nexus-ve-fieldLblIcon{color:#cbd5e1;line-height:0;display:inline-flex}' +
-					'.nexus-ve .nexus-ve-dashBox{border:1px dashed #cbd5e1;border-radius:' +
+					'.nexulesuite_ve .nexulesuite_ve-selectedHint{font-size:12px;color:#94a3b8;font-weight:600;font-style:italic}' +
+					'.nexulesuite_ve .nexulesuite_ve-closeBtn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:0;border-radius:999px;background:transparent;color:#94a3b8;cursor:pointer;transition:background .15s ease,color .15s ease}' +
+					'.nexulesuite_ve .nexulesuite_ve-closeBtn:hover{background:#f1f5f9;color:#64748b}' +
+					'.nexulesuite_ve .nexulesuite_ve-body{padding:22px;display:flex;flex-direction:column;gap:22px;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch}' +
+					'.nexulesuite_ve .nexulesuite_ve-fieldLbl{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:13px;font-weight:700;color:#334155}' +
+					'.nexulesuite_ve .nexulesuite_ve-fieldLblIcon{color:#cbd5e1;line-height:0;display:inline-flex}' +
+					'.nexulesuite_ve .nexulesuite_ve-dashBox{border:1px dashed #cbd5e1;border-radius:' +
 					ui.radiusSm +
 					'px;background:' +
 					ui.bgSubtle +
 					';padding:14px 14px 12px;min-height:96px}' +
-					'.nexus-ve .nexus-ve-dashBrand{display:block;font-size:10px;font-weight:800;color:#94a3b8;letter-spacing:.2em;text-transform:uppercase;margin:0 0 10px}' +
-					'.nexus-ve .nexus-ve-chipRow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}' +
-					'.nexus-ve .nexus-ve-tagPill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;background:#fff;border:1px solid ' +
+					'.nexulesuite_ve .nexulesuite_ve-dashBrand{display:block;font-size:10px;font-weight:800;color:#94a3b8;letter-spacing:.2em;text-transform:uppercase;margin:0 0 10px}' +
+					'.nexulesuite_ve .nexulesuite_ve-chipRow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}' +
+					'.nexulesuite_ve .nexulesuite_ve-tagPill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;background:#fff;border:1px solid ' +
 					ui.border +
 					';box-shadow:0 1px 2px rgba(15,23,42,.05);font-size:12px;font-weight:800;color:#334155}' +
-					'.nexus-ve .nexus-ve-tagX{border:0;background:transparent;padding:0;margin:0;cursor:pointer;color:#cbd5e1;line-height:0;display:inline-flex;align-items:center;justify-content:center}' +
-					'.nexus-ve .nexus-ve-tagX:hover{color:#ef4444}' +
-					'.nexus-ve .nexus-ve-addGhost{display:inline-flex;align-items:center;padding:6px 10px;border-radius:8px;border:1px dashed #cbd5e1;background:transparent;color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;transition:border-color .15s ease,color .15s ease}' +
-					'.nexus-ve .nexus-ve-addGhost:hover{border-color:' +
+					'.nexulesuite_ve .nexulesuite_ve-tagX{border:0;background:transparent;padding:0;margin:0;cursor:pointer;color:#cbd5e1;line-height:0;display:inline-flex;align-items:center;justify-content:center}' +
+					'.nexulesuite_ve .nexulesuite_ve-tagX:hover{color:#ef4444}' +
+					'.nexulesuite_ve .nexulesuite_ve-addGhost{display:inline-flex;align-items:center;padding:6px 10px;border-radius:8px;border:1px dashed #cbd5e1;background:transparent;color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;transition:border-color .15s ease,color .15s ease}' +
+					'.nexulesuite_ve .nexulesuite_ve-addGhost:hover{border-color:' +
 					ui.indigoText +
 					';color:' +
 					ui.indigoText +
 					'}' +
-					'.nexus-ve .nexus-ve-availLbl{font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin:12px 0 8px}' +
-					'.nexus-ve .nexus-ve-pickBtn{height:28px;padding:0 10px;border-radius:999px;border:1px solid ' +
+					'.nexulesuite_ve .nexulesuite_ve-availLbl{font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin:12px 0 8px}' +
+					'.nexulesuite_ve .nexulesuite_ve-pickBtn{height:28px;padding:0 10px;border-radius:999px;border:1px solid ' +
 					ui.border +
 					';background:#fff;color:#475569;font-size:11px;font-weight:800;cursor:pointer;transition:border-color .15s ease,background .15s ease,color .15s ease}' +
-					'.nexus-ve .nexus-ve-pickBtn.nexus-ve-onPopup{border-color:#bfdbfe;background:#eff6ff;color:#1d4ed8}' +
-					'.nexus-ve .nexus-ve-pickBtn.nexus-ve-onMail{border-color:#fde68a;background:#fffbeb;color:#b45309}' +
-					'.nexus-ve .nexus-ve-footer{padding:22px;display:flex;gap:12px;background:rgba(248,250,252,.65);border-top:1px solid ' +
+					'.nexulesuite_ve .nexulesuite_ve-pickBtn.nexulesuite_ve-onPopup{border-color:#bfdbfe;background:#eff6ff;color:#1d4ed8}' +
+					'.nexulesuite_ve .nexulesuite_ve-pickBtn.nexulesuite_ve-onMail{border-color:#fde68a;background:#fffbeb;color:#b45309}' +
+					'.nexulesuite_ve .nexulesuite_ve-footer{padding:22px;display:flex;gap:12px;background:rgba(248,250,252,.65);border-top:1px solid ' +
 					ui.borderSoft +
 					'}' +
-					'.nexus-ve button.nexus-ve-btn{flex:1;height:46px;border-radius:' +
+					'.nexulesuite_ve button.nexulesuite_ve-btn{flex:1;height:46px;border-radius:' +
 					ui.radiusSm +
 					'px;font-size:13px;font-weight:800;cursor:pointer;transition:transform .12s ease,filter .15s ease,opacity .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease;display:inline-flex;align-items:center;justify-content:center;gap:8px}' +
-					'.nexus-ve button.nexus-ve-btn:active{transform:scale(.98)}' +
-					'.nexus-ve button.nexus-ve-btnPrimary{border:0;color:#fff;background:linear-gradient(180deg,#0f172a 0%,#020617 100%);box-shadow:0 12px 28px rgba(15,23,42,.18)}' +
-					'.nexus-ve button.nexus-ve-btnPrimary:hover{filter:brightness(1.06)}' +
-					'.nexus-ve button.nexus-ve-btnPrimary:disabled{opacity:.65;cursor:not-allowed;transform:none}' +
-					'.nexus-ve button.nexus-ve-btnGhost{flex:0 auto;min-width:108px;padding:0 18px;border:1px solid ' +
+					'.nexulesuite_ve button.nexulesuite_ve-btn:active{transform:scale(.98)}' +
+					'.nexulesuite_ve button.nexulesuite_ve-btnPrimary{border:0;color:#fff;background:linear-gradient(180deg,#0f172a 0%,#020617 100%);box-shadow:0 12px 28px rgba(15,23,42,.18)}' +
+					'.nexulesuite_ve button.nexulesuite_ve-btnPrimary:hover{filter:brightness(1.06)}' +
+					'.nexulesuite_ve button.nexulesuite_ve-btnPrimary:disabled{opacity:.65;cursor:not-allowed;transform:none}' +
+					'.nexulesuite_ve button.nexulesuite_ve-btnGhost{flex:0 auto;min-width:108px;padding:0 18px;border:1px solid ' +
 					ui.border +
 					';background:#fff;color:#475569;box-shadow:none;font-weight:800}' +
-					'.nexus-ve button.nexus-ve-btnGhost:hover{background:' +
+					'.nexulesuite_ve button.nexulesuite_ve-btnGhost:hover{background:' +
 					ui.bgSubtle +
 					'}' +
-					'.nexus-ve .nexus-ve-status{margin:0;font-size:12px;line-height:1.45;font-weight:600}' +
-					'.nexus-ve .nexus-ve-statusErr{color:#b91c1c}' +
-					'.nexus-ve-successBackdrop{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.5);padding:16px;box-sizing:border-box}' +
-					'.nexus-ve-successCard{width:100%;max-width:28rem;overflow:hidden;border-radius:24px;border:1px solid #f1f5f9;background:#fff;box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}' +
-					'.nexus-ve-successBody{padding:32px 32px 24px;text-align:center}' +
-					'.nexus-ve-successIconWrap{margin:0 auto;display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:999px;background:#ecfdf5;color:#10b981}' +
-					'.nexus-ve-successTitle{margin:20px 0 0;font-size:20px;font-weight:800;color:#0f172a;line-height:1.25}' +
-					'.nexus-ve-successMsg{margin:8px 0 0;font-size:14px;line-height:1.625;color:#64748b;white-space:pre-wrap;word-break:break-word}' +
-					'.nexus-ve-successFoot{padding:0 32px 32px}' +
-					'.nexus-ve-successDismiss{width:100%;border:0;border-radius:16px;background:#0f172a;color:#fff;padding:16px;font-size:14px;font-weight:800;cursor:pointer;transition:background .15s ease}' +
-					'.nexus-ve-successDismiss:hover{background:#000}'
+					'.nexulesuite_ve .nexulesuite_ve-status{margin:0;font-size:12px;line-height:1.45;font-weight:600}' +
+					'.nexulesuite_ve .nexulesuite_ve-statusErr{color:#b91c1c}' +
+					'.nexulesuite_ve-successBackdrop{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.5);padding:16px;box-sizing:border-box}' +
+					'.nexulesuite_ve-successCard{width:100%;max-width:28rem;overflow:hidden;border-radius:24px;border:1px solid #f1f5f9;background:#fff;box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}' +
+					'.nexulesuite_ve-successBody{padding:32px 32px 24px;text-align:center}' +
+					'.nexulesuite_ve-successIconWrap{margin:0 auto;display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:999px;background:#ecfdf5;color:#10b981}' +
+					'.nexulesuite_ve-successTitle{margin:20px 0 0;font-size:20px;font-weight:800;color:#0f172a;line-height:1.25}' +
+					'.nexulesuite_ve-successMsg{margin:8px 0 0;font-size:14px;line-height:1.625;color:#64748b;white-space:pre-wrap;word-break:break-word}' +
+					'.nexulesuite_ve-successFoot{padding:0 32px 32px}' +
+					'.nexulesuite_ve-successDismiss{width:100%;border:0;border-radius:16px;background:#0f172a;color:#fff;padding:16px;font-size:14px;font-weight:800;cursor:pointer;transition:background .15s ease}' +
+					'.nexulesuite_ve-successDismiss:hover{background:#000}'
 				);
 			}, [ ui ] );
 
@@ -526,7 +526,7 @@
 				var originalHtml = '';
 				try {
 					originalHtml =
-						target.__nexusVeOriginalOuterHTML || snapshotOuterHtml( target ) || target.outerHTML;
+						target.__nexulesuite_VeOriginalOuterHTML || snapshotOuterHtml( target ) || target.outerHTML;
 				} catch ( e ) {}
 
 				var extra = String( customClass || '' ).trim();
@@ -560,7 +560,7 @@
 					} else {
 						var vePa = target.parentElement;
 						var veWrapA = null;
-						if ( vePa && vePa.getAttribute && vePa.getAttribute( 'data-nexus-ve-wrap' ) ) {
+						if ( vePa && vePa.getAttribute && vePa.getAttribute( 'data-nexulesuite_ve-wrap' ) ) {
 							vePa.setAttribute( 'href', attrs.href );
 							vePa.setAttribute( 'rel', 'noopener' );
 							vePa.setAttribute( 'target', '_self' );
@@ -575,7 +575,7 @@
 							veNewA.setAttribute( 'href', attrs.href );
 							veNewA.setAttribute( 'rel', 'noopener' );
 							veNewA.setAttribute( 'target', '_self' );
-							veNewA.setAttribute( 'data-nexus-ve-wrap', '1' );
+							veNewA.setAttribute( 'data-nexulesuite_ve-wrap', '1' );
 							target.parentNode.insertBefore( veNewA, target );
 							veNewA.appendChild( target );
 							veWrapA = veNewA;
@@ -644,7 +644,7 @@
 			var chips = activeChipItems.map( function ( it ) {
 				return createElement(
 					'div',
-					{ key: it.id, className: 'nexus-ve-tagPill' },
+					{ key: it.id, className: 'nexulesuite_ve-tagPill' },
 					[
 						createElement( 'span', { key: 'l' }, it.label ),
 						createElement(
@@ -652,7 +652,7 @@
 							{
 								key: 'x',
 								type: 'button',
-								className: 'nexus-ve-tagX',
+								className: 'nexulesuite_ve-tagX',
 								'aria-label': 'Remove ' + it.cls,
 								onClick: function () { removeClassToken( it.cls ); },
 							},
@@ -665,7 +665,7 @@
 			chips.push(
 				createElement(
 					'button',
-					{ key: 'add', type: 'button', className: 'nexus-ve-addGhost', onClick: focusCustomInput },
+					{ key: 'add', type: 'button', className: 'nexulesuite_ve-addGhost', onClick: focusCustomInput },
 					'+ Add New'
 				)
 			);
@@ -675,10 +675,10 @@
 					'div',
 					{
 						key: 'success',
-						className: 'nexus-ve-successBackdrop',
+						className: 'nexulesuite_ve-successBackdrop',
 						role: 'dialog',
 						'aria-modal': 'true',
-						'aria-labelledby': 'nexus-ve-success-title',
+						'aria-labelledby': 'nexulesuite_ve-success-title',
 						onMouseDown: function ( e ) {
 							if ( e.target === e.currentTarget ) {
 								dismissSuccess();
@@ -687,15 +687,15 @@
 					},
 					createElement(
 						'div',
-						{ className: 'nexus-ve-successCard' },
+						{ className: 'nexulesuite_ve-successCard' },
 						[
 							createElement(
 								'div',
-								{ key: 'body', className: 'nexus-ve-successBody' },
+								{ key: 'body', className: 'nexulesuite_ve-successBody' },
 								[
 									createElement(
 										'div',
-										{ key: 'ico', className: 'nexus-ve-successIconWrap' },
+										{ key: 'ico', className: 'nexulesuite_ve-successIconWrap' },
 										veSvgIcon(
 											[ 'M21.801 10A10 10 0 1 1 17 3.335', 'm9 11 3 3L22 4' ],
 											{ size: 28 }
@@ -703,12 +703,12 @@
 									),
 									createElement(
 										'h3',
-										{ key: 't', id: 'nexus-ve-success-title', className: 'nexus-ve-successTitle' },
+										{ key: 't', id: 'nexulesuite_ve-success-title', className: 'nexulesuite_ve-successTitle' },
 										'Success!'
 									),
 									createElement(
 										'p',
-										{ key: 'm', className: 'nexus-ve-successMsg' },
+										{ key: 'm', className: 'nexulesuite_ve-successMsg' },
 										successMessage ||
 											'Your settings have been successfully updated. All changes are now live.'
 									),
@@ -716,12 +716,12 @@
 							),
 							createElement(
 								'div',
-								{ key: 'ft', className: 'nexus-ve-successFoot' },
+								{ key: 'ft', className: 'nexulesuite_ve-successFoot' },
 								createElement(
 									'button',
 									{
 										type: 'button',
-										className: 'nexus-ve-successDismiss',
+										className: 'nexulesuite_ve-successDismiss',
 										onClick: dismissSuccess,
 									},
 									'Dismiss'
@@ -737,11 +737,11 @@
 				null,
 				createElement(
 				'div',
-				{ className: 'nexus-ve', style: style, role: 'dialog', 'aria-modal': 'true' },
+				{ className: 'nexulesuite_ve', style: style, role: 'dialog', 'aria-modal': 'true' },
 				createElement( 'style', { key: 'css', dangerouslySetInnerHTML: { __html: css } } ),
 				createElement(
 					'header',
-					{ key: 'hdr', className: 'nexus-ve-header' },
+					{ key: 'hdr', className: 'nexulesuite_ve-header' },
 					createElement(
 						'div',
 						{ style: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' } },
@@ -750,24 +750,24 @@
 								'div',
 								{ key: 'left' },
 								[
-									createElement( 'h1', { key: 't', className: 'nexus-ve-h1' }, 'Visual Editor' ),
+									createElement( 'h1', { key: 't', className: 'nexulesuite_ve-h1' }, 'Visual Editor' ),
 									createElement(
 										'div',
-										{ key: 'm', className: 'nexus-ve-metaRow' },
+										{ key: 'm', className: 'nexulesuite_ve-metaRow' },
 										[
 											createElement(
 												'span',
-												{ key: 'chip', className: 'nexus-ve-chipIndigo' },
+												{ key: 'chip', className: 'nexulesuite_ve-chipIndigo' },
 												String( tagName || '' ).toUpperCase()
 											),
-											createElement( 'span', { key: 'sel', className: 'nexus-ve-selectedHint' }, 'Selected element' ),
+											createElement( 'span', { key: 'sel', className: 'nexulesuite_ve-selectedHint' }, 'Selected element' ),
 										]
 									),
 								]
 							),
 							createElement(
 								'button',
-								{ key: 'x', type: 'button', onClick: close, className: 'nexus-ve-closeBtn', 'aria-label': 'Close' },
+								{ key: 'x', type: 'button', onClick: close, className: 'nexulesuite_ve-closeBtn', 'aria-label': 'Close' },
 								icons.xMd
 							),
 						]
@@ -775,7 +775,7 @@
 				),
 				createElement(
 					'div',
-					{ key: 'body', className: 'nexus-ve-body', style: { flex: '1 1 auto', minHeight: 0 } },
+					{ key: 'body', className: 'nexulesuite_ve-body', style: { flex: '1 1 auto', minHeight: 0 } },
 					[
 						createElement(
 							'div',
@@ -783,13 +783,13 @@
 							[
 								createElement(
 									'label',
-									{ key: 'lb', className: 'nexus-ve-fieldLbl', htmlFor: 'nexus-ve-link' },
-									[ createElement( 'span', { key: 'i', className: 'nexus-ve-fieldLblIcon' }, icons.link ), 'Link (optional)' ]
+									{ key: 'lb', className: 'nexulesuite_ve-fieldLbl', htmlFor: 'nexulesuite_ve-link' },
+									[ createElement( 'span', { key: 'i', className: 'nexulesuite_ve-fieldLblIcon' }, icons.link ), 'Link (optional)' ]
 								),
 								createElement( 'input', {
 									key: 'in',
-									id: 'nexus-ve-link',
-									className: 'nexus-ve-input',
+									id: 'nexulesuite_ve-link',
+									className: 'nexulesuite_ve-input',
 									type: 'text',
 									value: link,
 									onChange: function ( e ) { setLink( e.target.value ); },
@@ -803,24 +803,24 @@
 							[
 								createElement(
 									'label',
-									{ key: 'lb', className: 'nexus-ve-fieldLbl' },
+									{ key: 'lb', className: 'nexulesuite_ve-fieldLbl' },
 									[
-										createElement( 'span', { key: 'i', className: 'nexus-ve-fieldLblIcon' }, icons.bell ),
+										createElement( 'span', { key: 'i', className: 'nexulesuite_ve-fieldLblIcon' }, icons.bell ),
 										'Auto Popup / Notify classes (multi-select)',
 									]
 								),
 								createElement(
 									'div',
-									{ key: 'box', className: 'nexus-ve-dashBox' },
+									{ key: 'box', className: 'nexulesuite_ve-dashBox' },
 									[
-										createElement( 'span', { key: 'brand', className: 'nexus-ve-dashBrand' }, 'nexus' ),
-										createElement( 'div', { key: 'row', className: 'nexus-ve-chipRow' }, chips ),
+										createElement( 'span', { key: 'brand', className: 'nexulesuite_ve-dashBrand' }, 'nexus' ),
+										createElement( 'div', { key: 'row', className: 'nexulesuite_ve-chipRow' }, chips ),
 										classGroups && classGroups.length
 											? createElement(
 												'div',
 												{ key: 'pick' },
 												[
-													createElement( 'div', { key: 'al', className: 'nexus-ve-availLbl' }, 'Available from settings' ),
+													createElement( 'div', { key: 'al', className: 'nexulesuite_ve-availLbl' }, 'Available from settings' ),
 												].concat(
 													classGroups.map( function ( g ) {
 														var rows = [];
@@ -841,7 +841,7 @@
 																),
 																createElement(
 																	'div',
-																	{ key: 'ch', className: 'nexus-ve-chipRow' },
+																	{ key: 'ch', className: 'nexulesuite_ve-chipRow' },
 																	rows.map( function ( row ) {
 																		var cls = row.cls;
 																		var checked = selectedClasses.indexOf( cls ) !== -1;
@@ -852,8 +852,8 @@
 																				key: row.kind + ':' + cls,
 																				type: 'button',
 																				className:
-																					'nexus-ve-pickBtn' +
-																					( checked ? ( isPopup ? ' nexus-ve-onPopup' : ' nexus-ve-onMail' ) : '' ),
+																					'nexulesuite_ve-pickBtn' +
+																					( checked ? ( isPopup ? ' nexulesuite_ve-onPopup' : ' nexulesuite_ve-onMail' ) : '' ),
 																				onClick: function () { toggleFromPicker( cls ); },
 																			},
 																			( isPopup ? 'POPUP: ' : 'MAIL: ' ) + cls
@@ -876,17 +876,17 @@
 							[
 								createElement(
 									'label',
-									{ key: 'lb', className: 'nexus-ve-fieldLbl', htmlFor: 'nexus-ve-custom-class' },
+									{ key: 'lb', className: 'nexulesuite_ve-fieldLbl', htmlFor: 'nexulesuite_ve-custom-class' },
 									[
-										createElement( 'span', { key: 'i', className: 'nexus-ve-fieldLblIcon' }, icons.tag ),
+										createElement( 'span', { key: 'i', className: 'nexulesuite_ve-fieldLblIcon' }, icons.tag ),
 										'Custom classes (optional)',
 									]
 								),
 								createElement( 'input', {
 									key: 'in',
-									id: 'nexus-ve-custom-class',
+									id: 'nexulesuite_ve-custom-class',
 									ref: customInputRef,
-									className: 'nexus-ve-input',
+									className: 'nexulesuite_ve-input',
 									type: 'text',
 									value: customClass,
 									onChange: function ( e ) { setCustomClass( e.target.value ); },
@@ -898,11 +898,11 @@
 							'div',
 							{ key: 'cls' },
 							[
-								createElement( 'label', { key: 'l', className: 'nexus-ve-fieldLbl', htmlFor: 'nexus-ve-css-class' }, 'CSS Class' ),
+								createElement( 'label', { key: 'l', className: 'nexulesuite_ve-fieldLbl', htmlFor: 'nexulesuite_ve-css-class' }, 'CSS Class' ),
 								createElement( 'input', {
 									key: 'i',
-									id: 'nexus-ve-css-class',
-									className: 'nexus-ve-input',
+									id: 'nexulesuite_ve-css-class',
+									className: 'nexulesuite_ve-input',
 									type: 'text',
 									value: selectedClasses.join( ' ' ),
 									onChange: function ( e ) {
@@ -917,11 +917,11 @@
 							'div',
 							{ key: 'id' },
 							[
-								createElement( 'label', { key: 'l', className: 'nexus-ve-fieldLbl', htmlFor: 'nexus-ve-css-id' }, 'ID' ),
+								createElement( 'label', { key: 'l', className: 'nexulesuite_ve-fieldLbl', htmlFor: 'nexulesuite_ve-css-id' }, 'ID' ),
 								createElement( 'input', {
 									key: 'i',
-									id: 'nexus-ve-css-id',
-									className: 'nexus-ve-input',
+									id: 'nexulesuite_ve-css-id',
+									className: 'nexulesuite_ve-input',
 									type: 'text',
 									value: cssId,
 									onChange: function ( e ) { setCssId( e.target.value ); },
@@ -934,7 +934,7 @@
 								'p',
 								{
 									key: 'st',
-									className: 'nexus-ve-status nexus-ve-statusErr',
+									className: 'nexulesuite_ve-status nexulesuite_ve-statusErr',
 								},
 								status
 							)
@@ -943,16 +943,16 @@
 				),
 				createElement(
 					'footer',
-					{ key: 'ft', className: 'nexus-ve-footer' },
+					{ key: 'ft', className: 'nexulesuite_ve-footer' },
 					[
 						createElement(
 							'button',
-							{ key: 'save', type: 'button', onClick: save, disabled: busy, className: 'nexus-ve-btn nexus-ve-btnPrimary' },
+							{ key: 'save', type: 'button', onClick: save, disabled: busy, className: 'nexulesuite_ve-btn nexulesuite_ve-btnPrimary' },
 							[ icons.save, busy ? 'Saving…' : 'Save Changes' ]
 						),
 						createElement(
 							'button',
-							{ key: 'cancel', type: 'button', onClick: close, className: 'nexus-ve-btn nexus-ve-btnGhost' },
+							{ key: 'cancel', type: 'button', onClick: close, className: 'nexulesuite_ve-btn nexulesuite_ve-btnGhost' },
 							'Cancel'
 						),
 					]
@@ -973,9 +973,9 @@
 		e.preventDefault();
 		e.stopPropagation();
 
-		if ( ! last.__nexusVeOriginalOuterHTML ) {
+		if ( ! last.__nexulesuite_VeOriginalOuterHTML ) {
 			try {
-				last.__nexusVeOriginalOuterHTML = snapshotOuterHtml( last );
+				last.__nexulesuite_VeOriginalOuterHTML = snapshotOuterHtml( last );
 			} catch ( ex ) {}
 		}
 
