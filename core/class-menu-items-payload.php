@@ -2,12 +2,12 @@
 /**
  * Normalizes stored menu items (legacy flat buttons → grouped format).
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite\Core;
+namespace nexulesuite_\Core;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Menu_Items_Payload {
 
-	public const OPTION_KEY = 'nexus_ls_menu_items_v1';
+	public const OPTION_KEY = 'nexulesuite_menu_items_v1';
 
 	/**
 	 * @return array{ groups: array<int,array<string,mixed>>, globalFontSize: int }
@@ -71,19 +71,19 @@ final class Menu_Items_Payload {
 	 * @return void
 	 */
 	public static function maybe_migrate_legacy_option(): void {
-		if ( '1' === get_option( 'nexus_ls_migrate_menu_groups_v1', '' ) ) {
+		if ( '1' === get_option( 'nexulesuite_migrate_menu_groups_v1', '' ) ) {
 			return;
 		}
 
 		$stored = get_option( self::OPTION_KEY, array() );
 		if ( ! is_array( $stored ) || isset( $stored['groups'] ) ) {
-			update_option( 'nexus_ls_migrate_menu_groups_v1', '1', false );
+			update_option( 'nexulesuite_migrate_menu_groups_v1', '1', false );
 			return;
 		}
 
 		$has_legacy = isset( $stored['items'] ) && is_array( $stored['items'] ) && count( $stored['items'] ) > 0;
 		if ( ! $has_legacy && ! self::looks_like_legacy_button_list( $stored ) ) {
-			update_option( 'nexus_ls_migrate_menu_groups_v1', '1', false );
+			update_option( 'nexulesuite_migrate_menu_groups_v1', '1', false );
 			return;
 		}
 
@@ -96,7 +96,7 @@ final class Menu_Items_Payload {
 			),
 			false
 		);
-		update_option( 'nexus_ls_migrate_menu_groups_v1', '1', false );
+		update_option( 'nexulesuite_migrate_menu_groups_v1', '1', false );
 	}
 
 	/**

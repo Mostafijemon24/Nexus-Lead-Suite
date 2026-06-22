@@ -140,9 +140,9 @@ function rowsFromSavedAutoPopupSettings( s ) {
 }
 
 	const apiFetch = async ( path, options = {} ) => {
-		const base = window?.nexusLsAdmin?.restUrl || '';
-		const nonce = window?.nexusLsAdmin?.nonce || '';
-		const res = await fetch( `${ base }nexus-lead-suite/v1${ path }`, {
+		const base = window?.nexulesuite_Admin?.restUrl || '';
+		const nonce = window?.nexulesuite_Admin?.nonce || '';
+		const res = await fetch( `${ base }nexulesuite_/v1${ path }`, {
 			credentials: 'same-origin',
 			headers: {
 				'Content-Type': 'application/json',
@@ -156,8 +156,8 @@ function rowsFromSavedAutoPopupSettings( s ) {
 	};
 
 const wpFetch = async ( path ) => {
-	const base = window?.nexusLsAdmin?.restUrl || '';
-	const nonce = window?.nexusLsAdmin?.nonce || '';
+	const base = window?.nexulesuite_Admin?.restUrl || '';
+	const nonce = window?.nexulesuite_Admin?.nonce || '';
 	const res = await fetch( `${ base }${ path }`, {
 		credentials: 'same-origin',
 		headers: { 'X-WP-Nonce': nonce },
@@ -449,14 +449,14 @@ export function SettingsPage() {
 				throw convErr instanceof Error ? convErr : new Error( String( convErr ) );
 			}
 
-			const base = ( window?.nexusLsAdmin?.restUrl || '' ).replace( /\/?$/, '' );
+			const base = ( window?.nexulesuite_Admin?.restUrl || '' ).replace( /\/?$/, '' );
 			const fd = new FormData();
 			fd.append( 'file', uploadFile );
 
-			const res = await fetch( `${ base }/nexus-lead-suite/v1/settings/upload-chat-image`, {
+			const res = await fetch( `${ base }/nexulesuite_/v1/settings/upload-chat-image`, {
 				method: 'POST',
 				credentials: 'same-origin',
-				headers: { 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
+				headers: { 'X-WP-Nonce': window?.nexulesuite_Admin?.nonce || '' },
 				body: fd,
 			} );
 
@@ -509,14 +509,14 @@ export function SettingsPage() {
 				throw convErr instanceof Error ? convErr : new Error( String( convErr ) );
 			}
 
-			const base = ( window?.nexusLsAdmin?.restUrl || '' ).replace( /\/?$/, '' );
+			const base = ( window?.nexulesuite_Admin?.restUrl || '' ).replace( /\/?$/, '' );
 			const fd = new FormData();
 			fd.append( 'file', uploadFile );
 
-			const res = await fetch( `${ base }/nexus-lead-suite/v1/settings/upload-report-logo`, {
+			const res = await fetch( `${ base }/nexulesuite_/v1/settings/upload-report-logo`, {
 				method: 'POST',
 				credentials: 'same-origin',
-				headers: { 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
+				headers: { 'X-WP-Nonce': window?.nexulesuite_Admin?.nonce || '' },
 				body: fd,
 			} );
 
@@ -700,27 +700,27 @@ export function SettingsPage() {
 								    GENERAL & NAVIGATION
 								════════════════════════════════════════════ */}
 								{ activeTab === 'general' && (
-									<div className="nls-settings-general-wrap">
-										<div className="nls-sg-card">
-											<section className="nls-sg-section is-first">
-												<div className="nls-sg-sec-head">
-													<span className="nls-sg-sec-ico">
+									<div className="nexulesuite_settings-general-wrap">
+										<div className="nexulesuite_sg-card">
+											<section className="nexulesuite_sg-section is-first">
+												<div className="nexulesuite_sg-sec-head">
+													<span className="nexulesuite_sg-sec-ico">
 														<Layout size={ 16 } />
 													</span>
 													<div>
-														<span className="nls-sg-sec-title">Navigation &amp; Email</span>
-														<p className="nls-sg-sec-desc">Footer menu behaviour and activity notification routing.</p>
+														<span className="nexulesuite_sg-sec-title">Navigation &amp; Email</span>
+														<p className="nexulesuite_sg-sec-desc">Footer menu behaviour and activity notification routing.</p>
 													</div>
 												</div>
-												<div className="nls-sg-grid-2">
-													<div className="nls-sg-stack">
-														<div className="nls-sg-toggle-card">
-															<div className="nls-sg-toggle-card-body">
-																<span className="nls-sg-toggle-card-title">Enable Navigation</span>
+												<div className="nexulesuite_sg-grid-2">
+													<div className="nexulesuite_sg-stack">
+														<div className="nexulesuite_sg-toggle-card">
+															<div className="nexulesuite_sg-toggle-card-body">
+																<span className="nexulesuite_sg-toggle-card-title">Enable Navigation</span>
 																<p className="hint">Footer navigation menu auto-stack</p>
 															</div>
 															<div
-																className={ `nls-sg-toggle${ settings.enableNavigation ? ' on' : '' }` }
+																className={ `nexulesuite_sg-toggle${ settings.enableNavigation ? ' on' : '' }` }
 																role="switch"
 																aria-checked={ settings.enableNavigation }
 																tabIndex={ 0 }
@@ -735,7 +735,7 @@ export function SettingsPage() {
 																<span className="track"><span className="knob" /></span>
 															</div>
 														</div>
-														<div className="nls-sg-select-card">
+														<div className="nexulesuite_sg-select-card">
 															<span className="lbl">Events Email Template</span>
 															<select
 																className="sel"
@@ -749,14 +749,14 @@ export function SettingsPage() {
 															</select>
 														</div>
 													</div>
-													<div className="nls-sg-stack">
-														<div className="nls-sg-toggle-card">
-															<div className="nls-sg-toggle-card-body">
-																<span className="nls-sg-toggle-card-title">Allow Client Access</span>
+													<div className="nexulesuite_sg-stack">
+														<div className="nexulesuite_sg-toggle-card">
+															<div className="nexulesuite_sg-toggle-card-body">
+																<span className="nexulesuite_sg-toggle-card-title">Allow Client Access</span>
 																<p className="hint">Temporary reporting access</p>
 															</div>
 															<div
-																className={ `nls-sg-toggle${ settings.allowClientAccess ? ' on' : '' }` }
+																className={ `nexulesuite_sg-toggle${ settings.allowClientAccess ? ' on' : '' }` }
 																role="switch"
 																aria-checked={ settings.allowClientAccess }
 																tabIndex={ 0 }
@@ -771,8 +771,8 @@ export function SettingsPage() {
 																<span className="track"><span className="knob" /></span>
 															</div>
 														</div>
-														<div className={ `nls-sg-client-panel${ ! settings.allowClientAccess ? ' is-disabled' : '' }` }>
-															<div className="nls-sg-field">
+														<div className={ `nexulesuite_sg-client-panel${ ! settings.allowClientAccess ? ' is-disabled' : '' }` }>
+															<div className="nexulesuite_sg-field">
 																<span className="lbl">Report URL slug</span>
 																<input
 																	type="text"
@@ -785,7 +785,7 @@ export function SettingsPage() {
 																	Pretty URL path (save settings, then generate link). Plain permalinks use a query-string URL automatically.
 																</p>
 															</div>
-															<div className="nls-sg-field">
+															<div className="nexulesuite_sg-field">
 																<span className="lbl">Token TTL (Minutes)</span>
 																<input
 																	type="number"
@@ -797,21 +797,21 @@ export function SettingsPage() {
 															<button
 																type="button"
 																onClick={ handleGenerateLink }
-																className="nls-sg-btn nls-sg-btn-primary"
+																className="nexulesuite_sg-btn nexulesuite_sg-btn-primary"
 															>
 																<Wand2 size={ 14 } /> Generate Dynamic Access Link
 															</button>
-															<div className="nls-sg-link-box">
-																<span className="nls-sg-link-ico" aria-hidden="true"><Globe size={ 16 } /></span>
+															<div className="nexulesuite_sg-link-box">
+																<span className="nexulesuite_sg-link-ico" aria-hidden="true"><Globe size={ 16 } /></span>
 																{ generatedLink ? (
-																	<div className="nls-sg-link-inner">
-																		<input readOnly value={ generatedLink } className="nls-sg-link-inp" />
-																		<button type="button" onClick={ copyToClipboard } className="nls-sg-link-copy" aria-label="Copy link">
+																	<div className="nexulesuite_sg-link-inner">
+																		<input readOnly value={ generatedLink } className="nexulesuite_sg-link-inp" />
+																		<button type="button" onClick={ copyToClipboard } className="nexulesuite_sg-link-copy" aria-label="Copy link">
 																			{ copySuccess ? <Check size={ 16 } className="is-copied" /> : <Copy size={ 16 } /> }
 																		</button>
 																	</div>
 																) : (
-																	<span className="nls-sg-link-placeholder">Link will appear here after generation...</span>
+																	<span className="nexulesuite_sg-link-placeholder">Link will appear here after generation...</span>
 																) }
 															</div>
 														</div>
@@ -819,23 +819,23 @@ export function SettingsPage() {
 												</div>
 											</section>
 
-											<section className="nls-sg-section">
-												<div className="nls-sg-sec-head">
-													<span className="nls-sg-sec-ico">
+											<section className="nexulesuite_sg-section">
+												<div className="nexulesuite_sg-sec-head">
+													<span className="nexulesuite_sg-sec-ico">
 														<ImageIcon size={ 16 } />
 													</span>
 													<div>
-														<span className="nls-sg-sec-title">Report &amp; PDF Logo</span>
-														<p className="nls-sg-sec-desc">
+														<span className="nexulesuite_sg-sec-title">Report &amp; PDF Logo</span>
+														<p className="nexulesuite_sg-sec-desc">
 															If uploaded, the logo appears above the site title in PDF reports; otherwise only the title shows.
 														</p>
 													</div>
 												</div>
-												<div className="nls-sg-grid-2">
-													<div className="nls-sg-stack">
-														<div className="nls-sg-field">
+												<div className="nexulesuite_sg-grid-2">
+													<div className="nexulesuite_sg-stack">
+														<div className="nexulesuite_sg-field">
 															<span className="lbl">Logo URL</span>
-															<div className="nls-sg-logo-row">
+															<div className="nexulesuite_sg-logo-row">
 																<input
 																	type="text"
 																	className="inp"
@@ -848,7 +848,7 @@ export function SettingsPage() {
 																	type="button"
 																	onClick={ () => reportLogoInputRef.current?.click?.() }
 																	disabled={ uploadingReportLogo }
-																	className="nls-sg-btn nls-sg-btn-primary"
+																	className="nexulesuite_sg-btn nexulesuite_sg-btn-primary"
 																>
 																	{ uploadingReportLogo ? <Loader2 size={ 16 } className="animate-spin" /> : <Upload size={ 16 } /> }
 																	Upload
@@ -857,7 +857,7 @@ export function SettingsPage() {
 																	type="button"
 																	onClick={ () => updateSetting( 'reportLogo', '' ) }
 																	disabled={ ! settings.reportLogo }
-																	className="nls-sg-btn nls-sg-btn-secondary"
+																	className="nexulesuite_sg-btn nexulesuite_sg-btn-secondary"
 																>
 																	<X size={ 16 } /> Remove
 																</button>
@@ -867,41 +867,41 @@ export function SettingsPage() {
 															</p>
 														</div>
 													</div>
-													<div className="nls-sg-stack">
+													<div className="nexulesuite_sg-stack">
 														<span className="lbl">PDF report header preview</span>
-														<div className="nls-sg-preview-box">
-															<div className="nls-sg-preview-logo">
+														<div className="nexulesuite_sg-preview-box">
+															<div className="nexulesuite_sg-preview-logo">
 																{ settings.reportLogo ? (
 																	<img
 																		src={ settings.reportLogo }
 																		alt="Report Logo"
-																		className="nls-sg-preview-img"
+																		className="nexulesuite_sg-preview-img"
 																	/>
 																) : (
-																	<ImageIcon size={ 22 } className="nls-sg-preview-empty" aria-hidden />
+																	<ImageIcon size={ 22 } className="nexulesuite_sg-preview-empty" aria-hidden />
 																) }
 															</div>
-															<div className="nls-sg-preview-title">{ window?.nexusLsAdmin?.siteName || 'Site Title' }</div>
-															<div className="nls-sg-preview-sub">Activities Report</div>
+															<div className="nexulesuite_sg-preview-title">{ window?.nexulesuite_Admin?.siteName || 'Site Title' }</div>
+															<div className="nexulesuite_sg-preview-sub">Activities Report</div>
 														</div>
 													</div>
 												</div>
 											</section>
 
-											<section className="nls-sg-section">
-												<div className="nls-sg-sec-head">
-													<span className="nls-sg-sec-ico is-violet">
+											<section className="nexulesuite_sg-section">
+												<div className="nexulesuite_sg-sec-head">
+													<span className="nexulesuite_sg-sec-ico is-violet">
 														<FontIcon size={ 16 } />
 													</span>
 													<div>
-														<span className="nls-sg-sec-title">Global Font Settings</span>
-														<p className="nls-sg-sec-desc">
+														<span className="nexulesuite_sg-sec-title">Global Font Settings</span>
+														<p className="nexulesuite_sg-sec-desc">
 															Applies to all plugin elements: Forms, Popups, Menu Items, Reports &amp; PDF.
 														</p>
 													</div>
 												</div>
-												<div className="nls-sg-grid-2">
-													<div className="nls-sg-stack">
+												<div className="nexulesuite_sg-grid-2">
+													<div className="nexulesuite_sg-stack">
 														<input
 															type="text"
 															className="inp"
@@ -909,9 +909,9 @@ export function SettingsPage() {
 															value={ fontSearch }
 															onChange={ ( e ) => setFontSearch( e.target.value ) }
 														/>
-														<div className="nls-sg-font-list">
+														<div className="nexulesuite_sg-font-list">
 															{ filteredFonts.length === 0 ? (
-																<div className="nls-sg-font-empty">No fonts found</div>
+																<div className="nexulesuite_sg-font-empty">No fonts found</div>
 															) : filteredFonts.map( ( font ) => {
 																const isSelected = settings.globalFont === font.family;
 																return (
@@ -919,42 +919,42 @@ export function SettingsPage() {
 																		key={ font.family }
 																		type="button"
 																		onClick={ () => updateSetting( 'globalFont', font.family ) }
-																		className={ `nls-sg-font-item${ isSelected ? ' is-selected' : '' }` }
+																		className={ `nexulesuite_sg-font-item${ isSelected ? ' is-selected' : '' }` }
 																		style={ { fontFamily: `'${ font.family }', ${ font.category === 'Serif' ? 'serif' : font.category === 'Monospace' ? 'monospace' : 'sans-serif' }` } }
 																	>
-																		<span className="nls-sg-font-name">{ font.family }</span>
-																		<span className="nls-sg-font-cat">{ font.category }</span>
+																		<span className="nexulesuite_sg-font-name">{ font.family }</span>
+																		<span className="nexulesuite_sg-font-cat">{ font.category }</span>
 																	</button>
 																);
 															} ) }
 														</div>
-														<p className="nls-sg-font-meta">{ GOOGLE_FONTS.length } fonts · Google CDN · zero files in plugin</p>
+														<p className="nexulesuite_sg-font-meta">{ GOOGLE_FONTS.length } fonts · Google CDN · zero files in plugin</p>
 													</div>
-													<div className="nls-sg-stack">
+													<div className="nexulesuite_sg-stack">
 														<div
-															className="nls-sg-font-preview"
+															className="nexulesuite_sg-font-preview"
 															style={ { fontFamily: settings.globalFont ? `'${ settings.globalFont }', sans-serif` : 'inherit' } }
 														>
-															<div className="nls-sg-font-preview-head">
+															<div className="nexulesuite_sg-font-preview-head">
 																<span className="lbl">Live Preview</span>
-																<span className="nls-sg-font-badge">{ settings.globalFont || 'System Default' }</span>
+																<span className="nexulesuite_sg-font-badge">{ settings.globalFont || 'System Default' }</span>
 															</div>
-															<h2 className="nls-sg-font-h2">The quick brown fox</h2>
-															<h4 className="nls-sg-font-h4">Jumps over the lazy dog</h4>
-															<p className="nls-sg-font-body">
+															<h2 className="nexulesuite_sg-font-h2">The quick brown fox</h2>
+															<h4 className="nexulesuite_sg-font-h4">Jumps over the lazy dog</h4>
+															<p className="nexulesuite_sg-font-body">
 																Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 															</p>
-															<div className="nls-sg-font-btns">
-																<button type="button" className="nls-sg-font-btn-primary">Submit Form</button>
-																<button type="button" className="nls-sg-font-btn-secondary">Chat Now</button>
+															<div className="nexulesuite_sg-font-btns">
+																<button type="button" className="nexulesuite_sg-font-btn-primary">Submit Form</button>
+																<button type="button" className="nexulesuite_sg-font-btn-secondary">Chat Now</button>
 															</div>
-															<div className="nls-sg-font-input-demo">
+															<div className="nexulesuite_sg-font-input-demo">
 																<span className="lbl">Form Input</span>
-																<div className="nls-sg-font-input-fake">Type your name here...</div>
+																<div className="nexulesuite_sg-font-input-fake">Type your name here...</div>
 															</div>
 														</div>
-														<div className="nls-sg-info-box">
-															<Info size={ 14 } className="nls-sg-info-ico" />
+														<div className="nexulesuite_sg-info-box">
+															<Info size={ 14 } className="nexulesuite_sg-info-ico" />
 															<p>
 																Font, size, weight &amp; line height apply globally to all plugin frontend elements: Forms, Popups, Menu Items &amp; Reports. Served via Google CDN — <strong>no files stored in plugin</strong>.
 															</p>
@@ -963,11 +963,11 @@ export function SettingsPage() {
 												</div>
 											</section>
 
-											<div className="nls-sg-alert">
-												<span className="nls-sg-alert-ico" aria-hidden="true"><AlertTriangle size={ 18 } /></span>
+											<div className="nexulesuite_sg-alert">
+												<span className="nexulesuite_sg-alert-ico" aria-hidden="true"><AlertTriangle size={ 18 } /></span>
 												<div>
-													<h6 className="nls-sg-alert-title">System Notification Logic Alert</h6>
-													<p className="nls-sg-alert-text">
+													<h6 className="nexulesuite_sg-alert-title">System Notification Logic Alert</h6>
+													<p className="nexulesuite_sg-alert-text">
 														The email template selected above is strictly for <strong>Activity Notifications only</strong>.
 														Submission data will NOT be sent via this notification email.
 													</p>
@@ -1006,20 +1006,20 @@ export function SettingsPage() {
 										</div>
 
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:items-stretch">
-											<div className="nls-settings-autopopup-exclusion-wrap flex flex-col min-h-[320px]">
-												<div className="nls-sap-excl-card">
-													<section className="nls-sap-excl-section is-first">
-														<div className="nls-sap-excl-sec-head">
-															<span className="nls-sap-excl-sec-ico" aria-hidden="true">
+											<div className="nexulesuite_settings-autopopup-exclusion-wrap flex flex-col min-h-[320px]">
+												<div className="nexulesuite_sap-excl-card">
+													<section className="nexulesuite_sap-excl-section is-first">
+														<div className="nexulesuite_sap-excl-sec-head">
+															<span className="nexulesuite_sap-excl-sec-ico" aria-hidden="true">
 																<FileX size={ 16 } />
 															</span>
 															<div>
-																<span className="nls-sap-excl-sec-title">Exclusion Rules</span>
-																<p className="nls-sap-excl-sec-desc">Suppress auto popup on selected posts and pages.</p>
+																<span className="nexulesuite_sap-excl-sec-title">Exclusion Rules</span>
+																<p className="nexulesuite_sap-excl-sec-desc">Suppress auto popup on selected posts and pages.</p>
 															</div>
 														</div>
-														<div className="nls-sap-excl-stack">
-															<div className="nls-sap-excl-field">
+														<div className="nexulesuite_sap-excl-stack">
+															<div className="nexulesuite_sap-excl-field">
 																<span className="lbl">Exclude Posts</span>
 																<select
 																	onChange={ ( e ) => {
@@ -1035,13 +1035,13 @@ export function SettingsPage() {
 																	) ) }
 																</select>
 																{ settings.excludePosts.length > 0 && (
-																	<div className="nls-sap-excl-tags">
+																	<div className="nexulesuite_sap-excl-tags">
 																		{ settings.excludePosts.map( ( post ) => (
-																			<span key={ post.id } className="nls-sap-excl-chip is-post">
+																			<span key={ post.id } className="nexulesuite_sap-excl-chip is-post">
 																				{ post.title }
 																				<button
 																					type="button"
-																					className="nls-sap-excl-chip-remove"
+																					className="nexulesuite_sap-excl-chip-remove"
 																					onClick={ () => toggleExclusion( 'excludePosts', post ) }
 																					aria-label={ `Remove ${ post.title }` }
 																				>
@@ -1052,7 +1052,7 @@ export function SettingsPage() {
 																	</div>
 																) }
 															</div>
-															<div className="nls-sap-excl-field">
+															<div className="nexulesuite_sap-excl-field">
 																<span className="lbl">Exclude Pages</span>
 																<select
 																	onChange={ ( e ) => {
@@ -1068,13 +1068,13 @@ export function SettingsPage() {
 																	) ) }
 																</select>
 																{ settings.excludePages.length > 0 && (
-																	<div className="nls-sap-excl-tags">
+																	<div className="nexulesuite_sap-excl-tags">
 																		{ settings.excludePages.map( ( page ) => (
-																			<span key={ page.id } className="nls-sap-excl-chip is-page">
+																			<span key={ page.id } className="nexulesuite_sap-excl-chip is-page">
 																				{ page.title }
 																				<button
 																					type="button"
-																					className="nls-sap-excl-chip-remove"
+																					className="nexulesuite_sap-excl-chip-remove"
 																					onClick={ () => toggleExclusion( 'excludePages', page ) }
 																					aria-label={ `Remove ${ page.title }` }
 																				>
@@ -1185,28 +1185,28 @@ export function SettingsPage() {
 								    LIVECHAT & STYLING
 								════════════════════════════════════════════ */}
 								{ activeTab === 'chat' && (
-									<div className="nls-settings-livechat-wrap">
-										<div className="nls-lc-layout">
-											<div className="nls-lc-main">
-												<div className="nls-lc-card">
-													<section className="nls-lc-section is-first">
-														<div className="nls-lc-sec-head">
-															<span className="nls-lc-sec-ico" aria-hidden="true">
+									<div className="nexulesuite_settings-livechat-wrap">
+										<div className="nexulesuite_lc-layout">
+											<div className="nexulesuite_lc-main">
+												<div className="nexulesuite_lc-card">
+													<section className="nexulesuite_lc-section is-first">
+														<div className="nexulesuite_lc-sec-head">
+															<span className="nexulesuite_lc-sec-ico" aria-hidden="true">
 																<MessageCircle size={ 16 } />
 															</span>
 															<div>
-																<span className="nls-lc-sec-title">Livechat Widget</span>
-																<p className="nls-lc-sec-desc">Enable the floating chat widget and configure header content shown in the panel.</p>
+																<span className="nexulesuite_lc-sec-title">Livechat Widget</span>
+																<p className="nexulesuite_lc-sec-desc">Enable the floating chat widget and configure header content shown in the panel.</p>
 															</div>
 														</div>
-														<div className="nls-lc-stack">
-															<div className="nls-lc-toggle-card">
-																<div className="nls-lc-toggle-card-body">
-																	<span className="nls-lc-toggle-card-title">Enable Livechat Widget</span>
+														<div className="nexulesuite_lc-stack">
+															<div className="nexulesuite_lc-toggle-card">
+																<div className="nexulesuite_lc-toggle-card-body">
+																	<span className="nexulesuite_lc-toggle-card-title">Enable Livechat Widget</span>
 																	<p className="hint">Show the floating chat launcher on the front-end</p>
 																</div>
 																<div
-																	className={ `nls-lc-toggle${ settings.enableLivechat ? ' on' : '' }` }
+																	className={ `nexulesuite_lc-toggle${ settings.enableLivechat ? ' on' : '' }` }
 																	role="switch"
 																	aria-checked={ settings.enableLivechat }
 																	tabIndex={ 0 }
@@ -1221,10 +1221,10 @@ export function SettingsPage() {
 																	<span className="track"><span className="knob" /></span>
 																</div>
 															</div>
-															<div className="nls-lc-grid-2">
-																<div className="nls-lc-field is-full">
+															<div className="nexulesuite_lc-grid-2">
+																<div className="nexulesuite_lc-field is-full">
 																	<span className="lbl">Livechat Button Image</span>
-																	<div className="nls-lc-upload-row">
+																	<div className="nexulesuite_lc-upload-row">
 																		<input
 																			type="text"
 																			className="inp"
@@ -1237,7 +1237,7 @@ export function SettingsPage() {
 																			type="button"
 																			disabled={ uploadingChatImg }
 																			onClick={ () => fileInputRef.current.click() }
-																			className="nls-lc-btn nls-lc-btn-primary"
+																			className="nexulesuite_lc-btn nexulesuite_lc-btn-primary"
 																			title="Upload to Media Library"
 																		>
 																			{ uploadingChatImg ? <Loader2 size={ 16 } className="animate-spin" /> : <Upload size={ 16 } /> }
@@ -1245,7 +1245,7 @@ export function SettingsPage() {
 																		</button>
 																	</div>
 																</div>
-																<div className="nls-lc-field">
+																<div className="nexulesuite_lc-field">
 																	<span className="lbl">Livechat Title</span>
 																	<input
 																		type="text"
@@ -1254,7 +1254,7 @@ export function SettingsPage() {
 																		onChange={ ( e ) => updateSetting( 'chatTitle', e.target.value ) }
 																	/>
 																</div>
-																<div className="nls-lc-field">
+																<div className="nexulesuite_lc-field">
 																	<span className="lbl">Livechat Badge</span>
 																	<input
 																		type="text"
@@ -1263,7 +1263,7 @@ export function SettingsPage() {
 																		onChange={ ( e ) => updateSetting( 'chatBadge', e.target.value ) }
 																	/>
 																</div>
-																<div className="nls-lc-field is-full">
+																<div className="nexulesuite_lc-field is-full">
 																	<span className="lbl">Livechat Content</span>
 																	<textarea
 																		className="ta"
@@ -1275,17 +1275,17 @@ export function SettingsPage() {
 														</div>
 													</section>
 
-													<section className="nls-lc-section">
-														<div className="nls-lc-sec-head">
-															<span className="nls-lc-sec-ico is-violet" aria-hidden="true">
+													<section className="nexulesuite_lc-section">
+														<div className="nexulesuite_lc-sec-head">
+															<span className="nexulesuite_lc-sec-ico is-violet" aria-hidden="true">
 																<MousePointer2 size={ 16 } />
 															</span>
 															<div>
-																<span className="nls-lc-sec-title">Chat Buttons &amp; Redirects</span>
-																<p className="nls-lc-sec-desc">Configure button labels and where each action links — URL or popup.</p>
+																<span className="nexulesuite_lc-sec-title">Chat Buttons &amp; Redirects</span>
+																<p className="nexulesuite_lc-sec-desc">Configure button labels and where each action links — URL or popup.</p>
 															</div>
 														</div>
-														<div className="nls-lc-btn-list">
+														<div className="nexulesuite_lc-btn-list">
 															{ [
 																{ key: 'chatFormButton', linkKey: 'chatFormButtonLink', label: 'Button 01', placeholder: 'Start Conversation' },
 																{ key: 'chatButtonTwo',  linkKey: 'chatButtonTwoLink',  label: 'Button 02', placeholder: "What's App" },
@@ -1307,8 +1307,8 @@ export function SettingsPage() {
 																const setPopupVal = ( eventName ) => updateSetting( btn.linkKey, 'popup:' + eventName );
 
 																return (
-																	<div key={ btn.key } className="nls-lc-btn-card">
-																		<div className="nls-lc-field">
+																	<div key={ btn.key } className="nexulesuite_lc-btn-card">
+																		<div className="nexulesuite_lc-field">
 																			<span className="lbl">{ btn.label } — Label</span>
 																			<input
 																				type="text"
@@ -1318,9 +1318,9 @@ export function SettingsPage() {
 																				placeholder={ btn.placeholder }
 																			/>
 																		</div>
-																		<div className="nls-lc-field">
+																		<div className="nexulesuite_lc-field">
 																			<span className="lbl">Link Type</span>
-																			<div className="nls-lc-seg">
+																			<div className="nexulesuite_lc-seg">
 																				{ [ 'link', 'popup' ].map( ( type ) => (
 																					<button
 																						key={ type }
@@ -1334,7 +1334,7 @@ export function SettingsPage() {
 																			</div>
 																		</div>
 																		{ linkType === 'link' ? (
-																			<div className="nls-lc-field">
+																			<div className="nexulesuite_lc-field">
 																				<span className="lbl">Destination URL</span>
 																				<input
 																					type="text"
@@ -1345,10 +1345,10 @@ export function SettingsPage() {
 																				/>
 																			</div>
 																		) : (
-																			<div className="nls-lc-field is-popup-select">
+																			<div className="nexulesuite_lc-field is-popup-select">
 																				<span className="lbl">Select Popup</span>
 																				{ popups.length === 0 ? (
-																					<div className="nls-lc-alert">
+																					<div className="nexulesuite_lc-alert">
 																						No popups created yet. Go to <strong>Nexus → Popups</strong> and create one first.
 																					</div>
 																				) : (
@@ -1368,8 +1368,8 @@ export function SettingsPage() {
 																			</div>
 																		) }
 																		{ isBtn1 && linkType === 'popup' && (
-																			<p className="nls-lc-info-note">
-																				Selected popup content is shown inside the chat bubble. Use <code>[smart_trigger_form id=&quot;…&quot;]</code> in the popup body. Set recipient email(s) on that form under <strong>Form Builder → Advanced → Submission notification email(s)</strong>.
+																			<p className="nexulesuite_lc-info-note">
+																				Selected popup content is shown inside the chat bubble. Use <code>[nexulesuite_form id=&quot;…&quot;]</code> in the popup body. Set recipient email(s) on that form under <strong>Form Builder → Advanced → Submission notification email(s)</strong>.
 																			</p>
 																		) }
 																	</div>
@@ -1378,20 +1378,20 @@ export function SettingsPage() {
 														</div>
 													</section>
 
-													<section className="nls-lc-section">
-														<div className="nls-lc-sec-head">
-															<span className="nls-lc-sec-ico is-violet" aria-hidden="true">
+													<section className="nexulesuite_lc-section">
+														<div className="nexulesuite_lc-sec-head">
+															<span className="nexulesuite_lc-sec-ico is-violet" aria-hidden="true">
 																<Paintbrush size={ 16 } />
 															</span>
 															<div>
-																<span className="nls-lc-sec-title">Button &amp; Widget Styling</span>
-																<p className="nls-lc-sec-desc">Position, colours, spacing, and hover effects for the chat widget and buttons.</p>
+																<span className="nexulesuite_lc-sec-title">Button &amp; Widget Styling</span>
+																<p className="nexulesuite_lc-sec-desc">Position, colours, spacing, and hover effects for the chat widget and buttons.</p>
 															</div>
 														</div>
-														<div className="nls-lc-grid-2">
-															<div className="nls-lc-field is-full">
+														<div className="nexulesuite_lc-grid-2">
+															<div className="nexulesuite_lc-field is-full">
 																<span className="lbl">Widget Position</span>
-																<div className="nls-lc-seg">
+																<div className="nexulesuite_lc-seg">
 																	{ [
 																		{ id: 'left', label: 'Left side', Icon: AlignLeft },
 																		{ id: 'right', label: 'Right side', Icon: AlignRight },
@@ -1412,7 +1412,7 @@ export function SettingsPage() {
 																</div>
 																<p className="hint">Pins the entire floating chat widget to the left or right edge of the site (same as front-end).</p>
 															</div>
-															<div className="nls-lc-color-field">
+															<div className="nexulesuite_lc-color-field">
 																<span className="lbl">Button BG</span>
 																<div className="cgroup">
 																	<label className="cswatch" style={ { backgroundColor: settings.primaryBtnBg } }>
@@ -1421,14 +1421,14 @@ export function SettingsPage() {
 																	<input type="text" className="chex" value={ settings.primaryBtnBg } onChange={ ( e ) => updateSetting( 'primaryBtnBg', e.target.value ) } />
 																</div>
 															</div>
-															<div className="nls-lc-range-field">
-																<div className="nls-lc-range-head">
+															<div className="nexulesuite_lc-range-field">
+																<div className="nexulesuite_lc-range-head">
 																	<span className="lbl">Padding (px)</span>
-																	<span className="nls-lc-range-val">{ settings.chatPadding }</span>
+																	<span className="nexulesuite_lc-range-val">{ settings.chatPadding }</span>
 																</div>
-																<input type="range" min="4" max="40" value={ settings.chatPadding } onChange={ ( e ) => updateSetting( 'chatPadding', e.target.value ) } className="nls-lc-range" />
+																<input type="range" min="4" max="40" value={ settings.chatPadding } onChange={ ( e ) => updateSetting( 'chatPadding', e.target.value ) } className="nexulesuite_lc-range" />
 															</div>
-															<div className="nls-lc-color-field">
+															<div className="nexulesuite_lc-color-field">
 																<span className="lbl">Button Text</span>
 																<div className="cgroup">
 																	<label className="cswatch" style={ { backgroundColor: settings.primaryBtnText } }>
@@ -1437,7 +1437,7 @@ export function SettingsPage() {
 																	<input type="text" className="chex" value={ settings.primaryBtnText } onChange={ ( e ) => updateSetting( 'primaryBtnText', e.target.value ) } />
 																</div>
 															</div>
-															<div className="nls-lc-color-field">
+															<div className="nexulesuite_lc-color-field">
 																<span className="lbl">Online Blink Dot</span>
 																<div className="cgroup">
 																	<label className="cswatch" style={ { backgroundColor: settings.chatBlinkDotColor } }>
@@ -1447,14 +1447,14 @@ export function SettingsPage() {
 																</div>
 																<p className="hint">Header status indicator next to the badge text.</p>
 															</div>
-															<div className="nls-lc-range-field">
-																<div className="nls-lc-range-head">
+															<div className="nexulesuite_lc-range-field">
+																<div className="nexulesuite_lc-range-head">
 																	<span className="lbl">Radius (px)</span>
-																	<span className="nls-lc-range-val">{ settings.chatBorderRadius }</span>
+																	<span className="nexulesuite_lc-range-val">{ settings.chatBorderRadius }</span>
 																</div>
-																<input type="range" min="0" max="50" value={ settings.chatBorderRadius } onChange={ ( e ) => updateSetting( 'chatBorderRadius', e.target.value ) } className="nls-lc-range" />
+																<input type="range" min="0" max="50" value={ settings.chatBorderRadius } onChange={ ( e ) => updateSetting( 'chatBorderRadius', e.target.value ) } className="nexulesuite_lc-range" />
 															</div>
-															<div className="nls-lc-field">
+															<div className="nexulesuite_lc-field">
 																<span className="lbl">Button Hover Effect</span>
 																<select value={ settings.chatHoverEffect } onChange={ ( e ) => updateSetting( 'chatHoverEffect', e.target.value ) } className="sel">
 																	<option value="none">None</option>
@@ -1471,41 +1471,41 @@ export function SettingsPage() {
 												</div>
 											</div>
 
-											<aside className="nls-lc-preview">
-												<div className="nls-lc-preview-head">
+											<aside className="nexulesuite_lc-preview">
+												<div className="nexulesuite_lc-preview-head">
 													<Eye size={ 14 } aria-hidden="true" />
 													<span>Real-time Preview</span>
 												</div>
-												<div className={ `nls-lc-preview-stage${ settings.chatAlign === 'left' ? ' is-left' : ' is-right' }` }>
+												<div className={ `nexulesuite_lc-preview-stage${ settings.chatAlign === 'left' ? ' is-left' : ' is-right' }` }>
 													<div
-														className="nls-lc-preview-panel"
+														className="nexulesuite_lc-preview-panel"
 														style={ {
 															fontFamily: settings.globalFont ? `'${ settings.globalFont }', sans-serif` : 'inherit',
 														} }
 													>
-														<div className="nls-lc-preview-header">
+														<div className="nexulesuite_lc-preview-header">
 															{ settings.chatButtonImage
-																? <img src={ settings.chatButtonImage } className="nls-lc-preview-avatar" alt="Support" />
-																: <div className="nls-lc-preview-avatar-fallback"><MessageCircle size={ 22 } /></div>
+																? <img src={ settings.chatButtonImage } className="nexulesuite_lc-preview-avatar" alt="Support" />
+																: <div className="nexulesuite_lc-preview-avatar-fallback"><MessageCircle size={ 22 } /></div>
 															}
-															<div className="nls-lc-preview-meta">
+															<div className="nexulesuite_lc-preview-meta">
 																<h6>{ settings.chatTitle || 'Support Widget' }</h6>
-																<span className="nls-lc-preview-badge">
-																	<span className="nls-lc-preview-dot" style={ { backgroundColor: settings.chatBlinkDotColor || settings.primaryBtnText } } aria-hidden />
+																<span className="nexulesuite_lc-preview-badge">
+																	<span className="nexulesuite_lc-preview-dot" style={ { backgroundColor: settings.chatBlinkDotColor || settings.primaryBtnText } } aria-hidden />
 																	{ settings.chatBadge || 'Online' }
 																</span>
 															</div>
 														</div>
-														<div className="nls-lc-preview-body">{ settings.chatContent }</div>
-														<div className="nls-lc-preview-actions">
-															<button type="button" className={ `nls-lc-preview-btn is-full ${ getHoverClass( settings.chatHoverEffect ) }` } style={ { backgroundColor: settings.primaryBtnBg, color: settings.primaryBtnText, padding: `${ settings.chatPadding }px`, borderRadius: `${ settings.chatBorderRadius }px` } }>
+														<div className="nexulesuite_lc-preview-body">{ settings.chatContent }</div>
+														<div className="nexulesuite_lc-preview-actions">
+															<button type="button" className={ `nexulesuite_lc-preview-btn is-full ${ getHoverClass( settings.chatHoverEffect ) }` } style={ { backgroundColor: settings.primaryBtnBg, color: settings.primaryBtnText, padding: `${ settings.chatPadding }px`, borderRadius: `${ settings.chatBorderRadius }px` } }>
 																{ settings.chatFormButton || 'Start Conversation' }
 															</button>
-															<div className="nls-lc-preview-btn-row">
-																<button type="button" className={ `nls-lc-preview-btn ${ getHoverClass( settings.chatHoverEffect ) }` } style={ { backgroundColor: settings.primaryBtnBg, color: settings.primaryBtnText, padding: `${ settings.chatPadding }px`, borderRadius: `${ settings.chatBorderRadius }px`, opacity: 0.9 } }>
+															<div className="nexulesuite_lc-preview-btn-row">
+																<button type="button" className={ `nexulesuite_lc-preview-btn ${ getHoverClass( settings.chatHoverEffect ) }` } style={ { backgroundColor: settings.primaryBtnBg, color: settings.primaryBtnText, padding: `${ settings.chatPadding }px`, borderRadius: `${ settings.chatBorderRadius }px`, opacity: 0.9 } }>
 																	{ settings.chatButtonTwo || "What's App" }
 																</button>
-																<button type="button" className={ `nls-lc-preview-btn ${ getHoverClass( settings.chatHoverEffect ) }` } style={ { backgroundColor: settings.primaryBtnBg, color: settings.primaryBtnText, padding: `${ settings.chatPadding }px`, borderRadius: `${ settings.chatBorderRadius }px`, opacity: 0.9 } }>
+																<button type="button" className={ `nexulesuite_lc-preview-btn ${ getHoverClass( settings.chatHoverEffect ) }` } style={ { backgroundColor: settings.primaryBtnBg, color: settings.primaryBtnText, padding: `${ settings.chatPadding }px`, borderRadius: `${ settings.chatBorderRadius }px`, opacity: 0.9 } }>
 																	{ settings.chatButtonThird || 'E-mail' }
 																</button>
 															</div>

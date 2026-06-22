@@ -1,13 +1,13 @@
 (function () {
 	'use strict';
 
-	var btn = document.getElementById('nexus-ls-client-pdf');
-	var msgEl = document.getElementById('nexus-ls-client-pdf-msg');
-	if (!btn || typeof nexusLsClientPdfCfg !== 'object') {
+	var btn = document.getElementById('nexulesuite_client-pdf');
+	var msgEl = document.getElementById('nexulesuite_client-pdf-msg');
+	if (!btn || typeof nexulesuite_ClientPdfCfg !== 'object') {
 		return;
 	}
 
-	var cfg = nexusLsClientPdfCfg;
+	var cfg = nexulesuite_ClientPdfCfg;
 
 	btn.addEventListener('click', function () {
 		if (msgEl) {

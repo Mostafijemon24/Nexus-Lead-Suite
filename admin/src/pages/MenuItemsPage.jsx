@@ -199,8 +199,8 @@ export function MenuItemsPage() {
 		[ groups, savedGroups, globalFontSize, savedFontSize ]
 	);
 
-	const restBase = window?.nexusLsAdmin?.restUrl || '/wp-json/';
-	const nonce = window?.nexusLsAdmin?.nonce || '';
+	const restBase = window?.nexulesuite_Admin?.restUrl || '/wp-json/';
+	const nonce = window?.nexulesuite_Admin?.nonce || '';
 
 	useEffect( () => {
 		let cancelled = false;
@@ -208,15 +208,15 @@ export function MenuItemsPage() {
 			setStatus( ( s ) => ( { ...s, loading: true, error: '' } ) );
 			try {
 				const [ menuRes, popupRes, metaRes ] = await Promise.all( [
-					fetch( `${ restBase }nexus-lead-suite/v1/menu-items`, {
+					fetch( `${ restBase }nexulesuite_/v1/menu-items`, {
 						credentials: 'same-origin',
 						headers: { 'X-WP-Nonce': nonce },
 					} ),
-					fetch( `${ restBase }nexus-lead-suite/v1/popups`, {
+					fetch( `${ restBase }nexulesuite_/v1/popups`, {
 						credentials: 'same-origin',
 						headers: { 'X-WP-Nonce': nonce },
 					} ),
-					fetch( `${ restBase }nexus-lead-suite/v1/menu-items/condition-meta`, {
+					fetch( `${ restBase }nexulesuite_/v1/menu-items/condition-meta`, {
 						credentials: 'same-origin',
 						headers: { 'X-WP-Nonce': nonce },
 					} ),
@@ -404,7 +404,7 @@ export function MenuItemsPage() {
 		setContentSearch( ( s ) => ( { ...s, [ key ]: { loading: true, results: s[ key ]?.results || [] } } ) );
 		try {
 			const params = new URLSearchParams( { search: query, types } );
-			const res = await fetch( `${ restBase }nexus-lead-suite/v1/menu-items/content-search?${ params }`, {
+			const res = await fetch( `${ restBase }nexulesuite_/v1/menu-items/content-search?${ params }`, {
 				credentials: 'same-origin',
 				headers: { 'X-WP-Nonce': nonce },
 			} );
@@ -419,7 +419,7 @@ export function MenuItemsPage() {
 	const saveAll = async () => {
 		setStatus( ( s ) => ( { ...s, saving: true, error: '' } ) );
 		try {
-			const res = await fetch( `${ restBase }nexus-lead-suite/v1/menu-items`, {
+			const res = await fetch( `${ restBase }nexulesuite_/v1/menu-items`, {
 				method: 'POST',
 				credentials: 'same-origin',
 				headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce },
@@ -486,33 +486,33 @@ export function MenuItemsPage() {
 		};
 
 		return (
-			<div className="nls-group-details-wrap max-w-[880px] mx-auto w-full pb-10">
-				<div className="nls-gd-card">
-					<div className="nls-gd-pad">
-						<div className="nls-gd-section">
-							<div className="nls-gd-sec-head">
-								<span className="nls-gd-sec-ico">
+			<div className="nexulesuite_group-details-wrap max-w-[880px] mx-auto w-full pb-10">
+				<div className="nexulesuite_gd-card">
+					<div className="nexulesuite_gd-pad">
+						<div className="nexulesuite_gd-section">
+							<div className="nexulesuite_gd-sec-head">
+								<span className="nexulesuite_gd-sec-ico">
 									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 										<path d="M12 3l9 5-9 5-9-5 9-5z" />
 										<path d="M3 13l9 5 9-5" />
 									</svg>
 								</span>
-								<span className="nls-gd-sec-title">Group Details</span>
+								<span className="nexulesuite_gd-sec-title">Group Details</span>
 							</div>
-							<div className="nls-gd-grid-2">
-								<div className="nls-gd-field">
-									<label htmlFor={ `nls-group-name-${ selectedGroup.id }` }>Group name</label>
+							<div className="nexulesuite_gd-grid-2">
+								<div className="nexulesuite_gd-field">
+									<label htmlFor={ `nexulesuite_group-name-${ selectedGroup.id }` }>Group name</label>
 									<input
-										id={ `nls-group-name-${ selectedGroup.id }` }
+										id={ `nexulesuite_group-name-${ selectedGroup.id }` }
 										type="text"
 										value={ selectedGroup.name || '' }
 										onChange={ ( e ) => updateGroupField( selectedGroup.id, 'name', e.target.value ) }
 									/>
 								</div>
-								<div className="nls-gd-field">
-									<label htmlFor={ `nls-group-priority-${ selectedGroup.id }` }>Priority</label>
+								<div className="nexulesuite_gd-field">
+									<label htmlFor={ `nexulesuite_group-priority-${ selectedGroup.id }` }>Priority</label>
 									<input
-										id={ `nls-group-priority-${ selectedGroup.id }` }
+										id={ `nexulesuite_group-priority-${ selectedGroup.id }` }
 										type="number"
 										min="0"
 										max="999"
@@ -522,7 +522,7 @@ export function MenuItemsPage() {
 								</div>
 							</div>
 							<div
-								className={ `nls-gd-toggle${ groupEnabled ? ' on' : '' }` }
+								className={ `nexulesuite_gd-toggle${ groupEnabled ? ' on' : '' }` }
 								role="switch"
 								aria-checked={ groupEnabled }
 								tabIndex={ 0 }
@@ -539,7 +539,7 @@ export function MenuItemsPage() {
 								</span>
 								<span className="lbl">Group enabled</span>
 							</div>
-							<div className="nls-gd-actions">
+							<div className="nexulesuite_gd-actions">
 								<button
 									type="button"
 									onClick={ () => {
@@ -548,7 +548,7 @@ export function MenuItemsPage() {
 											setSelectedButtonId( selectedGroup.buttons[ 0 ].id );
 										}
 									} }
-									className="nls-gd-btn"
+									className="nexulesuite_gd-btn"
 								>
 									<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 										<path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4" />
@@ -561,7 +561,7 @@ export function MenuItemsPage() {
 								<button
 									type="button"
 									onClick={ addButton }
-									className="nls-gd-btn primary"
+									className="nexulesuite_gd-btn primary"
 								>
 									<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
 										<path d="M12 5v14M5 12h14" />
@@ -571,14 +571,14 @@ export function MenuItemsPage() {
 							</div>
 						</div>
 
-						<div className="nls-gd-section">
-							<div className="nls-gd-sec-head">
-								<span className="nls-gd-sec-ico">
+						<div className="nexulesuite_gd-section">
+							<div className="nexulesuite_gd-sec-head">
+								<span className="nexulesuite_gd-sec-ico">
 									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 										<path d="M4 6h16M7 12h10M10 18h4" />
 									</svg>
 								</span>
-								<span className="nls-gd-sec-title">Display Conditions</span>
+								<span className="nexulesuite_gd-sec-title">Display Conditions</span>
 							</div>
 							<DisplayConditionsEditor
 								variant="reference"
@@ -604,21 +604,21 @@ export function MenuItemsPage() {
 		const btn = selectedButton;
 
 		return (
-			<div className="nls-btn-editor-wrap">
-				<div className="nls-be-inner">
-					<div className="nls-be-card">
-						<div className="nls-be-section is-first">
-							<div className="nls-be-sec-head">
-								<span className="nls-be-sec-ico">
+			<div className="nexulesuite_btn-editor-wrap">
+				<div className="nexulesuite_be-inner">
+					<div className="nexulesuite_be-card">
+						<div className="nexulesuite_be-section is-first">
+							<div className="nexulesuite_be-sec-head">
+								<span className="nexulesuite_be-sec-ico">
 									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 										<path d="M4 7V4h16v3M9 20h6M12 4v16" />
 									</svg>
 								</span>
-								<span className="nls-be-sec-title">Content &amp; Action</span>
+								<span className="nexulesuite_be-sec-title">Content &amp; Action</span>
 							</div>
 
-							<div className="nls-be-row-2">
-								<div className="nls-be-field">
+							<div className="nexulesuite_be-row-2">
+								<div className="nexulesuite_be-field">
 									<span className="lbl">Button text</span>
 									<input
 										type="text"
@@ -627,7 +627,7 @@ export function MenuItemsPage() {
 										onChange={ ( e ) => updateButton( selectedGroup.id, btn.id, 'label', e.target.value ) }
 									/>
 								</div>
-								<div className="nls-be-field">
+								<div className="nexulesuite_be-field">
 									<span className="lbl">Action icon</span>
 									<select
 										className="sel"
@@ -649,8 +649,8 @@ export function MenuItemsPage() {
 								</div>
 							</div>
 
-							<div className="nls-be-row-2">
-								<div className="nls-be-field">
+							<div className="nexulesuite_be-row-2">
+								<div className="nexulesuite_be-field">
 									<span className="lbl">Link URL</span>
 									<input
 										type="text"
@@ -660,7 +660,7 @@ export function MenuItemsPage() {
 										onChange={ ( e ) => updateButton( selectedGroup.id, btn.id, 'url', e.target.value ) }
 									/>
 								</div>
-								<div className="nls-be-field">
+								<div className="nexulesuite_be-field">
 									<span className="lbl">Popup event id (manual click)</span>
 									{ popups.length > 0 ? (
 										<select
@@ -694,9 +694,9 @@ export function MenuItemsPage() {
 							</div>
 						</div>
 
-						<div className="nls-be-section">
-							<div className="nls-be-sec-head">
-								<span className="nls-be-sec-ico is-pink">
+						<div className="nexulesuite_be-section">
+							<div className="nexulesuite_be-sec-head">
+								<span className="nexulesuite_be-sec-ico is-pink">
 									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 										<circle cx="13.5" cy="6.5" r="2.5" />
 										<circle cx="6.5" cy="12" r="2.5" />
@@ -704,10 +704,10 @@ export function MenuItemsPage() {
 										<path d="M3 21c2-4 4-6 8-7" />
 									</svg>
 								</span>
-								<span className="nls-be-sec-title">Visual Styling</span>
+								<span className="nexulesuite_be-sec-title">Visual Styling</span>
 							</div>
 
-							<div className="nls-be-row-2 is-triple">
+							<div className="nexulesuite_be-row-2 is-triple">
 								<BtnColorField
 									label="Background"
 									value={ btn.style?.bg || '#10b981' }
@@ -718,7 +718,7 @@ export function MenuItemsPage() {
 									value={ btn.style?.text || '#ffffff' }
 									onChange={ ( val ) => updateButtonStyle( selectedGroup.id, btn.id, 'text', val ) }
 								/>
-								<div className="nls-be-field">
+								<div className="nexulesuite_be-field">
 									<span className="lbl">Hover animation</span>
 									<select
 										className="sel"

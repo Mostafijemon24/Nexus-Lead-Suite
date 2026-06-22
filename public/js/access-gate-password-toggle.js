@@ -1,11 +1,11 @@
 (function () {
 	'use strict';
 
-	document.querySelectorAll('[data-nexus-ls-gate]').forEach(function (wrap) {
-		var input = wrap.querySelector('[data-nexus-ls-gate-pass]');
-		var toggle = wrap.querySelector('[data-nexus-ls-gate-toggle]');
-		var eyeOn = wrap.querySelector('[data-nexus-ls-gate-eye-on]');
-		var eyeOff = wrap.querySelector('[data-nexus-ls-gate-eye-off]');
+	document.querySelectorAll('[data-nexulesuite_gate]').forEach(function (wrap) {
+		var input = wrap.querySelector('[data-nexulesuite_gate-pass]');
+		var toggle = wrap.querySelector('[data-nexulesuite_gate-toggle]');
+		var eyeOn = wrap.querySelector('[data-nexulesuite_gate-eye-on]');
+		var eyeOff = wrap.querySelector('[data-nexulesuite_gate-eye-off]');
 		if (!input || !toggle || !eyeOn || !eyeOff) {
 			return;
 		}

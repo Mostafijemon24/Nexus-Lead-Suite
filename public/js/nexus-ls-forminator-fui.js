@@ -1,7 +1,7 @@
 /**
  * Initializes WPMU DEV Forminator UI (FUI) helpers on Nexus Lead Suite forms.
  *
- * Depends on: jquery, forminator-form.min.js (window.FUI), nexus-ls-forms-runtime.
+ * Depends on: jquery, forminator-form.min.js (window.FUI), nexulesuite_forms-runtime.
  */
 (function ($) {
   "use strict";
@@ -54,7 +54,7 @@
   }
 
   $(function () {
-    document.querySelectorAll(".nexus-st-form.forminator-ui").forEach(function (el) {
+    document.querySelectorAll(".nexulesuite_st-form.forminator-ui").forEach(function (el) {
       bootOne(el);
     });
   });

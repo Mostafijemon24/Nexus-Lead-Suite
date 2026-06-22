@@ -2,15 +2,15 @@
 /**
  * REST API bootstrap (routes registered here in future milestones).
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite\Api;
+namespace nexulesuite_\Api;
 
-use Nexus_Lead_Suite\Data_Bundle;
-use Nexus_Lead_Suite\Forms_Payload_Codec;
+use nexulesuite_\Data_Bundle;
+use nexulesuite_\Forms_Payload_Codec;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,25 +20,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Registers REST API integration.
  *
- * Loaded from {@see \Nexus_Lead_Suite\Plugin::bootstrap_rest_api()} on {@see 'rest_api_init'} (priority 0)
+ * Loaded from {@see \nexulesuite_\Plugin::bootstrap_rest_api()} on {@see 'rest_api_init'} (priority 0)
  * so this file is not parsed on ordinary frontend page views.
  */
 final class Rest_Api {
 	/**
 	 * Forms option key (base64 + rawurlencode JSON).
 	 */
-	private const FORMS_OPTION_KEY = 'nexus_ls_forms_builder_v0';
-	private const RECAPTCHA_OPTION_KEY = 'nexus_ls_recaptcha_keys_v0';
-	private const TURNSTILE_OPTION_KEY = 'nexus_ls_turnstile_keys_v0';
-	private const MENU_ITEMS_OPTION_KEY = 'nexus_ls_menu_items_v1';
-	private const POPUPS_OPTION_KEY = 'nexus_ls_popups_v1';
-	private const EMAIL_TEMPLATES_OPTION_KEY = 'nexus_ls_email_templates_v1';
-	private const GENERAL_SETTINGS_OPTION_KEY = 'nexus_ls_general_settings_v1';
+	private const FORMS_OPTION_KEY = 'nexulesuite_forms_builder_v0';
+	private const RECAPTCHA_OPTION_KEY = 'nexulesuite_recaptcha_keys_v0';
+	private const TURNSTILE_OPTION_KEY = 'nexulesuite_turnstile_keys_v0';
+	private const MENU_ITEMS_OPTION_KEY = 'nexulesuite_menu_items_v1';
+	private const POPUPS_OPTION_KEY = 'nexulesuite_popups_v1';
+	private const EMAIL_TEMPLATES_OPTION_KEY = 'nexulesuite_email_templates_v1';
+	private const GENERAL_SETTINGS_OPTION_KEY = 'nexulesuite_general_settings_v1';
 
 	/**
 	 * Post meta: Visual Editor DOM patches when markup is not in post_content (theme/header/builders).
 	 */
-	private const VE_DOM_PATCHES_META_KEY = '_nexus_ls_ve_dom_patches';
+	private const VE_DOM_PATCHES_META_KEY = '_nexulesuite_ve_dom_patches';
 
 	/**
 	 * Hooks REST registration on the next rest_api_init (eager bootstrap).
@@ -59,7 +59,7 @@ final class Rest_Api {
 	 */
 	public function register_routes(): void {
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/render-shortcode',
 			array(
 				'methods'             => 'POST',
@@ -75,7 +75,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/settings/general',
 			array(
 				'methods'             => 'GET',
@@ -85,7 +85,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/settings/general',
 			array(
 				'methods'             => 'POST',
@@ -101,7 +101,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/form-submissions',
 			array(
 				'methods'             => 'GET',
@@ -111,7 +111,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/settings/upload-chat-image',
 			array(
 				'methods'             => 'POST',
@@ -121,7 +121,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/settings/upload-report-logo',
 			array(
 				'methods'             => 'POST',
@@ -131,7 +131,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/settings/generate-client-access-link',
 			array(
 				'methods'             => 'POST',
@@ -148,7 +148,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/settings/full-export',
 			array(
 				'methods'             => 'GET',
@@ -169,7 +169,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/settings/full-import',
 			array(
 				'methods'             => 'POST',
@@ -185,7 +185,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/captcha/recaptcha',
 			array(
 				'methods'             => 'GET',
@@ -195,7 +195,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/captcha/recaptcha',
 			array(
 				'methods'             => 'POST',
@@ -216,7 +216,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/captcha/turnstile',
 			array(
 				'methods'             => 'GET',
@@ -226,7 +226,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/captcha/turnstile',
 			array(
 				'methods'             => 'POST',
@@ -247,7 +247,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/forms',
 			array(
 				'methods'             => 'GET',
@@ -257,7 +257,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/forms',
 			array(
 				'methods'             => 'POST',
@@ -273,7 +273,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/smtp/settings',
 			array(
 				'methods'             => 'GET',
@@ -283,7 +283,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/smtp/settings',
 			array(
 				'methods'             => 'POST',
@@ -299,7 +299,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/smtp/test',
 			array(
 				'methods'             => 'POST',
@@ -316,7 +316,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/emails/templates',
 			array(
 				'methods'             => 'GET',
@@ -326,7 +326,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/emails/templates',
 			array(
 				'methods'             => 'POST',
@@ -347,7 +347,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/menu-items',
 			array(
 				'methods'             => 'GET',
@@ -357,7 +357,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/menu-items',
 			array(
 				'methods'             => 'POST',
@@ -382,7 +382,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/menu-items/content-search',
 			array(
 				'methods'             => 'GET',
@@ -404,7 +404,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/menu-items/condition-meta',
 			array(
 				'methods'             => 'GET',
@@ -414,7 +414,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/popups',
 			array(
 				'methods'             => 'GET',
@@ -424,7 +424,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/popups',
 			array(
 				'methods'             => 'POST',
@@ -440,7 +440,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/reports/activities/list',
 			array(
 				'methods'             => 'GET',
@@ -477,7 +477,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/reports/activities/clear',
 			array(
 				'methods'             => 'POST',
@@ -487,7 +487,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/reports/activities/pdf',
 			array(
 				'methods'             => 'POST',
@@ -528,7 +528,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/reports/activities/email',
 			array(
 				'methods'             => 'POST',
@@ -578,7 +578,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/track/events',
 			array(
 				'methods'             => 'POST',
@@ -599,7 +599,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/visual-editor/toggle',
 			array(
 				'methods'             => 'POST',
@@ -618,7 +618,7 @@ final class Rest_Api {
 		);
 
 		register_rest_route(
-			'nexus-lead-suite/v1',
+			'nexulesuite_/v1',
 			'/visual-editor/update',
 			array(
 				'methods'             => 'POST',
@@ -685,7 +685,7 @@ final class Rest_Api {
 		$domain   = defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '';
 		$path     = defined( 'COOKIEPATH' ) ? COOKIEPATH : '/';
 
-		$name    = 'nexus_ls_ve';
+		$name    = 'nexulesuite_ve';
 		$value   = $enabled ? '1' : '';
 		$expires = $enabled ? ( time() + DAY_IN_SECONDS ) : ( time() - DAY_IN_SECONDS );
 
@@ -718,9 +718,9 @@ final class Rest_Api {
 	private function ve_parse_client_fragment_root( string $html ): ?\DOMElement {
 		$libxml = libxml_use_internal_errors( true );
 		$frag   = new \DOMDocument();
-		$rid    = 'nexus-ls-ve-' . preg_replace( '/[^a-z0-9]/i', '', (string) wp_generate_password( 10, false, false ) );
+		$rid    = 'nexulesuite_ve-' . preg_replace( '/[^a-z0-9]/i', '', (string) wp_generate_password( 10, false, false ) );
 		if ( '' === $rid ) {
-			$rid = 'nexus-ls-ve-root';
+			$rid = 'nexulesuite_ve-root';
 		}
 		$wrapped = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><div id="' . esc_attr( $rid ) . '">' . $html . '</div></body></html>';
 		if ( ! $frag->loadHTML( $wrapped, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD ) ) {
@@ -1002,12 +1002,12 @@ final class Rest_Api {
 
 		$el = $this->ve_parse_client_fragment_root( $html );
 		if ( ! ( $el instanceof \DOMElement ) ) {
-			$html = preg_replace( '/\sdata-nexus-ve-hover=(["\'])1\1/i', '', $html );
+			$html = preg_replace( '/\sdata-nexulesuite_ve-hover=(["\'])1\1/i', '', $html );
 			$html = is_string( $html ) ? preg_replace( '/\soutline(-offset)?:\s*[^;"\']+;?/i', '', $html ) : '';
 			return is_string( $html ) ? trim( $html ) : '';
 		}
 
-		$el->removeAttribute( 'data-nexus-ve-hover' );
+		$el->removeAttribute( 'data-nexulesuite_ve-hover' );
 		if ( $el->hasAttribute( 'style' ) ) {
 			$style = (string) $el->getAttribute( 'style' );
 			$style = preg_replace( '/\s*outline(-offset)?:\s*[^;]+;?/i', '', $style );
@@ -1045,18 +1045,18 @@ final class Rest_Api {
 	public function visual_editor_update_post_content( \WP_REST_Request $request ) {
 		$post_id = absint( $request->get_param( 'postId' ) );
 		if ( $post_id <= 0 ) {
-			return new \WP_Error( 'nexus_ls_ve_bad_post', 'Invalid postId.', array( 'status' => 400 ) );
+			return new \WP_Error( 'nexulesuite_ve_bad_post', 'Invalid postId.', array( 'status' => 400 ) );
 		}
 
 		$post = get_post( $post_id );
 		if ( ! $post || ! isset( $post->post_content ) ) {
-			return new \WP_Error( 'nexus_ls_ve_missing_post', 'Post not found.', array( 'status' => 404 ) );
+			return new \WP_Error( 'nexulesuite_ve_missing_post', 'Post not found.', array( 'status' => 404 ) );
 		}
 
 		$original_html = (string) $request->get_param( 'originalHtml' );
 		$original_html = trim( $original_html );
 		if ( '' === $original_html ) {
-			return new \WP_Error( 'nexus_ls_ve_bad_html', 'Missing originalHtml.', array( 'status' => 400 ) );
+			return new \WP_Error( 'nexulesuite_ve_bad_html', 'Missing originalHtml.', array( 'status' => 400 ) );
 		}
 		$original_html = $this->ve_normalize_client_outer_html( $original_html );
 
@@ -1085,7 +1085,7 @@ final class Rest_Api {
 		$has_content = '' !== trim( $content );
 
 		if ( ! $has_content && ( '' === $selector_path || '' === $tag_name ) ) {
-			return new \WP_Error( 'nexus_ls_ve_empty', 'Post content is empty and no selector was provided.', array( 'status' => 400 ) );
+			return new \WP_Error( 'nexulesuite_ve_empty', 'Post content is empty and no selector was provided.', array( 'status' => 400 ) );
 		}
 
 		$libxml_prev = libxml_use_internal_errors( true );
@@ -1096,14 +1096,14 @@ final class Rest_Api {
 
 		if ( $has_content ) {
 			$doc = new \DOMDocument();
-			$wrapper_id = 'nexus-ls-ve-wrapper';
+			$wrapper_id = 'nexulesuite_ve-wrapper';
 			$html       = '<!doctype html><html><head><meta charset="utf-8"></head><body><div id="' . esc_attr( $wrapper_id ) . '">' . $content . '</div></body></html>';
 
 			$loaded = $doc->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
 			if ( false === $loaded ) {
 				libxml_clear_errors();
 				libxml_use_internal_errors( $libxml_prev );
-				return new \WP_Error( 'nexus_ls_ve_parse_failed', 'Failed to parse HTML.', array( 'status' => 500 ) );
+				return new \WP_Error( 'nexulesuite_ve_parse_failed', 'Failed to parse HTML.', array( 'status' => 500 ) );
 			}
 
 			$xpath = new \DOMXPath( $doc );
@@ -1112,7 +1112,7 @@ final class Rest_Api {
 			if ( ! ( $root instanceof \DOMElement ) ) {
 				libxml_clear_errors();
 				libxml_use_internal_errors( $libxml_prev );
-				return new \WP_Error( 'nexus_ls_ve_root_missing', 'Root wrapper missing.', array( 'status' => 500 ) );
+				return new \WP_Error( 'nexulesuite_ve_root_missing', 'Root wrapper missing.', array( 'status' => 500 ) );
 			}
 
 			$found = $this->ve_find_element_for_original_html( $doc, $xpath, $root, $original_html );
@@ -1134,7 +1134,7 @@ final class Rest_Api {
 				);
 			}
 			return new \WP_Error(
-				'nexus_ls_ve_not_found',
+				'nexulesuite_ve_not_found',
 				'Could not locate the selected element in this page\'s editor HTML (post_content). Send a valid selectorPath + tagName to save theme/header elements as a page-level patch, or edit inside the post body.',
 				array( 'status' => 409 )
 			);
@@ -1293,7 +1293,7 @@ final class Rest_Api {
 	public function get_form_submissions(): \WP_REST_Response {
 		global $wpdb;
 
-		$table = \Nexus_Lead_Suite\Core\Form_Submissions_Store::table();
+		$table = \nexulesuite_\Core\Form_Submissions_Store::table();
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name from trusted prefix; admin-only REST endpoint.
 		$rows = $wpdb->get_results(
@@ -1527,7 +1527,7 @@ final class Rest_Api {
 
 		$input = $request->get_param( 'settings' );
 		if ( ! is_array( $input ) ) {
-			return new \WP_Error( 'nexus_ls_invalid_settings', 'Invalid settings payload.' );
+			return new \WP_Error( 'nexulesuite_invalid_settings', 'Invalid settings payload.' );
 		}
 
 		$allowed_hover = array( 'none', 'lift', 'scale', 'glow', 'shake', 'rotate', 'darken' );
@@ -1671,8 +1671,8 @@ final class Rest_Api {
 			|| ( ! empty( $prev['allowClientAccess'] ) !== ! empty( $clean['allowClientAccess'] ) );
 
 		if ( $need_rewrite_flush ) {
-			require_once NEXUS_LS_PLUGIN_DIR . 'public/class-client-access.php';
-			\Nexus_Lead_Suite\Public\Client_Access::sync_rewrite_rules();
+			require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
+			\nexulesuite_\Public\Client_Access::sync_rewrite_rules();
 			flush_rewrite_rules( false );
 		}
 
@@ -1693,12 +1693,12 @@ final class Rest_Api {
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function generate_client_access_link( \WP_REST_Request $request ) {
-		require_once NEXUS_LS_PLUGIN_DIR . 'public/class-client-access.php';
+		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
 
 		$saved = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
 		if ( ! is_array( $saved ) || empty( $saved['allowClientAccess'] ) ) {
 			return new \WP_Error(
-				'nexus_ls_client_access_off',
+				'nexulesuite_client_access_off',
 				__( 'Save settings with "Allow Client Access" enabled before generating a link.', 'nexus-lead-suite' ),
 				array( 'status' => 403 )
 			);
@@ -1711,13 +1711,13 @@ final class Rest_Api {
 			: $ttl_saved;
 
 		$token = wp_generate_password( 48, false, false );
-		\Nexus_Lead_Suite\Public\Client_Access::store_token( $token, MINUTE_IN_SECONDS * $ttl_min );
+		\nexulesuite_\Public\Client_Access::store_token( $token, MINUTE_IN_SECONDS * $ttl_min );
 
 		return rest_ensure_response(
 			array(
 				'success' => true,
 				'data'    => array(
-					'url'              => \Nexus_Lead_Suite\Public\Client_Access::build_access_url( $token ),
+					'url'              => \nexulesuite_\Public\Client_Access::build_access_url( $token ),
 					'expiresInMinutes' => $ttl_min,
 				),
 			)
@@ -1752,14 +1752,14 @@ final class Rest_Api {
 				error_log( 'Nexus Lead Suite full export json_encode: ' . $json_err->getMessage() );
 
 				return new \WP_Error(
-					'nexus_ls_export_encode',
+					'nexulesuite_export_encode',
 					__( 'Could not serialize the export. Try embed_media=0 or reduce data in form/email HTML fields.', 'nexus-lead-suite' ) . ' ' . ( defined( 'WP_DEBUG' ) && WP_DEBUG ? $json_err->getMessage() : '' ),
 					array( 'status' => 500 )
 				);
 			}
 			if ( false === $check ) {
 				return new \WP_Error(
-					'nexus_ls_export_encode',
+					'nexulesuite_export_encode',
 					__( 'Could not build the export file. Try export with ?embed_media=0 or disable embedded media from Backup settings.', 'nexus-lead-suite' ),
 					array( 'status' => 500 )
 				);
@@ -1783,7 +1783,7 @@ final class Rest_Api {
 			}
 
 			return new \WP_Error(
-				'nexus_ls_export_failed',
+				'nexulesuite_export_failed',
 				$msg,
 				array( 'status' => 500 )
 			);
@@ -1792,7 +1792,7 @@ final class Rest_Api {
 
 	/**
 	 * Full site replace: all tracked options, extra plugin options from the file, and custom tables
-	 * are overwritten; any previous `nexus_ls*` extra options not in the export are removed.
+	 * are overwritten; any previous `nexulesuite_ls*` extra options not in the export are removed.
 	 *
 	 * @param mixed $request Request body: { bundle: object }.
 	 * @return \WP_REST_Response|\WP_Error
@@ -1804,7 +1804,7 @@ final class Rest_Api {
 		}
 		if ( ! is_array( $bundle ) ) {
 			return new \WP_Error(
-				'nexus_ls_import_invalid',
+				'nexulesuite_import_invalid',
 				__( 'Invalid import payload.', 'nexus-lead-suite' ),
 				array( 'status' => 400 )
 			);
@@ -1822,7 +1822,7 @@ final class Rest_Api {
 			}
 
 			return new \WP_Error(
-				'nexus_ls_import_failed',
+				'nexulesuite_import_failed',
 				$msg,
 				array(
 					'status'  => 500,
@@ -1866,7 +1866,7 @@ final class Rest_Api {
 		$tmp_name = isset( $file['tmp_name'] ) ? (string) $file['tmp_name'] : '';
 		if ( '' === $tmp_name || ! is_uploaded_file( $tmp_name ) ) {
 			return new \WP_Error(
-				'nexus_ls_no_file',
+				'nexulesuite_no_file',
 				__( 'No valid image upload received.', 'nexus-lead-suite' ),
 				array( 'status' => 400 )
 			);
@@ -1874,7 +1874,7 @@ final class Rest_Api {
 
 		if ( ! empty( $file['error'] ) ) {
 			return new \WP_Error(
-				'nexus_ls_upload_err',
+				'nexulesuite_upload_err',
 				sprintf(
 					/* translators: %s: PHP upload error code */
 					__( 'Upload failed (code %s).', 'nexus-lead-suite' ),
@@ -1887,14 +1887,15 @@ final class Rest_Api {
 		$max_bytes = 3 * 1024 * 1024;
 		if ( isset( $file['size'] ) && (int) $file['size'] > $max_bytes ) {
 			return new \WP_Error(
-				'nexus_ls_file_large',
+				'nexulesuite_file_large',
 				__( 'Image must be 3 MB or smaller.', 'nexus-lead-suite' ),
 				array( 'status' => 400 )
 			);
 		}
 
+		// Only file.php is needed (for wp_handle_upload). image.php is intentionally
+		// NOT loaded: this method deliberately skips wp_generate_attachment_metadata().
 		require_once ABSPATH . 'wp-admin/includes/file.php';
-		require_once ABSPATH . 'wp-admin/includes/image.php';
 
 		$mimes = array(
 			'jpg|jpeg|jpe' => 'image/jpeg',
@@ -1913,7 +1914,7 @@ final class Rest_Api {
 
 		if ( isset( $upload['error'] ) ) {
 			return new \WP_Error(
-				'nexus_ls_upload_failed',
+				'nexulesuite_upload_failed',
 				sanitize_text_field( (string) $upload['error'] ),
 				array( 'status' => 400 )
 			);
@@ -1926,7 +1927,7 @@ final class Rest_Api {
 				wp_delete_file( $upload['file'] );
 			}
 			return new \WP_Error(
-				'nexus_ls_bad_type',
+				'nexulesuite_bad_type',
 				__( 'Only JPEG, PNG, GIF, or WebP images are allowed.', 'nexus-lead-suite' ),
 				array( 'status' => 400 )
 			);
@@ -1946,7 +1947,7 @@ final class Rest_Api {
 				wp_delete_file( $upload['file'] );
 			}
 			return new \WP_Error(
-				'nexus_ls_attachment_failed',
+				'nexulesuite_attachment_failed',
 				__( 'Could not save attachment.', 'nexus-lead-suite' ),
 				array( 'status' => 500 )
 			);
@@ -1956,7 +1957,7 @@ final class Rest_Api {
 		if ( ! is_string( $relative ) || '' === $relative ) {
 			wp_delete_attachment( $attach_id, true );
 			return new \WP_Error(
-				'nexus_ls_path_failed',
+				'nexulesuite_path_failed',
 				__( 'Could not resolve upload path.', 'nexus-lead-suite' ),
 				array( 'status' => 500 )
 			);
@@ -1979,7 +1980,7 @@ final class Rest_Api {
 		if ( ! $url ) {
 			wp_delete_attachment( $attach_id, true );
 			return new \WP_Error(
-				'nexus_ls_url_failed',
+				'nexulesuite_url_failed',
 				__( 'Could not resolve attachment URL.', 'nexus-lead-suite' ),
 				array( 'status' => 500 )
 			);
@@ -2013,10 +2014,10 @@ final class Rest_Api {
 	 * @return \WP_REST_Response
 	 */
 	public function get_menu_items() {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-menu-items-payload.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-menu-items-payload.php';
 
 		$stored     = get_option( self::MENU_ITEMS_OPTION_KEY, array() );
-		$normalized = \Nexus_Lead_Suite\Core\Menu_Items_Payload::normalize_stored( $stored );
+		$normalized = \nexulesuite_\Core\Menu_Items_Payload::normalize_stored( $stored );
 
 		return rest_ensure_response(
 			array(
@@ -2059,7 +2060,7 @@ final class Rest_Api {
 	public function save_popups( \WP_REST_Request $request ) {
 		$popups = $request->get_param( 'popups' );
 		if ( ! is_array( $popups ) ) {
-			return new \WP_Error( 'nexus_ls_invalid_popups', 'Invalid popups payload.' );
+			return new \WP_Error( 'nexulesuite_invalid_popups', 'Invalid popups payload.' );
 		}
 
 		$clean = $this->sanitize_popups_payload( $popups );
@@ -2082,7 +2083,7 @@ final class Rest_Api {
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function save_menu_items( \WP_REST_Request $request ) {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-menu-items-payload.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-menu-items-payload.php';
 
 		$groups_in = $request->get_param( 'groups' );
 		$items_in  = $request->get_param( 'items' );
@@ -2091,12 +2092,12 @@ final class Rest_Api {
 			$clean_groups = $this->sanitize_menu_groups( $groups_in );
 		} elseif ( is_array( $items_in ) ) {
 			$clean_groups = array(
-				\Nexus_Lead_Suite\Core\Menu_Items_Payload::build_default_group(
+				\nexulesuite_\Core\Menu_Items_Payload::build_default_group(
 					$this->sanitize_menu_items( $items_in )
 				),
 			);
 		} else {
-			return new \WP_Error( 'nexus_ls_invalid_menu_items', 'Invalid menu items payload.' );
+			return new \WP_Error( 'nexulesuite_invalid_menu_items', 'Invalid menu items payload.' );
 		}
 
 		$global_font_size = max( 10, min( 32, (int) ( $request->get_param( 'globalFontSize' ) ?? 14 ) ) );
@@ -2568,7 +2569,7 @@ final class Rest_Api {
 				'headingEditMode' => $heading_mode,
 				'subHeading'      => $sub,
 				'textAlign'       => $align,
-				'content'         => \Nexus_Lead_Suite\sanitize_popup_body_for_storage( $content ),
+				'content'         => \nexulesuite_\sanitize_popup_body_for_storage( $content ),
 				'conditions'      => array(
 					'match' => $match,
 					'rules' => $rules,
@@ -2605,7 +2606,7 @@ final class Rest_Api {
 			return true;
 		}
 
-		require_once NEXUS_LS_PLUGIN_DIR . 'public/class-client-access.php';
+		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
 
 		$saved = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
 		if ( ! is_array( $saved ) || empty( $saved['allowClientAccess'] ) ) {
@@ -2614,7 +2615,7 @@ final class Rest_Api {
 
 		$token = sanitize_text_field( (string) $request->get_param( 'token' ) );
 
-		return \Nexus_Lead_Suite\Public\Client_Access::is_token_valid( $token );
+		return \nexulesuite_\Public\Client_Access::is_token_valid( $token );
 	}
 
 	/**
@@ -2642,7 +2643,7 @@ final class Rest_Api {
 			}
 		}
 
-		$data = \Nexus_Lead_Suite\build_popup_preview_payload( $raw );
+		$data = \nexulesuite_\build_popup_preview_payload( $raw );
 
 		return rest_ensure_response(
 			array(
@@ -2658,7 +2659,7 @@ final class Rest_Api {
 	 * @return bool
 	 */
 	public function can_manage_settings(): bool {
-		if ( ! \Nexus_Lead_Suite\Core\Access_Gate::is_unlocked() ) {
+		if ( ! \nexulesuite_\Core\Access_Gate::is_unlocked() ) {
 			return false;
 		}
 		return current_user_can( 'manage_options' );
@@ -2855,7 +2856,7 @@ final class Rest_Api {
 	public function save_forms( \WP_REST_Request $request ) {
 		$payload = $request->get_param( 'payload' );
 		if ( ! is_array( $payload ) ) {
-			return new \WP_Error( 'nexus_ls_invalid_forms', 'Invalid forms payload.' );
+			return new \WP_Error( 'nexulesuite_invalid_forms', 'Invalid forms payload.' );
 		}
 
 		$clean = $this->sanitize_forms_payload( $payload );
@@ -3251,7 +3252,7 @@ final class Rest_Api {
 		$templates = get_option( self::EMAIL_TEMPLATES_OPTION_KEY, null );
 		if ( null === $templates ) {
 			// Back-compat: older builds used this option key.
-			$templates = get_option( 'nexus_ls_email_templates', array() );
+			$templates = get_option( 'nexulesuite_email_templates', array() );
 		}
 		if ( ! is_array( $templates ) ) {
 			$templates = array();
@@ -3435,7 +3436,7 @@ final class Rest_Api {
 	 * @return \WP_REST_Response
 	 */
 	public function get_smtp_settings() {
-		$opt = get_option( \Nexus_Lead_Suite\Mailer::OPTION_KEY, array() );
+		$opt = get_option( \nexulesuite_\Mailer::OPTION_KEY, array() );
 		if ( ! is_array( $opt ) ) {
 			$opt = array();
 		}
@@ -3458,14 +3459,14 @@ final class Rest_Api {
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function save_smtp_settings( \WP_REST_Request $request ) {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-mailer.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-mailer.php';
 
 		$settings = $request->get_param( 'settings' );
 		if ( ! is_array( $settings ) ) {
-			return new \WP_Error( 'nexus_ls_invalid_smtp', 'Invalid SMTP settings.' );
+			return new \WP_Error( 'nexulesuite_invalid_smtp', 'Invalid SMTP settings.' );
 		}
 
-		$prev = get_option( \Nexus_Lead_Suite\Mailer::OPTION_KEY, array() );
+		$prev = get_option( \nexulesuite_\Mailer::OPTION_KEY, array() );
 		$prev = is_array( $prev ) ? $prev : array();
 		$prev_pass = isset( $prev['password'] ) ? (string) $prev['password'] : '';
 		$new_pass  = isset( $settings['password'] ) ? (string) $settings['password'] : '';
@@ -3491,7 +3492,7 @@ final class Rest_Api {
 			$clean['secure'] = 'tls';
 		}
 
-		update_option( \Nexus_Lead_Suite\Mailer::OPTION_KEY, $clean, false );
+		update_option( \nexulesuite_\Mailer::OPTION_KEY, $clean, false );
 
 		$return = $clean;
 		unset( $return['password'] );
@@ -3515,7 +3516,7 @@ final class Rest_Api {
 	public function smtp_send_test_email( \WP_REST_Request $request ) {
 		$to = sanitize_email( (string) $request->get_param( 'to' ) );
 		if ( ! $to || ! is_email( $to ) ) {
-			return new \WP_Error( 'nexus_ls_invalid_email', 'Invalid email address.' );
+			return new \WP_Error( 'nexulesuite_invalid_email', 'Invalid email address.' );
 		}
 
 		$site = get_bloginfo( 'name' );
@@ -3548,7 +3549,7 @@ final class Rest_Api {
 			if ( $last_mail_error instanceof \WP_Error ) {
 				$detail = $last_mail_error->get_error_message();
 			}
-			return new \WP_Error( 'nexus_ls_test_failed', $detail !== '' ? $detail : 'Test email failed.' );
+			return new \WP_Error( 'nexulesuite_test_failed', $detail !== '' ? $detail : 'Test email failed.' );
 		}
 
 		return rest_ensure_response(
@@ -3565,7 +3566,7 @@ final class Rest_Api {
 	 * @return \WP_REST_Response
 	 */
 	public function list_activities_report( \WP_REST_Request $request ): \WP_REST_Response {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-activities-store.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-activities-store.php';
 
 		$tab    = $this->sanitize_activity_tab( (string) $request->get_param( 'tab' ) );
 		$from   = sanitize_text_field( (string) $request->get_param( 'dateFrom' ) );
@@ -3579,11 +3580,11 @@ final class Rest_Api {
 			$to = '';
 		}
 
-		$db_rows = \Nexus_Lead_Suite\Core\Activities_Store::fetch_report_rows( $tab, $from, $to, $search );
+		$db_rows = \nexulesuite_\Core\Activities_Store::fetch_report_rows( $tab, $from, $to, $search );
 		$rows    = array();
 
 		foreach ( $db_rows as $row ) {
-			$rows[] = \Nexus_Lead_Suite\Core\Activities_Store::map_db_row_to_activity( $row );
+			$rows[] = \nexulesuite_\Core\Activities_Store::map_db_row_to_activity( $row );
 		}
 
 		return rest_ensure_response(
@@ -3603,9 +3604,9 @@ final class Rest_Api {
 	 * @return \WP_REST_Response
 	 */
 	public function clear_activities_report( \WP_REST_Request $request ): \WP_REST_Response {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-activities-store.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-activities-store.php';
 
-		$deleted = \Nexus_Lead_Suite\Core\Activities_Store::clear_all();
+		$deleted = \nexulesuite_\Core\Activities_Store::clear_all();
 
 		return rest_ensure_response(
 			array(
@@ -3664,9 +3665,9 @@ final class Rest_Api {
 			}
 		}
 
-		if ( ! wp_verify_nonce( $nonce, 'nexus_ls_track' ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'nexulesuite_track' ) ) {
 			return new \WP_Error(
-				'nexus_ls_track_nonce',
+				'nexulesuite_track_nonce',
 				__( 'Invalid tracking nonce.', 'nexus-lead-suite' ),
 				array( 'status' => 403 )
 			);
@@ -3674,7 +3675,7 @@ final class Rest_Api {
 
 		if ( ! is_array( $events_in ) ) {
 			return new \WP_Error(
-				'nexus_ls_track_payload',
+				'nexulesuite_track_payload',
 				__( 'Invalid events payload.', 'nexus-lead-suite' ),
 				array( 'status' => 400 )
 			);
@@ -3683,7 +3684,7 @@ final class Rest_Api {
 		$count = count( $events_in );
 		if ( $count > 25 ) {
 			return new \WP_Error(
-				'nexus_ls_track_limit',
+				'nexulesuite_track_limit',
 				__( 'Too many events in one request.', 'nexus-lead-suite' ),
 				array( 'status' => 400 )
 			);
@@ -3691,12 +3692,12 @@ final class Rest_Api {
 
 		if ( $count > 0 ) {
 			$ip      = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( (string) $_SERVER['REMOTE_ADDR'] ) ) : '';
-			$rl_key  = 'nexus_ls_trkrl_' . md5( $ip );
+			$rl_key  = 'nexulesuite_trkrl_' . md5( $ip );
 			$burst   = (int) get_transient( $rl_key );
 			$allowed = 240;
 			if ( $burst + $count > $allowed ) {
 				return new \WP_Error(
-					'nexus_ls_track_ratelimit',
+					'nexulesuite_track_ratelimit',
 					__( 'Too many tracking requests.', 'nexus-lead-suite' ),
 					array( 'status' => 429 )
 				);
@@ -3704,7 +3705,7 @@ final class Rest_Api {
 			set_transient( $rl_key, $burst + $count, MINUTE_IN_SECONDS );
 		}
 
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-activities-store.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-activities-store.php';
 
 		/*
 		 * Logical aggregation + dedupe
@@ -3724,7 +3725,7 @@ final class Rest_Api {
 			}
 
 			$type = isset( $ev['type'] ) ? sanitize_key( (string) $ev['type'] ) : '';
-			if ( ! in_array( $type, \Nexus_Lead_Suite\Core\Activities_Store::CLIENT_TRACK_TYPES, true ) ) {
+			if ( ! in_array( $type, \nexulesuite_\Core\Activities_Store::CLIENT_TRACK_TYPES, true ) ) {
 				continue;
 			}
 
@@ -3763,7 +3764,7 @@ final class Rest_Api {
 			}
 
 			// Near-duplicate dedupe (prevents double-init tracker bursts).
-			$dedupe_key = 'nexus_ls_evdd_' . md5( $ip_for_dedupe . '|' . $ua_for_dedupe . '|' . $type . '|' . $page . '|' . wp_json_encode( $meta ) . '|' . $dedupe_bucket );
+			$dedupe_key = 'nexulesuite_evdd_' . md5( $ip_for_dedupe . '|' . $ua_for_dedupe . '|' . $type . '|' . $page . '|' . wp_json_encode( $meta ) . '|' . $dedupe_bucket );
 			if ( get_transient( $dedupe_key ) ) {
 				continue;
 			}
@@ -3785,7 +3786,7 @@ final class Rest_Api {
 				$scroll_template['target'] = 'pct-' . (string) (int) $max_scroll_pct;
 			}
 
-			$dedupe_key_scroll = 'nexus_ls_evdd_' . md5( $ip_for_dedupe . '|' . $ua_for_dedupe . '|scroll_depth|' . (string) $scroll_template['page'] . '|pct:' . (string) (int) $max_scroll_pct . '|' . $dedupe_bucket );
+			$dedupe_key_scroll = 'nexulesuite_evdd_' . md5( $ip_for_dedupe . '|' . $ua_for_dedupe . '|scroll_depth|' . (string) $scroll_template['page'] . '|pct:' . (string) (int) $max_scroll_pct . '|' . $dedupe_bucket );
 			if ( ! get_transient( $dedupe_key_scroll ) ) {
 				set_transient( $dedupe_key_scroll, 1, 30 );
 				$events_sanitized[] = $scroll_template;
@@ -3793,7 +3794,7 @@ final class Rest_Api {
 		}
 
 		foreach ( $events_sanitized as $sev ) {
-			\Nexus_Lead_Suite\Core\Activities_Store::record_interaction(
+			\nexulesuite_\Core\Activities_Store::record_interaction(
 				(string) $sev['type'],
 				(string) $sev['target'],
 				(string) $sev['page'],
@@ -3845,19 +3846,19 @@ final class Rest_Api {
 	 * @return array<int,array<string,string>>
 	 */
 	private function build_pdf_table_rows_from_filters( string $tab, string $date_from, string $date_to, string $search ): array {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-activities-store.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-activities-store.php';
 
-		$db_rows    = \Nexus_Lead_Suite\Core\Activities_Store::fetch_report_rows(
+		$db_rows    = \nexulesuite_\Core\Activities_Store::fetch_report_rows(
 			$tab,
 			$date_from,
 			$date_to,
 			$search,
-			\Nexus_Lead_Suite\Core\Activities_Store::PDF_EXPORT_ROW_LIMIT
+			\nexulesuite_\Core\Activities_Store::PDF_EXPORT_ROW_LIMIT
 		);
 		$table_rows = array();
 
 		foreach ( $db_rows as $row ) {
-			$act          = \Nexus_Lead_Suite\Core\Activities_Store::map_db_row_to_activity( $row );
+			$act          = \nexulesuite_\Core\Activities_Store::map_db_row_to_activity( $row );
 			$table_rows[] = array(
 				'identifier'  => $act['actionName'],
 				'reference'   => $act['pageUrl'],
@@ -3875,7 +3876,7 @@ final class Rest_Api {
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function generate_activities_pdf( \WP_REST_Request $request ) {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-simple-pdf.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-simple-pdf.php';
 
 		try {
 			$tab       = $this->sanitize_activity_tab( (string) $request->get_param( 'tab' ) );
@@ -3901,7 +3902,7 @@ final class Rest_Api {
 				$logo['max_display'] = $this->get_report_logo_pdf_max_display();
 			}
 
-			$pdf_bytes = \Nexus_Lead_Suite\Simple_Pdf::build_activities_report_pdf(
+			$pdf_bytes = \nexulesuite_\Simple_Pdf::build_activities_report_pdf(
 				(string) get_bloginfo( 'name' ),
 				array(
 					'date_line' => $date_line,
@@ -3916,37 +3917,37 @@ final class Rest_Api {
 
 			$uploads = wp_upload_dir();
 			if ( empty( $uploads['basedir'] ) || empty( $uploads['baseurl'] ) ) {
-				return new \WP_Error( 'nexus_ls_uploads_unavailable', 'Uploads directory unavailable.' );
+				return new \WP_Error( 'nexulesuite_uploads_unavailable', 'Uploads directory unavailable.' );
 			}
 
-			$subdir   = dirname( NEXUS_LS_PLUGIN_BASENAME );
+			$subdir   = dirname( nexulesuite_PLUGIN_BASENAME );
 			$dir      = trailingslashit( (string) $uploads['basedir'] ) . $subdir;
 			$url_base = trailingslashit( (string) $uploads['baseurl'] ) . $subdir;
 
 			if ( ! file_exists( $dir ) ) {
 				$made = wp_mkdir_p( $dir );
 				if ( ! $made ) {
-					return new \WP_Error( 'nexus_ls_uploads_mkdir_failed', 'Failed to create uploads directory.' );
+					return new \WP_Error( 'nexulesuite_uploads_mkdir_failed', 'Failed to create uploads directory.' );
 				}
 			}
 
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 			if ( ! WP_Filesystem() ) {
-				return new \WP_Error( 'nexus_ls_uploads_fs_unavailable', 'Filesystem unavailable.' );
+				return new \WP_Error( 'nexulesuite_uploads_fs_unavailable', 'Filesystem unavailable.' );
 			}
 
 			global $wp_filesystem;
 			if ( ! is_object( $wp_filesystem ) || ! $wp_filesystem->is_dir( $dir ) || ! $wp_filesystem->is_writable( $dir ) ) {
-				return new \WP_Error( 'nexus_ls_uploads_not_writable', 'Uploads directory is not writable.' );
+				return new \WP_Error( 'nexulesuite_uploads_not_writable', 'Uploads directory is not writable.' );
 			}
 
-			$filename = 'nexus-activities-report-' . gmdate( 'Ymd-His' ) . '-' . wp_generate_password( 6, false, false ) . '.pdf';
+			$filename = 'nexulesuite_activities-report-' . gmdate( 'Ymd-His' ) . '-' . wp_generate_password( 6, false, false ) . '.pdf';
 			$path     = trailingslashit( $dir ) . $filename;
 			$url      = trailingslashit( $url_base ) . $filename;
 
 			$written = $wp_filesystem->put_contents( $path, $pdf_bytes, FS_CHMOD_FILE );
 			if ( ! $written || strlen( $pdf_bytes ) < 10 ) {
-				return new \WP_Error( 'nexus_ls_pdf_write_failed', 'Failed to write PDF.' );
+				return new \WP_Error( 'nexulesuite_pdf_write_failed', 'Failed to write PDF.' );
 			}
 
 			return rest_ensure_response(
@@ -3958,7 +3959,7 @@ final class Rest_Api {
 				)
 			);
 		} catch ( \Throwable $e ) {
-			return new \WP_Error( 'nexus_ls_pdf_exception', 'PDF generation failed.' );
+			return new \WP_Error( 'nexulesuite_pdf_exception', 'PDF generation failed.' );
 		}
 	}
 
@@ -4011,7 +4012,7 @@ final class Rest_Api {
 			return null;
 		}
 
-		$tmp = trailingslashit( $uploads['path'] ) . 'nexus-site-logo-' . wp_generate_password( 6, false, false ) . '.jpg';
+		$tmp = trailingslashit( $uploads['path'] ) . 'nexulesuite_site-logo-' . wp_generate_password( 6, false, false ) . '.jpg';
 		$saved = $editor->save( $tmp, 'image/jpeg' );
 		if ( is_wp_error( $saved ) || empty( $saved['path'] ) ) {
 			return null;
@@ -4111,7 +4112,7 @@ final class Rest_Api {
 			return null;
 		}
 
-		$tmp = trailingslashit( (string) $uploads['path'] ) . 'nexus-report-logo-' . wp_generate_password( 6, false, false ) . '.jpg';
+		$tmp = trailingslashit( (string) $uploads['path'] ) . 'nexulesuite_report-logo-' . wp_generate_password( 6, false, false ) . '.jpg';
 		$saved = $editor->save( $tmp, 'image/jpeg' );
 		if ( is_wp_error( $saved ) || empty( $saved['path'] ) ) {
 			return null;
@@ -4155,7 +4156,7 @@ final class Rest_Api {
 		$clean_recipients = array_values( array_unique( $clean_recipients ) );
 
 		if ( empty( $clean_recipients ) ) {
-			return new \WP_Error( 'nexus_ls_no_recipients', 'No valid recipients provided.' );
+			return new \WP_Error( 'nexulesuite_no_recipients', 'No valid recipients provided.' );
 		}
 
 		// Generate PDF using the same logic.
@@ -4167,7 +4168,7 @@ final class Rest_Api {
 		$data = $pdf_response->get_data();
 		$pdf_url = isset( $data['data']['pdf_url'] ) ? (string) $data['data']['pdf_url'] : '';
 		if ( '' === $pdf_url ) {
-			return new \WP_Error( 'nexus_ls_pdf_missing', 'PDF URL missing.' );
+			return new \WP_Error( 'nexulesuite_pdf_missing', 'PDF URL missing.' );
 		}
 
 		$uploads = wp_upload_dir();
@@ -4175,13 +4176,13 @@ final class Rest_Api {
 		$basedir = isset( $uploads['basedir'] ) ? (string) $uploads['basedir'] : '';
 
 		if ( '' === $baseurl || '' === $basedir ) {
-			return new \WP_Error( 'nexus_ls_uploads_unavailable', 'Uploads directory unavailable.' );
+			return new \WP_Error( 'nexulesuite_uploads_unavailable', 'Uploads directory unavailable.' );
 		}
 
 		$pdf_path = str_replace( $baseurl, $basedir, $pdf_url );
 		$pdf_path = wp_normalize_path( $pdf_path );
 		if ( ! file_exists( $pdf_path ) ) {
-			return new \WP_Error( 'nexus_ls_pdf_not_found', 'PDF file not found.' );
+			return new \WP_Error( 'nexulesuite_pdf_not_found', 'PDF file not found.' );
 		}
 
 		$custom_message = (string) $request->get_param( 'customMessage' );
@@ -4236,7 +4237,7 @@ final class Rest_Api {
 				$detail = $last_mail_error->get_error_message();
 			}
 			return new \WP_Error(
-				'nexus_ls_mail_failed',
+				'nexulesuite_mail_failed',
 				$detail !== '' ? $detail : 'Email sending failed.'
 			);
 		}

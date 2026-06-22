@@ -19,12 +19,12 @@ const ROUTES = {
 
 export function App() {
 	const [ route, setRoute ] = useState(
-		window?.nexusLsAdmin?.initialRoute || 'activities'
+		window?.nexulesuite_Admin?.initialRoute || 'activities'
 	);
 
 	useEffect( () => {
 		function syncFromUrl() {
-			const pages = window?.nexusLsAdmin?.adminPages;
+			const pages = window?.nexulesuite_Admin?.adminPages;
 			if ( ! pages ) {
 				return;
 			}
@@ -45,7 +45,7 @@ export function App() {
 
 	return (
 		<AdminErrorBoundary>
-		<div className="nexus-ls-admin-app flex min-h-screen">
+		<div className="nexulesuite_admin-app flex min-h-screen">
 			<AdminSidebar activeId={ route } onNavigate={ setRoute } />
 			<main className="min-h-screen flex-1">
 				{ Page ? (

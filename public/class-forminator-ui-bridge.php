@@ -2,12 +2,12 @@
 /**
  * Loads vendored Forminator UI (GPLv3) assets and maps Nexus form markup to FUI classes.
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite\Public;
+namespace nexulesuite_\Public;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -25,14 +25,14 @@ final class Forminator_UI_Bridge {
 	 * @return string Absolute URL to a vendored file.
 	 */
 	public static function vendor_url( string $rel ): string {
-		return NEXUS_LS_PLUGIN_URL . self::VENDOR_REL . '/' . ltrim( $rel, '/' );
+		return nexulesuite_PLUGIN_URL . self::VENDOR_REL . '/' . ltrim( $rel, '/' );
 	}
 
 	/**
 	 * @return string Absolute filesystem path.
 	 */
 	public static function vendor_path( string $rel ): string {
-		return NEXUS_LS_PLUGIN_DIR . self::VENDOR_REL . '/' . ltrim( $rel, '/' );
+		return nexulesuite_PLUGIN_DIR . self::VENDOR_REL . '/' . ltrim( $rel, '/' );
 	}
 
 	public static function is_available(): bool {
@@ -84,12 +84,12 @@ final class Forminator_UI_Bridge {
 		$handles_chain = array();
 
 		$core_styles = array(
-			'nexus-fui-base'   => 'css/forminator-base.min.css',
-			'nexus-fui-global' => 'css/forminator-global.min.css',
-			'nexus-fui-grid'   => 'css/forminator-grid.min.css',
-			'nexus-fui-forms'  => 'css/forminator-forms.min.css',
-			'nexus-fui-icons'  => 'css/forminator-icons.min.css',
-			'nexus-fui-shell'  => 'css/forminator-ui.min.css',
+			'nexulesuite_fui-base'   => 'css/forminator-base.min.css',
+			'nexulesuite_fui-global' => 'css/forminator-global.min.css',
+			'nexulesuite_fui-grid'   => 'css/forminator-grid.min.css',
+			'nexulesuite_fui-forms'  => 'css/forminator-forms.min.css',
+			'nexulesuite_fui-icons'  => 'css/forminator-icons.min.css',
+			'nexulesuite_fui-shell'  => 'css/forminator-ui.min.css',
 		);
 
 		foreach ( $core_styles as $handle => $rel ) {
@@ -116,7 +116,7 @@ final class Forminator_UI_Bridge {
 		foreach ( $designs as $design ) {
 			$full_rel = 'css/src/form/forminator-form-' . $design . '.full.min.css';
 			$full_p   = self::vendor_path( $full_rel );
-			$h        = 'nexus-fui-design-' . $design;
+			$h        = 'nexulesuite_fui-design-' . $design;
 			$pag_dep  = $deps_after_core;
 			if ( file_exists( $full_p ) ) {
 				wp_enqueue_style(
@@ -131,7 +131,7 @@ final class Forminator_UI_Bridge {
 				$pag_rel = 'css/src/form/forminator-form-' . $design . '.pagination.min.css';
 				$pag_p   = self::vendor_path( $pag_rel );
 				if ( file_exists( $pag_p ) ) {
-					$ph = 'nexus-fui-pag-' . $design;
+					$ph = 'nexulesuite_fui-pag-' . $design;
 					wp_enqueue_style(
 						$ph,
 						self::vendor_url( $pag_rel ),
@@ -144,30 +144,30 @@ final class Forminator_UI_Bridge {
 
 		$js_p = self::vendor_path( 'js/forminator-form.min.js' );
 		wp_enqueue_script(
-			'nexus-fui-form',
+			'nexulesuite_fui-form',
 			self::vendor_url( 'js/forminator-form.min.js' ),
 			array( 'jquery' ),
-			file_exists( $js_p ) ? (string) filemtime( $js_p ) : NEXUS_LS_VERSION,
+			file_exists( $js_p ) ? (string) filemtime( $js_p ) : nexulesuite_VERSION,
 			true
 		);
 
-		$bridge_js = NEXUS_LS_PLUGIN_DIR . 'public/js/nexus-ls-forminator-fui.js';
+		$bridge_js = nexulesuite_PLUGIN_DIR . 'public/js/nexus-ls-forminator-fui.js';
 		if ( file_exists( $bridge_js ) ) {
 			wp_enqueue_script(
-				'nexus-ls-forminator-fui',
-				NEXUS_LS_PLUGIN_URL . 'public/js/nexus-ls-forminator-fui.js',
-				array( 'jquery', 'nexus-fui-form', 'nexus-ls-forms-runtime' ),
+				'nexulesuite_forminator-fui',
+				nexulesuite_PLUGIN_URL . 'public/js/nexus-ls-forminator-fui.js',
+				array( 'jquery', 'nexulesuite_fui-form', 'nexulesuite_forms-runtime' ),
 				(string) filemtime( $bridge_js ),
 				true
 			);
 		}
 
-		$bridge_css = NEXUS_LS_PLUGIN_DIR . 'public/css/nexus-ls-forminator-bridge.css';
+		$bridge_css = nexulesuite_PLUGIN_DIR . 'public/css/nexus-ls-forminator-bridge.css';
 		if ( file_exists( $bridge_css ) ) {
 			wp_enqueue_style(
-				'nexus-ls-forminator-bridge',
-				NEXUS_LS_PLUGIN_URL . 'public/css/nexus-ls-forminator-bridge.css',
-				array( 'nexus-ls-forms-runtime' ),
+				'nexulesuite_forminator-bridge',
+				nexulesuite_PLUGIN_URL . 'public/css/nexus-ls-forminator-bridge.css',
+				array( 'nexulesuite_forms-runtime' ),
 				(string) filemtime( $bridge_css )
 			);
 		}

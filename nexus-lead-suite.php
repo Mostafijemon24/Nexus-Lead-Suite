@@ -3,7 +3,7 @@
  * Plugin Name:       Nexus Lead Suite
  * Plugin URI:        https://wordpress.org/plugins/nexus-lead-suite/
  * Description:       A high-performance, all-in-one lead generation and user analytics suite with a modern admin experience.
- * Version:           1.0.10
+ * Version:           1.0.11
  * Requires at least: 6.2
  * Requires PHP:      7.4
  * Author:            Nexus Lead Suite
@@ -13,12 +13,12 @@
  * Text Domain:       nexus-lead-suite
  * Domain Path:       /languages
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite;
+namespace nexulesuite_;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -52,11 +52,11 @@ if ( defined( 'PHP_VERSION_ID' ) && PHP_VERSION_ID < 70400 ) {
 	return;
 }
 
-define( 'NEXUS_LS_VERSION', '1.0.10' );
-define( 'NEXUS_LS_PLUGIN_FILE', __FILE__ );
-define( 'NEXUS_LS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'NEXUS_LS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'NEXUS_LS_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'nexulesuite_VERSION', '1.0.10' );
+define( 'nexulesuite_PLUGIN_FILE', __FILE__ );
+define( 'nexulesuite_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'nexulesuite_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'nexulesuite_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 // Minimal polyfills in entry file (in case host/plugin uploader skips new files).
 if ( ! function_exists( 'str_starts_with' ) ) {
@@ -86,40 +86,40 @@ if ( ! function_exists( 'str_ends_with' ) ) {
 }
 
 try {
-	$nexus_ls_polyfills = NEXUS_LS_PLUGIN_DIR . 'core/polyfills.php';
-	if ( file_exists( $nexus_ls_polyfills ) ) {
-		require_once $nexus_ls_polyfills;
+	$nexulesuite_polyfills = nexulesuite_PLUGIN_DIR . 'core/polyfills.php';
+	if ( file_exists( $nexulesuite_polyfills ) ) {
+		require_once $nexulesuite_polyfills;
 	}
 
-	$nexus_ls_required = array(
-		NEXUS_LS_PLUGIN_DIR . 'core/class-activator.php',
-		NEXUS_LS_PLUGIN_DIR . 'core/class-forms-payload-codec.php',
-		NEXUS_LS_PLUGIN_DIR . 'core/class-form-submissions-store.php',
-		NEXUS_LS_PLUGIN_DIR . 'core/class-activities-store.php',
-		NEXUS_LS_PLUGIN_DIR . 'core/class-data-bundle.php',
-		NEXUS_LS_PLUGIN_DIR . 'core/class-deactivator.php',
-		NEXUS_LS_PLUGIN_DIR . 'core/popup-shortcode-expand.php',
-		NEXUS_LS_PLUGIN_DIR . 'core/class-plugin.php',
+	$nexulesuite_required = array(
+		nexulesuite_PLUGIN_DIR . 'core/class-activator.php',
+		nexulesuite_PLUGIN_DIR . 'core/class-forms-payload-codec.php',
+		nexulesuite_PLUGIN_DIR . 'core/class-form-submissions-store.php',
+		nexulesuite_PLUGIN_DIR . 'core/class-activities-store.php',
+		nexulesuite_PLUGIN_DIR . 'core/class-data-bundle.php',
+		nexulesuite_PLUGIN_DIR . 'core/class-deactivator.php',
+		nexulesuite_PLUGIN_DIR . 'core/popup-shortcode-expand.php',
+		nexulesuite_PLUGIN_DIR . 'core/class-plugin.php',
 	);
 
-	$nexus_ls_missing = array();
-	foreach ( $nexus_ls_required as $path ) {
+	$nexulesuite_missing = array();
+	foreach ( $nexulesuite_required as $path ) {
 		if ( ! file_exists( $path ) ) {
-			$nexus_ls_missing[] = $path;
+			$nexulesuite_missing[] = $path;
 		}
 	}
 
-	if ( ! empty( $nexus_ls_missing ) ) {
+	if ( ! empty( $nexulesuite_missing ) ) {
 		if ( is_admin() ) {
 			add_action(
 				'admin_notices',
-				static function () use ( $nexus_ls_missing ): void {
+				static function () use ( $nexulesuite_missing ): void {
 					echo '<div class="notice notice-error"><p><strong>' .
 						esc_html__( 'Nexus Lead Suite installation is incomplete.', 'nexus-lead-suite' ) .
 						'</strong></p><p>' .
 						esc_html__( 'Some required plugin files are missing. Re-upload the full plugin folder (do not upload only a single PHP file). Missing:', 'nexus-lead-suite' ) .
 						'</p><ul style="margin-left:16px;list-style:disc;">';
-					foreach ( $nexus_ls_missing as $p ) {
+					foreach ( $nexulesuite_missing as $p ) {
 						echo '<li><code>' . esc_html( (string) $p ) . '</code></li>';
 					}
 					echo '</ul></div>';
@@ -134,7 +134,7 @@ try {
 			}
 			wp_die(
 				esc_html__( 'Plugin activation failed because the installation is incomplete. Missing files:', 'nexus-lead-suite' ) .
-					'<br /><br /><code>' . esc_html( implode( "\n", $nexus_ls_missing ) ) . '</code>',
+					'<br /><br /><code>' . esc_html( implode( "\n", $nexulesuite_missing ) ) . '</code>',
 				esc_html__( 'Activation error', 'nexus-lead-suite' ),
 				array( 'back_link' => true )
 			);
@@ -142,14 +142,14 @@ try {
 		return;
 	}
 
-	require_once NEXUS_LS_PLUGIN_DIR . 'core/class-activator.php';
-	require_once NEXUS_LS_PLUGIN_DIR . 'core/class-forms-payload-codec.php';
-	require_once NEXUS_LS_PLUGIN_DIR . 'core/class-form-submissions-store.php';
-	require_once NEXUS_LS_PLUGIN_DIR . 'core/class-activities-store.php';
-	require_once NEXUS_LS_PLUGIN_DIR . 'core/class-data-bundle.php';
-	require_once NEXUS_LS_PLUGIN_DIR . 'core/class-deactivator.php';
-	require_once NEXUS_LS_PLUGIN_DIR . 'core/popup-shortcode-expand.php';
-	require_once NEXUS_LS_PLUGIN_DIR . 'core/class-plugin.php';
+	require_once nexulesuite_PLUGIN_DIR . 'core/class-activator.php';
+	require_once nexulesuite_PLUGIN_DIR . 'core/class-forms-payload-codec.php';
+	require_once nexulesuite_PLUGIN_DIR . 'core/class-form-submissions-store.php';
+	require_once nexulesuite_PLUGIN_DIR . 'core/class-activities-store.php';
+	require_once nexulesuite_PLUGIN_DIR . 'core/class-data-bundle.php';
+	require_once nexulesuite_PLUGIN_DIR . 'core/class-deactivator.php';
+	require_once nexulesuite_PLUGIN_DIR . 'core/popup-shortcode-expand.php';
+	require_once nexulesuite_PLUGIN_DIR . 'core/class-plugin.php';
 } catch ( \Throwable $e ) {
 	if ( is_admin() ) {
 		add_action(
@@ -200,13 +200,13 @@ register_deactivation_hook( __FILE__, array( Deactivator::class, 'deactivate' ) 
  *
  * @return void
  */
-function nexus_ls_run(): void {
+function nexulesuite_run(): void {
 	$plugin = new Plugin();
 	$plugin->run();
 }
 
 try {
-	nexus_ls_run();
+	nexulesuite_run();
 } catch ( \Throwable $e ) {
 	if ( is_admin() ) {
 		add_action(

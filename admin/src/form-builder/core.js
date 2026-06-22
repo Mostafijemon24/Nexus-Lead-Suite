@@ -180,7 +180,7 @@ function bh({
             className: "fixed inset-0 bg-black/50 z-40 transition-opacity",
             onClick: t
         }), s.jsxs("div", {
-            className: "nexus-ls-field-picker-modal fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-xl shadow-2xl w-[90vw] max-w-4xl max-h-[85vh] flex flex-col",
+            className: "nexulesuite_field-picker-modal fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-xl shadow-2xl w-[90vw] max-w-4xl max-h-[85vh] flex flex-col",
             children: [s.jsxs("div", {
                 className: "flex items-center justify-between px-6 py-5 border-b border-gray-200 bg-white",
                 children: [s.jsxs("div", {
@@ -205,7 +205,7 @@ function bh({
                 children: s.jsxs("div", {
                     className: "relative",
                     children: [s.jsx(up, {
-                        className: "nexus-ls-field-picker-search-icon absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10",
+                        className: "nexulesuite_field-picker-search-icon absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10",
                         size: 18
                     }), s.jsx("input", {
                         type: "text",
@@ -213,7 +213,7 @@ function bh({
                         value: l,
                         onChange: i => r(i.target.value),
                         autoFocus: !0,
-                        className: "nexus-ls-field-picker-search-input w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm"
+                        className: "nexulesuite_field-picker-search-input w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm"
                     })]
                 })
             }), s.jsx("div", {
@@ -235,7 +235,7 @@ function bh({
                         },
                         className: "p-3 sm:p-4 border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 hover:shadow-md transition-all group flex flex-col items-center text-center",
                         children: [s.jsx("div", {
-                            className: "nexus-ls-field-picker-icon text-3xl sm:text-4xl mb-2 sm:mb-3 text-slate-600 group-hover:scale-110 transition-transform flex items-center justify-center",
+                            className: "nexulesuite_field-picker-icon text-3xl sm:text-4xl mb-2 sm:mb-3 text-slate-600 group-hover:scale-110 transition-transform flex items-center justify-center",
                             children: i.icon
                         }), s.jsx("h3", {
                             className: "normal-case font-semibold text-gray-900 text-xs sm:text-sm leading-tight",
@@ -929,12 +929,12 @@ export function FieldSettingsInline({
         },
         h = async (N, I = {}) => {
             var Q, O, E;
-            const D = (((Q = window == null ? void 0 : window.nexusLsAdmin) == null ? void 0 : Q.restUrl) || "").replace(/\/$/, "") + N,
+            const D = (((Q = window == null ? void 0 : window.nexulesuite_Admin) == null ? void 0 : Q.restUrl) || "").replace(/\/$/, "") + N,
                 J = await fetch(D, {
                     ...I,
                     headers: {
                         "Content-Type": "application/json",
-                        "X-WP-Nonce": ((O = window == null ? void 0 : window.nexusLsAdmin) == null ? void 0 : O.nonce) || "",
+                        "X-WP-Nonce": ((O = window == null ? void 0 : window.nexulesuite_Admin) == null ? void 0 : O.nonce) || "",
                         ...I.headers || {}
                     }
                 }),
@@ -950,7 +950,7 @@ export function FieldSettingsInline({
         let I = !0;
         return u(""), y(""), o(!0), (async () => {
             try {
-                const D = await h(l === "recaptcha" ? "/nexus-lead-suite/v1/captcha/recaptcha" : "/nexus-lead-suite/v1/captcha/turnstile");
+                const D = await h(l === "recaptcha" ? "/nexulesuite_/v1/captcha/recaptcha" : "/nexulesuite_/v1/captcha/turnstile");
                 if (!I) return;
                 const J = (D == null ? void 0 : D.data) || {};
                 j(J.siteKey || ""), C(""), x(J.secretMasked || ""), l === "recaptcha" && (q(J.apiVersion === "v3" ? "v3" : "v2"), V(String(["number", "string"].includes(typeof J.scoreThreshold) && !isNaN(parseFloat(J.scoreThreshold)) ? parseFloat(J.scoreThreshold) : 0.5)))
@@ -1287,7 +1287,7 @@ export function FieldSettingsInline({
                         onClick: async () => {
                             o(!0), u(""), y("");
                             try {
-                                const N = await h("/nexus-lead-suite/v1/captcha/recaptcha", {
+                                const N = await h("/nexulesuite_/v1/captcha/recaptcha", {
                                         method: "POST",
                                         body: JSON.stringify({
                                             siteKey: p,
@@ -1364,7 +1364,7 @@ export function FieldSettingsInline({
                         onClick: async () => {
                             o(!0), u(""), y("");
                             try {
-                                const N = await h("/nexus-lead-suite/v1/captcha/turnstile", {
+                                const N = await h("/nexulesuite_/v1/captcha/turnstile", {
                                         method: "POST",
                                         body: JSON.stringify({
                                             siteKey: p,

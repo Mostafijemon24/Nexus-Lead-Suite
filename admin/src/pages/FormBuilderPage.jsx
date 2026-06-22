@@ -90,7 +90,7 @@ function createBlankFormTemplate() {
 }
 
 function copyShortcode( formId, onCopied ) {
-	const shortcode = `[smart_trigger_form id="${ formId }"]`;
+	const shortcode = `[nexulesuite_form id="${ formId }"]`;
 	const done = () => {
 		onCopied( formId );
 		window.setTimeout( () => onCopied( null ), 2000 );
@@ -127,13 +127,13 @@ function copyShortcode( formId, onCopied ) {
 }
 
 async function apiFetch( path, options = {} ) {
-	const base = window?.nexusLsAdmin?.restUrl || '';
+	const base = window?.nexulesuite_Admin?.restUrl || '';
 	const url = base.replace( /\/$/, '' ) + path;
 	const res = await fetch( url, {
 		...options,
 		headers: {
 			'Content-Type': 'application/json',
-			'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '',
+			'X-WP-Nonce': window?.nexulesuite_Admin?.nonce || '',
 			...( options.headers || {} ),
 		},
 	} );
@@ -149,7 +149,7 @@ function SimpleFormColorField( { label, value, onChange } ) {
 	const normalized = value || '#ffffff';
 
 	return (
-		<div className="nls-fb-color-field">
+		<div className="nexulesuite_fb-color-field">
 			<span className="lbl">{ label }</span>
 			<div className="cgroup">
 				<span className="cswatch" style={ { background: normalized } }>
@@ -195,21 +195,21 @@ function FormItem( {
 
 	if ( isSimple ) {
 		return (
-			<li className="nls-form-builder-wrap">
-				<div className={ `nls-fb-card${ expanded ? ' is-expanded' : '' }` }>
-					<div className="nls-fb-head">
-						<button type="button" onClick={ onToggle } className="nls-fb-head-main">
-							<span className="nls-fb-title">{ form.name || 'Untitled Form' }</span>
-							<span className="nls-fb-badge">Simple</span>
+			<li className="nexulesuite_form-builder-wrap">
+				<div className={ `nexulesuite_fb-card${ expanded ? ' is-expanded' : '' }` }>
+					<div className="nexulesuite_fb-head">
+						<button type="button" onClick={ onToggle } className="nexulesuite_fb-head-main">
+							<span className="nexulesuite_fb-title">{ form.name || 'Untitled Form' }</span>
+							<span className="nexulesuite_fb-badge">Simple</span>
 							{ form.published === false ? (
-								<span className="nls-fb-badge is-muted">Hidden</span>
+								<span className="nexulesuite_fb-badge is-muted">Hidden</span>
 							) : null }
 						</button>
-						<div className="nls-fb-actions" onClick={ ( e ) => e.stopPropagation() }>
+						<div className="nexulesuite_fb-actions" onClick={ ( e ) => e.stopPropagation() }>
 							<button
 								type="button"
 								onClick={ () => onPreview?.( form.id ) }
-								className="nls-fb-icon-btn"
+								className="nexulesuite_fb-icon-btn"
 								title="Preview"
 							>
 								<Eye size={ 16 } />
@@ -217,7 +217,7 @@ function FormItem( {
 							<button
 								type="button"
 								onClick={ () => onPublishPersist?.( form.id, form.published === false ) }
-								className={ `nls-fb-icon-btn${ form.published === false ? ' is-warn' : '' }` }
+								className={ `nexulesuite_fb-icon-btn${ form.published === false ? ' is-warn' : '' }` }
 								title={ form.published === false ? 'Show form on website' : 'Hide form on website' }
 							>
 								{ form.published === false ? <Eye size={ 16 } /> : <EyeOff size={ 16 } /> }
@@ -225,7 +225,7 @@ function FormItem( {
 							<button
 								type="button"
 								onClick={ () => copyShortcode( form.id, onCopiedIdChange ) }
-								className={ `nls-fb-icon-btn${ copiedId === form.id ? ' is-success' : '' }` }
+								className={ `nexulesuite_fb-icon-btn${ copiedId === form.id ? ' is-success' : '' }` }
 								title="Copy shortcode"
 							>
 								<Clipboard size={ 16 } />
@@ -233,7 +233,7 @@ function FormItem( {
 							<button
 								type="button"
 								onClick={ () => onDuplicate( form.id ) }
-								className="nls-fb-icon-btn"
+								className="nexulesuite_fb-icon-btn"
 								title="Duplicate"
 							>
 								<Copy size={ 16 } />
@@ -241,7 +241,7 @@ function FormItem( {
 							<button
 								type="button"
 								onClick={ () => onDelete( form.id ) }
-								className="nls-fb-icon-btn is-danger"
+								className="nexulesuite_fb-icon-btn is-danger"
 								title="Delete"
 							>
 								<Trash2 size={ 16 } />
@@ -249,7 +249,7 @@ function FormItem( {
 							<button
 								type="button"
 								onClick={ onToggle }
-								className="nls-fb-icon-btn nls-fb-chevron"
+								className="nexulesuite_fb-icon-btn nexulesuite_fb-chevron"
 								title={ expanded ? 'Collapse' : 'Expand' }
 							>
 								<ChevronDown size={ 16 } className={ expanded ? 'is-open' : '' } />
@@ -258,9 +258,9 @@ function FormItem( {
 					</div>
 
 					{ expanded && (
-						<div className="nls-fb-body">
-							<div className="nls-fb-name-row">
-								<div className="nls-fb-field">
+						<div className="nexulesuite_fb-body">
+							<div className="nexulesuite_fb-name-row">
+								<div className="nexulesuite_fb-field">
 									<span className="lbl">Form Name</span>
 									<input
 										type="text"
@@ -269,16 +269,16 @@ function FormItem( {
 										onChange={ ( e ) => onUpdate( form.id, { name: e.target.value } ) }
 									/>
 								</div>
-								<div className="nls-fb-shortcode-col">
+								<div className="nexulesuite_fb-shortcode-col">
 									<span className="lbl">Shortcode</span>
-									<div className="nls-fb-shortcode-row">
-										<code className="nls-fb-shortcode">
-											[smart_trigger_form id=&quot;{ form.id }&quot;]
+									<div className="nexulesuite_fb-shortcode-row">
+										<code className="nexulesuite_fb-shortcode">
+											[nexulesuite_form id=&quot;{ form.id }&quot;]
 										</code>
 										<button
 											type="button"
 											onClick={ () => copyShortcode( form.id, onCopiedIdChange ) }
-											className={ `nls-fb-copy-btn${ copiedId === form.id ? ' is-copied' : '' }` }
+											className={ `nexulesuite_fb-copy-btn${ copiedId === form.id ? ' is-copied' : '' }` }
 										>
 											{ copiedId === form.id ? 'Copied!' : 'Copy' }
 										</button>
@@ -286,7 +286,7 @@ function FormItem( {
 								</div>
 							</div>
 
-							<div className="nls-fb-tabs" role="tablist">
+							<div className="nexulesuite_fb-tabs" role="tablist">
 								{ [ 'fields', 'styling', 'advanced' ].map( ( tab ) => (
 									<button
 										key={ tab }
@@ -294,7 +294,7 @@ function FormItem( {
 										role="tab"
 										aria-selected={ activeTab === tab }
 										onClick={ () => onTabChange( tab ) }
-										className={ `nls-fb-tab${ activeTab === tab ? ' active' : '' }` }
+										className={ `nexulesuite_fb-tab${ activeTab === tab ? ' active' : '' }` }
 									>
 										{ tab.charAt( 0 ).toUpperCase() + tab.slice( 1 ) }
 									</button>
@@ -302,7 +302,7 @@ function FormItem( {
 							</div>
 
 							{ activeTab === 'fields' && (
-								<div className="nls-fb-tab-panel">
+								<div className="nexulesuite_fb-tab-panel">
 									<DynamicFieldsBuilder
 										form={ form }
 										onPatchForm={ ( patch ) => onUpdate( form.id, patch ) }
@@ -312,8 +312,8 @@ function FormItem( {
 							) }
 
 							{ activeTab === 'styling' && (
-								<div className="nls-fb-tab-panel">
-									<div className="nls-fb-color-grid">
+								<div className="nexulesuite_fb-tab-panel">
+									<div className="nexulesuite_fb-color-grid">
 										{ [
 											[ 'Background Color', 'backgroundColor' ],
 											[ 'Text Color', 'textColor' ],
@@ -332,7 +332,7 @@ function FormItem( {
 											/>
 										) ) }
 									</div>
-									<div className="nls-fb-field nls-fb-submit-field">
+									<div className="nexulesuite_fb-field nexulesuite_fb-submit-field">
 										<span className="lbl">Submit Button Text</span>
 										<input
 											type="text"
@@ -345,26 +345,26 @@ function FormItem( {
 							) }
 
 							{ activeTab === 'advanced' && (
-								<div className="nls-fb-tab-panel nls-fb-advanced">
-									<section className="nls-fb-section is-first">
-										<div className="nls-fb-sec-head">
-											<span className="nls-fb-sec-ico">
+								<div className="nexulesuite_fb-tab-panel nexulesuite_fb-advanced">
+									<section className="nexulesuite_fb-section is-first">
+										<div className="nexulesuite_fb-sec-head">
+											<span className="nexulesuite_fb-sec-ico">
 												<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 													<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
 													<circle cx="12" cy="12" r="3" />
 												</svg>
 											</span>
-											<span className="nls-fb-sec-title">Visibility</span>
+											<span className="nexulesuite_fb-sec-title">Visibility</span>
 										</div>
-										<div className="nls-fb-toggle-card">
-											<div className="nls-fb-toggle-card-body">
-												<span className="nls-fb-toggle-card-title">Show form on website</span>
+										<div className="nexulesuite_fb-toggle-card">
+											<div className="nexulesuite_fb-toggle-card-body">
+												<span className="nexulesuite_fb-toggle-card-title">Show form on website</span>
 												<p className="hint">
 													Turn off to hide everywhere on the front (shortcodes, popups, widgets). The form stays in the builder for editing.
 												</p>
 											</div>
 											<div
-												className={ `nls-fb-toggle${ form.published !== false ? ' on' : '' }` }
+												className={ `nexulesuite_fb-toggle${ form.published !== false ? ' on' : '' }` }
 												role="switch"
 												aria-checked={ form.published !== false }
 												tabIndex={ 0 }
@@ -383,18 +383,18 @@ function FormItem( {
 										</div>
 									</section>
 
-									<section className="nls-fb-section">
-										<div className="nls-fb-sec-head">
-											<span className="nls-fb-sec-ico is-amber">
+									<section className="nexulesuite_fb-section">
+										<div className="nexulesuite_fb-sec-head">
+											<span className="nexulesuite_fb-sec-ico is-amber">
 												<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 													<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
 													<path d="M13.73 21a2 2 0 0 1-3.46 0" />
 												</svg>
 											</span>
-											<span className="nls-fb-sec-title">Notifications &amp; Integrations</span>
+											<span className="nexulesuite_fb-sec-title">Notifications &amp; Integrations</span>
 										</div>
-										<div className="nls-fb-adv-stack">
-											<div className="nls-fb-field">
+										<div className="nexulesuite_fb-adv-stack">
+											<div className="nexulesuite_fb-field">
 												<span className="lbl">Submission notification email(s)</span>
 												<input
 													type="text"
@@ -407,7 +407,7 @@ function FormItem( {
 													Comma-separated. Submissions go here. If empty, the site admin email is used.
 												</p>
 											</div>
-											<div className="nls-fb-field">
+											<div className="nexulesuite_fb-field">
 												<span className="lbl">CRM / Webhook URL (this form)</span>
 												<input
 													type="url"
@@ -423,18 +423,18 @@ function FormItem( {
 										</div>
 									</section>
 
-									<section className="nls-fb-section">
-										<div className="nls-fb-sec-head">
-											<span className="nls-fb-sec-ico is-pink">
+									<section className="nexulesuite_fb-section">
+										<div className="nexulesuite_fb-sec-head">
+											<span className="nexulesuite_fb-sec-ico is-pink">
 												<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 													<polyline points="16 18 22 12 16 6" />
 													<polyline points="8 6 2 12 8 18" />
 												</svg>
 											</span>
-											<span className="nls-fb-sec-title">Custom Markup</span>
+											<span className="nexulesuite_fb-sec-title">Custom Markup</span>
 										</div>
-										<div className="nls-fb-adv-stack">
-											<div className="nls-fb-field">
+										<div className="nexulesuite_fb-adv-stack">
+											<div className="nexulesuite_fb-field">
 												<span className="lbl">Custom Header HTML</span>
 												<textarea
 													className="ta mono"
@@ -448,7 +448,7 @@ function FormItem( {
 													placeholder="<div>Your custom header HTML...</div>"
 												/>
 											</div>
-											<div className="nls-fb-field">
+											<div className="nexulesuite_fb-field">
 												<span className="lbl">Custom Footer HTML</span>
 												<textarea
 													className="ta mono"
@@ -462,29 +462,29 @@ function FormItem( {
 													placeholder="<div>Your custom footer HTML...</div>"
 												/>
 											</div>
-											<div className="nls-fb-field">
+											<div className="nexulesuite_fb-field">
 												<span className="lbl">Custom CSS</span>
 												<textarea
 													className="ta mono"
 													value={ form.customCSS || '' }
 													onChange={ ( e ) => onUpdate( form.id, { customCSS: e.target.value } ) }
 													rows={ 5 }
-													placeholder=".smart-trigger-form { /* your styles */ }"
+													placeholder=".nexulesuite_form { /* your styles */ }"
 												/>
 											</div>
 										</div>
 									</section>
 
-									<section className="nls-fb-section">
-										<div className="nls-fb-sec-head">
-											<span className="nls-fb-sec-ico">
+									<section className="nexulesuite_fb-section">
+										<div className="nexulesuite_fb-sec-head">
+											<span className="nexulesuite_fb-sec-ico">
 												<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 													<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
 												</svg>
 											</span>
-											<span className="nls-fb-sec-title">Legal</span>
+											<span className="nexulesuite_fb-sec-title">Legal</span>
 										</div>
-										<div className="nls-fb-field">
+										<div className="nexulesuite_fb-field">
 											<span className="lbl">Terms &amp; Conditions Text</span>
 											<textarea
 												className="ta"
@@ -589,7 +589,7 @@ function FormItem( {
 							<label className="mb-1.5 block text-sm font-semibold text-slate-700">Shortcode</label>
 							<div className="flex items-center gap-2">
 								<code className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-700">
-									[smart_trigger_form id=&quot;{ form.id }&quot;]
+									[nexulesuite_form id=&quot;{ form.id }&quot;]
 								</code>
 								<button
 									type="button"
@@ -757,7 +757,7 @@ function FormItem( {
 									value={ form.customCSS || '' }
 									onChange={ ( e ) => onUpdate( form.id, { customCSS: e.target.value } ) }
 									rows={ 5 }
-									placeholder=".smart-trigger-form { /* your styles */ }"
+									placeholder=".nexulesuite_form { /* your styles */ }"
 									className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-sm outline-none ring-violet-200 focus:ring-2"
 								/>
 							</div>
@@ -780,7 +780,7 @@ function FormItem( {
 }
 
 export function FormBuilderPage() {
-	const bootForms = window?.nexusLsAdmin?.formsPayload?.forms;
+	const bootForms = window?.nexulesuite_Admin?.formsPayload?.forms;
 	const [ search, setSearch ] = useState( '' );
 	const [ items, setItems ] = useState( Array.isArray( bootForms ) ? bootForms.map( normalizeForm ) : [] );
 	const [ expandedId, setExpandedId ] = useState( null );
@@ -798,7 +798,7 @@ export function FormBuilderPage() {
 		setLoadingForms( true );
 		( async () => {
 			try {
-				const res = await apiFetch( '/nexus-lead-suite/v1/forms' );
+				const res = await apiFetch( '/nexulesuite_/v1/forms' );
 				const forms = res?.data?.payload?.forms;
 				if ( alive && Array.isArray( forms ) ) {
 					setItems( forms.map( normalizeForm ) );
@@ -835,7 +835,7 @@ export function FormBuilderPage() {
 		setSaving( true );
 		setSaveError( '' );
 		try {
-			await apiFetch( '/nexus-lead-suite/v1/forms', {
+			await apiFetch( '/nexulesuite_/v1/forms', {
 				method: 'POST',
 				body: JSON.stringify( { payload: { forms: nextItems } } ),
 			} );
@@ -938,7 +938,7 @@ export function FormBuilderPage() {
 							</div>
 						) }
 
-						<div className="nls-form-builder-wrap nls-fb-add-wrap">
+						<div className="nexulesuite_form-builder-wrap nexulesuite_fb-add-wrap">
 							<button
 								type="button"
 								onClick={ () => {
@@ -955,7 +955,7 @@ export function FormBuilderPage() {
 									setExpandedId( id );
 									setActiveTab( 'fields' );
 								} }
-								className="nls-fb-add-dash"
+								className="nexulesuite_fb-add-dash"
 							>
 								<Plus size={ 16 } />
 								Add Simple Form

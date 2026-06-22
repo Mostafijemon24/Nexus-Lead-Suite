@@ -32,7 +32,7 @@ function copyText( text ) {
 }
 
 function getPluginRestUrl( route ) {
-	const base = ( window?.nexusLsAdmin?.restUrl || '/wp-json/' ).replace( /\/?$/, '/' );
+	const base = ( window?.nexulesuite_Admin?.restUrl || '/wp-json/' ).replace( /\/?$/, '/' );
 	const path = String( route || '' ).replace( /^\//, '' );
 	return `${ base }${ path }`;
 }
@@ -145,10 +145,10 @@ export function EmailsPage() {
 		async function boot() {
 			setStatus( { loading: true, saving: false, error: '' } );
 			try {
-				const res = await fetch( getPluginRestUrl( 'nexus-lead-suite/v1/emails/templates' ), {
+				const res = await fetch( getPluginRestUrl( 'nexulesuite_/v1/emails/templates' ), {
 					method: 'GET',
 					credentials: 'same-origin',
-					headers: { 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
+					headers: { 'X-WP-Nonce': window?.nexulesuite_Admin?.nonce || '' },
 				} );
 				const json = await parsePluginRestJson( res );
 				const loaded = Array.isArray( json?.data?.templates ) ? json.data.templates : [];
@@ -217,10 +217,10 @@ export function EmailsPage() {
 		setStatus( ( s ) => ( { ...s, saving: true, error: '' } ) );
 		const currentTemplates = Array.isArray( templatesRef.current ) ? templatesRef.current : [];
 		try {
-			const res = await fetch( getPluginRestUrl( 'nexus-lead-suite/v1/emails/templates' ), {
+			const res = await fetch( getPluginRestUrl( 'nexulesuite_/v1/emails/templates' ), {
 				method: 'POST',
 				credentials: 'same-origin',
-				headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': window?.nexusLsAdmin?.nonce || '' },
+				headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': window?.nexulesuite_Admin?.nonce || '' },
 				body: JSON.stringify( {
 					contentEncoding: 'base64',
 					templates: currentTemplates.map( ( tpl ) => ( {
@@ -253,7 +253,7 @@ export function EmailsPage() {
 			.replace(/{dateTime}/g, now)
 			.replace(/{ipAddress}/g, '192.0.2.10')
 			.replace(/{pageUrl}/g, '/contact-us')
-			.replace(/{siteName}/g, window?.nexusLsAdmin?.siteTitle || 'Site' )
+			.replace(/{siteName}/g, window?.nexulesuite_Admin?.siteTitle || 'Site' )
 			.replace(/{siteUrl}/g, window?.location?.origin || '' );
 	};
 
@@ -333,15 +333,15 @@ export function EmailsPage() {
 					</aside>
 
 					<main className="flex-1 overflow-y-auto p-8" style={ { background: '#f4f5f8' } }>
-						<div className="nls-emails-editor-wrap max-w-[1080px] mx-auto pb-20">
+						<div className="nexulesuite_emails-editor-wrap max-w-[1080px] mx-auto pb-20">
 							{ status.error ? (
-								<div className="nls-em-alert">{ status.error }</div>
+								<div className="nexulesuite_em-alert">{ status.error }</div>
 							) : null }
 
-							<div className="nls-em-card">
-								<section className="nls-em-section is-first">
-									<div className="nls-em-name-row">
-										<div className="nls-em-field">
+							<div className="nexulesuite_em-card">
+								<section className="nexulesuite_em-section is-first">
+									<div className="nexulesuite_em-name-row">
+										<div className="nexulesuite_em-field">
 											<span className="lbl">Template Name</span>
 											<input
 												type="text"
@@ -351,9 +351,9 @@ export function EmailsPage() {
 												placeholder="Template Name..."
 											/>
 										</div>
-										<div className="nls-em-uuid-badge">
+										<div className="nexulesuite_em-uuid-badge">
 											<Hash size={ 14 } />
-											<span className="nls-em-uuid-text"># { ( active?.uuid || '' ).substring( 0, 18 ) }...</span>
+											<span className="nexulesuite_em-uuid-text"># { ( active?.uuid || '' ).substring( 0, 18 ) }...</span>
 											<button
 												type="button"
 												onClick={ () => {
@@ -361,31 +361,31 @@ export function EmailsPage() {
 													setCopied( true );
 													setTimeout( () => setCopied( false ), 1800 );
 												} }
-												className="nls-em-uuid-copy"
+												className="nexulesuite_em-uuid-copy"
 												aria-label="Copy UUID"
 											>
-												{ copied ? <Check size={ 14 } className="nls-em-uuid-copied" /> : <Copy size={ 14 } /> }
+												{ copied ? <Check size={ 14 } className="nexulesuite_em-uuid-copied" /> : <Copy size={ 14 } /> }
 											</button>
 										</div>
 									</div>
 								</section>
 
-								<section className="nls-em-section">
-									<div className="nls-em-sec-head">
-										<span className="nls-em-sec-ico">
+								<section className="nexulesuite_em-section">
+									<div className="nexulesuite_em-sec-head">
+										<span className="nexulesuite_em-sec-ico">
 											<UserPlus size={ 16 } />
 										</span>
-										<span className="nls-em-sec-title">Recipients Management</span>
+										<span className="nexulesuite_em-sec-title">Recipients Management</span>
 									</div>
-									<div className="nls-em-recipients-box">
-										<div className="nls-em-recipients-inner">
+									<div className="nexulesuite_em-recipients-box">
+										<div className="nexulesuite_em-recipients-inner">
 											{ ( active?.recipients || [] ).map( ( email, i ) => (
-												<span key={ `${ email }-${ i }` } className="nls-em-recipient-chip">
+												<span key={ `${ email }-${ i }` } className="nexulesuite_em-recipient-chip">
 													{ email }
 													<button
 														type="button"
 														onClick={ () => patchActive( { recipients: active.recipients.filter( ( _, idx ) => idx !== i ) } ) }
-														className="nls-em-recipient-remove"
+														className="nexulesuite_em-recipient-remove"
 														aria-label="Remove recipient"
 													>
 														<X size={ 12 } />
@@ -398,21 +398,21 @@ export function EmailsPage() {
 												onChange={ ( e ) => setRecipientInput( e.target.value ) }
 												onKeyDown={ addRecipientOnKey }
 												placeholder="Enter email address..."
-												className="nls-em-recipients-inp"
+												className="nexulesuite_em-recipients-inp"
 											/>
 										</div>
-										<span className="nls-em-recipients-mail" aria-hidden="true">
+										<span className="nexulesuite_em-recipients-mail" aria-hidden="true">
 											<Mail size={ 16 } />
 										</span>
 									</div>
 								</section>
 
-								<section className="nls-em-section">
-									<div className="nls-em-sec-head">
-										<span className="nls-em-sec-ico">
+								<section className="nexulesuite_em-section">
+									<div className="nexulesuite_em-sec-head">
+										<span className="nexulesuite_em-sec-ico">
 											<Terminal size={ 16 } />
 										</span>
-										<span className="nls-em-sec-title">Email Subject Line</span>
+										<span className="nexulesuite_em-sec-title">Email Subject Line</span>
 									</div>
 									<input
 										type="text"
@@ -423,23 +423,23 @@ export function EmailsPage() {
 									/>
 								</section>
 
-								<section className="nls-em-section">
-									<div className="nls-em-tags-head">
-										<div className="nls-em-sec-head nls-em-sec-head--dense">
-											<span className="nls-em-sec-ico">
+								<section className="nexulesuite_em-section">
+									<div className="nexulesuite_em-tags-head">
+										<div className="nexulesuite_em-sec-head nexulesuite_em-sec-head--dense">
+											<span className="nexulesuite_em-sec-ico">
 												<Database size={ 16 } />
 											</span>
-											<span className="nls-em-sec-title">Data Injection Library</span>
+											<span className="nexulesuite_em-sec-title">Data Injection Library</span>
 										</div>
-										<span className="nls-em-tags-hint">Click tag to auto-insert into subject</span>
+										<span className="nexulesuite_em-tags-hint">Click tag to auto-insert into subject</span>
 									</div>
-									<div className="nls-em-tags">
+									<div className="nexulesuite_em-tags">
 										{ TAGS.map( ( tag ) => (
 											<button
 												key={ tag.val }
 												type="button"
 												onClick={ () => patchActive( { subject: ( active?.subject || '' ) + tag.val } ) }
-												className="nls-em-tag"
+												className="nexulesuite_em-tag"
 											>
 												<tag.Icon size={ 12 } />
 												<span>{ tag.label }</span>
@@ -449,18 +449,18 @@ export function EmailsPage() {
 									</div>
 								</section>
 
-								<section className="nls-em-section nls-em-html-panel">
-									<div className="nls-em-html-ico">
+								<section className="nexulesuite_em-section nexulesuite_em-html-panel">
+									<div className="nexulesuite_em-html-ico">
 										<Code size={ 28 } />
 									</div>
-									<div className="nls-em-html-copy">
+									<div className="nexulesuite_em-html-copy">
 										<h4>HTML Source Controller</h4>
 										<p>Manage the visual structure and dynamic content mapping here.</p>
 									</div>
 									<button
 										type="button"
 										onClick={ () => setCodeOpen( true ) }
-										className="nls-em-html-btn"
+										className="nexulesuite_em-html-btn"
 									>
 										<Code size={ 18 } /> Open Source Code Editor
 									</button>

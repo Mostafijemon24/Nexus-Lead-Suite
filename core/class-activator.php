@@ -2,12 +2,12 @@
 /**
  * Fired during plugin activation.
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite;
+namespace nexulesuite_;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -22,7 +22,7 @@ final class Activator {
 	/**
 	 * Option key storing the database schema version.
 	 */
-	public const SCHEMA_VERSION_OPTION = 'nexus_ls_db_version';
+	public const SCHEMA_VERSION_OPTION = 'nexulesuite_db_version';
 
 	/**
 	 * Current database schema version (increment when tables change).
@@ -38,12 +38,12 @@ final class Activator {
 		self::install_tables();
 		update_option( self::SCHEMA_VERSION_OPTION, self::SCHEMA_VERSION, false );
 
-		if ( ! wp_next_scheduled( 'nexus_ls_purge_form_submissions' ) ) {
-			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'nexus_ls_purge_form_submissions' );
+		if ( ! wp_next_scheduled( 'nexulesuite_purge_form_submissions' ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'nexulesuite_purge_form_submissions' );
 		}
 
-		require_once NEXUS_LS_PLUGIN_DIR . 'public/class-client-access.php';
-		\Nexus_Lead_Suite\Public\Client_Access::activation_flush_rewrite_rules();
+		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
+		\nexulesuite_\Public\Client_Access::activation_flush_rewrite_rules();
 	}
 
 	/**
@@ -59,8 +59,8 @@ final class Activator {
 		$charset_collate = $wpdb->get_charset_collate();
 		$prefix          = $wpdb->prefix;
 
-		$interactions = "{$prefix}nexus_ls_interactions";
-		$submissions  = "{$prefix}nexus_ls_submissions";
+		$interactions = "{$prefix}nexulesuite_interactions";
+		$submissions  = "{$prefix}nexulesuite_submissions";
 
 		$sql_interactions = "CREATE TABLE {$interactions} (
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,

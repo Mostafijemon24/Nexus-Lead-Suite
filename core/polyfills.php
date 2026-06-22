@@ -2,7 +2,7 @@
 /**
  * Polyfills for older PHP versions supported by the plugin.
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);

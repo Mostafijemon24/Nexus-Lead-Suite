@@ -1,15 +1,15 @@
 /* =============================================================
    Nexus Lead Suite — Forms Runtime CSS
-   All selectors are scoped under .nexus-st-form to prevent
+   All selectors are scoped under .nexulesuite_st-form to prevent
    conflicts with the active theme and guarantee rendering
    inside popups and shortcode pages.
    ============================================================= */
 
 /* ── Wrapper ─────────────────────────────────────────────── */
-.nexus-st-form.nexus-st-form--dismissed {
+.nexulesuite_st-form.nexulesuite_st-form--dismissed {
   display: none !important;
 }
-.nexus-st-form {
+.nexulesuite_st-form {
   /* Usable from ~150px wide containers; scales on large / ultra-wide viewports */
   width: 100% !important;
   min-width: 150px !important;
@@ -17,21 +17,21 @@
   margin: 0 !important;
   padding: 0 !important;
   box-sizing: border-box !important;
-  font-family: var(--nexus-ls-font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif) !important;
+  font-family: var(--nexulesuite_font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif) !important;
   font-size: clamp(14px, 0.28vw + 13.2px, 17px) !important;
-  color: var(--nexus-st-form-text, #1e293b) !important;
+  color: var(--nexulesuite_st-form-text, #1e293b) !important;
   line-height: 1.5 !important;
   overflow-wrap: anywhere !important;
   word-wrap: break-word !important;
 }
-.nexus-st-form *,
-.nexus-st-form *::before,
-.nexus-st-form *::after {
+.nexulesuite_st-form *,
+.nexulesuite_st-form *::before,
+.nexulesuite_st-form *::after {
   box-sizing: border-box !important;
 }
 
 /* Honeypot: off-screen trap for bots (humans should not tab here). */
-.nexus-st-form .nexus-st-hp {
+.nexulesuite_st-form .nexulesuite_st-hp {
   position: absolute !important;
   left: -10000px !important;
   top: auto !important;
@@ -44,7 +44,7 @@
   padding: 0 !important;
   margin: 0 !important;
 }
-.nexus-st-form .nexus-st-hp input {
+.nexulesuite_st-form .nexulesuite_st-hp input {
   position: absolute !important;
   left: 0 !important;
   top: 0 !important;
@@ -55,16 +55,16 @@
 }
 
 /* ── Header / title — always hidden ─────────────────────── */
-.nexus-st-form .nexus-st-form__header,
-.nexus-st-form .nexus-st-form__title,
-.nexus-st-form .nexus-st-step__title,
-.nexus-st-form .nexus-st-step__subtitle {
+.nexulesuite_st-form .nexulesuite_st-form__header,
+.nexulesuite_st-form .nexulesuite_st-form__title,
+.nexulesuite_st-form .nexulesuite_st-step__title,
+.nexulesuite_st-form .nexulesuite_st-step__subtitle {
   display: none !important;
 }
 
 /* ── Form body card ──────────────────────────────────────── */
-.nexus-st-form .nexus-st-form__body {
-  background: var(--nexus-st-form-bg, #ffffff) !important;
+.nexulesuite_st-form .nexulesuite_st-form__body {
+  background: var(--nexulesuite_st-form-bg, #ffffff) !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: clamp(10px, 2.2vw, 18px) !important;
   padding: clamp(10px, 3.5vw, 28px) !important;
@@ -74,11 +74,11 @@
 }
 
 /* After submit: only the result card (matches admin FeedbackModal layout). */
-.nexus-st-form.nexus-st-form--sent .nexus-st-form__body > *:not(.nexus-st-form-result-card) {
+.nexulesuite_st-form.nexulesuite_st-form--sent .nexulesuite_st-form__body > *:not(.nexulesuite_st-form-result-card) {
   display: none !important;
 }
 
-.nexus-st-form .nexus-st-form-result-card {
+.nexulesuite_st-form .nexulesuite_st-form-result-card {
   width: 100% !important;
   max-width: 28rem !important;
   margin: 0 auto !important;
@@ -90,17 +90,17 @@
   font-family: inherit !important;
 }
 
-.nexus-st-form .nexus-st-form-result-card--error {
+.nexulesuite_st-form .nexulesuite_st-form-result-card--error {
   border-color: #fecdd3 !important;
   box-shadow: 0 25px 50px -12px rgba(190, 18, 60, 0.12) !important;
 }
 
-.nexus-st-form .nexus-st-form-result-card__inner {
+.nexulesuite_st-form .nexulesuite_st-form-result-card__inner {
   padding: clamp(1rem, 4vw, 2rem) clamp(0.65rem, 3.5vw, 2rem) 1rem !important;
   text-align: center !important;
 }
 
-.nexus-st-form .nexus-st-form-result-card__icon {
+.nexulesuite_st-form .nexulesuite_st-form-result-card__icon {
   margin: 0 auto !important;
   width: 3.5rem !important;
   height: 3.5rem !important;
@@ -110,21 +110,21 @@
   justify-content: center !important;
 }
 
-.nexus-st-form .nexus-st-form-result-card--success .nexus-st-form-result-card__icon {
+.nexulesuite_st-form .nexulesuite_st-form-result-card--success .nexulesuite_st-form-result-card__icon {
   background: #ecfdf5 !important;
   color: #10b981 !important;
 }
 
-.nexus-st-form .nexus-st-form-result-card--error .nexus-st-form-result-card__icon {
+.nexulesuite_st-form .nexulesuite_st-form-result-card--error .nexulesuite_st-form-result-card__icon {
   background: #fff1f2 !important;
   color: #f43f5e !important;
 }
 
-.nexus-st-form .nexus-st-form-result-card__icon svg {
+.nexulesuite_st-form .nexulesuite_st-form-result-card__icon svg {
   display: block !important;
 }
 
-.nexus-st-form .nexus-st-form-result-card__title {
+.nexulesuite_st-form .nexulesuite_st-form-result-card__title {
   margin: 1.25rem 0 0 !important;
   font-size: 1.25rem !important;
   font-weight: 800 !important;
@@ -133,20 +133,20 @@
 }
 
 /* Form-level theming */
-.nexus-st-form .nexus-st-form__body {
-  color: var(--nexus-st-form-text, #1e293b) !important;
+.nexulesuite_st-form .nexulesuite_st-form__body {
+  color: var(--nexulesuite_st-form-text, #1e293b) !important;
 }
 
 /* Checkbox / radio / consent links — match primary button (not stepper chrome). */
-.nexus-st-form input[type="checkbox"],
-.nexus-st-form input[type="radio"] {
-  accent-color: var(--nexus-st-btn, #7c3aed) !important;
+.nexulesuite_st-form input[type="checkbox"],
+.nexulesuite_st-form input[type="radio"] {
+  accent-color: var(--nexulesuite_st-btn, #7c3aed) !important;
 }
-.nexus-st-form .nexus-st-consent a {
-  color: var(--nexus-st-btn, #7c3aed) !important;
+.nexulesuite_st-form .nexulesuite_st-consent a {
+  color: var(--nexulesuite_st-btn, #7c3aed) !important;
 }
 
-.nexus-st-form .nexus-st-form-result-card__message {
+.nexulesuite_st-form .nexulesuite_st-form-result-card__message {
   margin: 0.5rem 0 0 !important;
   font-size: 0.875rem !important;
   font-weight: 500 !important;
@@ -156,7 +156,7 @@
   word-break: break-word !important;
 }
 
-.nexus-st-form .nexus-st-form-result-card__dismiss {
+.nexulesuite_st-form .nexulesuite_st-form-result-card__dismiss {
   display: block !important;
   width: calc(100% - 4rem) !important;
   max-width: 100% !important;
@@ -173,38 +173,38 @@
   transition: background 0.15s ease !important;
 }
 
-.nexus-st-form .nexus-st-form-result-card__dismiss:hover {
+.nexulesuite_st-form .nexulesuite_st-form-result-card__dismiss:hover {
   background: #020617 !important;
 }
 
 /* ── Multi-step progress (thin bar + dots) ───────────────── */
-.nexus-st-form .nexus-st-progress {
+.nexulesuite_st-form .nexulesuite_st-progress {
   width: 100% !important;
   margin: 0 0 18px 0 !important;
   padding: 0 !important;
 }
 
-.nexus-st-form .nexus-st-progress__track {
+.nexulesuite_st-form .nexulesuite_st-progress__track {
   height: 4px !important;
   border-radius: 999px !important;
-  background: color-mix(in srgb, var(--nexus-st-form-text, #1e293b), transparent 88%) !important;
+  background: color-mix(in srgb, var(--nexulesuite_st-form-text, #1e293b), transparent 88%) !important;
   overflow: hidden !important;
   width: 100% !important;
 }
 
-.nexus-st-form .nexus-st-progress__fill {
+.nexulesuite_st-form .nexulesuite_st-progress__fill {
   height: 100% !important;
   width: 0%;
   border-radius: inherit !important;
   background: linear-gradient(
     90deg,
-    var(--nexus-st-stepper, #7c3aed),
-    color-mix(in srgb, var(--nexus-st-stepper, #7c3aed), #fff 18%)
+    var(--nexulesuite_st-stepper, #7c3aed),
+    color-mix(in srgb, var(--nexulesuite_st-stepper, #7c3aed), #fff 18%)
   ) !important;
   transition: width 0.38s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-.nexus-st-form .nexus-st-progress__dots {
+.nexulesuite_st-form .nexulesuite_st-progress__dots {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
@@ -214,88 +214,88 @@
   gap: 6px !important;
 }
 
-.nexus-st-form .nexus-st-progress__dot {
+.nexulesuite_st-form .nexulesuite_st-progress__dot {
   flex: 0 0 auto !important;
   width: 8px !important;
   height: 8px !important;
   border-radius: 50% !important;
-  background: color-mix(in srgb, var(--nexus-st-form-text, #1e293b), transparent 82%) !important;
+  background: color-mix(in srgb, var(--nexulesuite_st-form-text, #1e293b), transparent 82%) !important;
   transition:
     transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
     background 0.22s ease,
     box-shadow 0.22s ease !important;
 }
 
-.nexus-st-form .nexus-st-progress__dot--done {
-  background: var(--nexus-st-stepper, #7c3aed) !important;
+.nexulesuite_st-form .nexulesuite_st-progress__dot--done {
+  background: var(--nexulesuite_st-stepper, #7c3aed) !important;
   opacity: 0.55 !important;
   transform: scale(1) !important;
 }
 
-.nexus-st-form .nexus-st-progress__dot--active {
-  background: var(--nexus-st-stepper, #7c3aed) !important;
+.nexulesuite_st-form .nexulesuite_st-progress__dot--active {
+  background: var(--nexulesuite_st-stepper, #7c3aed) !important;
   opacity: 1 !important;
   transform: scale(1.28) !important;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--nexus-st-stepper, #7c3aed), transparent 78%) !important;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--nexulesuite_st-stepper, #7c3aed), transparent 78%) !important;
 }
 
 /* ── Grid / layout ───────────────────────────────────────── */
-.nexus-st-form .nexus-st-grid {
+.nexulesuite_st-form .nexulesuite_st-grid {
   display: flex !important;
   flex-direction: column !important;
   gap: 16px !important;
   width: 100% !important;
 }
 
-.nexus-st-form .nexus-st-layout {
+.nexulesuite_st-form .nexulesuite_st-layout {
   display: grid !important;
   gap: 14px !important;
   width: 100% !important;
 }
-.nexus-st-form .nexus-st-layout__col {
+.nexulesuite_st-form .nexulesuite_st-layout__col {
   display: flex !important;
   flex-direction: column !important;
   gap: 14px !important;
   min-width: 0 !important;
 }
-.nexus-st-form .nexus-st-layout--cols-1 { grid-template-columns: 1fr !important; }
-.nexus-st-form .nexus-st-layout--cols-2 { grid-template-columns: 1fr 1fr !important; }
-.nexus-st-form .nexus-st-layout--cols-3 { grid-template-columns: 1fr 1fr 1fr !important; }
-.nexus-st-form .nexus-st-layout--cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr !important; }
+.nexulesuite_st-form .nexulesuite_st-layout--cols-1 { grid-template-columns: 1fr !important; }
+.nexulesuite_st-form .nexulesuite_st-layout--cols-2 { grid-template-columns: 1fr 1fr !important; }
+.nexulesuite_st-form .nexulesuite_st-layout--cols-3 { grid-template-columns: 1fr 1fr 1fr !important; }
+.nexulesuite_st-form .nexulesuite_st-layout--cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr !important; }
 
 @media (max-width: 600px) {
-  .nexus-st-form .nexus-st-layout--cols-2,
-  .nexus-st-form .nexus-st-layout--cols-3,
-  .nexus-st-form .nexus-st-layout--cols-4 {
+  .nexulesuite_st-form .nexulesuite_st-layout--cols-2,
+  .nexulesuite_st-form .nexulesuite_st-layout--cols-3,
+  .nexulesuite_st-form .nexulesuite_st-layout--cols-4 {
     grid-template-columns: 1fr !important;
   }
 }
 @media (min-width: 601px) and (max-width: 768px) {
-  .nexus-st-form .nexus-st-layout--cols-3,
-  .nexus-st-form .nexus-st-layout--cols-4 {
+  .nexulesuite_st-form .nexulesuite_st-layout--cols-3,
+  .nexulesuite_st-form .nexulesuite_st-layout--cols-4 {
     grid-template-columns: 1fr 1fr !important;
   }
 }
 
 /* Compound (inline 2-col for name pairs etc.) */
-.nexus-st-form .nexus-st-compound {
+.nexulesuite_st-form .nexulesuite_st-compound {
   display: grid !important;
   gap: 12px !important;
 }
-.nexus-st-form .nexus-st-compound--2 {
+.nexulesuite_st-form .nexulesuite_st-compound--2 {
   grid-template-columns: 1fr 1fr !important;
 }
-.nexus-st-form .nexus-st-compound--1 {
+.nexulesuite_st-form .nexulesuite_st-compound--1 {
   grid-template-columns: 1fr !important;
 }
 @media (max-width: 520px) {
-  .nexus-st-form .nexus-st-compound--2 {
+  .nexulesuite_st-form .nexulesuite_st-compound--2 {
     grid-template-columns: 1fr !important;
   }
 }
 
 /* ── Field wrapper ───────────────────────────────────────── */
-.nexus-st-form .nexus-st-field {
+.nexulesuite_st-form .nexulesuite_st-field {
   display: flex !important;
   flex-direction: column !important;
   gap: 6px !important;
@@ -304,69 +304,69 @@
 }
 
 /* ── Label ───────────────────────────────────────────────── */
-.nexus-st-form .nexus-st-field__label {
+.nexulesuite_st-form .nexulesuite_st-field__label {
   display: block !important;
   font-size: 13px !important;
   font-weight: 600 !important;
-  color: color-mix(in srgb, var(--nexus-st-form-text, #1e293b), #000 15%) !important;
+  color: color-mix(in srgb, var(--nexulesuite_st-form-text, #1e293b), #000 15%) !important;
   margin: 0 0 4px 0 !important;
   padding: 0 !important;
   line-height: 1.4 !important;
 }
 
-.nexus-st-form .nexus-st-field__help {
+.nexulesuite_st-form .nexulesuite_st-field__help {
   margin: -2px 0 6px 0 !important;
   padding: 0 !important;
   font-size: 12px !important;
   font-weight: 400 !important;
   line-height: 1.45 !important;
-  color: color-mix(in srgb, var(--nexus-st-form-text, #1e293b), transparent 32%) !important;
+  color: color-mix(in srgb, var(--nexulesuite_st-form-text, #1e293b), transparent 32%) !important;
 }
-.nexus-st-form .nexus-st-req {
+.nexulesuite_st-form .nexulesuite_st-req {
   color: #ef4444 !important;
   margin-left: 3px !important;
   font-weight: 700 !important;
 }
 
 /* ── Floating labels (focus / filled: hint moves to top) ─── */
-.nexus-st-form .nexus-st-field--floating:not(.nexus-st-field--show-label) .nexus-st-field__label {
+.nexulesuite_st-form .nexulesuite_st-field--floating:not(.nexulesuite_st-field--show-label) .nexulesuite_st-field__label {
   display: none !important;
 }
 
 /* If the builder requests "Show label", use the top label and disable inner floating label. */
-.nexus-st-form .nexus-st-field--show-label .nexus-st-float-label {
+.nexulesuite_st-form .nexulesuite_st-field--show-label .nexulesuite_st-float-label {
   display: none !important;
 }
-.nexus-st-form .nexus-st-field--show-label .nexus-st-float-wrap .nexus-st-input,
-.nexus-st-form .nexus-st-field--show-label .nexus-st-float-wrap .nexus-st-textarea {
+.nexulesuite_st-form .nexulesuite_st-field--show-label .nexulesuite_st-float-wrap .nexulesuite_st-input,
+.nexulesuite_st-form .nexulesuite_st-field--show-label .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
   padding-top: 11px !important;
   padding-bottom: 11px !important;
 }
 
-.nexus-st-form .nexus-st-float-wrap {
+.nexulesuite_st-form .nexulesuite_st-float-wrap {
   position: relative !important;
   display: block !important;
   width: 100% !important;
   min-width: 0 !important;
 }
 
-.nexus-st-form .nexus-st-float-wrap .nexus-st-input,
-.nexus-st-form .nexus-st-float-wrap .nexus-st-textarea {
+.nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-input,
+.nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
   padding-top: 1.35rem !important;
   padding-bottom: 9px !important;
 }
 
-.nexus-st-form .nexus-st-float-wrap .nexus-st-textarea {
+.nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
   min-height: 118px !important;
 }
 
-.nexus-st-form .nexus-st-float-wrap .nexus-st-input::placeholder,
-.nexus-st-form .nexus-st-float-wrap .nexus-st-textarea::placeholder {
+.nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-input::placeholder,
+.nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-textarea::placeholder {
   color: transparent !important;
   opacity: 0 !important;
 }
 
-.nexus-st-form .nexus-st-float-label {
+.nexulesuite_st-form .nexulesuite_st-float-label {
   position: absolute !important;
   left: 15px !important;
   right: 2rem !important;
@@ -377,7 +377,7 @@
   font-size: 14px !important;
   font-weight: 500 !important;
   line-height: 1.2 !important;
-  color: var(--nexus-st-form-placeholder, color-mix(in srgb, var(--nexus-st-form-field-text, #0f172a), transparent 45%)) !important;
+  color: var(--nexulesuite_st-form-placeholder, color-mix(in srgb, var(--nexulesuite_st-form-field-text, #0f172a), transparent 45%)) !important;
   pointer-events: none !important;
   transform: translateY(-50%) !important;
   transform-origin: left center !important;
@@ -393,54 +393,54 @@
   z-index: 1 !important;
 }
 
-.nexus-st-form .nexus-st-float-wrap--textarea .nexus-st-float-label {
+.nexulesuite_st-form .nexulesuite_st-float-wrap--textarea .nexulesuite_st-float-label {
   top: 27px !important;
 }
 
-.nexus-st-form .nexus-st-float-wrap:focus-within .nexus-st-float-label,
-.nexus-st-form .nexus-st-float-wrap:has(.nexus-st-input:not(:placeholder-shown)) .nexus-st-float-label,
-.nexus-st-form .nexus-st-float-wrap:has(.nexus-st-textarea:not(:placeholder-shown)) .nexus-st-float-label {
+.nexulesuite_st-form .nexulesuite_st-float-wrap:focus-within .nexulesuite_st-float-label,
+.nexulesuite_st-form .nexulesuite_st-float-wrap:has(.nexulesuite_st-input:not(:placeholder-shown)) .nexulesuite_st-float-label,
+.nexulesuite_st-form .nexulesuite_st-float-wrap:has(.nexulesuite_st-textarea:not(:placeholder-shown)) .nexulesuite_st-float-label {
   top: 12px !important;
   font-size: 11px !important;
   font-weight: 700 !important;
   transform: translateY(-50%) !important;
-  color: color-mix(in srgb, var(--nexus-st-form-text, #1e293b), #000 10%) !important;
+  color: color-mix(in srgb, var(--nexulesuite_st-form-text, #1e293b), #000 10%) !important;
 }
 
-.nexus-st-form .nexus-st-float-wrap:focus-within .nexus-st-float-label {
-  color: var(--nexus-st-btn, #7c3aed) !important;
+.nexulesuite_st-form .nexulesuite_st-float-wrap:focus-within .nexulesuite_st-float-label {
+  color: var(--nexulesuite_st-btn, #7c3aed) !important;
 }
 
 /* ── Text inputs, textarea, select ──────────────────────── */
-.nexus-st-form .nexus-st-field--custom-appearance .nexus-st-input:not([type="file"]),
-.nexus-st-form .nexus-st-field--custom-appearance .nexus-st-textarea,
-.nexus-st-form .nexus-st-field--custom-appearance .nexus-st-select {
-  font-size: var(--nexus-st-field-font-size, 14px) !important;
-  font-weight: var(--nexus-st-field-font-weight, inherit) !important;
-  padding: var(--nexus-st-field-inner-pad, 11px) var(--nexus-st-field-inner-pad-x, 14px) !important;
+.nexulesuite_st-form .nexulesuite_st-field--custom-appearance .nexulesuite_st-input:not([type="file"]),
+.nexulesuite_st-form .nexulesuite_st-field--custom-appearance .nexulesuite_st-textarea,
+.nexulesuite_st-form .nexulesuite_st-field--custom-appearance .nexulesuite_st-select {
+  font-size: var(--nexulesuite_st-field-font-size, 14px) !important;
+  font-weight: var(--nexulesuite_st-field-font-weight, inherit) !important;
+  padding: var(--nexulesuite_st-field-inner-pad, 11px) var(--nexulesuite_st-field-inner-pad-x, 14px) !important;
 }
 
-.nexus-st-form .nexus-st-field--custom-appearance .nexus-st-select-btn {
-  font-size: var(--nexus-st-field-font-size, 14px) !important;
-  font-weight: var(--nexus-st-field-font-weight, 500) !important;
-  padding: var(--nexus-st-field-inner-pad, 11px) var(--nexus-st-field-inner-pad-x, 14px) !important;
+.nexulesuite_st-form .nexulesuite_st-field--custom-appearance .nexulesuite_st-select-btn {
+  font-size: var(--nexulesuite_st-field-font-size, 14px) !important;
+  font-weight: var(--nexulesuite_st-field-font-weight, 500) !important;
+  padding: var(--nexulesuite_st-field-inner-pad, 11px) var(--nexulesuite_st-field-inner-pad-x, 14px) !important;
 }
 
-.nexus-st-form .nexus-st-input,
-.nexus-st-form .nexus-st-textarea,
-.nexus-st-form .nexus-st-select {
+.nexulesuite_st-form .nexulesuite_st-input,
+.nexulesuite_st-form .nexulesuite_st-textarea,
+.nexulesuite_st-form .nexulesuite_st-select {
   display: block !important;
   width: 100% !important;
   padding: 11px 14px !important;
   font-size: 14px !important;
   font-family: inherit !important;
   /* Keep fields readable even when the form theme sets light text on a dark background. */
-  color: var(--nexus-st-form-field-text, #0f172a) !important;
-  background: var(--nexus-st-form-field-bg, #f8fafc) !important;
-  border-color: var(--nexus-st-form-field-border-color, #e2e8f0) !important;
-  border-style: var(--nexus-st-form-field-border-style, solid) !important;
-  border-width: var(--nexus-st-form-field-border-width, 2px) !important;
-  border-radius: var(--nexus-st-form-field-radius, 10px) !important;
+  color: var(--nexulesuite_st-form-field-text, #0f172a) !important;
+  background: var(--nexulesuite_st-form-field-bg, #f8fafc) !important;
+  border-color: var(--nexulesuite_st-form-field-border-color, #e2e8f0) !important;
+  border-style: var(--nexulesuite_st-form-field-border-style, solid) !important;
+  border-width: var(--nexulesuite_st-form-field-border-width, 2px) !important;
+  border-radius: var(--nexulesuite_st-form-field-radius, 10px) !important;
   outline: none !important;
   box-shadow: none !important;
   transition:
@@ -454,7 +454,7 @@
 }
 
 /* ── Custom dropdown (forces downward opening) ───────────── */
-.nexus-st-form .nexus-st-select--native {
+.nexulesuite_st-form .nexulesuite_st-select--native {
   position: absolute !important;
   inset: auto !important;
   width: 1px !important;
@@ -463,12 +463,12 @@
   pointer-events: none !important;
 }
 
-.nexus-st-form .nexus-st-select-ui {
+.nexulesuite_st-form .nexulesuite_st-select-ui {
   position: relative !important;
   width: 100% !important;
 }
 
-.nexus-st-form .nexus-st-select-btn {
+.nexulesuite_st-form .nexulesuite_st-select-btn {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
@@ -477,27 +477,27 @@
   padding: 11px 14px !important;
   font-size: 14px !important;
   font-family: inherit !important;
-  color: var(--nexus-st-form-field-text, #0f172a) !important;
-  background: var(--nexus-st-form-field-bg, #f8fafc) !important;
-  border-color: var(--nexus-st-form-field-border-color, #e2e8f0) !important;
-  border-style: var(--nexus-st-form-field-border-style, solid) !important;
-  border-width: var(--nexus-st-form-field-border-width, 2px) !important;
-  border-radius: var(--nexus-st-form-field-radius, 10px) !important;
+  color: var(--nexulesuite_st-form-field-text, #0f172a) !important;
+  background: var(--nexulesuite_st-form-field-bg, #f8fafc) !important;
+  border-color: var(--nexulesuite_st-form-field-border-color, #e2e8f0) !important;
+  border-style: var(--nexulesuite_st-form-field-border-style, solid) !important;
+  border-width: var(--nexulesuite_st-form-field-border-width, 2px) !important;
+  border-radius: var(--nexulesuite_st-form-field-radius, 10px) !important;
   cursor: pointer !important;
   user-select: none !important;
   line-height: 1.5 !important;
 }
 
-.nexus-st-form .nexus-st-select-btn:focus {
+.nexulesuite_st-form .nexulesuite_st-select-btn:focus {
   outline: none !important;
-  border-color: var(--nexus-st-btn, #7c3aed) !important;
+  border-color: var(--nexulesuite_st-btn, #7c3aed) !important;
   box-shadow:
-    0 0 0 2px color-mix(in srgb, var(--nexus-st-btn, #7c3aed), transparent 82%),
-    0 6px 18px -10px color-mix(in srgb, var(--nexus-st-btn, #7c3aed), transparent 58%) !important;
+    0 0 0 2px color-mix(in srgb, var(--nexulesuite_st-btn, #7c3aed), transparent 82%),
+    0 6px 18px -10px color-mix(in srgb, var(--nexulesuite_st-btn, #7c3aed), transparent 58%) !important;
   background: #ffffff !important;
 }
 
-.nexus-st-form .nexus-st-select-btn__text {
+.nexulesuite_st-form .nexulesuite_st-select-btn__text {
   flex: 1 1 auto !important;
   min-width: 0 !important;
   overflow: hidden !important;
@@ -506,11 +506,11 @@
   text-align: left !important;
 }
 
-.nexus-st-form .nexus-st-select-btn__text--placeholder {
-  color: var(--nexus-st-form-placeholder, color-mix(in srgb, var(--nexus-st-form-field-text, #0f172a), transparent 45%)) !important;
+.nexulesuite_st-form .nexulesuite_st-select-btn__text--placeholder {
+  color: var(--nexulesuite_st-form-placeholder, color-mix(in srgb, var(--nexulesuite_st-form-field-text, #0f172a), transparent 45%)) !important;
 }
 
-.nexus-st-form .nexus-st-select-btn__chev {
+.nexulesuite_st-form .nexulesuite_st-select-btn__chev {
   flex: 0 0 auto !important;
   width: 16px !important;
   height: 16px !important;
@@ -518,7 +518,7 @@
 }
 
 /* The dropdown menu is fixed-positioned (in JS) so it can escape overflow clipping. */
-.nexus-st-select-menu {
+.nexulesuite_st-select-menu {
   position: fixed !important;
   z-index: 2147483000 !important;
   background: #ffffff !important;
@@ -530,14 +530,14 @@
   margin: 0 !important;
   overscroll-behavior: contain !important;
   transform-origin: top left !important;
-  animation: nexus-st-dd-in 0.12s ease-out both !important;
+  animation: nexulesuite_st-dd-in 0.12s ease-out both !important;
 }
 
-.nexus-st-select-menu:focus {
+.nexulesuite_st-select-menu:focus {
   outline: none !important;
 }
 
-@keyframes nexus-st-dd-in {
+@keyframes nexulesuite_st-dd-in {
   from {
     opacity: 0;
     transform: translateY(-4px) scale(0.99);
@@ -549,15 +549,15 @@
 }
 
 /* Hide scrollbar (keep scroll working) */
-.nexus-st-select-menu {
+.nexulesuite_st-select-menu {
   scrollbar-width: none !important; /* Firefox */
 }
-.nexus-st-select-menu::-webkit-scrollbar {
+.nexulesuite_st-select-menu::-webkit-scrollbar {
   width: 0 !important;
   height: 0 !important;
 }
 
-.nexus-st-select-opt {
+.nexulesuite_st-select-opt {
   display: block !important;
   width: 100% !important;
   padding: 10px 10px !important;
@@ -569,75 +569,75 @@
   position: relative !important;
   padding-right: 30px !important;
 }
-.nexus-st-select-opt[aria-disabled="true"] {
+.nexulesuite_st-select-opt[aria-disabled="true"] {
   color: #94a3b8 !important;
   cursor: not-allowed !important;
 }
-.nexus-st-select-opt:hover:not([aria-disabled="true"]) {
+.nexulesuite_st-select-opt:hover:not([aria-disabled="true"]) {
   background: #f1f5f9 !important;
 }
-.nexus-st-select-opt[aria-selected="true"] {
-  background: color-mix(in srgb, var(--nexus-st-btn, #7c3aed), transparent 90%) !important;
-  color: color-mix(in srgb, var(--nexus-st-btn, #7c3aed), #000 18%) !important;
+.nexulesuite_st-select-opt[aria-selected="true"] {
+  background: color-mix(in srgb, var(--nexulesuite_st-btn, #7c3aed), transparent 90%) !important;
+  color: color-mix(in srgb, var(--nexulesuite_st-btn, #7c3aed), #000 18%) !important;
   font-weight: 700 !important;
 }
 
-.nexus-st-select-opt[aria-selected="true"]::after {
+.nexulesuite_st-select-opt[aria-selected="true"]::after {
   content: "✓";
   position: absolute !important;
   right: 10px !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
   font-weight: 900 !important;
-  color: color-mix(in srgb, var(--nexus-st-btn, #7c3aed), #000 12%) !important;
+  color: color-mix(in srgb, var(--nexulesuite_st-btn, #7c3aed), #000 12%) !important;
 }
-.nexus-st-form .nexus-st-select {
+.nexulesuite_st-form .nexulesuite_st-select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
   background-position: right 12px center !important;
   padding-right: 36px !important;
   cursor: pointer !important;
 }
-.nexus-st-form .nexus-st-textarea {
+.nexulesuite_st-form .nexulesuite_st-textarea {
   min-height: 110px !important;
   resize: vertical !important;
 }
 
 /* Hover: slight border lift before focus */
-.nexus-st-form .nexus-st-input:hover:not(:disabled):not(:focus):not(.nexus-st-input--invalid):not(.nexus-st-input--inline-invalid),
-.nexus-st-form .nexus-st-textarea:hover:not(:disabled):not(:focus):not(.nexus-st-input--invalid):not(.nexus-st-input--inline-invalid),
-.nexus-st-form .nexus-st-select:hover:not(:disabled):not(:focus):not(.nexus-st-input--invalid):not(.nexus-st-input--inline-invalid) {
+.nexulesuite_st-form .nexulesuite_st-input:hover:not(:disabled):not(:focus):not(.nexulesuite_st-input--invalid):not(.nexulesuite_st-input--inline-invalid),
+.nexulesuite_st-form .nexulesuite_st-textarea:hover:not(:disabled):not(:focus):not(.nexulesuite_st-input--invalid):not(.nexulesuite_st-input--inline-invalid),
+.nexulesuite_st-form .nexulesuite_st-select:hover:not(:disabled):not(:focus):not(.nexulesuite_st-input--invalid):not(.nexulesuite_st-input--inline-invalid) {
   border-color: color-mix(
     in srgb,
-    var(--nexus-st-form-field-border-color, #e2e8f0),
-    var(--nexus-st-btn, #7c3aed) 32%
+    var(--nexulesuite_st-form-field-border-color, #e2e8f0),
+    var(--nexulesuite_st-btn, #7c3aed) 32%
   ) !important;
 }
 
-.nexus-st-form .nexus-st-input:focus,
-.nexus-st-form .nexus-st-textarea:focus,
-.nexus-st-form .nexus-st-select:focus {
-  border-color: var(--nexus-st-btn, #7c3aed) !important;
+.nexulesuite_st-form .nexulesuite_st-input:focus,
+.nexulesuite_st-form .nexulesuite_st-textarea:focus,
+.nexulesuite_st-form .nexulesuite_st-select:focus {
+  border-color: var(--nexulesuite_st-btn, #7c3aed) !important;
   /* Slim focus ring + light glow */
   box-shadow:
-    0 0 0 2px color-mix(in srgb, var(--nexus-st-btn, #7c3aed), transparent 82%),
-    0 6px 18px -10px color-mix(in srgb, var(--nexus-st-btn, #7c3aed), transparent 58%) !important;
+    0 0 0 2px color-mix(in srgb, var(--nexulesuite_st-btn, #7c3aed), transparent 82%),
+    0 6px 18px -10px color-mix(in srgb, var(--nexulesuite_st-btn, #7c3aed), transparent 58%) !important;
   background: #ffffff !important;
 }
 
 /* Dropdown list (best-effort; some browsers limit styling <option>). */
-.nexus-st-form .nexus-st-select option,
-.nexus-st-form .nexus-st-select optgroup {
+.nexulesuite_st-form .nexulesuite_st-select option,
+.nexulesuite_st-form .nexulesuite_st-select optgroup {
   color: #0f172a !important;
   background: #ffffff !important;
 }
-.nexus-st-form .nexus-st-input::placeholder,
-.nexus-st-form .nexus-st-textarea::placeholder {
-  color: var(--nexus-st-form-placeholder, color-mix(in srgb, var(--nexus-st-form-field-text, #0f172a), transparent 45%)) !important;
+.nexulesuite_st-form .nexulesuite_st-input::placeholder,
+.nexulesuite_st-form .nexulesuite_st-textarea::placeholder {
+  color: var(--nexulesuite_st-form-placeholder, color-mix(in srgb, var(--nexulesuite_st-form-field-text, #0f172a), transparent 45%)) !important;
   opacity: 1 !important;
 }
 
-@keyframes nexus-ls-shake-invalid {
+@keyframes nexulesuite_shake-invalid {
   0%,
   100% {
     transform: translateX(0);
@@ -662,33 +662,33 @@
   }
 }
 
-.nexus-st-form .nexus-st-input.nexus-st-input--invalid,
-.nexus-st-form .nexus-st-textarea.nexus-st-input--invalid,
-.nexus-st-form .nexus-st-select.nexus-st-input--invalid {
+.nexulesuite_st-form .nexulesuite_st-input.nexulesuite_st-input--invalid,
+.nexulesuite_st-form .nexulesuite_st-textarea.nexulesuite_st-input--invalid,
+.nexulesuite_st-form .nexulesuite_st-select.nexulesuite_st-input--invalid {
   border-color: #f43f5e !important;
   box-shadow:
     0 0 0 2px rgba(244, 63, 94, 0.22),
     0 0 12px 1px rgba(244, 63, 94, 0.32) !important;
-  animation: nexus-ls-shake-invalid 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+  animation: nexulesuite_shake-invalid 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
 }
 
-.nexus-st-form .nexus-st-input.nexus-st-input--inline-invalid,
-.nexus-st-form .nexus-st-textarea.nexus-st-input--inline-invalid,
-.nexus-st-form .nexus-st-select.nexus-st-input--inline-invalid {
+.nexulesuite_st-form .nexulesuite_st-input.nexulesuite_st-input--inline-invalid,
+.nexulesuite_st-form .nexulesuite_st-textarea.nexulesuite_st-input--inline-invalid,
+.nexulesuite_st-form .nexulesuite_st-select.nexulesuite_st-input--inline-invalid {
   border-color: #fb7185 !important;
   box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.14) !important;
 }
 
-.nexus-st-form .nexus-st-input.nexus-st-input--inline-invalid:focus,
-.nexus-st-form .nexus-st-textarea.nexus-st-input--inline-invalid:focus,
-.nexus-st-form .nexus-st-select.nexus-st-input--inline-invalid:focus {
+.nexulesuite_st-form .nexulesuite_st-input.nexulesuite_st-input--inline-invalid:focus,
+.nexulesuite_st-form .nexulesuite_st-textarea.nexulesuite_st-input--inline-invalid:focus,
+.nexulesuite_st-form .nexulesuite_st-select.nexulesuite_st-input--inline-invalid:focus {
   border-color: #f43f5e !important;
   box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.22) !important;
 }
 
-.nexus-st-form .nexus-st-input.nexus-st-input--invalid:focus,
-.nexus-st-form .nexus-st-textarea.nexus-st-input--invalid:focus,
-.nexus-st-form .nexus-st-select.nexus-st-input--invalid:focus {
+.nexulesuite_st-form .nexulesuite_st-input.nexulesuite_st-input--invalid:focus,
+.nexulesuite_st-form .nexulesuite_st-textarea.nexulesuite_st-input--invalid:focus,
+.nexulesuite_st-form .nexulesuite_st-select.nexulesuite_st-input--invalid:focus {
   border-color: #e11d48 !important;
   box-shadow:
     0 0 0 2px rgba(244, 63, 94, 0.28),
@@ -696,15 +696,15 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nexus-st-form .nexus-st-input.nexus-st-input--invalid,
-  .nexus-st-form .nexus-st-textarea.nexus-st-input--invalid,
-  .nexus-st-form .nexus-st-select.nexus-st-input--invalid {
+  .nexulesuite_st-form .nexulesuite_st-input.nexulesuite_st-input--invalid,
+  .nexulesuite_st-form .nexulesuite_st-textarea.nexulesuite_st-input--invalid,
+  .nexulesuite_st-form .nexulesuite_st-select.nexulesuite_st-input--invalid {
     animation: none !important;
   }
 }
 
 /* ── File upload — custom styled wrapper ─────────────────── */
-.nexus-st-form .nexus-st-file-wrap {
+.nexulesuite_st-form .nexulesuite_st-file-wrap {
   position: relative !important;
   display: flex !important;
   align-items: center !important;
@@ -718,13 +718,13 @@
     border-color 0.22s ease,
     box-shadow 0.22s ease !important;
 }
-.nexus-st-form .nexus-st-file-wrap:focus-within {
-  border-color: var(--nexus-st-btn, #7c3aed) !important;
+.nexulesuite_st-form .nexulesuite_st-file-wrap:focus-within {
+  border-color: var(--nexulesuite_st-btn, #7c3aed) !important;
   box-shadow:
-    0 0 0 2px color-mix(in srgb, var(--nexus-st-btn, #7c3aed), transparent 82%),
-    0 6px 18px -10px color-mix(in srgb, var(--nexus-st-btn, #7c3aed), transparent 58%) !important;
+    0 0 0 2px color-mix(in srgb, var(--nexulesuite_st-btn, #7c3aed), transparent 82%),
+    0 6px 18px -10px color-mix(in srgb, var(--nexulesuite_st-btn, #7c3aed), transparent 58%) !important;
 }
-.nexus-st-form .nexus-st-file-btn {
+.nexulesuite_st-form .nexulesuite_st-file-btn {
   flex-shrink: 0 !important;
   padding: 11px 16px !important;
   background: #e8e3ff !important;
@@ -739,7 +739,7 @@
   align-items: center !important;
   gap: 6px !important;
 }
-.nexus-st-form .nexus-st-file-name {
+.nexulesuite_st-form .nexulesuite_st-file-name {
   flex: 1 !important;
   padding: 11px 14px !important;
   font-size: 13px !important;
@@ -748,7 +748,7 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
-.nexus-st-form input[type="file"].nexus-st-input {
+.nexulesuite_st-form input[type="file"].nexulesuite_st-input {
   position: absolute !important;
   inset: 0 !important;
   opacity: 0 !important;
@@ -762,17 +762,17 @@
 }
 
 /* ── Radio / Checkbox options ────────────────────────────── */
-.nexus-st-form .nexus-st-options {
+.nexulesuite_st-form .nexulesuite_st-options {
   display: flex !important;
   flex-direction: column !important;
   gap: 10px !important;
 }
-.nexus-st-form .nexus-st-options--inline {
+.nexulesuite_st-form .nexulesuite_st-options--inline {
   flex-direction: row !important;
   flex-wrap: wrap !important;
   gap: 12px !important;
 }
-.nexus-st-form .nexus-st-option {
+.nexulesuite_st-form .nexulesuite_st-option {
   display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;
@@ -780,8 +780,8 @@
   color: #334155 !important;
   cursor: pointer !important;
 }
-.nexus-st-form .nexus-st-option input[type="radio"],
-.nexus-st-form .nexus-st-option input[type="checkbox"] {
+.nexulesuite_st-form .nexulesuite_st-option input[type="radio"],
+.nexulesuite_st-form .nexulesuite_st-option input[type="checkbox"] {
   width: 16px !important;
   height: 16px !important;
   accent-color: #7c3aed !important;
@@ -791,7 +791,7 @@
 }
 
 /* ── Consent / terms ─────────────────────────────────────── */
-.nexus-st-form .nexus-st-consent {
+.nexulesuite_st-form .nexulesuite_st-consent {
   display: flex !important;
   align-items: flex-start !important;
   gap: 10px !important;
@@ -799,26 +799,26 @@
   color: #475569 !important;
   line-height: 1.5 !important;
 }
-.nexus-st-form .nexus-st-consent input[type="checkbox"] {
+.nexulesuite_st-form .nexulesuite_st-consent input[type="checkbox"] {
   width: 16px !important;
   height: 16px !important;
   accent-color: #7c3aed !important;
   margin-top: 2px !important;
   flex-shrink: 0 !important;
 }
-.nexus-st-form .nexus-st-consent a {
+.nexulesuite_st-form .nexulesuite_st-consent a {
   color: #7c3aed !important;
   text-decoration: underline !important;
 }
 
 /* ── Actions row ─────────────────────────────────────────── */
-.nexus-st-form .nexus-st-actions {
+.nexulesuite_st-form .nexulesuite_st-actions {
   display: flex !important;
   gap: 10px !important;
   margin-top: 20px !important;
   flex-wrap: wrap !important;
 }
-.nexus-st-form .nexus-st-btn {
+.nexulesuite_st-form .nexulesuite_st-btn {
   flex: 1 1 auto !important;
   min-width: 0 !important;
   padding: 13px 18px !important;
@@ -835,83 +835,83 @@
   justify-content: center !important;
   gap: 6px !important;
 }
-.nexus-st-form .nexus-st-btn--primary {
-  background: var(--nexus-st-btn, #7c3aed) !important;
-  border-color: var(--nexus-st-btn, #7c3aed) !important;
+.nexulesuite_st-form .nexulesuite_st-btn--primary {
+  background: var(--nexulesuite_st-btn, #7c3aed) !important;
+  border-color: var(--nexulesuite_st-btn, #7c3aed) !important;
   color: #ffffff !important;
 }
-.nexus-st-form .nexus-st-btn--primary:hover {
-  background: color-mix(in srgb, var(--nexus-st-btn, #7c3aed), #000 15%) !important;
-  border-color: color-mix(in srgb, var(--nexus-st-btn, #7c3aed), #000 15%) !important;
+.nexulesuite_st-form .nexulesuite_st-btn--primary:hover {
+  background: color-mix(in srgb, var(--nexulesuite_st-btn, #7c3aed), #000 15%) !important;
+  border-color: color-mix(in srgb, var(--nexulesuite_st-btn, #7c3aed), #000 15%) !important;
   transform: translateY(-1px) !important;
 }
-.nexus-st-form .nexus-st-btn--secondary {
+.nexulesuite_st-form .nexulesuite_st-btn--secondary {
   background: #ffffff !important;
   border-color: #e2e8f0 !important;
   color: #475569 !important;
 }
-.nexus-st-form .nexus-st-btn--secondary:hover {
+.nexulesuite_st-form .nexulesuite_st-btn--secondary:hover {
   background: #f8fafc !important;
 }
-.nexus-st-form .nexus-st-btn:disabled,
-.nexus-st-form .nexus-st-btn:disabled:hover {
+.nexulesuite_st-form .nexulesuite_st-btn:disabled,
+.nexulesuite_st-form .nexulesuite_st-btn:disabled:hover {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
   transform: none !important;
 }
 
-.nexus-st-form .nexus-st-btn--loading:disabled,
-.nexus-st-form .nexus-st-btn--success:disabled {
+.nexulesuite_st-form .nexulesuite_st-btn--loading:disabled,
+.nexulesuite_st-form .nexulesuite_st-btn--success:disabled {
   opacity: 1 !important;
   cursor: default !important;
 }
 
-.nexus-st-form .nexus-st-actions .nexus-st-btn--primary.nexus-st-submit--gated:disabled:not(.nexus-st-btn--loading):not(.nexus-st-btn--success) {
+.nexulesuite_st-form .nexulesuite_st-actions .nexulesuite_st-btn--primary.nexulesuite_st-submit--gated:disabled:not(.nexulesuite_st-btn--loading):not(.nexulesuite_st-btn--success) {
   opacity: 0.42 !important;
   filter: grayscale(0.12) !important;
   cursor: not-allowed !important;
 }
 
-.nexus-st-form .nexus-st-btn__state-icon {
+.nexulesuite_st-form .nexulesuite_st-btn__state-icon {
   display: block !important;
   width: 24px !important;
   height: 24px !important;
   flex-shrink: 0 !important;
 }
 
-.nexus-st-form .nexus-st-btn__spinner-ico {
-  animation: nexus-ls-spin 0.65s linear infinite !important;
+.nexulesuite_st-form .nexulesuite_st-btn__spinner-ico {
+  animation: nexulesuite_spin 0.65s linear infinite !important;
 }
 
-@keyframes nexus-ls-spin {
+@keyframes nexulesuite_spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-.nexus-st-form .nexus-st-btn--primary.nexus-st-btn--success {
+.nexulesuite_st-form .nexulesuite_st-btn--primary.nexulesuite_st-btn--success {
   background: #10b981 !important;
   border-color: #059669 !important;
   color: #ffffff !important;
 }
 
-.nexus-st-form .nexus-st-btn__tick-stroke {
+.nexulesuite_st-form .nexulesuite_st-btn__tick-stroke {
   stroke-dasharray: 32 !important;
   stroke-dashoffset: 32 !important;
-  animation: nexus-ls-tick-draw 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.08s !important;
+  animation: nexulesuite_tick-draw 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.08s !important;
 }
 
-.nexus-st-form .nexus-st-btn__tick-ico {
-  animation: nexus-ls-tick-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+.nexulesuite_st-form .nexulesuite_st-btn__tick-ico {
+  animation: nexulesuite_tick-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
-@keyframes nexus-ls-tick-draw {
+@keyframes nexulesuite_tick-draw {
   to {
     stroke-dashoffset: 0 !important;
   }
 }
 
-@keyframes nexus-ls-tick-pop {
+@keyframes nexulesuite_tick-pop {
   0% {
     transform: scale(0.6);
     opacity: 0.7;
@@ -926,7 +926,7 @@
 }
 
 /* ── Submission feedback messages ────────────────────────── */
-.nexus-st-form .nexus-st-success {
+.nexulesuite_st-form .nexulesuite_st-success {
   padding: 14px 18px !important;
   background: #f0fdf4 !important;
   border: 1px solid #bbf7d0 !important;
@@ -936,7 +936,7 @@
   font-weight: 600 !important;
   margin-top: 8px !important;
 }
-.nexus-st-form .nexus-st-error {
+.nexulesuite_st-form .nexulesuite_st-error {
   padding: 14px 18px !important;
   background: #fff1f2 !important;
   border: 1px solid #fecdd3 !important;
@@ -947,16 +947,16 @@
   margin-top: 8px !important;
 }
 
-/* Popup: when form shows success/error card, hide blue header + close (see inline nexus-popup-css too) */
-.nexus-popup-overlay.nexus-popup-overlay--form-result .nexus-popup__header,
-.nexus-popup-overlay.nexus-popup-overlay--form-result .nexus-popup__close {
+/* Popup: when form shows success/error card, hide blue header + close (see inline nexulesuite_popup-css too) */
+.nexulesuite_popup-overlay.nexulesuite_popup-overlay--form-result .nexulesuite_popup__header,
+.nexulesuite_popup-overlay.nexulesuite_popup-overlay--form-result .nexulesuite_popup__close {
   display: none !important;
 }
 
 /* ── Inside popup / chat embed: remove inner "card" frame ─ */
-.nexus-popup-overlay .nexus-popup__body .nexus-st-form > .nexus-st-form__body,
-.nexus-popup__body .nexus-st-form > .nexus-st-form__body,
-.nexus-chat-inline-popup-body .nexus-st-form > .nexus-st-form__body {
+.nexulesuite_popup-overlay .nexulesuite_popup__body .nexulesuite_st-form > .nexulesuite_st-form__body,
+.nexulesuite_popup__body .nexulesuite_st-form > .nexulesuite_st-form__body,
+.nexulesuite_chat-inline-popup-body .nexulesuite_st-form > .nexulesuite_st-form__body {
   border: none !important;
   box-shadow: none !important;
   padding: 0 !important;
@@ -965,112 +965,112 @@
 }
 
 /* Some themes set light text on popup body; keep native <select> text visible (esp. WebKit). */
-.nexus-popup__body .nexus-st-form .nexus-st-select,
-.nexus-chat-inline-popup-body .nexus-st-form .nexus-st-select {
-  color: var(--nexus-st-form-field-text, var(--nexus-st-form-text, #0f172a)) !important;
+.nexulesuite_popup__body .nexulesuite_st-form .nexulesuite_st-select,
+.nexulesuite_chat-inline-popup-body .nexulesuite_st-form .nexulesuite_st-select {
+  color: var(--nexulesuite_st-form-field-text, var(--nexulesuite_st-form-text, #0f172a)) !important;
   -webkit-text-fill-color: currentColor !important;
 }
 
 /* ── Responsive: touch-friendly fields (phones & small tablets) ─ */
 @media (max-width: 640px) {
-  .nexus-st-form .nexus-st-field {
+  .nexulesuite_st-form .nexulesuite_st-field {
     gap: 8px !important;
   }
 
-  .nexus-st-form .nexus-st-field__label {
+  .nexulesuite_st-form .nexulesuite_st-field__label {
     font-size: 14px !important;
   }
 
   /* 16px+ prevents iOS Safari zoom-on-focus; extra padding ≈ 48pt+ tap height */
-  .nexus-st-form .nexus-st-input:not([type="file"]),
-  .nexus-st-form .nexus-st-select {
+  .nexulesuite_st-form .nexulesuite_st-input:not([type="file"]),
+  .nexulesuite_st-form .nexulesuite_st-select {
     font-size: 16px !important;
     line-height: 1.45 !important;
     padding: 15px 16px !important;
     min-height: 52px !important;
   }
 
-  .nexus-st-form .nexus-st-textarea {
+  .nexulesuite_st-form .nexulesuite_st-textarea {
     font-size: 16px !important;
     line-height: 1.45 !important;
     padding: 14px 16px !important;
     min-height: 140px !important;
   }
 
-  .nexus-st-form .nexus-st-float-wrap .nexus-st-input:not([type="file"]) {
+  .nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-input:not([type="file"]) {
     padding-top: 1.55rem !important;
     padding-bottom: 14px !important;
     min-height: 56px !important;
   }
 
-  .nexus-st-form .nexus-st-float-wrap .nexus-st-textarea {
+  .nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
     min-height: 152px !important;
     padding-top: 1.65rem !important;
     padding-bottom: 14px !important;
   }
 
-  .nexus-st-form .nexus-st-float-label {
+  .nexulesuite_st-form .nexulesuite_st-float-label {
     left: 16px !important;
     top: 28px !important;
     font-size: 15px !important;
   }
 
-  .nexus-st-form .nexus-st-float-wrap--textarea .nexus-st-float-label {
+  .nexulesuite_st-form .nexulesuite_st-float-wrap--textarea .nexulesuite_st-float-label {
     top: 32px !important;
   }
 
-  .nexus-st-form .nexus-st-float-wrap:focus-within .nexus-st-float-label,
-  .nexus-st-form .nexus-st-float-wrap:has(.nexus-st-input:not(:placeholder-shown)) .nexus-st-float-label,
-  .nexus-st-form .nexus-st-float-wrap:has(.nexus-st-textarea:not(:placeholder-shown)) .nexus-st-float-label {
+  .nexulesuite_st-form .nexulesuite_st-float-wrap:focus-within .nexulesuite_st-float-label,
+  .nexulesuite_st-form .nexulesuite_st-float-wrap:has(.nexulesuite_st-input:not(:placeholder-shown)) .nexulesuite_st-float-label,
+  .nexulesuite_st-form .nexulesuite_st-float-wrap:has(.nexulesuite_st-textarea:not(:placeholder-shown)) .nexulesuite_st-float-label {
     top: 13px !important;
     font-size: 12px !important;
   }
 
-  .nexus-st-form .nexus-st-select {
+  .nexulesuite_st-form .nexulesuite_st-select {
     padding-right: 44px !important;
     background-position: right 14px center !important;
   }
 
-  .nexus-st-form .nexus-st-btn {
+  .nexulesuite_st-form .nexulesuite_st-btn {
     font-size: 16px !important;
     min-height: 52px !important;
     padding: 14px 18px !important;
   }
 
-  .nexus-st-form .nexus-st-file-wrap {
+  .nexulesuite_st-form .nexulesuite_st-file-wrap {
     min-height: 52px !important;
   }
 
-  .nexus-st-form .nexus-st-file-btn {
+  .nexulesuite_st-form .nexulesuite_st-file-btn {
     padding: 14px 16px !important;
     font-size: 14px !important;
   }
 
-  .nexus-st-form .nexus-st-file-name {
+  .nexulesuite_st-form .nexulesuite_st-file-name {
     padding: 14px 16px !important;
     font-size: 14px !important;
   }
 
-  .nexus-st-form .nexus-st-option {
+  .nexulesuite_st-form .nexulesuite_st-option {
     gap: 10px !important;
     font-size: 15px !important;
     min-height: 44px !important;
     padding: 4px 0 !important;
   }
 
-  .nexus-st-form .nexus-st-option input[type="radio"],
-  .nexus-st-form .nexus-st-option input[type="checkbox"] {
+  .nexulesuite_st-form .nexulesuite_st-option input[type="radio"],
+  .nexulesuite_st-form .nexulesuite_st-option input[type="checkbox"] {
     width: 22px !important;
     height: 22px !important;
     min-width: 22px !important;
   }
 
-  .nexus-st-form .nexus-st-consent {
+  .nexulesuite_st-form .nexulesuite_st-consent {
     font-size: 15px !important;
     gap: 12px !important;
   }
 
-  .nexus-st-form .nexus-st-consent input[type="checkbox"] {
+  .nexulesuite_st-form .nexulesuite_st-consent input[type="checkbox"] {
     width: 22px !important;
     height: 22px !important;
     min-width: 22px !important;
@@ -1080,12 +1080,12 @@
 
 /* Tiny containers (~150px wide sidebars): full-width controls, compact chrome */
 @media (max-width: 360px) {
-  .nexus-st-form .nexus-st-actions {
+  .nexulesuite_st-form .nexulesuite_st-actions {
     flex-direction: column !important;
     align-items: stretch !important;
   }
 
-  .nexus-st-form .nexus-st-btn {
+  .nexulesuite_st-form .nexulesuite_st-btn {
     flex: 1 1 auto !important;
     width: 100% !important;
     min-height: 44px !important;
@@ -1096,28 +1096,28 @@
 
 /* Large / ultra-wide viewports: balanced spacing (root still min-width 150px) */
 @media (min-width: 1200px) {
-  .nexus-st-form .nexus-st-actions {
+  .nexulesuite_st-form .nexulesuite_st-actions {
     gap: clamp(10px, 0.85vw, 20px) !important;
     margin-top: clamp(20px, 1.4vw, 30px) !important;
   }
 
-  .nexus-st-form .nexus-st-progress {
+  .nexulesuite_st-form .nexulesuite_st-progress {
     margin: 0 0 clamp(18px, 1.15vw, 26px) 0 !important;
   }
 
-  .nexus-st-form .nexus-st-field {
+  .nexulesuite_st-form .nexulesuite_st-field {
     gap: clamp(8px, 0.45vw, 14px) !important;
   }
 }
 
 @media (min-width: 1800px) {
-  .nexus-st-form .nexus-st-form__body {
+  .nexulesuite_st-form .nexulesuite_st-form__body {
     box-shadow: 0 4px 28px rgba(15, 23, 42, 0.085) !important;
   }
 
-  .nexus-popup-overlay .nexus-popup__body .nexus-st-form > .nexus-st-form__body,
-  .nexus-popup__body .nexus-st-form > .nexus-st-form__body,
-  .nexus-chat-inline-popup-body .nexus-st-form > .nexus-st-form__body {
+  .nexulesuite_popup-overlay .nexulesuite_popup__body .nexulesuite_st-form > .nexulesuite_st-form__body,
+  .nexulesuite_popup__body .nexulesuite_st-form > .nexulesuite_st-form__body,
+  .nexulesuite_chat-inline-popup-body .nexulesuite_st-form > .nexulesuite_st-form__body {
     box-shadow: none !important;
   }
 }
@@ -1125,25 +1125,25 @@
 /* =============================================================
    Minimal clean skin — reference: neutral labels, thin borders,
    white fields, restrained submit styling.
-   Activated via `.nexus-st-form--minimal` on the form root (PHP).
+   Activated via `.nexulesuite_st-form--minimal` on the form root (PHP).
    ============================================================= */
 
-.nexus-st-form.nexus-st-form--minimal {
-  --nexus-st-form-bg: #ffffff !important;
-  --nexus-st-form-text: #1a1a1a !important;
-  --nexus-st-form-field-text: #111111 !important;
-  --nexus-st-form-field-bg: #ffffff !important;
-  --nexus-st-form-placeholder: #737373 !important;
-  --nexus-st-form-field-border-color: #d4d4d4 !important;
-  --nexus-st-form-field-border-style: solid !important;
-  --nexus-st-form-field-border-width: 1px !important;
-  --nexus-st-form-field-radius: 2px !important;
+.nexulesuite_st-form.nexulesuite_st-form--minimal {
+  --nexulesuite_st-form-bg: #ffffff !important;
+  --nexulesuite_st-form-text: #1a1a1a !important;
+  --nexulesuite_st-form-field-text: #111111 !important;
+  --nexulesuite_st-form-field-bg: #ffffff !important;
+  --nexulesuite_st-form-placeholder: #737373 !important;
+  --nexulesuite_st-form-field-border-color: #d4d4d4 !important;
+  --nexulesuite_st-form-field-border-style: solid !important;
+  --nexulesuite_st-form-field-border-width: 1px !important;
+  --nexulesuite_st-form-field-radius: 2px !important;
   /*
-   * Do not use !important on --nexus-st-btn / --nexus-st-stepper: the form root sets these
+   * Do not use !important on --nexulesuite_st-btn / --nexulesuite_st-stepper: the form root sets these
    * inline from the builder (render_form_html); important would override user colors.
    */
-  --nexus-st-btn: #262626;
-  --nexus-st-stepper: #525252;
+  --nexulesuite_st-btn: #262626;
+  --nexulesuite_st-stepper: #525252;
   font-family:
     ui-sans-serif,
     system-ui,
@@ -1157,7 +1157,7 @@
   color: #1a1a1a !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-form__body {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-form__body {
   background: #ffffff !important;
   border: 1px solid #e5e5e5 !important;
   border-radius: 4px !important;
@@ -1165,42 +1165,42 @@
   padding: clamp(12px, 2.8vw, 22px) !important;
 }
 
-.nexus-popup-overlay .nexus-st-form.nexus-st-form--minimal > .nexus-st-form__body,
-.nexus-popup__body .nexus-st-form.nexus-st-form--minimal > .nexus-st-form__body {
+.nexulesuite_popup-overlay .nexulesuite_st-form.nexulesuite_st-form--minimal > .nexulesuite_st-form__body,
+.nexulesuite_popup__body .nexulesuite_st-form.nexulesuite_st-form--minimal > .nexulesuite_st-form__body {
   padding: clamp(10px, 2.2vw, 16px) 0 !important;
 }
 
 @media (min-width: 1800px) {
-  .nexus-st-form.nexus-st-form--minimal .nexus-st-form__body {
+  .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-form__body {
     box-shadow: none !important;
   }
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-grid {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-grid {
   gap: 13px !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-layout {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-layout {
   gap: 13px !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-layout__col {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-layout__col {
   gap: 13px !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-compound {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-compound {
   gap: 13px !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-field {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field {
   gap: 4px !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-progress {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-progress {
   margin: 0 0 11px 0 !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-field__label {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field__label {
   font-size: 13px !important;
   font-weight: 400 !important;
   color: #616161 !important;
@@ -1208,49 +1208,49 @@
   margin: 0 0 0 !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-field__help {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field__help {
   margin: -1px 0 3px 0 !important;
   font-size: 11.5px !important;
   color: #737373 !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-req {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-req {
   color: #b91c1c !important;
   font-weight: 600 !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-float-label {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-label {
   color: #737373 !important;
   font-weight: 400 !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-float-wrap:focus-within .nexus-st-float-label,
-.nexus-st-form.nexus-st-form--minimal
-  .nexus-st-float-wrap:has(.nexus-st-input:not(:placeholder-shown))
-  .nexus-st-float-label,
-.nexus-st-form.nexus-st-form--minimal
-  .nexus-st-float-wrap:has(.nexus-st-textarea:not(:placeholder-shown))
-  .nexus-st-float-label {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap:focus-within .nexulesuite_st-float-label,
+.nexulesuite_st-form.nexulesuite_st-form--minimal
+  .nexulesuite_st-float-wrap:has(.nexulesuite_st-input:not(:placeholder-shown))
+  .nexulesuite_st-float-label,
+.nexulesuite_st-form.nexulesuite_st-form--minimal
+  .nexulesuite_st-float-wrap:has(.nexulesuite_st-textarea:not(:placeholder-shown))
+  .nexulesuite_st-float-label {
   color: #404040 !important;
   font-weight: 600 !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-float-wrap:focus-within .nexus-st-float-label {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap:focus-within .nexulesuite_st-float-label {
   color: #262626 !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-progress__fill {
-  background: var(--nexus-st-stepper, #404040) !important;
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-progress__fill {
+  background: var(--nexulesuite_st-stepper, #404040) !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-progress__dot--active,
-.nexus-st-form.nexus-st-form--minimal .nexus-st-progress__dot--done {
-  background: var(--nexus-st-stepper, #404040) !important;
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-progress__dot--active,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-progress__dot--done {
+  background: var(--nexulesuite_st-stepper, #404040) !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-input,
-.nexus-st-form.nexus-st-form--minimal .nexus-st-textarea,
-.nexus-st-form.nexus-st-form--minimal .nexus-st-select {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-input,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-textarea,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-select {
   padding: 9px 10px !important;
   border-width: 1px !important;
   border-radius: 2px !important;
@@ -1260,71 +1260,71 @@
   transition: border-color 0.15s ease !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-float-wrap .nexus-st-input,
-.nexus-st-form.nexus-st-form--minimal .nexus-st-float-wrap .nexus-st-textarea {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap .nexulesuite_st-input,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
   padding-top: 11px !important;
   padding-bottom: 11px !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-field--show-label .nexus-st-float-wrap .nexus-st-input,
-.nexus-st-form.nexus-st-form--minimal .nexus-st-field--show-label .nexus-st-float-wrap .nexus-st-textarea {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field--show-label .nexulesuite_st-float-wrap .nexulesuite_st-input,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field--show-label .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
   padding-top: 9px !important;
   padding-bottom: 9px !important;
 }
 
 /* Per-field "Styling" tab — keep builder padding/fonts over minimal defaults */
-.nexus-st-form.nexus-st-form--minimal .nexus-st-field--custom-appearance .nexus-st-input:not([type="file"]),
-.nexus-st-form.nexus-st-form--minimal .nexus-st-field--custom-appearance .nexus-st-textarea,
-.nexus-st-form.nexus-st-form--minimal .nexus-st-field--custom-appearance .nexus-st-select {
-  padding: var(--nexus-st-field-inner-pad, 9px) var(--nexus-st-field-inner-pad-x, 10px) !important;
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field--custom-appearance .nexulesuite_st-input:not([type="file"]),
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field--custom-appearance .nexulesuite_st-textarea,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field--custom-appearance .nexulesuite_st-select {
+  padding: var(--nexulesuite_st-field-inner-pad, 9px) var(--nexulesuite_st-field-inner-pad-x, 10px) !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-field--custom-appearance .nexus-st-float-wrap .nexus-st-input,
-.nexus-st-form.nexus-st-form--minimal .nexus-st-field--custom-appearance .nexus-st-float-wrap .nexus-st-textarea {
-  padding-top: var(--nexus-st-field-inner-pad, 11px) !important;
-  padding-bottom: var(--nexus-st-field-inner-pad, 11px) !important;
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field--custom-appearance .nexulesuite_st-float-wrap .nexulesuite_st-input,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field--custom-appearance .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
+  padding-top: var(--nexulesuite_st-field-inner-pad, 11px) !important;
+  padding-bottom: var(--nexulesuite_st-field-inner-pad, 11px) !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal
-  .nexus-st-field--custom-appearance.nexus-st-field--show-label
-  .nexus-st-float-wrap
-  .nexus-st-input,
-.nexus-st-form.nexus-st-form--minimal
-  .nexus-st-field--custom-appearance.nexus-st-field--show-label
-  .nexus-st-float-wrap
-  .nexus-st-textarea {
-  padding-top: var(--nexus-st-field-inner-pad, 9px) !important;
-  padding-bottom: var(--nexus-st-field-inner-pad, 9px) !important;
+.nexulesuite_st-form.nexulesuite_st-form--minimal
+  .nexulesuite_st-field--custom-appearance.nexulesuite_st-field--show-label
+  .nexulesuite_st-float-wrap
+  .nexulesuite_st-input,
+.nexulesuite_st-form.nexulesuite_st-form--minimal
+  .nexulesuite_st-field--custom-appearance.nexulesuite_st-field--show-label
+  .nexulesuite_st-float-wrap
+  .nexulesuite_st-textarea {
+  padding-top: var(--nexulesuite_st-field-inner-pad, 9px) !important;
+  padding-bottom: var(--nexulesuite_st-field-inner-pad, 9px) !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-field--custom-appearance .nexus-st-select-btn {
-  padding: var(--nexus-st-field-inner-pad, 9px) var(--nexus-st-field-inner-pad-x, 10px) !important;
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field--custom-appearance .nexulesuite_st-select-btn {
+  padding: var(--nexulesuite_st-field-inner-pad, 9px) var(--nexulesuite_st-field-inner-pad-x, 10px) !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-textarea {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-textarea {
   min-height: 118px !important;
   resize: none !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-float-wrap .nexus-st-textarea {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
   min-height: 126px !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-input:hover:not(:disabled):not(:focus):not(.nexus-st-input--invalid):not(.nexus-st-input--inline-invalid),
-.nexus-st-form.nexus-st-form--minimal .nexus-st-textarea:hover:not(:disabled):not(:focus):not(.nexus-st-input--invalid):not(.nexus-st-input--inline-invalid),
-.nexus-st-form.nexus-st-form--minimal .nexus-st-select:hover:not(:disabled):not(:focus):not(.nexus-st-input--invalid):not(.nexus-st-input--inline-invalid) {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-input:hover:not(:disabled):not(:focus):not(.nexulesuite_st-input--invalid):not(.nexulesuite_st-input--inline-invalid),
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-textarea:hover:not(:disabled):not(:focus):not(.nexulesuite_st-input--invalid):not(.nexulesuite_st-input--inline-invalid),
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-select:hover:not(:disabled):not(:focus):not(.nexulesuite_st-input--invalid):not(.nexulesuite_st-input--inline-invalid) {
   border-color: #bdbdbd !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-input:focus,
-.nexus-st-form.nexus-st-form--minimal .nexus-st-textarea:focus,
-.nexus-st-form.nexus-st-form--minimal .nexus-st-select:focus {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-input:focus,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-textarea:focus,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-select:focus {
   border-color: #525252 !important;
   box-shadow: 0 0 0 1px #525252 !important;
   background: #ffffff !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-select-btn {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-select-btn {
   padding: 9px 10px !important;
   border-radius: 2px !important;
   border-width: 1px !important;
@@ -1333,76 +1333,76 @@
   box-shadow: none !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-select-btn:focus {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-select-btn:focus {
   border-color: #525252 !important;
   box-shadow: 0 0 0 1px #525252 !important;
   background: #ffffff !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-select-btn__chev {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-select-btn__chev {
   color: #737373 !important;
 }
 
-.nexus-st-select-menu.nexus-st-select-menu--minimal {
+.nexulesuite_st-select-menu.nexulesuite_st-select-menu--minimal {
   border: 1px solid #e5e5e5 !important;
   border-radius: 3px !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.09) !important;
 }
 
-.nexus-st-select-menu.nexus-st-select-menu--minimal .nexus-st-select-opt {
+.nexulesuite_st-select-menu.nexulesuite_st-select-menu--minimal .nexulesuite_st-select-opt {
   padding: 8px 9px !important;
 }
 
-.nexus-st-select-menu.nexus-st-select-menu--minimal .nexus-st-select-opt:hover:not([aria-disabled="true"]) {
+.nexulesuite_st-select-menu.nexulesuite_st-select-menu--minimal .nexulesuite_st-select-opt:hover:not([aria-disabled="true"]) {
   background: #f5f5f5 !important;
 }
 
-.nexus-st-select-menu.nexus-st-select-menu--minimal .nexus-st-select-opt[aria-selected="true"] {
+.nexulesuite_st-select-menu.nexulesuite_st-select-menu--minimal .nexulesuite_st-select-opt[aria-selected="true"] {
   background: #eeeeee !important;
   color: #111111 !important;
   font-weight: 600 !important;
 }
 
-.nexus-st-select-menu.nexus-st-select-menu--minimal .nexus-st-select-opt[aria-selected="true"]::after {
+.nexulesuite_st-select-menu.nexulesuite_st-select-menu--minimal .nexulesuite_st-select-opt[aria-selected="true"]::after {
   color: #404040 !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-file-wrap {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-file-wrap {
   border: 1px solid #d4d4d4 !important;
   border-radius: 2px !important;
   background: #ffffff !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-file-wrap:focus-within {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-file-wrap:focus-within {
   border-color: #525252 !important;
   box-shadow: 0 0 0 1px #525252 !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-file-btn {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-file-btn {
   background: #f5f5f5 !important;
   color: #262626 !important;
   border-right: 1px solid #e5e5e5 !important;
   font-weight: 600 !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-option input[type="radio"],
-.nexus-st-form.nexus-st-form--minimal .nexus-st-option input[type="checkbox"],
-.nexus-st-form.nexus-st-form--minimal .nexus-st-consent input[type="checkbox"] {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-option input[type="radio"],
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-option input[type="checkbox"],
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-consent input[type="checkbox"] {
   accent-color: #404040 !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-consent a {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-consent a {
   color: #262626 !important;
   text-decoration: underline !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-actions {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-actions {
   margin-top: 14px !important;
   gap: 8px !important;
   justify-content: flex-start !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-btn {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-btn {
   flex: 0 0 auto !important;
   border-radius: 2px !important;
   font-weight: 700 !important;
@@ -1410,62 +1410,62 @@
   transition: background 0.15s ease, opacity 0.15s ease !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-btn--primary {
-  background: var(--nexus-st-btn, #e8e8e8) !important;
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-btn--primary {
+  background: var(--nexulesuite_st-btn, #e8e8e8) !important;
   border: none !important;
-  border-color: var(--nexus-st-btn, #e8e8e8) !important;
+  border-color: var(--nexulesuite_st-btn, #e8e8e8) !important;
   color: #ffffff !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-btn--primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--nexus-st-btn, #e8e8e8), #000 15%) !important;
-  border-color: color-mix(in srgb, var(--nexus-st-btn, #e8e8e8), #000 15%) !important;
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-btn--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--nexulesuite_st-btn, #e8e8e8), #000 15%) !important;
+  border-color: color-mix(in srgb, var(--nexulesuite_st-btn, #e8e8e8), #000 15%) !important;
   transform: none !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-btn--secondary {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-btn--secondary {
   background: #ffffff !important;
   border: 1px solid #d4d4d4 !important;
   color: #333333 !important;
 }
 
-.nexus-st-form.nexus-st-form--minimal .nexus-st-btn--primary.nexus-st-btn--success {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-btn--primary.nexulesuite_st-btn--success {
   background: #d1fae5 !important;
   border: 1px solid #86efac !important;
   color: #065f46 !important;
 }
 
 @media (max-width: 640px) {
-  .nexus-st-form.nexus-st-form--minimal .nexus-st-grid {
+  .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-grid {
     gap: 11px !important;
   }
 
-  .nexus-st-form.nexus-st-form--minimal .nexus-st-input:not([type="file"]),
-  .nexus-st-form.nexus-st-form--minimal .nexus-st-select {
+  .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-input:not([type="file"]),
+  .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-select {
     min-height: 46px !important;
     padding: 10px 12px !important;
   }
 
-  .nexus-st-form.nexus-st-form--minimal .nexus-st-float-wrap .nexus-st-input:not([type="file"]),
-  .nexus-st-form.nexus-st-form--minimal .nexus-st-field--show-label .nexus-st-float-wrap .nexus-st-input:not([type="file"]) {
+  .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap .nexulesuite_st-input:not([type="file"]),
+  .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field--show-label .nexulesuite_st-float-wrap .nexulesuite_st-input:not([type="file"]) {
     min-height: 46px !important;
   }
 
-  .nexus-st-form.nexus-st-form--minimal .nexus-st-select-btn {
+  .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-select-btn {
     min-height: 46px !important;
   }
 
-  .nexus-st-form.nexus-st-form--minimal .nexus-st-actions {
+  .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-actions {
     margin-top: 12px !important;
   }
 
-  .nexus-st-form.nexus-st-form--minimal .nexus-st-btn {
+  .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-btn {
     min-height: 46px !important;
     padding: 10px 18px !important;
   }
 }
 
 /* reCAPTCHA v3: invisible score — placeholder div hidden; badge is global */
-.nexus-st-form .nexus-st-captcha--recaptcha-v3 {
+.nexulesuite_st-form .nexulesuite_st-captcha--recaptcha-v3 {
   display: none;
 }

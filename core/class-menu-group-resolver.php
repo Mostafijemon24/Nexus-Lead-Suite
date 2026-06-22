@@ -2,12 +2,12 @@
 /**
  * Resolves which menu button groups match the current front-end request.
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite\Core;
+namespace nexulesuite_\Core;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {

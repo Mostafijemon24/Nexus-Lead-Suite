@@ -2,14 +2,14 @@
 /**
  * Admin SPA loader (menu + asset enqueue).
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite\Admin;
+namespace nexulesuite_\Admin;
 
-use Nexus_Lead_Suite\Forms_Payload_Codec;
+use nexulesuite_\Forms_Payload_Codec;
 use WP_Error;
 
 // Exit if accessed directly.
@@ -35,7 +35,7 @@ final class Admin_App {
 	public function register_hooks(): void {
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-		add_action( 'wp_ajax_nexus_ls_popup_preview', array( $this, 'ajax_popup_preview' ) );
+		add_action( 'wp_ajax_nexulesuite_popup_preview', array( $this, 'ajax_popup_preview' ) );
 	}
 
 	/**
@@ -101,16 +101,16 @@ final class Admin_App {
 			wp_die( esc_html__( 'You do not have permission to access this page.', 'nexus-lead-suite' ) );
 		}
 
-		if ( ! \Nexus_Lead_Suite\Core\Access_Gate::is_unlocked() ) {
-			\Nexus_Lead_Suite\Core\Access_Gate::render_lock_screen_and_exit(
+		if ( ! \nexulesuite_\Core\Access_Gate::is_unlocked() ) {
+			\nexulesuite_\Core\Access_Gate::render_lock_screen_and_exit(
 				__( 'Nexus Lead Suite — Locked', 'nexus-lead-suite' ),
 				// phpcs:ignore WordPress.Security.NonceVerification.Missing -- display-only wrong-password hint; Access_Gate validates POST.
-				isset( $_POST['nexus_ls_gate_password'] ) ? __( 'Wrong password.', 'nexus-lead-suite' ) : ''
+				isset( $_POST['nexulesuite_gate_password'] ) ? __( 'Wrong password.', 'nexus-lead-suite' ) : ''
 			);
 		}
 
 		// Note: WP admin's .wrap applies max-width constraints; our SPA needs full width.
-		echo '<div id="nexus-ls-admin-root"></div>';
+		echo '<div id="nexulesuite_admin-root"></div>';
 	}
 
 	/**
@@ -119,7 +119,7 @@ final class Admin_App {
 	 * @return void
 	 */
 	public function ajax_popup_preview(): void {
-		if ( ! \Nexus_Lead_Suite\Core\Access_Gate::is_unlocked() ) {
+		if ( ! \nexulesuite_\Core\Access_Gate::is_unlocked() ) {
 			wp_send_json_error( array( 'message' => __( 'Plugin is locked.', 'nexus-lead-suite' ) ), 403 );
 			return;
 		}
@@ -129,14 +129,14 @@ final class Admin_App {
 			return;
 		}
 
-		if ( ! check_ajax_referer( 'nexus_ls_popup_preview', 'nonce', false ) ) {
+		if ( ! check_ajax_referer( 'nexulesuite_popup_preview', 'nonce', false ) ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid or expired session. Reload the page.', 'nexus-lead-suite' ) ), 403 );
 			return;
 		}
 
 		$content = isset( $_POST['content'] ) ? wp_unslash( (string) $_POST['content'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above; raw HTML for shortcode preview.
 
-		$data = \Nexus_Lead_Suite\build_popup_preview_payload( $content );
+		$data = \nexulesuite_\build_popup_preview_payload( $content );
 
 		wp_send_json_success( $data );
 	}
@@ -170,36 +170,36 @@ final class Admin_App {
 		// neutralized in wp-admin-chrome.css and purged from assets/admin/js/main.js.
 		wp_enqueue_script( 'wp-tinymce' );
 
-		// Dev mode (optional): define('NEXUS_LS_VITE_DEV', true) in wp-config.php.
-		if ( defined( 'NEXUS_LS_VITE_DEV' ) && NEXUS_LS_VITE_DEV ) {
+		// Dev mode (optional): define('nexulesuite_VITE_DEV', true) in wp-config.php.
+		if ( defined( 'nexulesuite_VITE_DEV' ) && nexulesuite_VITE_DEV ) {
 			$this->enqueue_vite_dev();
 			return;
 		}
 
 		$manifest = $this->read_vite_manifest();
 		if ( is_wp_error( $manifest ) ) {
-			$fallback_css_path = NEXUS_LS_PLUGIN_DIR . 'assets/admin/css/main.css';
-			$fallback_js_path  = NEXUS_LS_PLUGIN_DIR . 'assets/admin/js/main.js';
-			$fallback_css_ver  = file_exists( $fallback_css_path ) ? (string) filemtime( $fallback_css_path ) : NEXUS_LS_VERSION;
-			$fallback_js_ver   = file_exists( $fallback_js_path ) ? (string) filemtime( $fallback_js_path ) : NEXUS_LS_VERSION;
+			$fallback_css_path = nexulesuite_PLUGIN_DIR . 'assets/admin/css/main.css';
+			$fallback_js_path  = nexulesuite_PLUGIN_DIR . 'assets/admin/js/main.js';
+			$fallback_css_ver  = file_exists( $fallback_css_path ) ? (string) filemtime( $fallback_css_path ) : nexulesuite_VERSION;
+			$fallback_js_ver   = file_exists( $fallback_js_path ) ? (string) filemtime( $fallback_js_path ) : nexulesuite_VERSION;
 
 			wp_enqueue_style(
-				'nexus-ls-admin-fallback',
-				esc_url( NEXUS_LS_PLUGIN_URL . 'assets/admin/css/main.css' ),
+				'nexulesuite_admin-fallback',
+				esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/css/main.css' ),
 				array(),
 				$fallback_css_ver
 			);
 
 			wp_enqueue_script(
-				'nexus-ls-admin-fallback',
-				esc_url( NEXUS_LS_PLUGIN_URL . 'assets/admin/js/main.js' ),
+				'nexulesuite_admin-fallback',
+				esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/js/main.js' ),
 				array( 'wp-tinymce' ),
 				$fallback_js_ver,
 				true
 			);
 
-			$this->localize_admin_script( 'nexus-ls-admin-fallback' );
-			$this->append_email_templates_rest_patch( 'nexus-ls-admin-fallback' );
+			$this->localize_admin_script( 'nexulesuite_admin-fallback' );
+			$this->append_email_templates_rest_patch( 'nexulesuite_admin-fallback' );
 
 			return;
 		}
@@ -221,33 +221,33 @@ final class Admin_App {
 
 		foreach ( $css_files as $idx => $css_file ) {
 			$css_rel  = ltrim( (string) $css_file, '/' );
-			$css_path = NEXUS_LS_PLUGIN_DIR . 'assets/admin/' . $css_rel;
+			$css_path = nexulesuite_PLUGIN_DIR . 'assets/admin/' . $css_rel;
 			if ( ! file_exists( $css_path ) ) {
 				continue;
 			}
 			$css_ver = (string) filemtime( $css_path );
 
 			wp_enqueue_style(
-				'nexus-ls-admin-' . absint( $idx ),
-				esc_url( NEXUS_LS_PLUGIN_URL . 'assets/admin/' . $css_rel ),
+				'nexulesuite_admin-' . absint( $idx ),
+				esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/' . $css_rel ),
 				array(),
 				$css_ver
 			);
 		}
 
 		$js_rel  = ltrim( (string) $entry['file'], '/' );
-		$js_path = NEXUS_LS_PLUGIN_DIR . 'assets/admin/' . $js_rel;
-		$js_ver  = file_exists( $js_path ) ? (string) filemtime( $js_path ) : NEXUS_LS_VERSION;
+		$js_path = nexulesuite_PLUGIN_DIR . 'assets/admin/' . $js_rel;
+		$js_ver  = file_exists( $js_path ) ? (string) filemtime( $js_path ) : nexulesuite_VERSION;
 
 		wp_enqueue_script(
-			'nexus-ls-admin',
-			esc_url( NEXUS_LS_PLUGIN_URL . 'assets/admin/' . $js_rel ),
+			'nexulesuite_admin',
+			esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/' . $js_rel ),
 			array( 'wp-tinymce' ),
 			$js_ver,
 			true
 		);
 
-		wp_set_script_translations( 'nexus-ls-admin', 'nexus-lead-suite', NEXUS_LS_PLUGIN_DIR . 'languages' );
+		wp_set_script_translations( 'nexulesuite_admin', 'nexus-lead-suite', nexulesuite_PLUGIN_DIR . 'languages' );
 
 		// Resolve initial route from current page query param.
 		$submenu_routes = $this->get_submenu_routes();
@@ -260,18 +260,18 @@ final class Admin_App {
 			$admin_pages[ $route ] = esc_url_raw( admin_url( 'admin.php?page=' . $slug ) );
 		}
 
-		$this->localize_admin_script( 'nexus-ls-admin', $initial_route, $admin_pages );
-		$this->append_email_templates_rest_patch( 'nexus-ls-admin' );
+		$this->localize_admin_script( 'nexulesuite_admin', $initial_route, $admin_pages );
+		$this->append_email_templates_rest_patch( 'nexulesuite_admin' );
 
 		// Enhance Livechat "Button 01 → Popup" dropdown: include Form Builder forms as selectable items.
 		// The bundled admin UI currently shows only popups; selecting a form stores "popup:form:{id}".
 		wp_add_inline_script(
-			'nexus-ls-admin',
+			'nexulesuite_admin',
 			'(function(){' .
 			'"use strict";' .
-			'function getForms(){try{var p=window.nexusLsAdmin&&window.nexusLsAdmin.formsPayload;var f=p&&Array.isArray(p.forms)?p.forms:[];return f.map(function(x){return {id:String(x.id||\"\").trim(),name:String(x.name||\"\").trim()};}).filter(function(x){return x.id;});}catch(e){return [];}}' .
+			'function getForms(){try{var p=window.nexulesuite_Admin&&window.nexulesuite_Admin.formsPayload;var f=p&&Array.isArray(p.forms)?p.forms:[];return f.map(function(x){return {id:String(x.id||\"\").trim(),name:String(x.name||\"\").trim()};}).filter(function(x){return x.id;});}catch(e){return [];}}' .
 			'function isChatButtonsPopupSelect(sel){if(!sel||sel.tagName!==\"SELECT\")return false;var opt0=sel.querySelector(\"option\");if(!opt0)return false;return (opt0.textContent||\"\").toLowerCase().indexOf(\"select a popup\")!==-1;}' .
-			'function inject(sel){if(!isChatButtonsPopupSelect(sel))return; if(sel.__nexusFormsInjected)return; var forms=getForms(); if(!forms.length)return;' .
+			'function inject(sel){if(!isChatButtonsPopupSelect(sel))return; if(sel.__nexulesuite_FormsInjected)return; var forms=getForms(); if(!forms.length)return;' .
 			// Only inject into the first chat-buttons select on the page (Button 01).
 			'var wrap=sel.closest(\"div.p-5\"); if(!wrap)return; var label=wrap.querySelector(\"label\"); if(!label)return; var txt=(label.textContent||\"\").toLowerCase(); if(txt.indexOf(\"button 01\")===-1)return;' .
 			// Add a visual separator (disabled option) once.
@@ -279,7 +279,7 @@ final class Admin_App {
 			'if(!hasSep){var sep=document.createElement(\"option\"); sep.value=\"__forms__\"; sep.disabled=true; sep.textContent=\"— Forms —\"; sel.appendChild(sep);} ' .
 			// Append forms.
 			'forms.forEach(function(f){var v=\"form:\"+f.id; for(var i=0;i<sel.options.length;i++){if(sel.options[i] && sel.options[i].value===v) return;} var o=document.createElement(\"option\"); o.value=v; o.textContent=(f.name?f.name:f.id); sel.appendChild(o);});' .
-			'sel.__nexusFormsInjected=true;}' .
+			'sel.__nexulesuite_FormsInjected=true;}' .
 			'function scan(root){var r=root||document; var sels=r.querySelectorAll(\"select\"); for(var i=0;i<sels.length;i++){inject(sels[i]);}}' .
 			'scan(document);' .
 			'var mo=new MutationObserver(function(muts){muts.forEach(function(m){if(m.addedNodes){for(var i=0;i<m.addedNodes.length;i++){var n=m.addedNodes[i]; if(n&&n.nodeType===1){scan(n);}}}});});' .
@@ -295,8 +295,8 @@ final class Admin_App {
 	 * @return void
 	 */
 	private function enqueue_admin_global_font(): void {
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-global-font.php';
-		\Nexus_Lead_Suite\Core\Global_Font::enqueue( 'nexus-ls-global-font' );
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-global-font.php';
+		\nexulesuite_\Core\Global_Font::enqueue( 'nexulesuite_global-font' );
 	}
 
 	/**
@@ -305,12 +305,12 @@ final class Admin_App {
 	 * @return void
 	 */
 	private function enqueue_admin_chrome_styles(): void {
-		$path = NEXUS_LS_PLUGIN_DIR . 'assets/admin/css/wp-admin-chrome.css';
-		$ver  = file_exists( $path ) ? (string) filemtime( $path ) : NEXUS_LS_VERSION;
+		$path = nexulesuite_PLUGIN_DIR . 'assets/admin/css/wp-admin-chrome.css';
+		$ver  = file_exists( $path ) ? (string) filemtime( $path ) : nexulesuite_VERSION;
 
 		wp_enqueue_style(
-			'nexus-ls-admin-chrome',
-			esc_url( NEXUS_LS_PLUGIN_URL . 'assets/admin/css/wp-admin-chrome.css' ),
+			'nexulesuite_admin-chrome',
+			esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/css/wp-admin-chrome.css' ),
 			array(),
 			$ver
 		);
@@ -335,20 +335,20 @@ final class Admin_App {
 			}
 		}
 
-		require_once NEXUS_LS_PLUGIN_DIR . 'core/class-global-font.php';
-		$global_font     = \Nexus_Lead_Suite\Core\Global_Font::get_saved_font();
-		$global_weights  = \Nexus_Lead_Suite\Core\Global_Font::get_weights_for_font( $global_font );
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-global-font.php';
+		$global_font     = \nexulesuite_\Core\Global_Font::get_saved_font();
+		$global_weights  = \nexulesuite_\Core\Global_Font::get_weights_for_font( $global_font );
 
 		wp_localize_script(
 			$handle,
-			'nexusLsAdmin',
+			'nexulesuite_Admin',
 			array(
 				'restUrl'           => esc_url_raw( rest_url() ),
 				'nonce'             => wp_create_nonce( 'wp_rest' ),
 				'adminAjaxUrl'      => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
-				'popupPreviewNonce' => wp_create_nonce( 'nexus_ls_popup_preview' ),
-				'pluginUrl'         => esc_url_raw( NEXUS_LS_PLUGIN_URL ),
-				'pluginVersion'     => NEXUS_LS_VERSION,
+				'popupPreviewNonce' => wp_create_nonce( 'nexulesuite_popup_preview' ),
+				'pluginUrl'         => esc_url_raw( nexulesuite_PLUGIN_URL ),
+				'pluginVersion'     => nexulesuite_VERSION,
 				'siteUrl'           => esc_url_raw( home_url( '/' ) ),
 				'siteTitle'         => get_bloginfo( 'name' ),
 				'formsPayload'      => $this->get_forms_payload_for_boot(),
@@ -372,14 +372,14 @@ final class Admin_App {
 			return;
 		}
 
-		$forms_css_path = NEXUS_LS_PLUGIN_DIR . 'public/css/forms-runtime.css';
+		$forms_css_path = nexulesuite_PLUGIN_DIR . 'public/css/forms-runtime.css';
 		if ( ! file_exists( $forms_css_path ) ) {
 			return;
 		}
 
 		wp_enqueue_style(
-			'nexus-ls-forms-runtime-preview',
-			esc_url( NEXUS_LS_PLUGIN_URL . 'public/css/forms-runtime.css' ),
+			'nexulesuite_forms-runtime-preview',
+			esc_url( nexulesuite_PLUGIN_URL . 'public/css/forms-runtime.css' ),
 			array(),
 			(string) filemtime( $forms_css_path )
 		);
@@ -396,11 +396,11 @@ final class Admin_App {
 			$handle,
 			'(function(){' .
 			'"use strict";' .
-			'if(window.__nexusLsEmailTemplatesFetchPatch){return;}' .
-			'window.__nexusLsEmailTemplatesFetchPatch=true;' .
+			'if(window.__nexulesuite_EmailTemplatesFetchPatch){return;}' .
+			'window.__nexulesuite_EmailTemplatesFetchPatch=true;' .
 			'var nativeFetch=window.fetch.bind(window);' .
-			'function restBase(){var raw=(window.nexusLsAdmin&&window.nexusLsAdmin.restUrl)||"/wp-json/";return raw.replace(/\\/?$/,"/");}' .
-			'function templatesUrl(){return restBase()+"nexus-lead-suite/v1/emails/templates";}' .
+			'function restBase(){var raw=(window.nexulesuite_Admin&&window.nexulesuite_Admin.restUrl)||"/wp-json/";return raw.replace(/\\/?$/,"/");}' .
+			'function templatesUrl(){return restBase()+"nexulesuite_/v1/emails/templates";}' .
 			'function encodeUtf8Base64(value){var bytes=new TextEncoder().encode(String(value||""));var binary="";for(var i=0;i<bytes.length;i++){binary+=String.fromCharCode(bytes[i]);}return btoa(binary);}' .
 			'window.fetch=function(input,init){' .
 			'var url=typeof input==="string"?input:(input&&input.url)||"";' .
@@ -431,7 +431,7 @@ final class Admin_App {
 	 * @return array<string,mixed>
 	 */
 	private function get_forms_payload_for_boot(): array {
-		$raw = get_option( 'nexus_ls_forms_builder_v0', null );
+		$raw = get_option( 'nexulesuite_forms_builder_v0', null );
 		if ( null === $raw ) {
 			$raw = get_option( 'step_forms_builder_v0', '' );
 		}
@@ -445,19 +445,19 @@ final class Admin_App {
 	 * @return array<string, mixed>|WP_Error
 	 */
 	private function read_vite_manifest() {
-		$path = NEXUS_LS_PLUGIN_DIR . 'assets/admin/vite-manifest.json';
+		$path = nexulesuite_PLUGIN_DIR . 'assets/admin/vite-manifest.json';
 		if ( ! file_exists( $path ) ) {
-			return new WP_Error( 'nexus_ls_manifest_missing', 'manifest missing' );
+			return new WP_Error( 'nexulesuite_manifest_missing', 'manifest missing' );
 		}
 
 		$raw = file_get_contents( $path );
 		if ( false === $raw ) {
-			return new WP_Error( 'nexus_ls_manifest_unreadable', 'manifest unreadable' );
+			return new WP_Error( 'nexulesuite_manifest_unreadable', 'manifest unreadable' );
 		}
 
 		$decoded = json_decode( $raw, true );
 		if ( ! is_array( $decoded ) ) {
-			return new WP_Error( 'nexus_ls_manifest_invalid', 'manifest invalid' );
+			return new WP_Error( 'nexulesuite_manifest_invalid', 'manifest invalid' );
 		}
 
 		return $decoded;
@@ -473,19 +473,19 @@ final class Admin_App {
 
 		// Vite client (HMR).
 		wp_enqueue_script(
-			'nexus-ls-vite-client',
+			'nexulesuite_vite-client',
 			esc_url( $origin . '/@vite/client' ),
 			array(),
-			NEXUS_LS_VERSION,
+			nexulesuite_VERSION,
 			true
 		);
 
 		// Entry module.
 		wp_enqueue_script(
-			'nexus-ls-admin-dev',
+			'nexulesuite_admin-dev',
 			esc_url( $origin . '/src/main.jsx' ),
 			array(),
-			NEXUS_LS_VERSION,
+			nexulesuite_VERSION,
 			true
 		);
 
@@ -493,7 +493,7 @@ final class Admin_App {
 		add_filter(
 			'script_loader_tag',
 			static function ( string $tag, string $handle, string $src ): string {
-				if ( 'nexus-ls-vite-client' !== $handle && 'nexus-ls-admin-dev' !== $handle ) {
+				if ( 'nexulesuite_vite-client' !== $handle && 'nexulesuite_admin-dev' !== $handle ) {
 					return $tag;
 				}
 

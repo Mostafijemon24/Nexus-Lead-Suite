@@ -20,7 +20,7 @@ const NAV_ITEMS = [
 function SidebarLogo() {
 	return (
 		<div
-			className="nexus-ls-sidebar-logo flex h-full w-full items-center justify-center rounded-xl"
+			className="nexulesuite_sidebar-logo flex h-full w-full items-center justify-center rounded-xl"
 			aria-hidden="true"
 		>
 			<span
@@ -44,7 +44,7 @@ export function AdminSidebar( { activeId, onNavigate } ) {
 	return (
 		<aside
 			className={ [
-				'nexus-ls-admin-sidebar flex h-full min-h-screen flex-col border-r py-5 transition-[width] duration-200 ease-out',
+				'nexulesuite_admin-sidebar flex h-full min-h-screen flex-col border-r py-5 transition-[width] duration-200 ease-out',
 				collapsed ? 'w-[4.5rem]' : 'w-60',
 			].join( ' ' ) }
 			aria-label="Nexus Lead Suite navigation"
@@ -60,16 +60,16 @@ export function AdminSidebar( { activeId, onNavigate } ) {
 					<SidebarLogo />
 				</div>
 				{ ! collapsed && (
-					<div className="nexus-ls-sidebar-brand flex min-h-10 min-w-0 items-center rounded-lg py-0 text-left text-[15px] font-semibold leading-normal tracking-tight">
+					<div className="nexulesuite_sidebar-brand flex min-h-10 min-w-0 items-center rounded-lg py-0 text-left text-[15px] font-semibold leading-normal tracking-tight">
 						<span className="truncate">Nexus</span>
 					</div>
 				) }
 			</div>
 
-			<div className="nexus-ls-sidebar-divider mx-3 mt-4 border-t" role="presentation" />
+			<div className="nexulesuite_sidebar-divider mx-3 mt-4 border-t" role="presentation" />
 
 			<nav
-				id="nexus-ls-sidebar-nav"
+				id="nexulesuite_sidebar-nav"
 				className="mt-5 flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto px-3"
 				aria-labelledby={ navLabelId }
 			>
@@ -80,7 +80,7 @@ export function AdminSidebar( { activeId, onNavigate } ) {
 					const Icon = item.icon;
 					const isActive = activeId === item.id;
 					const href =
-						window?.nexusLsAdmin?.adminPages?.[ item.id ] || '#';
+						window?.nexulesuite_Admin?.adminPages?.[ item.id ] || '#';
 
 					return (
 						<div key={ item.id }>
@@ -105,7 +105,7 @@ export function AdminSidebar( { activeId, onNavigate } ) {
 									}
 								} }
 								className={ [
-									'nexus-ls-sidebar-link flex w-full items-center gap-3.5 rounded-xl px-4 py-3 text-left text-[14px] font-medium outline-none',
+									'nexulesuite_sidebar-link flex w-full items-center gap-3.5 rounded-xl px-4 py-3 text-left text-[14px] font-medium outline-none',
 									collapsed ? 'justify-center px-2.5' : '',
 									isActive ? 'is-active' : '',
 								].join( ' ' ) }
@@ -122,12 +122,12 @@ export function AdminSidebar( { activeId, onNavigate } ) {
 				} ) }
 			</nav>
 
-			<div className="nexus-ls-sidebar-footer nexus-ls-sidebar-divider relative z-10 mx-3 mt-auto shrink-0 border-t pt-3">
+			<div className="nexulesuite_sidebar-footer nexulesuite_sidebar-divider relative z-10 mx-3 mt-auto shrink-0 border-t pt-3">
 				<button
 					type="button"
 					onClick={ () => setCollapsed( ( value ) => ! value ) }
 					className={ [
-						'nexus-ls-sidebar-collapse flex w-full cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-medium outline-none ring-violet-500/50 transition focus-visible:ring-2',
+						'nexulesuite_sidebar-collapse flex w-full cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-medium outline-none ring-violet-500/50 transition focus-visible:ring-2',
 						collapsed ? 'justify-center px-2' : '',
 					].join( ' ' ) }
 					aria-label={ collapsed ? 'Expand sidebar' : 'Collapse sidebar' }

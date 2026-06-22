@@ -2,12 +2,12 @@
 /**
  * Activity log: forms, popup UX, clicks, scroll depth, exit intent, triggers.
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite\Core;
+namespace nexulesuite_\Core;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Activity log backed by {@see dbDelta()} table `*_nexus_ls_interactions`.
+ * Activity log backed by {@see dbDelta()} table `*_nexulesuite_interactions`.
  */
 final class Activities_Store {
 
@@ -41,7 +41,7 @@ final class Activities_Store {
 	public static function table(): string {
 		global $wpdb;
 
-		return $wpdb->prefix . 'nexus_ls_interactions';
+		return $wpdb->prefix . 'nexulesuite_interactions';
 	}
 
 	/**

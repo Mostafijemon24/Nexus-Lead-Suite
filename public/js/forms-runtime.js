@@ -85,22 +85,22 @@
 
   function enhanceNativeSelect(sel) {
     if (!(sel instanceof HTMLSelectElement)) return;
-    if (!sel.classList.contains("nexus-st-select")) return;
-    if (sel.dataset.nexusEnhanced === "1") return;
+    if (!sel.classList.contains("nexulesuite_st-select")) return;
+    if (sel.dataset.nexulesuite_enhanced === "1") return;
     if (sel.disabled) return;
     if (sel.multiple) return;
     const sizeAttr = Number(sel.getAttribute("size") || "0");
     if (sizeAttr && sizeAttr > 1) return;
 
-    sel.dataset.nexusEnhanced = "1";
-    sel.classList.add("nexus-st-select--native");
+    sel.dataset.nexulesuite_enhanced = "1";
+    sel.classList.add("nexulesuite_st-select--native");
 
     const wrap = document.createElement("div");
-    wrap.className = "nexus-st-select-ui";
+    wrap.className = "nexulesuite_st-select-ui";
 
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "nexus-st-select-btn";
+    btn.className = "nexulesuite_st-select-btn";
     btn.setAttribute("aria-haspopup", "listbox");
     btn.setAttribute("aria-expanded", "false");
     // Prevent mouse wheel from accidentally changing selection / feeling "spinny".
@@ -113,10 +113,10 @@
     );
 
     const text = document.createElement("span");
-    text.className = "nexus-st-select-btn__text";
+    text.className = "nexulesuite_st-select-btn__text";
 
     const chev = document.createElement("span");
-    chev.className = "nexus-st-select-btn__chev";
+    chev.className = "nexulesuite_st-select-btn__chev";
     chev.appendChild(createChevronSvg());
 
     btn.appendChild(text);
@@ -130,10 +130,10 @@
       const val = String(sel.value || "");
       if (!val.trim()) {
         text.textContent = getPlaceholderLabel(sel);
-        text.classList.add("nexus-st-select-btn__text--placeholder");
+        text.classList.add("nexulesuite_st-select-btn__text--placeholder");
       } else {
         text.textContent = getSelectedLabel(sel) || val;
-        text.classList.remove("nexus-st-select-btn__text--placeholder");
+        text.classList.remove("nexulesuite_st-select-btn__text--placeholder");
       }
     }
     syncBtnText();
@@ -184,9 +184,9 @@
     function openMenu() {
       if (menu) return;
       menu = document.createElement("div");
-      menu.className = "nexus-st-select-menu";
-      if (sel.closest(".nexus-st-form--minimal")) {
-        menu.classList.add("nexus-st-select-menu--minimal");
+      menu.className = "nexulesuite_st-select-menu";
+      if (sel.closest(".nexulesuite_st-form--minimal")) {
+        menu.classList.add("nexulesuite_st-select-menu--minimal");
       }
       menu.setAttribute("role", "listbox");
       menu.tabIndex = -1;
@@ -196,7 +196,7 @@
         const v = String(opt.value || "");
         const lbl = String(opt.textContent || opt.label || "").trim() || v || "Option";
         const row = document.createElement("div");
-        row.className = "nexus-st-select-opt";
+        row.className = "nexulesuite_st-select-opt";
         row.setAttribute("role", "option");
         row.textContent = lbl;
         const isDisabled = Boolean(opt.disabled) || (v === "" && opt.disabled);
@@ -304,7 +304,7 @@
 
   function bindNexusInputMask(el) {
     if (!(el instanceof HTMLInputElement)) return;
-    const mask = el.dataset.nexusMask;
+    const mask = el.dataset.nexulesuite_mask;
     if (!mask) return;
     if (mask === "us-phone") {
       el.addEventListener("input", onUsPhoneInput);
@@ -314,20 +314,20 @@
   }
 
   function initInputMasks(root) {
-    qsa(root, "input[data-nexus-mask]").forEach(bindNexusInputMask);
+    qsa(root, "input[data-nexulesuite_mask]").forEach(bindNexusInputMask);
   }
 
   /** Local draft persistence (survive refresh). */
   const FORM_DRAFT_VERSION = 1;
   const FORM_DRAFT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
   /** Match {@see Shortcodes::HONEYPOT_FIELD_NAME} — never persist honeypot in drafts. */
-  const FORM_HONEYPOT_NAME = "nexus_ls_hp_website";
+  const FORM_HONEYPOT_NAME = "nexulesuite_hp_website";
 
   /** @param {Element} root */
   function formDraftStorageKey(root) {
     const id = String(root.getAttribute("data-form-id") || "form").trim() || "form";
     return (
-      "nexus_ls_fd_v" +
+      "nexulesuite_fd_v" +
       FORM_DRAFT_VERSION +
       "|" +
       location.origin +
@@ -340,7 +340,7 @@
 
   /** @param {Element} root */
   function getFormFromRoot(root) {
-    const form = qs(root, "form.nexus-st-form__body") || qs(root, "form");
+    const form = qs(root, "form.nexulesuite_st-form__body") || qs(root, "form");
     return form instanceof HTMLFormElement ? form : null;
   }
 
@@ -516,7 +516,7 @@
   function flushFormDraftNow(root) {
     const form = getFormFromRoot(root);
     if (!form) return;
-    const step = parseInt(String(root.getAttribute("data-nexus-draft-step") || "0"), 10) || 0;
+    const step = parseInt(String(root.getAttribute("data-nexulesuite_draft-step") || "0"), 10) || 0;
     const fields = serializeFormDraftFields(form);
     if (isFormDraftEmpty(fields) && step === 0) {
       clearFormDraft(root);
@@ -533,7 +533,7 @@
     function scheduleSave() {
       window.clearTimeout(timer);
       timer = window.setTimeout(() => {
-        const step = parseInt(String(root.getAttribute("data-nexus-draft-step") || "0"), 10) || 0;
+        const step = parseInt(String(root.getAttribute("data-nexulesuite_draft-step") || "0"), 10) || 0;
         const fields = serializeFormDraftFields(form);
         if (isFormDraftEmpty(fields) && step === 0) {
           clearFormDraft(root);
@@ -556,7 +556,7 @@
     initInputMasks(root);
     if (form && draft && draft.fields) {
       applyFormDraftFields(form, draft.fields);
-      qsa(form, "input[data-nexus-mask]").forEach((el) => {
+      qsa(form, "input[data-nexulesuite_mask]").forEach((el) => {
         el.dispatchEvent(new Event("input", { bubbles: true }));
       });
       const gate = submitGateSyncByRoot.get(root);
@@ -591,7 +591,7 @@
   }
 
   function captchaStepVisible(el) {
-    const step = el.closest(".nexus-st-step");
+    const step = el.closest(".nexulesuite_st-step");
     if (!step) return true;
     return !step.hidden;
   }
@@ -614,14 +614,14 @@
   }
 
   function syncCaptchaRelatedSubmitGate(el) {
-    const root = el.closest(".nexus-st-form");
+    const root = el.closest(".nexulesuite_st-form");
     if (!root) return;
     const sync = submitGateSyncByRoot.get(root);
     if (typeof sync === "function") sync();
   }
 
   function renderRecaptchaWidgets(form) {
-    const cfg = window.nexusLsForms || {};
+    const cfg = window.nexulesuite_Forms || {};
     const siteKey = cfg.recaptchaSiteKey;
     if (!siteKey) return;
     if ((cfg.recaptchaApiVersion || "v2") === "v3") return;
@@ -631,17 +631,17 @@
         window.grecaptcha &&
         typeof window.grecaptcha.render === "function",
       () => {
-        qsa(form, ".nexus-st-captcha--recaptcha").forEach((el) => {
+        qsa(form, ".nexulesuite_st-captcha--recaptcha").forEach((el) => {
           if (!(el instanceof HTMLElement)) return;
           if (!captchaStepVisible(el)) return;
-          if (el.getAttribute("data-nexus-widget-id") !== null) return;
+          if (el.getAttribute("data-nexulesuite_widget-id") !== null) return;
           const wid = window.grecaptcha.render(el, {
             sitekey: siteKey,
             callback: () => syncCaptchaRelatedSubmitGate(el),
             "expired-callback": () => syncCaptchaRelatedSubmitGate(el),
             "error-callback": () => syncCaptchaRelatedSubmitGate(el),
           });
-          el.setAttribute("data-nexus-widget-id", String(wid));
+          el.setAttribute("data-nexulesuite_widget-id", String(wid));
           syncCaptchaRelatedSubmitGate(el);
         });
       }
@@ -649,24 +649,24 @@
   }
 
   function renderTurnstileWidgets(form) {
-    const cfg = window.nexusLsForms || {};
+    const cfg = window.nexulesuite_Forms || {};
     const siteKey = cfg.turnstileSiteKey;
     if (!siteKey) return;
     whenExternalScriptReady(
       () =>
         typeof window.turnstile !== "undefined" && window.turnstile && typeof window.turnstile.render === "function",
       () => {
-        qsa(form, ".nexus-st-captcha--turnstile").forEach((el) => {
+        qsa(form, ".nexulesuite_st-captcha--turnstile").forEach((el) => {
           if (!(el instanceof HTMLElement)) return;
           if (!captchaStepVisible(el)) return;
-          if (el.getAttribute("data-nexus-widget-id") !== null) return;
+          if (el.getAttribute("data-nexulesuite_widget-id") !== null) return;
           const wid = window.turnstile.render(el, {
             sitekey: siteKey,
             callback: () => syncCaptchaRelatedSubmitGate(el),
             "expired-callback": () => syncCaptchaRelatedSubmitGate(el),
             "error-callback": () => syncCaptchaRelatedSubmitGate(el),
           });
-          el.setAttribute("data-nexus-widget-id", String(wid));
+          el.setAttribute("data-nexulesuite_widget-id", String(wid));
           syncCaptchaRelatedSubmitGate(el);
         });
       }
@@ -674,7 +674,7 @@
   }
 
   /**
-   * @param {Element} root .nexus-st-form
+   * @param {Element} root .nexulesuite_st-form
    */
   function refreshFormCaptchas(root) {
     const form = getFormFromRoot(root);
@@ -687,15 +687,15 @@
    * @param {HTMLFormElement} form
    */
   function isCaptchaSatisfied(form) {
-    const cfg = window.nexusLsForms || {};
+    const cfg = window.nexulesuite_Forms || {};
     const recVer = cfg.recaptchaApiVersion || "v2";
     if (recVer !== "v3") {
-      for (const el of qsa(form, ".nexus-st-captcha--recaptcha")) {
+      for (const el of qsa(form, ".nexulesuite_st-captcha--recaptcha")) {
         if (!(el instanceof HTMLElement)) continue;
         if (!cfg.recaptchaSiteKey) continue;
-        const step = el.closest(".nexus-st-step");
+        const step = el.closest(".nexulesuite_st-step");
         const hidden = step instanceof HTMLElement && step.hidden;
-        const widAttr = el.getAttribute("data-nexus-widget-id");
+        const widAttr = el.getAttribute("data-nexulesuite_widget-id");
         if (hidden && widAttr === null) continue;
         if (widAttr === null) return false;
         if (typeof window.grecaptcha === "undefined" || !window.grecaptcha) return false;
@@ -703,12 +703,12 @@
         if (!token) return false;
       }
     }
-    for (const el of qsa(form, ".nexus-st-captcha--turnstile")) {
+    for (const el of qsa(form, ".nexulesuite_st-captcha--turnstile")) {
       if (!(el instanceof HTMLElement)) continue;
       if (!cfg.turnstileSiteKey) continue;
-      const step = el.closest(".nexus-st-step");
+      const step = el.closest(".nexulesuite_st-step");
       const hidden = step instanceof HTMLElement && step.hidden;
-      const widAttr = el.getAttribute("data-nexus-widget-id");
+      const widAttr = el.getAttribute("data-nexulesuite_widget-id");
       if (hidden && widAttr === null) continue;
       if (widAttr === null) return false;
       if (typeof window.turnstile === "undefined" || !window.turnstile) return false;
@@ -722,26 +722,26 @@
    * @param {HTMLFormElement} form
    */
   function resetCaptchaWidgets(form) {
-    const cfg = window.nexusLsForms || {};
+    const cfg = window.nexulesuite_Forms || {};
     if ((cfg.recaptchaApiVersion || "v2") !== "v3") {
-      qsa(form, ".nexus-st-captcha--recaptcha").forEach((el) => {
+      qsa(form, ".nexulesuite_st-captcha--recaptcha").forEach((el) => {
         if (!(el instanceof HTMLElement)) return;
-        const widAttr = el.getAttribute("data-nexus-widget-id");
+        const widAttr = el.getAttribute("data-nexulesuite_widget-id");
         if (widAttr === null || typeof window.grecaptcha === "undefined" || !window.grecaptcha) return;
         try {
           window.grecaptcha.reset(parseInt(widAttr, 10));
         } catch (_e) {}
       });
     }
-    qsa(form, ".nexus-st-captcha--turnstile").forEach((el) => {
+    qsa(form, ".nexulesuite_st-captcha--turnstile").forEach((el) => {
       if (!(el instanceof HTMLElement)) return;
-      const widAttr = el.getAttribute("data-nexus-widget-id");
+      const widAttr = el.getAttribute("data-nexulesuite_widget-id");
       if (widAttr === null || typeof window.turnstile === "undefined" || !window.turnstile) return;
       try {
         window.turnstile.reset(widAttr);
       } catch (_e) {}
     });
-    const root = form.closest(".nexus-st-form");
+    const root = form.closest(".nexulesuite_st-form");
     if (root) {
       const sync = submitGateSyncByRoot.get(root);
       if (typeof sync === "function") sync();
@@ -768,7 +768,7 @@
           try {
             window.grecaptcha.ready(() => {
               window.grecaptcha
-                .execute(siteKey, { action: action || "nexus_ls_form_submit" })
+                .execute(siteKey, { action: action || "nexulesuite_form_submit" })
                 .then((token) => finish(token))
                 .catch(() => finish(""));
             });
@@ -812,19 +812,19 @@
   function updateInlineFieldValidity(el) {
     if (shouldSkipInlineFormatHint(el)) return;
     if (!el.willValidate) {
-      el.classList.remove("nexus-st-input--inline-invalid");
+      el.classList.remove("nexulesuite_st-input--inline-invalid");
       el.removeAttribute("aria-invalid");
       return;
     }
     const raw = String(el.value || "");
     const trimmed = raw.trim();
     if (trimmed === "" && el.hasAttribute("required")) {
-      el.classList.remove("nexus-st-input--inline-invalid");
+      el.classList.remove("nexulesuite_st-input--inline-invalid");
       el.removeAttribute("aria-invalid");
       return;
     }
     const bad = !el.checkValidity();
-    el.classList.toggle("nexus-st-input--inline-invalid", bad);
+    el.classList.toggle("nexulesuite_st-input--inline-invalid", bad);
     if (bad) el.setAttribute("aria-invalid", "true");
     else el.removeAttribute("aria-invalid");
   }
@@ -832,14 +832,14 @@
   /**
    * Keeps the primary submit control disabled until all required fields are satisfied.
    *
-   * @param {Element} root .nexus-st-form
+   * @param {Element} root .nexulesuite_st-form
    * @returns {void}
    */
   function initSubmitGate(root) {
     if (!(root instanceof Element)) return;
-    if (root.getAttribute("data-nexus-submit-gate") === "1") return;
-    root.setAttribute("data-nexus-submit-gate", "1");
-    const form = qs(root, "form.nexus-st-form__body") || qs(root, "form");
+    if (root.getAttribute("data-nexulesuite_submit-gate") === "1") return;
+    root.setAttribute("data-nexulesuite_submit-gate", "1");
+    const form = qs(root, "form.nexulesuite_st-form__body") || qs(root, "form");
     if (!(form instanceof HTMLFormElement)) return;
 
     function onFormFieldActivity(ev) {
@@ -858,14 +858,14 @@
       const submitBtn = form.querySelector('button[type="submit"]');
       if (!(submitBtn instanceof HTMLButtonElement)) return;
       if (
-        submitBtn.classList.contains("nexus-st-btn--loading") ||
-        submitBtn.classList.contains("nexus-st-btn--success")
+        submitBtn.classList.contains("nexulesuite_st-btn--loading") ||
+        submitBtn.classList.contains("nexulesuite_st-btn--success")
       ) {
         return;
       }
       const complete = isFormConstraintValid(form) && isCaptchaSatisfied(form);
       submitBtn.disabled = !complete;
-      submitBtn.classList.toggle("nexus-st-submit--gated", !complete);
+      submitBtn.classList.toggle("nexulesuite_st-submit--gated", !complete);
       submitBtn.setAttribute("aria-disabled", complete ? "false" : "true");
     }
 
@@ -877,19 +877,19 @@
   }
 
   const SVG_SUBMIT_SPINNER =
-    '<svg class="nexus-st-btn__state-icon nexus-st-btn__spinner-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-opacity="0.22"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
+    '<svg class="nexulesuite_st-btn__state-icon nexulesuite_st-btn__spinner-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-opacity="0.22"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
 
   const SVG_SUBMIT_TICK =
-    '<svg class="nexus-st-btn__state-icon nexus-st-btn__tick-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="nexus-st-btn__tick-stroke" d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    '<svg class="nexulesuite_st-btn__state-icon nexulesuite_st-btn__tick-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="nexulesuite_st-btn__tick-stroke" d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   /** @param {HTMLButtonElement | null | undefined} btn */
   function setSubmitBtnLoading(btn) {
     if (!(btn instanceof HTMLButtonElement)) return;
     const label = String(btn.textContent || "").trim();
-    btn.dataset.nexusSubmitLabel = label;
+    btn.dataset.nexulesuite_submitLabel = label;
     btn.disabled = true;
-    btn.classList.remove("nexus-st-btn--success", "nexus-st-submit--gated");
-    btn.classList.add("nexus-st-btn--loading");
+    btn.classList.remove("nexulesuite_st-btn--success", "nexulesuite_st-submit--gated");
+    btn.classList.add("nexulesuite_st-btn--loading");
     btn.innerHTML = SVG_SUBMIT_SPINNER;
     btn.setAttribute("aria-busy", "true");
   }
@@ -903,8 +903,8 @@
       onShownTick?.();
       return;
     }
-    btn.classList.remove("nexus-st-btn--loading", "nexus-st-submit--gated");
-    btn.classList.add("nexus-st-btn--success");
+    btn.classList.remove("nexulesuite_st-btn--loading", "nexulesuite_st-submit--gated");
+    btn.classList.add("nexulesuite_st-btn--success");
     btn.innerHTML = SVG_SUBMIT_TICK;
     btn.removeAttribute("aria-busy");
     btn.setAttribute("aria-label", "Sent");
@@ -919,13 +919,13 @@
    */
   function resetSubmitBtnAfterError(btn, fallbackLabel) {
     if (!(btn instanceof HTMLButtonElement)) return;
-    btn.classList.remove("nexus-st-btn--loading", "nexus-st-btn--success");
+    btn.classList.remove("nexulesuite_st-btn--loading", "nexulesuite_st-btn--success");
     btn.removeAttribute("aria-busy");
     btn.removeAttribute("aria-label");
-    const stored = btn.dataset.nexusSubmitLabel;
-    delete btn.dataset.nexusSubmitLabel;
+    const stored = btn.dataset.nexulesuite_submitLabel;
+    delete btn.dataset.nexulesuite_submitLabel;
     btn.textContent = stored || fallbackLabel || "Submit";
-    const root = btn.closest(".nexus-st-form");
+    const root = btn.closest(".nexulesuite_st-form");
     const form = root ? getFormFromRoot(root) : null;
     if (form) resetCaptchaWidgets(form);
     const sync = root ? submitGateSyncByRoot.get(root) : undefined;
@@ -946,7 +946,7 @@
     });
     if (invalid) {
       invalid.focus?.();
-      invalid.classList.add("nexus-st-input--invalid");
+      invalid.classList.add("nexulesuite_st-input--invalid");
       if (
         invalid instanceof HTMLInputElement ||
         invalid instanceof HTMLTextAreaElement ||
@@ -954,14 +954,14 @@
       ) {
         updateInlineFieldValidity(invalid);
       }
-      setTimeout(() => invalid.classList.remove("nexus-st-input--invalid"), 1600);
+      setTimeout(() => invalid.classList.remove("nexulesuite_st-input--invalid"), 1600);
       return false;
     }
     return true;
   }
 
   function validateAllSteps(root) {
-    const steps = qsa(root, ".nexus-st-step");
+    const steps = qsa(root, ".nexulesuite_st-step");
     if (!steps.length) return true;
     for (const s of steps) {
       if (!validateStep(s)) return false;
@@ -980,10 +980,10 @@
   }
 
   /**
-   * First focusable control inside the step, in builder/DOM order (.nexus-st-field blocks).
+   * First focusable control inside the step, in builder/DOM order (.nexulesuite_st-field blocks).
    */
   function findFirstFieldInStep(scope) {
-    for (const field of qsa(scope, ".nexus-st-field")) {
+    for (const field of qsa(scope, ".nexulesuite_st-field")) {
       for (const el of qsa(field, "input, select, textarea")) {
         if (isAutofocusCandidate(el)) return el;
       }
@@ -992,8 +992,8 @@
   }
 
   function formMayReceiveAutofocus(root) {
-    const overlay = root.closest(".nexus-popup-overlay");
-    if (overlay && !overlay.classList.contains("nexus-popup--open")) {
+    const overlay = root.closest(".nexulesuite_popup-overlay");
+    if (overlay && !overlay.classList.contains("nexulesuite_popup--open")) {
       return false;
     }
     if (root.closest("[hidden]")) {
@@ -1006,10 +1006,10 @@
    * Focus the first field of the first eligible form (visible, not inside a closed popup).
    */
   function tryAutofocusFirstField() {
-    for (const root of qsa(document, ".nexus-st-form")) {
+    for (const root of qsa(document, ".nexulesuite_st-form")) {
       if (!formMayReceiveAutofocus(root)) continue;
       const step =
-        qs(root, ".nexus-st-step:not([hidden])") || qs(root, ".nexus-st-step");
+        qs(root, ".nexulesuite_st-step:not([hidden])") || qs(root, ".nexulesuite_st-step");
       if (!step) continue;
       const el = findFirstFieldInStep(step);
       if (el) {
@@ -1020,14 +1020,14 @@
   }
 
   function initForm(root, draftStepHint) {
-    const steps = qsa(root, ".nexus-st-step");
+    const steps = qsa(root, ".nexulesuite_st-step");
     if (!steps.length) {
-      root.setAttribute("data-nexus-draft-step", "0");
+      root.setAttribute("data-nexulesuite_draft-step", "0");
       return;
     }
     const isMulti = root.dataset.formType === "multi";
     if (!isMulti) {
-      root.setAttribute("data-nexus-draft-step", "0");
+      root.setAttribute("data-nexulesuite_draft-step", "0");
       return;
     }
 
@@ -1035,14 +1035,14 @@
     if (typeof draftStepHint === "number" && Number.isFinite(draftStepHint)) {
       index = Math.max(0, Math.min(steps.length - 1, Math.floor(draftStepHint)));
     }
-    const actions = qs(root, ".nexus-st-actions");
+    const actions = qs(root, ".nexulesuite_st-actions");
     const btnPrev = qs(actions, '[data-action="prev"]');
     const btnNext = qs(actions, '[data-action="next"]');
     const submitText = root.getAttribute("data-submit-text") || "Submit";
 
-    const progressRoot = qs(root, ".nexus-st-progress");
-    const progressFill = progressRoot ? qs(progressRoot, ".nexus-st-progress__fill") : null;
-    const progressDots = progressRoot ? qsa(progressRoot, ".nexus-st-progress__dot") : [];
+    const progressRoot = qs(root, ".nexulesuite_st-progress");
+    const progressFill = progressRoot ? qs(progressRoot, ".nexulesuite_st-progress__fill") : null;
+    const progressDots = progressRoot ? qsa(progressRoot, ".nexulesuite_st-progress__dot") : [];
 
     function render() {
       steps.forEach((s, i) => {
@@ -1062,12 +1062,12 @@
           "Step " + String(index + 1) + " of " + String(total)
         );
         progressDots.forEach((dot, i) => {
-          dot.classList.toggle("nexus-st-progress__dot--active", i === index);
-          dot.classList.toggle("nexus-st-progress__dot--done", i < index);
+          dot.classList.toggle("nexulesuite_st-progress__dot--active", i === index);
+          dot.classList.toggle("nexulesuite_st-progress__dot--done", i < index);
         });
       }
 
-      root.setAttribute("data-nexus-draft-step", String(index));
+      root.setAttribute("data-nexulesuite_draft-step", String(index));
 
       const gate = submitGateSyncByRoot.get(root);
       if (typeof gate === "function") gate();
@@ -1098,13 +1098,13 @@
     '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
 
   function removeFormFeedback(root) {
-    qsa(root, ".nexus-st-form-result-card, .nexus-st-form-success-banner").forEach((el) =>
+    qsa(root, ".nexulesuite_st-form-result-card, .nexulesuite_st-form-success-banner").forEach((el) =>
       el.remove()
     );
-    root.classList.remove("nexus-st-form--sent");
-    const overlay = root.closest(".nexus-popup-overlay");
+    root.classList.remove("nexulesuite_st-form--sent");
+    const overlay = root.closest(".nexulesuite_popup-overlay");
     if (overlay) {
-      overlay.classList.remove("nexus-popup-overlay--form-result");
+      overlay.classList.remove("nexulesuite_popup-overlay--form-result");
     }
   }
 
@@ -1115,7 +1115,7 @@
    * @param {{ submitBtn?: HTMLButtonElement | null, prevText?: string }} opts
    */
   function showFormFeedback(root, message, variant, opts = {}) {
-    const cfg = window.nexusLsForms || {};
+    const cfg = window.nexulesuite_Forms || {};
     const thankYou =
       cfg.thankYouMessage || "Thank you! Your message has been sent.";
     const smtpHint = cfg.smtpSetupMessage || "Please set up your SMTP properly.";
@@ -1135,25 +1135,25 @@
 
     const card = document.createElement("div");
     card.className =
-      "nexus-st-form-result-card nexus-st-form-result-card--" + variant;
+      "nexulesuite_st-form-result-card nexulesuite_st-form-result-card--" + variant;
     card.setAttribute("role", variant === "error" ? "alert" : "status");
     card.setAttribute("aria-live", "polite");
 
     const inner = document.createElement("div");
-    inner.className = "nexus-st-form-result-card__inner";
+    inner.className = "nexulesuite_st-form-result-card__inner";
 
     const iconWrap = document.createElement("div");
-    iconWrap.className = "nexus-st-form-result-card__icon";
+    iconWrap.className = "nexulesuite_st-form-result-card__icon";
     iconWrap.setAttribute("aria-hidden", "true");
     iconWrap.innerHTML =
       variant === "success" ? SVG_RESULT_SUCCESS : SVG_RESULT_ERROR;
 
     const titleEl = document.createElement("h3");
-    titleEl.className = "nexus-st-form-result-card__title";
+    titleEl.className = "nexulesuite_st-form-result-card__title";
     titleEl.textContent = titleText;
 
     const msgEl = document.createElement("p");
-    msgEl.className = "nexus-st-form-result-card__message";
+    msgEl.className = "nexulesuite_st-form-result-card__message";
     msgEl.textContent = bodyText;
 
     inner.appendChild(iconWrap);
@@ -1162,38 +1162,38 @@
 
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "nexus-st-form-result-card__dismiss";
+    btn.className = "nexulesuite_st-form-result-card__dismiss";
     btn.textContent = dismissLabel;
     btn.addEventListener("click", () => {
-      const ov = root.closest(".nexus-popup-overlay");
+      const ov = root.closest(".nexulesuite_popup-overlay");
       if (ov) {
-        if (window.NexusLsPopupUi && typeof window.NexusLsPopupUi.close === "function") {
-          window.NexusLsPopupUi.close(ov);
+        if (window.nexulesuite_PopupUi && typeof window.nexulesuite_PopupUi.close === "function") {
+          window.nexulesuite_PopupUi.close(ov);
         } else {
-          ov.classList.remove("nexus-popup--open");
+          ov.classList.remove("nexulesuite_popup--open");
           ov.setAttribute("aria-hidden", "true");
           document.body.style.overflow = "";
-          if (typeof window.nexusLsResetPopupFormResult === "function") {
-            window.nexusLsResetPopupFormResult(ov);
+          if (typeof window.nexulesuite_ResetPopupFormResult === "function") {
+            window.nexulesuite_ResetPopupFormResult(ov);
           }
         }
         return;
       }
-      qsa(root, ".nexus-st-form-result-card").forEach((el) => el.remove());
-      root.classList.remove("nexus-st-form--sent");
-      root.classList.add("nexus-st-form--dismissed");
+      qsa(root, ".nexulesuite_st-form-result-card").forEach((el) => el.remove());
+      root.classList.remove("nexulesuite_st-form--sent");
+      root.classList.add("nexulesuite_st-form--dismissed");
     });
 
     card.appendChild(inner);
     card.appendChild(btn);
 
-    root.classList.add("nexus-st-form--sent");
-    const overlay = root.closest(".nexus-popup-overlay");
+    root.classList.add("nexulesuite_st-form--sent");
+    const overlay = root.closest(".nexulesuite_popup-overlay");
     if (overlay) {
-      overlay.classList.add("nexus-popup-overlay--form-result");
+      overlay.classList.add("nexulesuite_popup-overlay--form-result");
     }
 
-    const form = qs(root, "form.nexus-st-form__body") || qs(root, "form");
+    const form = qs(root, "form.nexulesuite_st-form__body") || qs(root, "form");
     if (form) {
       form.insertBefore(card, form.firstChild);
     } else {
@@ -1204,10 +1204,10 @@
   async function handleFormSubmitCapture(ev) {
     const form = ev.target;
     if (!(form instanceof HTMLFormElement)) return;
-    const root = form.closest(".nexus-st-form");
+    const root = form.closest(".nexulesuite_st-form");
     if (!root) return;
 
-    const cfg = window.nexusLsForms || {};
+    const cfg = window.nexulesuite_Forms || {};
     if (!cfg.ajaxUrl || !cfg.action) return;
 
     ev.preventDefault();
@@ -1219,17 +1219,17 @@
     setSubmitBtnLoading(submitBtn instanceof HTMLButtonElement ? submitBtn : null);
 
     const thankYou =
-      (window.nexusLsForms && window.nexusLsForms.thankYouMessage) ||
+      (window.nexulesuite_Forms && window.nexulesuite_Forms.thankYouMessage) ||
       "Thank you! Your message has been sent.";
     const smtpHint =
-      (window.nexusLsForms && window.nexusLsForms.smtpSetupMessage) ||
+      (window.nexulesuite_Forms && window.nexulesuite_Forms.smtpSetupMessage) ||
       "Please set up your SMTP properly.";
 
     let recaptchaV3Token = "";
     if (cfg.recaptchaApiVersion === "v3" && cfg.recaptchaSiteKey) {
       recaptchaV3Token = await getRecaptchaV3Token(
         cfg.recaptchaSiteKey,
-        cfg.recaptchaV3Action || "nexus_ls_form_submit"
+        cfg.recaptchaV3Action || "nexulesuite_form_submit"
       );
       if (!recaptchaV3Token.trim()) {
         resetSubmitBtnAfterError(submitBtn instanceof HTMLButtonElement ? submitBtn : null, prevText);
@@ -1248,12 +1248,12 @@
 
     const fd = new FormData(form);
     fd.append("action", cfg.action);
-    fd.append("_nexus_page_url", window.location.href);
+    fd.append("_nexulesuite_page_url", window.location.href);
 
-    const popupOv = form.closest(".nexus-popup-overlay");
+    const popupOv = form.closest(".nexulesuite_popup-overlay");
     if (popupOv && popupOv.dataset && popupOv.dataset.event) {
       fd.append(
-        "nexus_ls_form_context",
+        "nexulesuite_form_context",
         "popup:" + String(popupOv.dataset.event).trim()
       );
     }
@@ -1321,7 +1321,7 @@
     "pointerdown",
     (ev) => {
       const t = ev.target;
-      if (t instanceof HTMLSelectElement && t.classList.contains("nexus-st-select")) {
+      if (t instanceof HTMLSelectElement && t.classList.contains("nexulesuite_st-select")) {
         nudgeSelectIntoViewForDropdown(t);
       }
     },
@@ -1331,7 +1331,7 @@
     "focusin",
     (ev) => {
       const t = ev.target;
-      if (t instanceof HTMLSelectElement && t.classList.contains("nexus-st-select")) {
+      if (t instanceof HTMLSelectElement && t.classList.contains("nexulesuite_st-select")) {
         nudgeSelectIntoViewForDropdown(t);
       }
     },
@@ -1339,10 +1339,10 @@
   );
 
   document.addEventListener("DOMContentLoaded", () => {
-    qsa(document, ".nexus-st-form").forEach((root) => {
+    qsa(document, ".nexulesuite_st-form").forEach((root) => {
       initFormDraftForRoot(root);
       // Force dropdowns to open downward via custom UI.
-      qsa(root, "select.nexus-st-select").forEach((sel) => enhanceNativeSelect(sel));
+      qsa(root, "select.nexulesuite_st-select").forEach((sel) => enhanceNativeSelect(sel));
     });
     requestAnimationFrame(() => {
       requestAnimationFrame(tryAutofocusFirstField);

@@ -2,14 +2,14 @@
  * Popup manual-click bridge + notify triggers.
  * Matches overlays by data-event OR data-popup-id (trimmed; optional case-insensitive).
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 (function () {
 	'use strict';
 
-	var cfg = window.nexusLsPopupBridgeCfg || {};
+	var cfg = window.nexulesuite_PopupBridgeCfg || {};
 
-	window.NexusLsPopupUi = window.NexusLsPopupUi || {};
+	window.nexulesuite_PopupUi = window.nexulesuite_PopupUi || {};
 
 	function norm( s ) {
 		s = String( s || '' ).trim();
@@ -35,12 +35,12 @@
 		return a.toLowerCase() === b.toLowerCase();
 	}
 
-	window.NexusLsPopupUi.findOverlayByEventId = function ( want ) {
+	window.nexulesuite_PopupUi.findOverlayByEventId = function ( want ) {
 		want = norm( want );
 		if ( ! want ) {
 			return null;
 		}
-		var nodes = document.querySelectorAll( '.nexus-popup-overlay' );
+		var nodes = document.querySelectorAll( '.nexulesuite_popup-overlay' );
 		var i;
 		var node;
 		var ev;
@@ -56,18 +56,18 @@
 		return null;
 	};
 
-	window.NexusLsPopupUi.open = function ( el, openContext ) {
-		if ( ! el || el.classList.contains( 'nexus-popup--open' ) ) {
+	window.nexulesuite_PopupUi.open = function ( el, openContext ) {
+		if ( ! el || el.classList.contains( 'nexulesuite_popup--open' ) ) {
 			return;
 		}
-		el.classList.add( 'nexus-popup--open' );
+		el.classList.add( 'nexulesuite_popup--open' );
 		el.setAttribute( 'aria-hidden', 'false' );
 		document.body.style.overflow = 'hidden';
 		try {
 			var evn =
 				norm( el.getAttribute( 'data-event' ) ) ||
 				norm( el.getAttribute( 'data-popup-id' ) );
-			if ( window.NexusLsTrack && typeof window.NexusLsTrack.push === 'function' ) {
+			if ( window.nexulesuite_Track && typeof window.nexulesuite_Track.push === 'function' ) {
 				var openMeta = { popup_event: evn };
 				var label = '';
 				var openSource = 'click';
@@ -90,29 +90,29 @@
 						openMeta.auto_trigger = autoTrigger;
 					}
 				}
-				window.NexusLsTrack.push( { type: 'popup_open', meta: openMeta } );
-				if ( typeof window.NexusLsTrack.flush === 'function' ) {
-					window.NexusLsTrack.flush();
+				window.nexulesuite_Track.push( { type: 'popup_open', meta: openMeta } );
+				if ( typeof window.nexulesuite_Track.flush === 'function' ) {
+					window.nexulesuite_Track.flush();
 				}
 			}
 		} catch ( _err ) {}
 	};
 
-	window.NexusLsPopupUi.close = function ( el ) {
+	window.nexulesuite_PopupUi.close = function ( el ) {
 		if ( ! el ) {
 			return;
 		}
-		el.classList.remove( 'nexus-popup--open' );
+		el.classList.remove( 'nexulesuite_popup--open' );
 		el.setAttribute( 'aria-hidden', 'true' );
 		document.body.style.overflow = '';
-		if ( typeof window.nexusLsResetPopupFormResult === 'function' ) {
-			window.nexusLsResetPopupFormResult( el );
+		if ( typeof window.nexulesuite_ResetPopupFormResult === 'function' ) {
+			window.nexulesuite_ResetPopupFormResult( el );
 		}
 	};
 
 	function buildEventOverlayMap() {
 		var out = Object.create( null );
-		var nodes = document.querySelectorAll( '.nexus-popup-overlay' );
+		var nodes = document.querySelectorAll( '.nexulesuite_popup-overlay' );
 		for ( var i = 0; i < nodes.length; i++ ) {
 			var node = nodes[ i ];
 			var ev = norm( node.getAttribute( 'data-event' ) );
@@ -132,7 +132,7 @@
 	function findPopupByClassOnTarget( target, map ) {
 		if ( ! target || ! map ) return null;
 		// Do not trigger when clicking inside an open popup.
-		if ( target.closest && target.closest( '.nexus-popup-overlay' ) ) return null;
+		if ( target.closest && target.closest( '.nexulesuite_popup-overlay' ) ) return null;
 
 		var node = target;
 		var hop = 0;
@@ -153,10 +153,10 @@
 		return null;
 	}
 
-	var __nexusPopupEventMap = null;
-	var __nexusClassToEvent = null;
-	var __nexusNotifyClassToEvent = null;
-	var __nexusPopupClassToEvent = null;
+	var __nexulesuite_PopupEventMap = null;
+	var __nexulesuite_ClassToEvent = null;
+	var __nexulesuite_NotifyClassToEvent = null;
+	var __nexulesuite_PopupClassToEvent = null;
 
 	function shouldAllowDefaultNavigation( node ) {
 		if ( ! node ) return false;
@@ -258,7 +258,7 @@
 			return;
 		}
 		var fd = new FormData();
-		fd.append( 'action', 'nexus_ls_trigger_notify' );
+		fd.append( 'action', 'nexulesuite_trigger_notify' );
 		fd.append( 'nonce', cfg.notifyNonce || '' );
 		fd.append( 'trigger_id', trigId );
 		fd.append( 'notify_label', notifyLabel || trigId );
@@ -280,17 +280,17 @@
 		'click',
 		function ( e ) {
 			// Lazy-build overlay map (popups are rendered in footer).
-			if ( ! __nexusPopupEventMap ) {
-				__nexusPopupEventMap = buildEventOverlayMap();
+			if ( ! __nexulesuite_PopupEventMap ) {
+				__nexulesuite_PopupEventMap = buildEventOverlayMap();
 			}
-			if ( ! __nexusClassToEvent ) {
-				__nexusClassToEvent = cfg && cfg.classMap ? cfg.classMap : null;
+			if ( ! __nexulesuite_ClassToEvent ) {
+				__nexulesuite_ClassToEvent = cfg && cfg.classMap ? cfg.classMap : null;
 			}
-			if ( ! __nexusPopupClassToEvent ) {
-				__nexusPopupClassToEvent = cfg && cfg.popupClassMap ? cfg.popupClassMap : null;
+			if ( ! __nexulesuite_PopupClassToEvent ) {
+				__nexulesuite_PopupClassToEvent = cfg && cfg.popupClassMap ? cfg.popupClassMap : null;
 			}
-			if ( ! __nexusNotifyClassToEvent ) {
-				__nexusNotifyClassToEvent = cfg && cfg.notifyClassMap ? cfg.notifyClassMap : null;
+			if ( ! __nexulesuite_NotifyClassToEvent ) {
+				__nexulesuite_NotifyClassToEvent = cfg && cfg.notifyClassMap ? cfg.notifyClassMap : null;
 			}
 
 		/*
@@ -302,9 +302,9 @@
 		 * Popup always blocks navigation. Notify-only with a real href allows navigation.
 		 */
 		var popupEvent =
-			__nexusPopupClassToEvent ? findPopupByClassOnTarget( e.target, __nexusPopupClassToEvent ) : null;
+			__nexulesuite_PopupClassToEvent ? findPopupByClassOnTarget( e.target, __nexulesuite_PopupClassToEvent ) : null;
 		var notifyEvent =
-			__nexusNotifyClassToEvent ? findPopupByClassOnTarget( e.target, __nexusNotifyClassToEvent ) : null;
+			__nexulesuite_NotifyClassToEvent ? findPopupByClassOnTarget( e.target, __nexulesuite_NotifyClassToEvent ) : null;
 
 		var clickLabel = clickLabelOf( e.target );
 
@@ -320,14 +320,14 @@
 
 		if ( popupEvent && ! ( notifyAllowsRealLink && notifyEvent === popupEvent ) ) {
 			var overlay =
-				window.NexusLsPopupUi &&
-				typeof window.NexusLsPopupUi.findOverlayByEventId === 'function'
-					? window.NexusLsPopupUi.findOverlayByEventId( popupEvent )
+				window.nexulesuite_PopupUi &&
+				typeof window.nexulesuite_PopupUi.findOverlayByEventId === 'function'
+					? window.nexulesuite_PopupUi.findOverlayByEventId( popupEvent )
 					: null;
 			if ( overlay ) {
 				e.preventDefault();
 				e.stopPropagation();
-				window.NexusLsPopupUi.open( overlay, clickLabel );
+				window.nexulesuite_PopupUi.open( overlay, clickLabel );
 				return;
 			}
 		}
@@ -338,19 +338,19 @@
 		}
 
 			// Back-compat: direct match class==eventId (older setups).
-			var popupByClass = findPopupByClassOnTarget( e.target, __nexusPopupEventMap );
+			var popupByClass = findPopupByClassOnTarget( e.target, __nexulesuite_PopupEventMap );
 			if ( popupByClass ) {
 				e.preventDefault();
 				e.stopPropagation();
-				window.NexusLsPopupUi.open( popupByClass, clickLabel );
+				window.nexulesuite_PopupUi.open( popupByClass, clickLabel );
 				return;
 			}
 
-			var el = e.target.closest( '[data-nexas-trigger]' );
+			var el = e.target.closest( '[data-nexulesuite_trigger]' );
 			if ( ! el ) {
 				return;
 			}
-			var raw = norm( String( el.getAttribute( 'data-nexas-trigger' ) || '' ).trim() );
+			var raw = norm( String( el.getAttribute( 'data-nexulesuite_trigger' ) || '' ).trim() );
 			if ( ! raw ) {
 				return;
 			}
@@ -368,9 +368,9 @@
 
 				var popup =
 					trigId &&
-					window.NexusLsPopupUi &&
-					typeof window.NexusLsPopupUi.findOverlayByEventId === 'function'
-						? window.NexusLsPopupUi.findOverlayByEventId( trigId )
+					window.nexulesuite_PopupUi &&
+					typeof window.nexulesuite_PopupUi.findOverlayByEventId === 'function'
+						? window.nexulesuite_PopupUi.findOverlayByEventId( trigId )
 						: null;
 
 				fireNotify();
@@ -378,7 +378,7 @@
 				if ( popup ) {
 					e.preventDefault();
 					e.stopPropagation();
-					window.NexusLsPopupUi.open( popup, clickLabel || notifyLabel );
+					window.nexulesuite_PopupUi.open( popup, clickLabel || notifyLabel );
 					return;
 				}
 
@@ -404,15 +404,15 @@
 			}
 			var evName = norm( parts[ 0 ] );
 			var popup =
-				window.NexusLsPopupUi &&
-				typeof window.NexusLsPopupUi.findOverlayByEventId === 'function'
-					? window.NexusLsPopupUi.findOverlayByEventId( evName )
+				window.nexulesuite_PopupUi &&
+				typeof window.nexulesuite_PopupUi.findOverlayByEventId === 'function'
+					? window.nexulesuite_PopupUi.findOverlayByEventId( evName )
 					: null;
 			var hrefRaw = norm( el.getAttribute( 'href' ) );
 			if ( popup ) {
 				e.preventDefault();
 				e.stopPropagation();
-				window.NexusLsPopupUi.open( popup, clickLabel );
+				window.nexulesuite_PopupUi.open( popup, clickLabel );
 			} else if ( evName && parts.length === 1 && ( hrefRaw === '' || hrefRaw === '#' ) ) {
 				/* Popup configured but overlay missing / mismatch — avoid broken empty href or hash jump. */
 				e.preventDefault();

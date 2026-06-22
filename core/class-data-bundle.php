@@ -2,14 +2,14 @@
 /**
  * Full-site export/import: options, custom tables, and embedded uploads referenced in that data.
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite;
+namespace nexulesuite_;
 
-use Nexus_Lead_Suite\Core\Activities_Store;
+use nexulesuite_\Core\Activities_Store;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -50,21 +50,21 @@ final class Data_Bundle {
 	 * @var array<int,string>
 	 */
 	private const OPTION_KEYS = array(
-		'nexus_ls_db_version',
-		'nexus_ls_ca_rw_ok',
-		'nexus_ls_migrate_nav_client_off_v3',
-		'nexus_ls_migrate_auto_popup_off_v1',
-		'nexus_ls_migrate_livechat_off_v1',
-		'nexus_ls_general_settings_v1',
-		'nexus_ls_forms_builder_v0',
-		'nexus_ls_recaptcha_keys_v0',
-		'nexus_ls_turnstile_keys_v0',
-		'nexus_ls_menu_items_v1',
-		'nexus_ls_popups_v1',
-		'nexus_ls_email_templates_v1',
-		'nexus_ls_email_templates',
-		'nexus_ls_smtp_settings',
-		'nexus_ls_erase_on_uninstall',
+		'nexulesuite_db_version',
+		'nexulesuite_ca_rw_ok',
+		'nexulesuite_migrate_nav_client_off_v3',
+		'nexulesuite_migrate_auto_popup_off_v1',
+		'nexulesuite_migrate_livechat_off_v1',
+		'nexulesuite_general_settings_v1',
+		'nexulesuite_forms_builder_v0',
+		'nexulesuite_recaptcha_keys_v0',
+		'nexulesuite_turnstile_keys_v0',
+		'nexulesuite_menu_items_v1',
+		'nexulesuite_popups_v1',
+		'nexulesuite_email_templates_v1',
+		'nexulesuite_email_templates',
+		'nexulesuite_smtp_settings',
+		'nexulesuite_erase_on_uninstall',
 	);
 
 	/**
@@ -102,17 +102,17 @@ final class Data_Bundle {
 
 		$options_for_media = $options;
 		$options_out       = $options;
-		if ( array_key_exists( 'nexus_ls_forms_builder_v0', $options_for_media ) && null !== $options_for_media['nexus_ls_forms_builder_v0'] ) {
-			$options_for_media['nexus_ls_forms_builder_v0'] = Forms_Payload_Codec::decode_mixed_for_scan( $options_for_media['nexus_ls_forms_builder_v0'] );
+		if ( array_key_exists( 'nexulesuite_forms_builder_v0', $options_for_media ) && null !== $options_for_media['nexulesuite_forms_builder_v0'] ) {
+			$options_for_media['nexulesuite_forms_builder_v0'] = Forms_Payload_Codec::decode_mixed_for_scan( $options_for_media['nexulesuite_forms_builder_v0'] );
 		}
-		if ( array_key_exists( 'nexus_ls_forms_builder_v0', $options_out ) && null !== $options_out['nexus_ls_forms_builder_v0'] ) {
-			$options_out['nexus_ls_forms_builder_v0'] = Forms_Payload_Codec::decode_mixed_for_scan( $options_out['nexus_ls_forms_builder_v0'] );
+		if ( array_key_exists( 'nexulesuite_forms_builder_v0', $options_out ) && null !== $options_out['nexulesuite_forms_builder_v0'] ) {
+			$options_out['nexulesuite_forms_builder_v0'] = Forms_Payload_Codec::decode_mixed_for_scan( $options_out['nexulesuite_forms_builder_v0'] );
 		}
 
 		$bundle = array(
-			'nexus_ls_export_format' => self::EXPORT_FORMAT_CURRENT,
-			'json_export_schema'     => 'nexus-lead-suite-full-json/1',
-			'plugin_version'         => defined( 'NEXUS_LS_VERSION' ) ? NEXUS_LS_VERSION : '',
+			'nexulesuite_export_format' => self::EXPORT_FORMAT_CURRENT,
+			'json_export_schema'     => 'nexulesuite_-full-json/1',
+			'plugin_version'         => defined( 'nexulesuite_VERSION' ) ? nexulesuite_VERSION : '',
 			'exported_at'            => gmdate( 'c' ),
 			'source_site_url'        => home_url( '/' ),
 			'export_uploads_baseurl' => (string) ( $upload['baseurl'] ?? '' ),
@@ -151,16 +151,16 @@ final class Data_Bundle {
 		};
 
 		$forms_count = 0;
-		if ( $has( 'nexus_ls_forms_builder_v0' ) ) {
-			$forms_payload = $options['nexus_ls_forms_builder_v0'];
+		if ( $has( 'nexulesuite_forms_builder_v0' ) ) {
+			$forms_payload = $options['nexulesuite_forms_builder_v0'];
 			if ( is_array( $forms_payload ) && isset( $forms_payload['forms'] ) && is_array( $forms_payload['forms'] ) ) {
 				$forms_count = count( $forms_payload['forms'] );
 			}
 		}
 
 		$menu_count = 0;
-		if ( $has( 'nexus_ls_menu_items_v1' ) ) {
-			$menu = $options['nexus_ls_menu_items_v1'];
+		if ( $has( 'nexulesuite_menu_items_v1' ) ) {
+			$menu = $options['nexulesuite_menu_items_v1'];
 			if ( is_array( $menu ) ) {
 				if ( isset( $menu['groups'] ) && is_array( $menu['groups'] ) ) {
 					$menu_count = count( $menu['groups'] );
@@ -170,51 +170,51 @@ final class Data_Bundle {
 			}
 		}
 
-		$popup_count = $has( 'nexus_ls_popups_v1' ) && is_array( $options['nexus_ls_popups_v1'] )
-			? count( $options['nexus_ls_popups_v1'] )
+		$popup_count = $has( 'nexulesuite_popups_v1' ) && is_array( $options['nexulesuite_popups_v1'] )
+			? count( $options['nexulesuite_popups_v1'] )
 			: 0;
 
 		$email_count = 0;
-		if ( $has( 'nexus_ls_email_templates_v1' ) && is_array( $options['nexus_ls_email_templates_v1'] ) ) {
-			$email_count = count( $options['nexus_ls_email_templates_v1'] );
-		} elseif ( $has( 'nexus_ls_email_templates' ) && is_array( $options['nexus_ls_email_templates'] ) ) {
-			$email_count = count( $options['nexus_ls_email_templates'] );
+		if ( $has( 'nexulesuite_email_templates_v1' ) && is_array( $options['nexulesuite_email_templates_v1'] ) ) {
+			$email_count = count( $options['nexulesuite_email_templates_v1'] );
+		} elseif ( $has( 'nexulesuite_email_templates' ) && is_array( $options['nexulesuite_email_templates'] ) ) {
+			$email_count = count( $options['nexulesuite_email_templates'] );
 		}
 
 		return array(
 			'sections' => array(
 				'settings'    => array(
-					'option_key' => 'nexus_ls_general_settings_v1',
-					'included'   => $has( 'nexus_ls_general_settings_v1' ),
+					'option_key' => 'nexulesuite_general_settings_v1',
+					'included'   => $has( 'nexulesuite_general_settings_v1' ),
 				),
 				'menu_items'  => array(
-					'option_key' => 'nexus_ls_menu_items_v1',
-					'included'   => $has( 'nexus_ls_menu_items_v1' ),
+					'option_key' => 'nexulesuite_menu_items_v1',
+					'included'   => $has( 'nexulesuite_menu_items_v1' ),
 					'count'      => $menu_count,
 				),
 				'popups'      => array(
-					'option_key' => 'nexus_ls_popups_v1',
-					'included'   => $has( 'nexus_ls_popups_v1' ),
+					'option_key' => 'nexulesuite_popups_v1',
+					'included'   => $has( 'nexulesuite_popups_v1' ),
 					'count'      => $popup_count,
 				),
 				'emails'      => array(
-					'option_key' => 'nexus_ls_email_templates_v1',
-					'included'   => $has( 'nexus_ls_email_templates_v1' ) || $has( 'nexus_ls_email_templates' ),
+					'option_key' => 'nexulesuite_email_templates_v1',
+					'included'   => $has( 'nexulesuite_email_templates_v1' ) || $has( 'nexulesuite_email_templates' ),
 					'count'      => $email_count,
 				),
 				'forms'       => array(
-					'option_key' => 'nexus_ls_forms_builder_v0',
-					'included'   => $has( 'nexus_ls_forms_builder_v0' ),
+					'option_key' => 'nexulesuite_forms_builder_v0',
+					'included'   => $has( 'nexulesuite_forms_builder_v0' ),
 					'count'      => $forms_count,
 				),
 				'smtp'        => array(
-					'option_key' => 'nexus_ls_smtp_settings',
-					'included'   => $has( 'nexus_ls_smtp_settings' ),
+					'option_key' => 'nexulesuite_smtp_settings',
+					'included'   => $has( 'nexulesuite_smtp_settings' ),
 				),
 				'captcha'     => array(
-					'recaptcha_option_key' => 'nexus_ls_recaptcha_keys_v0',
-					'turnstile_option_key' => 'nexus_ls_turnstile_keys_v0',
-					'included'             => $has( 'nexus_ls_recaptcha_keys_v0' ) || $has( 'nexus_ls_turnstile_keys_v0' ),
+					'recaptcha_option_key' => 'nexulesuite_recaptcha_keys_v0',
+					'turnstile_option_key' => 'nexulesuite_turnstile_keys_v0',
+					'included'             => $has( 'nexulesuite_recaptcha_keys_v0' ) || $has( 'nexulesuite_turnstile_keys_v0' ),
 				),
 				'activities'  => array(
 					'table'    => 'interactions',
@@ -283,7 +283,7 @@ final class Data_Bundle {
 		global $wpdb;
 
 		$known = array_flip( self::OPTION_KEYS );
-		$like  = $wpdb->esc_like( 'nexus_ls' ) . '%';
+		$like  = $wpdb->esc_like( 'nexulesuite_ls' ) . '%';
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.DirectQuery
 		$rows = $wpdb->get_results(
@@ -320,7 +320,7 @@ final class Data_Bundle {
 	 * @param string $name Option name.
 	 */
 	private static function is_allowed_extra_option_name( string $name ): bool {
-		return (bool) preg_match( '/^nexus_ls[A-Za-z0-9_]+$/', $name );
+		return (bool) preg_match( '/^nexulesuite_ls[A-Za-z0-9_]+$/', $name );
 	}
 
 	/**
@@ -383,7 +383,7 @@ final class Data_Bundle {
 			}
 
 			return array(
-				'_nexus_ls_export_object' => is_object( $data ) ? get_class( $data ) : 'unknown',
+				'_nexulesuite_export_object' => is_object( $data ) ? get_class( $data ) : 'unknown',
 			);
 		}
 
@@ -429,7 +429,7 @@ final class Data_Bundle {
 		global $wpdb;
 
 		$interactions = Activities_Store::table();
-		$submissions  = $wpdb->prefix . 'nexus_ls_submissions';
+		$submissions  = $wpdb->prefix . 'nexulesuite_submissions';
 
 		return array(
 			'interactions' => self::fetch_all_rows( $interactions ),
@@ -809,7 +809,7 @@ final class Data_Bundle {
 		}
 		set_time_limit( 300 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- large import/export may exceed default timeout.
 
-		$fmt = isset( $bundle['nexus_ls_export_format'] ) ? (int) $bundle['nexus_ls_export_format'] : 0;
+		$fmt = isset( $bundle['nexulesuite_export_format'] ) ? (int) $bundle['nexulesuite_export_format'] : 0;
 		$allowed = array(
 			self::EXPORT_FORMAT_LEGACY,
 			self::EXPORT_FORMAT_WITH_MEDIA_NATIVE_FORMS,
@@ -817,14 +817,14 @@ final class Data_Bundle {
 		);
 		if ( ! in_array( $fmt, $allowed, true ) ) {
 			return new \WP_Error(
-				'nexus_ls_bundle_format',
+				'nexulesuite_bundle_format',
 				__( 'Unsupported or invalid export file. Use a Nexus Lead Suite full export.', 'nexus-lead-suite' ),
 				array( 'status' => 400 )
 			);
 		}
 
 		if ( ! isset( $bundle['options'] ) || ! is_array( $bundle['options'] ) ) {
-			return new \WP_Error( 'nexus_ls_bundle_options', __( 'Missing options object in bundle.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'nexulesuite_bundle_options', __( 'Missing options object in bundle.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
 		}
 
 		$opts = $bundle['options'];
@@ -832,7 +832,7 @@ final class Data_Bundle {
 		foreach ( self::OPTION_KEYS as $key ) {
 			if ( ! array_key_exists( $key, $opts ) ) {
 				return new \WP_Error(
-					'nexus_ls_bundle_incomplete',
+					'nexulesuite_bundle_incomplete',
 					sprintf(
 						/* translators: %s: option key */
 						__( 'Export file is incomplete (missing option: %s). Re-export from the latest plugin version.', 'nexus-lead-suite' ),
@@ -847,7 +847,7 @@ final class Data_Bundle {
 			self::ensure_tables_exist();
 		} catch ( \Throwable $e ) {
 			return new \WP_Error(
-				'nexus_ls_import_schema',
+				'nexulesuite_import_schema',
 				__( 'Could not prepare database tables for import.', 'nexus-lead-suite' ) . ' ' . $e->getMessage(),
 				array( 'status' => 500 )
 			);
@@ -874,8 +874,8 @@ final class Data_Bundle {
 			);
 		}
 
-		if ( array_key_exists( 'nexus_ls_forms_builder_v0', $opts ) && null !== $opts['nexus_ls_forms_builder_v0'] ) {
-			$opts['nexus_ls_forms_builder_v0'] = Forms_Payload_Codec::decode_mixed_for_scan( $opts['nexus_ls_forms_builder_v0'] );
+		if ( array_key_exists( 'nexulesuite_forms_builder_v0', $opts ) && null !== $opts['nexulesuite_forms_builder_v0'] ) {
+			$opts['nexulesuite_forms_builder_v0'] = Forms_Payload_Codec::decode_mixed_for_scan( $opts['nexulesuite_forms_builder_v0'] );
 		}
 
 		$opts      = self::deep_apply_url_map( $opts, $url_map );
@@ -887,7 +887,7 @@ final class Data_Bundle {
 				delete_option( $key );
 				continue;
 			}
-			if ( 'nexus_ls_forms_builder_v0' === $key ) {
+			if ( 'nexulesuite_forms_builder_v0' === $key ) {
 				$val = Forms_Payload_Codec::encode_mixed_for_storage( $val );
 			}
 			update_option( $key, $val, false );
@@ -930,7 +930,7 @@ final class Data_Bundle {
 		}
 
 		global $wpdb;
-		$submissions = $wpdb->prefix . 'nexus_ls_submissions';
+		$submissions = $wpdb->prefix . 'nexulesuite_submissions';
 		$db_err        = self::restore_table(
 			$submissions,
 			isset( $tables_in['submissions'] ) && is_array( $tables_in['submissions'] ) ? $tables_in['submissions'] : array(),
@@ -950,7 +950,7 @@ final class Data_Bundle {
 		}
 
 		/*
-		 * Full replace: remove orphan nexus_ls* options that existed on this site but were not in
+		 * Full replace: remove orphan nexulesuite_ls* options that existed on this site but were not in
 		 * the export (tracked keys + extra_options). Otherwise old data merges with the import.
 		 */
 		self::purge_extra_options_not_in_bundle( $bundle );
@@ -965,7 +965,7 @@ final class Data_Bundle {
 	/**
 	 * Deletes wp_options rows for plugin-scoped extras not listed in the bundle (full import wipe).
 	 *
-	 * Core {@see OPTION_KEYS} are already updated above; this only targets `nexus_ls*` names
+	 * Core {@see OPTION_KEYS} are already updated above; this only targets `nexulesuite_ls*` names
 	 * outside that set that are absent from `extra_options` in the file.
 	 *
 	 * @param array<string,mixed> $bundle Import bundle.
@@ -977,7 +977,7 @@ final class Data_Bundle {
 		$allowed_extra   = array_keys( $extra_in_bundle );
 		$known_flip      = array_flip( self::OPTION_KEYS );
 
-		$like = $wpdb->esc_like( 'nexus_ls' ) . '%';
+		$like = $wpdb->esc_like( 'nexulesuite_ls' ) . '%';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rows = $wpdb->get_col(
 			$wpdb->prepare(
@@ -1023,7 +1023,7 @@ final class Data_Bundle {
 		$upload    = wp_upload_dir();
 		$basedir_o = isset( $upload['basedir'] ) ? trailingslashit( (string) $upload['basedir'] ) : '';
 		if ( '' === $basedir_o ) {
-			return new \WP_Error( 'nexus_ls_import_uploads_base', __( 'Uploads folder is unavailable for import.', 'nexus-lead-suite' ), array( 'status' => 500 ) );
+			return new \WP_Error( 'nexulesuite_import_uploads_base', __( 'Uploads folder is unavailable for import.', 'nexus-lead-suite' ), array( 'status' => 500 ) );
 		}
 
 		$upload_root = wp_normalize_path( rtrim( $basedir_o, '/\\' ) );
@@ -1041,7 +1041,7 @@ final class Data_Bundle {
 
 			if ( '' === $canonical || '' === $b64 || '' === $rel_raw ) {
 				return new \WP_Error(
-					'nexus_ls_import_media_bad',
+					'nexulesuite_import_media_bad',
 					sprintf(
 						/* translators: %d: row index (1-based) */
 						__( 'Invalid embedded media row at #%d.', 'nexus-lead-suite' ),
@@ -1052,27 +1052,27 @@ final class Data_Bundle {
 			}
 
 			if ( false !== strpos( $rel_raw, '..' ) ) {
-				return new \WP_Error( 'nexus_ls_import_media_path', __( 'Unsafe media relative path.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
+				return new \WP_Error( 'nexulesuite_import_media_path', __( 'Unsafe media relative path.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
 			}
 
 			// phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 			$bytes = base64_decode( $b64, true );
 			// phpcs:enable
 			if ( false === $bytes || '' === $bytes ) {
-				return new \WP_Error( 'nexus_ls_import_media_b64', __( 'Could not decode embedded file data.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
+				return new \WP_Error( 'nexulesuite_import_media_b64', __( 'Could not decode embedded file data.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
 			}
 
 			$dest = wp_normalize_path( $upload_root . '/' . $rel_raw );
 			$dir  = dirname( $dest );
 			if ( strpos( wp_normalize_path( $dir ), $upload_root ) !== 0 ) {
-				return new \WP_Error( 'nexus_ls_media_dest', __( 'Rejected media destination outside uploads.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
+				return new \WP_Error( 'nexulesuite_media_dest', __( 'Rejected media destination outside uploads.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
 			}
 
 			wp_mkdir_p( $dir );
 
 			if ( file_put_contents( $dest, $bytes ) === false ) {
 				return new \WP_Error(
-					'nexus_ls_import_media_write',
+					'nexulesuite_import_media_write',
 					sprintf(
 						/* translators: %s: file name */
 						__( 'Could not write file: %s', 'nexus-lead-suite' ),
@@ -1108,7 +1108,7 @@ final class Data_Bundle {
 			);
 
 			if ( ! is_numeric( $post_id ) || (int) $post_id <= 0 ) {
-				return new \WP_Error( 'nexus_ls_attachment_failed', __( 'Could not register media in the Media Library.', 'nexus-lead-suite' ), array( 'status' => 500 ) );
+				return new \WP_Error( 'nexulesuite_attachment_failed', __( 'Could not register media in the Media Library.', 'nexus-lead-suite' ), array( 'status' => 500 ) );
 			}
 
 			$post_id = (int) $post_id;
@@ -1138,7 +1138,7 @@ final class Data_Bundle {
 
 			$new_url = wp_get_attachment_url( $post_id );
 			if ( ! is_string( $new_url ) || '' === $new_url ) {
-				return new \WP_Error( 'nexus_ls_attachment_url_failed', __( 'Imported file has no URL.', 'nexus-lead-suite' ), array( 'status' => 500 ) );
+				return new \WP_Error( 'nexulesuite_attachment_url_failed', __( 'Imported file has no URL.', 'nexus-lead-suite' ), array( 'status' => 500 ) );
 			}
 
 			$old_list = array_merge( array( $canonical ), isset( $item['alias_urls'] ) && is_array( $item['alias_urls'] ) ? $item['alias_urls'] : array() );
@@ -1304,7 +1304,7 @@ final class Data_Bundle {
 			error_log( 'Nexus Lead Suite restore_table truncate: ' . $e->getMessage() );
 
 			return new \WP_Error(
-				'nexus_ls_import_truncate',
+				'nexulesuite_import_truncate',
 				__( 'Could not clear activity tables for import.', 'nexus-lead-suite' ) . ' ' . $e->getMessage(),
 				array( 'status' => 500 )
 			);
@@ -1356,7 +1356,7 @@ final class Data_Bundle {
 				$ok = $wpdb->insert( $table, $data, $format ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			} catch ( \Throwable $e ) {
 				return new \WP_Error(
-					'nexus_ls_import_row',
+					'nexulesuite_import_row',
 					sprintf(
 						/* translators: 1: row number (1-based), 2: error message */
 						__( 'Database import failed at row %1$s: %2$s', 'nexus-lead-suite' ),
@@ -1369,7 +1369,7 @@ final class Data_Bundle {
 
 			if ( false === $ok ) {
 				return new \WP_Error(
-					'nexus_ls_import_row',
+					'nexulesuite_import_row',
 					sprintf(
 						/* translators: 1: row number (1-based), 2: database error */
 						__( 'Database import failed at row %1$s: %2$s', 'nexus-lead-suite' ),

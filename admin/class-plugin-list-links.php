@@ -2,12 +2,12 @@
 /**
  * Plugins list screen: Settings, Documentation, Support links.
  *
- * @package Nexus_Lead_Suite
+ * @package nexulesuite_
  */
 
 declare(strict_types=1);
 
-namespace Nexus_Lead_Suite\Admin;
+namespace nexulesuite_\Admin;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,7 +26,7 @@ final class Plugin_List_Links {
 	 * @return void
 	 */
 	public function register_hooks(): void {
-		add_filter( 'plugin_action_links_' . NEXUS_LS_PLUGIN_BASENAME, array( $this, 'filter_action_links' ) );
+		add_filter( 'plugin_action_links_' . nexulesuite_PLUGIN_BASENAME, array( $this, 'filter_action_links' ) );
 		add_filter( 'plugin_row_meta', array( $this, 'filter_row_meta' ), 10, 2 );
 	}
 
@@ -63,7 +63,7 @@ final class Plugin_List_Links {
 	 * @return array<int, string>
 	 */
 	public function filter_row_meta( array $links, string $file ): array {
-		if ( NEXUS_LS_PLUGIN_BASENAME !== $file ) {
+		if ( nexulesuite_PLUGIN_BASENAME !== $file ) {
 			return $links;
 		}
 
