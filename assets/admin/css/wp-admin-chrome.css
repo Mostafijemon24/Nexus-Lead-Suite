@@ -1,0 +1,286 @@
+/**
+ * Flush Nexus admin SPA against the WP admin menu (removes default #wpcontent gap).
+ */
+body.toplevel_page_nexulesuite_ #wpcontent,
+body[class*="page_nexulesuite_"] #wpcontent {
+	padding-left: 0;
+}
+
+body.toplevel_page_nexulesuite_ #wpbody-content,
+body[class*="page_nexulesuite_"] #wpbody-content {
+	padding: 0;
+}
+
+body.toplevel_page_nexulesuite_ .wrap,
+body[class*="page_nexulesuite_"] .wrap {
+	margin: 0;
+}
+
+#nexulesuite_admin-root {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	max-width: none;
+}
+
+/**
+ * Plugin shell + sidebar — transparent, synced with WP admin color scheme.
+ */
+#nexulesuite_admin-root .nexulesuite_admin-app,
+#nexulesuite_admin-root > .flex.min-h-screen,
+#nexulesuite_admin-root .bg-\[\#070b14\] {
+	background: transparent;
+}
+
+#nexulesuite_admin-root .nexulesuite_admin-sidebar,
+#nexulesuite_admin-root aside[aria-label="Nexus Lead Suite navigation"] {
+	background: transparent;
+	border-right-color: #dcdcde;
+	color: #50575e;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-divider,
+#nexulesuite_admin-root aside .border-sidebar-border {
+	border-color: #dcdcde;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-logo,
+#nexulesuite_admin-root aside [aria-hidden="true"].rounded-xl {
+	background-color: var(--wp-admin-theme-color, #2271b1);
+	box-shadow: none;
+	color: #fff;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-brand,
+#nexulesuite_admin-root aside .nexulesuite_sidebar-brand {
+	color: #1d2327;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-brand:hover,
+#nexulesuite_admin-root aside button.rounded-lg:hover {
+	background-color: #f0f0f1;
+	color: #1d2327;
+}
+
+/* Hide legacy dropdown chevron next to "Nexus". */
+#nexulesuite_admin-root aside button[aria-haspopup="true"] svg {
+	display: none;
+}
+
+#nexulesuite_admin-root #nexulesuite_sidebar-nav {
+	min-height: 0;
+	overflow-y: auto;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-footer,
+#nexulesuite_admin-root aside > div:last-child {
+	position: relative;
+	z-index: 2;
+	flex-shrink: 0;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-collapse svg,
+#nexulesuite_admin-root aside > div:last-child button svg {
+	pointer-events: none;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-link,
+#nexulesuite_admin-root aside nav a {
+	color: #334155;
+	text-decoration: none;
+	border: 1px solid transparent;
+	border-left-width: 3px;
+	border-left-color: transparent;
+	transition:
+		background-color 0.18s ease,
+		color 0.18s ease,
+		border-color 0.18s ease;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-link:hover,
+#nexulesuite_admin-root aside nav a:hover {
+	background-color: #f8fafc;
+	border-color: #e2e8f0;
+	border-left-color: #a5b4fc;
+	color: #1e293b;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-link.is-active,
+#nexulesuite_admin-root .nexulesuite_sidebar-link[aria-current="page"],
+#nexulesuite_admin-root aside nav a[aria-current="page"] {
+	background-color: #eef2ff;
+	border-color: #c7d2fe;
+	border-left-color: #4f46e5;
+	color: #4338ca;
+	font-weight: 600;
+	box-shadow: none;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-link.is-active:hover,
+#nexulesuite_admin-root .nexulesuite_sidebar-link[aria-current="page"]:hover,
+#nexulesuite_admin-root aside nav a[aria-current="page"]:hover {
+	background-color: #eef2ff;
+	border-color: #c7d2fe;
+	border-left-color: #4f46e5;
+	color: #4338ca;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-link.is-active svg,
+#nexulesuite_admin-root .nexulesuite_sidebar-link[aria-current="page"] svg,
+#nexulesuite_admin-root aside nav a[aria-current="page"] svg {
+	color: #4338ca;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-collapse,
+#nexulesuite_admin-root aside > div:last-child button {
+	color: #646970;
+}
+
+#nexulesuite_admin-root .nexulesuite_sidebar-collapse:hover,
+#nexulesuite_admin-root aside > div:last-child button:hover {
+	background-color: #f0f0f1;
+	color: #1d2327;
+}
+
+/* Override legacy dark Tailwind sidebar utilities in the compiled bundle. */
+#nexulesuite_admin-root .bg-sidebar {
+	background-color: transparent;
+}
+
+#nexulesuite_admin-root .bg-sidebar-active {
+	background-color: var(--wp-admin-theme-color, #2271b1);
+}
+
+#nexulesuite_admin-root aside .text-white {
+	color: #1d2327;
+}
+
+#nexulesuite_admin-root aside nav a.text-white,
+#nexulesuite_admin-root aside nav a[aria-current="page"].text-white {
+	color: #fff;
+}
+
+#nexulesuite_admin-root aside .text-slate-400 {
+	color: #646970;
+}
+
+#nexulesuite_admin-root aside .text-slate-200,
+#nexulesuite_admin-root aside .hover\:text-slate-200:hover {
+	color: #1d2327;
+}
+
+#nexulesuite_admin-root aside .hover\:bg-white\/\[0\.06\]:hover,
+#nexulesuite_admin-root aside .hover\:bg-white\/5:hover {
+	background-color: #f0f0f1;
+}
+
+/* Form Builder — field picker (WP admin button styles can hide SVG / lowercase text) */
+#nexulesuite_admin-root .nexulesuite_field-picker-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2.5rem;
+	min-width: 2.5rem;
+	color: #475569;
+}
+
+#nexulesuite_admin-root .nexulesuite_field-picker-icon svg,
+#nexulesuite_admin-root button .nexulesuite_field-picker-icon svg,
+#nexulesuite_admin-root .nexulesuite_field-picker-modal > div:first-child button svg {
+	display: block !important;
+	width: 1.5rem !important;
+	height: 1.5rem !important;
+	min-width: 1.5rem !important;
+	min-height: 1.5rem !important;
+	flex-shrink: 0;
+	color: inherit;
+	stroke: currentColor;
+	fill: none;
+	opacity: 1 !important;
+	visibility: visible !important;
+}
+
+#nexulesuite_admin-root .nexulesuite_field-picker-search-icon {
+	z-index: 2;
+	pointer-events: none;
+	color: #9ca3af;
+}
+
+#nexulesuite_admin-root .nexulesuite_field-picker-search-icon svg {
+	display: block;
+	width: 1.125rem;
+	height: 1.125rem;
+	min-width: 1.125rem;
+	min-height: 1.125rem;
+	flex-shrink: 0;
+	color: inherit;
+	stroke: currentColor;
+	fill: none;
+}
+
+#nexulesuite_admin-root .nexulesuite_field-picker-search-input {
+	position: relative;
+	z-index: 1;
+	padding-left: 2.5rem !important;
+}
+
+#nexulesuite_admin-root .nexulesuite_field-picker-modal button {
+	text-transform: none;
+	letter-spacing: normal;
+}
+
+/* Nexus admin — hide stray TinyMCE overlays unless a real dialog is open */
+body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) #mce-modal-blocker,
+body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) .mce-blocker,
+body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) .tox-dialog__backdrop {
+	display: none !important;
+	pointer-events: none !important;
+	visibility: hidden !important;
+}
+
+/* Main Heading Editor — TinyMCE inside popup builder card (classic editor chrome) */
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap {
+	display: flex;
+	flex-direction: column;
+	min-height: 170px;
+	background: #fff;
+}
+
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-tinymce,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-tinymce {
+	border: none !important;
+	box-shadow: none !important;
+	background: transparent !important;
+}
+
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-toolbar-grp,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-toolbar-overlord,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-top-part .mce-toolbar,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-editor-header {
+	display: none !important;
+}
+
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-edit-area,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-edit-area {
+	border: none !important;
+}
+
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-statusbar,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-statusbar {
+	display: none !important;
+}
+
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-edit-area iframe,
+#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-edit-area__iframe {
+	min-height: 170px !important;
+}
+
+#nexulesuite_admin-root .nexulesuite_heading-mce-ta {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	pointer-events: none;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+}

@@ -1,0 +1,4 @@
+Forminator UI assets in this folder are copied from the Forminator WordPress plugin
+(WPMU DEV / GPLv3). Source: assets/forminator-ui/
+
+Copyright 2019+ Incsub / WPMU DEV. Licensed under GNU General Public License v3.0.
