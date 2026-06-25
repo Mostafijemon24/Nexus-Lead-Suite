@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.12
+Stable tag: 1.0.13
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -101,6 +101,13 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 == Screenshots ==
 
 1. Dashboard (coming soon)
+
+= 1.0.13 =
+* Activities: improved tracking with conditional popup filtering so unrelated popup events are not logged.
+* Notifications: email alerts when tracked elements receive clicks (Activity Notifier).
+* Labels: clearer Action Name and Interaction labels in the admin timeline.
+* Visual Editor: click tracking reliability fixes on the front end.
+* Access gate: PHPCS compliance and password-toggle script hardening.
 
 = 1.0.12 =
 * Security: all dynamic output is escaped via wp_kses() with a form-aware allowlist, so forms, popups, SVG icons and data-* attributes keep working while scripts are stripped; removed an unused wp-admin core-file include.
