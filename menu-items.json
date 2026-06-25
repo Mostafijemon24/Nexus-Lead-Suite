@@ -1,0 +1,160 @@
+{
+    "groups": [
+        {
+            "id": "group-1781108695594",
+            "name": "New Button Group",
+            "priority": 50,
+            "enabled": true,
+            "conditions": {
+                "match": "any",
+                "rules": [
+                    {
+                        "type": "page",
+                        "ids": []
+                    }
+                ]
+            },
+            "buttons": [
+                {
+                    "id": "btn-1781108706728",
+                    "label": "New Action Button",
+                    "url": "",
+                    "eventName": "",
+                    "icon": "none",
+                    "displayMode": "inline",
+                    "cssId": "",
+                    "cssClass": "",
+                    "style": {
+                        "bg": "#4F46E5",
+                        "text": "#ffffff",
+                        "paddingVertical": "14",
+                        "paddingHorizontal": "28",
+                        "radius": "12",
+                        "hoverEffect": "glow"
+                    }
+                },
+                {
+                    "id": "btn-1781108709145",
+                    "label": "New Action Button",
+                    "url": "",
+                    "eventName": "",
+                    "icon": "none",
+                    "displayMode": "inline",
+                    "cssId": "",
+                    "cssClass": "",
+                    "style": {
+                        "bg": "#0F172A",
+                        "text": "#ffffff",
+                        "paddingVertical": "14",
+                        "paddingHorizontal": "28",
+                        "radius": "12",
+                        "hoverEffect": "glow"
+                    }
+                },
+                {
+                    "id": "btn-1781108709552",
+                    "label": "New Action Button",
+                    "url": "",
+                    "eventName": "",
+                    "icon": "none",
+                    "displayMode": "inline",
+                    "cssId": "",
+                    "cssClass": "",
+                    "style": {
+                        "bg": "#F59E0B",
+                        "text": "#ffffff",
+                        "paddingVertical": "14",
+                        "paddingHorizontal": "28",
+                        "radius": "12",
+                        "hoverEffect": "glow"
+                    }
+                },
+                {
+                    "id": "btn-1781108709753",
+                    "label": "New Action Button",
+                    "url": "",
+                    "eventName": "",
+                    "icon": "none",
+                    "displayMode": "inline",
+                    "cssId": "",
+                    "cssClass": "",
+                    "style": {
+                        "bg": "#10B981",
+                        "text": "#ffffff",
+                        "paddingVertical": "14",
+                        "paddingHorizontal": "28",
+                        "radius": "12",
+                        "hoverEffect": "glow"
+                    }
+                },
+                {
+                    "id": "btn-1781108709969",
+                    "label": "New Action Button",
+                    "url": "",
+                    "eventName": "",
+                    "icon": "none",
+                    "displayMode": "inline",
+                    "cssId": "",
+                    "cssClass": "",
+                    "style": {
+                        "bg": "#EC4899",
+                        "text": "#ffffff",
+                        "paddingVertical": "14",
+                        "paddingHorizontal": "28",
+                        "radius": "12",
+                        "hoverEffect": "glow"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "group-1781108715393",
+            "name": "New Button Group",
+            "priority": 0,
+            "enabled": true,
+            "conditions": {
+                "match": "any",
+                "rules": []
+            },
+            "buttons": [
+                {
+                    "id": "btn-1781108763537",
+                    "label": "New Action Button",
+                    "url": "",
+                    "eventName": "",
+                    "icon": "none",
+                    "displayMode": "inline",
+                    "cssId": "",
+                    "cssClass": "",
+                    "style": {
+                        "bg": "#6366F1",
+                        "text": "#ffffff",
+                        "paddingVertical": "16",
+                        "paddingHorizontal": "32",
+                        "radius": "50",
+                        "hoverEffect": "glow"
+                    }
+                },
+                {
+                    "id": "btn-1781108764618",
+                    "label": "New Action Button",
+                    "url": "",
+                    "eventName": "",
+                    "icon": "none",
+                    "displayMode": "inline",
+                    "cssId": "",
+                    "cssClass": "",
+                    "style": {
+                        "bg": "#3B82F6",
+                        "text": "#ffffff",
+                        "paddingVertical": "16",
+                        "paddingHorizontal": "32",
+                        "radius": "50",
+                        "hoverEffect": "glow"
+                    }
+                }
+            ]
+        }
+    ],
+    "globalFontSize": 14
+}
