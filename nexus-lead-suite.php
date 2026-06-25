@@ -3,7 +3,7 @@
  * Plugin Name:       Nexus Lead Suite
  * Plugin URI:        https://wordpress.org/plugins/nexus-lead-suite/
  * Description:       A high-performance, all-in-one lead generation and user analytics suite with a modern admin experience.
- * Version:           1.0.12
+ * Version:           1.0.13
  * Requires at least: 6.2
  * Requires PHP:      7.4
  * Author:            Nexus Lead Suite
@@ -52,7 +52,7 @@ if ( defined( 'PHP_VERSION_ID' ) && PHP_VERSION_ID < 70400 ) {
 	return;
 }
 
-define( 'nexulesuite_VERSION', '1.0.10' );
+define( 'nexulesuite_VERSION', '1.0.13' );
 define( 'nexulesuite_PLUGIN_FILE', __FILE__ );
 define( 'nexulesuite_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'nexulesuite_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
