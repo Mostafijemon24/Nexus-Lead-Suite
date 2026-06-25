@@ -1,0 +1,83 @@
+{
+    "popups": [
+        {
+            "id": "pop-1",
+            "name": "Appointment/Consultation!",
+            "eventName": "nexus-pop",
+            "heading": "<h2 style=\"margin:0;font-family:'Inter', sans-serif;font-weight:800;font-size:32px;letter-spacing:-1px;color:#FFFFFF;\">Book Your <span style=\"background: linear-gradient(90deg, #FACC15, #F59E0B); -webkit-background-clip: text; -webkit-text-fill-color: transparent;\">Consultation</span></h2>",
+            "headingEditMode": "visual",
+            "subHeading": "GET EXPERT ADVICE WITHIN 24 HOURS.",
+            "textAlign": "left",
+            "content": "<p>[forminator_form id=\"244624\"]</p>",
+            "conditions": {
+                "match": "any",
+                "rules": []
+            },
+            "style": {
+                "buttonColor": "#4F46E5",
+                "buttonWidth": "100",
+                "headingTextColor": "#FFFFFF",
+                "headingBgColor": "#0F172A",
+                "headingFontSize": "20",
+                "bodyBgColor": "#FFFFFF",
+                "width": "640",
+                "radius": "24",
+                "padding": "40",
+                "closeIconSize": "20",
+                "closeIconColor": "#94A3B8",
+                "closeIconBg": "#1E293B"
+            },
+            "logic": [
+                {
+                    "id": "L1",
+                    "trigger": "scroll",
+                    "delay": "0",
+                    "scrollPercentage": "0"
+                }
+            ]
+        },
+        {
+            "id": "pop-1781109013818",
+            "name": "New Popup",
+            "eventName": "event-1781109013818",
+            "heading": "<h2 style=\"margin:0;font-family:'Inter', sans-serif;font-weight:800;font-size:28px;letter-spacing:-1px;color:#111827;\">New <span style=\"background: linear-gradient(90deg, #4F46E5, #EC4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent;\">Campaign</span> Heading</h2>",
+            "headingEditMode": "visual",
+            "subHeading": "Sub-text here",
+            "textAlign": "left",
+            "content": "<p>Content...</p>",
+            "conditions": {
+                "match": "any",
+                "rules": [
+                    {
+                        "type": "page",
+                        "ids": [
+                            2
+                        ]
+                    }
+                ]
+            },
+            "style": {
+                "buttonColor": "#EC4899",
+                "buttonWidth": "100",
+                "headingTextColor": "#111827",
+                "headingBgColor": "#F8FAFC",
+                "headingFontSize": "20",
+                "bodyBgColor": "#FFFFFF",
+                "width": "500",
+                "radius": "24",
+                "padding": "32",
+                "closeIconSize": "20",
+                "closeIconColor": "#64748B",
+                "closeIconBg": "#F1F5F9"
+            },
+            "logic": [
+                {
+                    "id": "L1",
+                    "trigger": "scroll",
+                    "delay": "0",
+                    "scrollPercentage": "0"
+                }
+            ]
+        }
+    ]
+}
