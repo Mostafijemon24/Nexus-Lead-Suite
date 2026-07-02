@@ -1500,8 +1500,10 @@ export function FieldSettingsInline({
                 }), s.jsx("div", {
                     className: "space-y-3",
                     children: v.map((N, I) => s.jsxs("div", {
-                        className: "grid grid-cols-2 gap-3",
+                        className: "flex items-end gap-2",
                         children: [s.jsxs("div", {
+                            className: "grid grid-cols-2 gap-3 min-w-0 flex-1",
+                            children: [s.jsxs("div", {
                             children: [s.jsx("label", {
                                 className: "mb-1 block text-xs font-semibold text-slate-400",
                                 children: "Label"
@@ -1533,6 +1535,21 @@ export function FieldSettingsInline({
                                 },
                                 className: "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none font-mono"
                             })]
+                        })]
+                        }), s.jsx("button", {
+                            type: "button",
+                            disabled: v.length <= 1,
+                            onClick: () => {
+                                if (v.length <= 1) return;
+                                const D = v.filter((J, P) => P !== I);
+                                d("options", D)
+                            },
+                            "aria-label": "Remove option",
+                            title: v.length <= 1 ? "At least one option is required" : "Remove option",
+                            className: "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500 disabled:pointer-events-none disabled:opacity-40",
+                            children: s.jsx(Trash2, {
+                                size: 16
+                            })
                         })]
                     }, I))
                 }), s.jsx("button", {
