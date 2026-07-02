@@ -111,8 +111,21 @@ const DEFAULT_SETTINGS = {
 	chatBlinkDotColor: '#ffffff',
 	chatHoverEffect: 'lift',
 	reportLogo: '',
+	reportLogoPdfMax: 400,
 	autoPopupFormIds: [],
 };
+
+const REPORT_LOGO_PDF_MIN = 100;
+const REPORT_LOGO_PDF_MAX = 1000;
+const REPORT_LOGO_PDF_DEFAULT = 400;
+
+function clampReportLogoPdfMax( value ) {
+	const n = Math.round( Number( value ) );
+	if ( ! Number.isFinite( n ) ) {
+		return REPORT_LOGO_PDF_DEFAULT;
+	}
+	return Math.max( REPORT_LOGO_PDF_MIN, Math.min( REPORT_LOGO_PDF_MAX, n ) );
+}
 
 function newAutoPopupFormRow() {
 	const rk =
@@ -295,6 +308,7 @@ const InlineToggle = ( { enabled, onClick, label, desc, icon: Icon } ) => (
    Main component
 ───────────────────────────────────────────────────────── */
 export function SettingsPage() {
+	const pluginVersion = window?.nexulesuite_Admin?.pluginVersion || '';
 	const [ activeTab, setActiveTab ] = useState( 'general' );
 	const [ generatedLink, setGeneratedLink ] = useState( '' );
 	const [ copySuccess, setCopySuccess ] = useState( false );
@@ -384,6 +398,13 @@ export function SettingsPage() {
 	}, [] );
 
 	const updateSetting = ( field, value ) => setSettings( ( prev ) => ( { ...prev, [ field ]: value } ) );
+
+	// Report/PDF logo size: clamped value drives the slider + live preview; the raw
+	// field value is kept as-typed so the number input stays editable (normalized on blur).
+	const reportLogoPdfMax = clampReportLogoPdfMax( settings.reportLogoPdfMax );
+	const reportLogoPreviewPx = Math.round(
+		40 + ( ( reportLogoPdfMax - REPORT_LOGO_PDF_MIN ) / ( REPORT_LOGO_PDF_MAX - REPORT_LOGO_PDF_MIN ) ) * 80
+	);
 
 	const handleSave = async () => {
 		if ( saving ) return;
@@ -663,7 +684,7 @@ export function SettingsPage() {
 			<div className="w-full flex flex-col gap-6 md:gap-8">
 					<div className="flex gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100 text-[10px] font-bold text-slate-500 uppercase">
 						<div className="flex items-center gap-2 px-3 py-1.5 border-r border-slate-100">
-							<Server size={ 12 } className="text-blue-500" /> Ver 1.0.0 Nexus
+							<Server size={ 12 } className="text-blue-500" /> Ver { pluginVersion } Nexus
 						</div>
 						<div className="flex items-center gap-2 px-3 py-1.5">
 							<CircleDot size={ 12 } className="text-green-500 animate-pulse" /> System Active
@@ -866,11 +887,28 @@ export function SettingsPage() {
 																Source file min. <strong>700 × 700 px</strong> for sharp PDF · transparent PNG/WebP · max 3 MB · Preview uses <strong>70 × 70 px</strong> (no cropping or stretch).
 															</p>
 														</div>
+														<div className="nexulesuite_sg-field">
+															<span className="lbl">Logo size in PDF</span>
+															<div className="nexulesuite_sg-logo-size-row">
+																<input type="range" min={ REPORT_LOGO_PDF_MIN } max={ REPORT_LOGO_PDF_MAX } step="10" value={ reportLogoPdfMax } onChange={ ( e ) => updateSetting( 'reportLogoPdfMax', Number( e.target.value ) ) } className="nexulesuite_sg-logo-size-range" aria-label="Logo size in PDF reports" />
+																<input type="number" min={ REPORT_LOGO_PDF_MIN } max={ REPORT_LOGO_PDF_MAX } step="10" value={ settings.reportLogoPdfMax ?? REPORT_LOGO_PDF_DEFAULT } onChange={ ( e ) => updateSetting( 'reportLogoPdfMax', e.target.value === '' ? '' : Number( e.target.value ) ) } onBlur={ () => updateSetting( 'reportLogoPdfMax', clampReportLogoPdfMax( settings.reportLogoPdfMax ) ) } className="inp nexulesuite_sg-logo-size-num" aria-label="Logo size in PDF reports (points)" />
+																<span className="nexulesuite_sg-logo-size-unit">pt</span>
+															</div>
+															<p className="hint">Controls how large the logo prints in PDF reports. Range <strong>{ REPORT_LOGO_PDF_MIN }–{ REPORT_LOGO_PDF_MAX }</strong> · default <strong>{ REPORT_LOGO_PDF_DEFAULT }</strong>. The preview updates as you drag.</p>
+														</div>
 													</div>
 													<div className="nexulesuite_sg-stack">
 														<span className="lbl">PDF report header preview</span>
 														<div className="nexulesuite_sg-preview-box">
-															<div className="nexulesuite_sg-preview-logo">
+																<div
+																	className="nexulesuite_sg-preview-logo"
+																	style={ {
+																		width: `${ reportLogoPreviewPx }px`,
+																		height: `${ reportLogoPreviewPx }px`,
+																		minWidth: `${ reportLogoPreviewPx }px`,
+																		minHeight: `${ reportLogoPreviewPx }px`,
+																	} }
+																>
 																{ settings.reportLogo ? (
 																	<img
 																		src={ settings.reportLogo }
@@ -1534,7 +1572,7 @@ export function SettingsPage() {
 												<button
 													type="button"
 													onClick={ () => {
-														const data = { version: '1.0.0', settings };
+														const data = { version: pluginVersion, settings };
 														const blob = new Blob( [ JSON.stringify( data, null, 2 ) ], { type: 'application/json' } );
 														const url = URL.createObjectURL( blob );
 														const a = document.createElement( 'a' );

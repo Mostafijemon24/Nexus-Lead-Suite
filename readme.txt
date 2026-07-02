@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.13
+Stable tag: 1.0.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -101,6 +101,11 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 == Screenshots ==
 
 1. Dashboard (coming soon)
+
+= 1.0.14 =
+* Form builder: remove individual options from select/radio fields in the visual editor.
+* Settings: configurable report logo max size for PDF exports with live preview.
+* Admin: plugin version shown on the Settings page.
 
 = 1.0.13 =
 * Activities: improved tracking with conditional popup filtering so unrelated popup events are not logged.

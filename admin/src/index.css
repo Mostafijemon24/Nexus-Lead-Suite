@@ -3427,6 +3427,71 @@
 	font-weight: 600;
 }
 
+/* Report/PDF logo size control (slider + numeric input) */
+.nexulesuite_settings-general-wrap .nexulesuite_sg-logo-size-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.nexulesuite_settings-general-wrap .nexulesuite_sg-logo-size-row .nexulesuite_sg-logo-size-range {
+	flex: 1 1 auto;
+	min-width: 0;
+	height: 6px;
+	margin: 0;
+	padding: 0;
+	-webkit-appearance: none;
+	appearance: none;
+	background: var(--nexulesuite_sg-line);
+	border-radius: 999px;
+	cursor: pointer;
+	accent-color: var(--nexulesuite_sg-primary);
+}
+
+.nexulesuite_settings-general-wrap .nexulesuite_sg-logo-size-row .nexulesuite_sg-logo-size-range::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--nexulesuite_sg-primary);
+	border: 2px solid #fff;
+	box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+	cursor: pointer;
+}
+
+.nexulesuite_settings-general-wrap .nexulesuite_sg-logo-size-row .nexulesuite_sg-logo-size-range::-moz-range-thumb {
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--nexulesuite_sg-primary);
+	border: 2px solid #fff;
+	box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+	cursor: pointer;
+}
+
+.nexulesuite_settings-general-wrap .nexulesuite_sg-logo-size-row .nexulesuite_sg-logo-size-range:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 4px var(--nexulesuite_sg-primary-ring);
+}
+
+.nexulesuite_settings-general-wrap .nexulesuite_sg-logo-size-row .nexulesuite_sg-logo-size-num {
+	flex: 0 0 auto;
+	width: 92px;
+	text-align: center;
+}
+
+.nexulesuite_settings-general-wrap .nexulesuite_sg-logo-size-row .nexulesuite_sg-logo-size-unit {
+	flex: 0 0 auto;
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--nexulesuite_sg-faint);
+}
+
+.nexulesuite_settings-general-wrap .nexulesuite_sg-preview-logo {
+	transition: width 0.15s ease, height 0.15s ease;
+}
+
 .nexulesuite_settings-general-wrap .nexulesuite_sg-font-list {
 	height: 280px;
 	overflow-y: auto;
