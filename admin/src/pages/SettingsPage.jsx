@@ -13,6 +13,7 @@ import {
 	Image as ImageIcon, MessageCircle, Clock, X,
 	Mail, Link as LinkIcon, ShieldCheck, Wand2, Copy, Check, AlertTriangle,
 	FileX, Paintbrush, Info, Type as FontIcon, Loader2, Plus, Trash2, Layers,
+	Send, Lock,
 } from 'lucide-react';
 
 /* ─────────────────────────────────────────────────────────────
@@ -113,6 +114,46 @@ const DEFAULT_SETTINGS = {
 	reportLogo: '',
 	reportLogoPdfMax: 400,
 	autoPopupFormIds: [],
+};
+
+const DEFAULT_SMTP = {
+	enabled: false,
+	mailer: 'other',
+	host: '',
+	port: '587',
+	secure: 'tls',
+	username: '',
+	password: '',
+	from_email: '',
+	from_name: '',
+	force_from_name: false,
+	oauth_client_id: '',
+	oauth_client_secret: '',
+};
+
+const DEFAULT_SMTP_META = {
+	connected: false,
+	oauth_email: '',
+	hasClientSecret: false,
+	redirect_uri: '',
+	authorize_urls: {},
+	disconnect_url: '',
+};
+
+// Provider cards. Gmail/Outlook are relay presets whose host/port/encryption are
+// auto-configured server-side (kept in sync with Mailer::mailer_presets() in PHP).
+const SMTP_MAILERS = [
+	{ id: 'default', name: 'Default (PHP)', tagline: 'WordPress built-in mail()', accent: 'slate' },
+	{ id: 'gmail', name: 'Google / Gmail', tagline: 'Gmail & Workspace · OAuth 2.0', accent: 'rose' },
+	{ id: 'outlook', name: 'Microsoft / Outlook', tagline: 'Microsoft 365 · OAuth 2.0', accent: 'blue' },
+	{ id: 'other', name: 'Other SMTP', tagline: 'Any SMTP server', accent: 'violet' },
+];
+
+const SMTP_MAILER_ACCENTS = {
+	slate: 'border-slate-300 bg-slate-50 text-slate-600',
+	rose: 'border-rose-300 bg-rose-50 text-rose-600',
+	blue: 'border-blue-300 bg-blue-50 text-blue-600',
+	violet: 'border-violet-300 bg-violet-50 text-violet-600',
 };
 
 const REPORT_LOGO_PDF_MIN = 100;
@@ -304,6 +345,14 @@ const InlineToggle = ( { enabled, onClick, label, desc, icon: Icon } ) => (
 	</div>
 );
 
+/* Small hover/focus tooltip — keeps long help text off the page until needed. */
+const InfoTip = ( { text, label = 'More information' } ) => (
+	<button type="button" className="nexulesuite_tip" aria-label={ label }>
+		<Info size={ 13 } aria-hidden="true" />
+		<span className="nexulesuite_tip-bubble" role="tooltip">{ text }</span>
+	</button>
+);
+
 /* ─────────────────────────────────────────────────────────────
    Main component
 ───────────────────────────────────────────────────────── */
@@ -330,6 +379,15 @@ export function SettingsPage() {
 	const [ popups, setPopups ] = useState( [] );
 	const [ formsList, setFormsList ] = useState( [] );
 	const [ autoPopupFormRows, setAutoPopupFormRows ] = useState( [] );
+	const [ smtp, setSmtp ] = useState( DEFAULT_SMTP );
+	const [ smtpHasPassword, setSmtpHasPassword ] = useState( false );
+	const [ smtpSaving, setSmtpSaving ] = useState( false );
+	const [ smtpTesting, setSmtpTesting ] = useState( false );
+	const [ smtpTestEmail, setSmtpTestEmail ] = useState( '' );
+	const [ smtpTestResult, setSmtpTestResult ] = useState( null );
+	const [ smtpTestHtml, setSmtpTestHtml ] = useState( true );
+	const [ smtpMeta, setSmtpMeta ] = useState( DEFAULT_SMTP_META );
+	const [ redirectCopied, setRedirectCopied ] = useState( false );
 
 	const showNotice = ( type, text ) => {
 		if ( type === 'success' ) {
@@ -351,13 +409,14 @@ export function SettingsPage() {
 	useEffect( () => {
 		( async () => {
 			try {
-				const [ gResult, tResult, postsRaw, pagesRaw, popupsResult, formsResult ] = await Promise.allSettled( [
+				const [ gResult, tResult, postsRaw, pagesRaw, popupsResult, formsResult, smtpResult ] = await Promise.allSettled( [
 					apiFetch( '/settings/general', { method: 'GET' } ),
 					apiFetch( '/emails/templates', { method: 'GET' } ),
 					wpFetch( 'wp/v2/posts?per_page=50&_fields=id,title' ),
 					wpFetch( 'wp/v2/pages?per_page=50&_fields=id,title' ),
 					apiFetch( '/popups', { method: 'GET' } ),
 					apiFetch( '/forms', { method: 'GET' } ),
+					apiFetch( '/smtp/settings', { method: 'GET' } ),
 				] );
 
 				if ( gResult.status === 'fulfilled' && gResult.value.res.ok && gResult.value.json?.success ) {
@@ -385,6 +444,27 @@ export function SettingsPage() {
 					);
 				}
 
+				if ( smtpResult.status === 'fulfilled' && smtpResult.value.res.ok && smtpResult.value.json?.success ) {
+					const smtpData = smtpResult.value.json?.data || {};
+					const srvSmtp = smtpData.settings || {};
+					setSmtp( ( prev ) => ( {
+						...prev,
+						...srvSmtp,
+						port: srvSmtp.port != null ? String( srvSmtp.port ) : prev.port,
+						password: '',
+						oauth_client_secret: '',
+					} ) );
+					setSmtpHasPassword( !! smtpData.hasPassword );
+					setSmtpMeta( {
+						connected: !! smtpData.connected,
+						oauth_email: smtpData.oauth_email || '',
+						hasClientSecret: !! smtpData.hasClientSecret,
+						redirect_uri: smtpData.redirect_uri || '',
+						authorize_urls: smtpData.authorize_urls || {},
+						disconnect_url: smtpData.disconnect_url || '',
+					} );
+				}
+
 				const posts = postsRaw.status === 'fulfilled' && Array.isArray( postsRaw.value ) ? postsRaw.value : [];
 				const pages = pagesRaw.status === 'fulfilled' && Array.isArray( pagesRaw.value ) ? pagesRaw.value : [];
 				setAllPosts( posts.map( ( p ) => ( { id: p.id, title: p.title?.rendered || '' } ) ) );
@@ -398,6 +478,127 @@ export function SettingsPage() {
 	}, [] );
 
 	const updateSetting = ( field, value ) => setSettings( ( prev ) => ( { ...prev, [ field ]: value } ) );
+
+	const updateSmtp = ( field, value ) => setSmtp( ( prev ) => ( { ...prev, [ field ]: value } ) );
+
+	// Surface the OAuth connect / disconnect result after the provider redirects back.
+	useEffect( () => {
+		const params = new URLSearchParams( window.location.search );
+		const status = params.get( 'nls_smtp' );
+		if ( ! status ) {
+			return;
+		}
+		setActiveTab( 'smtp' );
+		if ( status === 'connected' || status === 'disconnected' ) {
+			setSuccessOpen( true );
+		} else if ( status === 'error' ) {
+			const msg = params.get( 'nls_smtp_msg' );
+			showNotice( 'error', msg ? decodeURIComponent( msg ) : 'OAuth authorization failed.' );
+		}
+		params.delete( 'nls_smtp' );
+		params.delete( 'nls_smtp_msg' );
+		const qs = params.toString();
+		window.history.replaceState( {}, '', window.location.pathname + ( qs ? `?${ qs }` : '' ) + window.location.hash );
+	}, [] );
+
+	const copyRedirectUri = () => {
+		const text = smtpMeta.redirect_uri || '';
+		if ( ! text || ! navigator?.clipboard?.writeText ) {
+			return;
+		}
+		navigator.clipboard.writeText( text ).then( () => {
+			setRedirectCopied( true );
+			window.setTimeout( () => setRedirectCopied( false ), 2000 );
+		} ).catch( () => {} );
+	};
+
+	// Provider card currently selected: "default" means SMTP disabled (WordPress mail()).
+	const smtpCurrentMailer = smtp.enabled ? ( smtp.mailer || 'other' ) : 'default';
+
+	const selectSmtpMailer = ( id ) => {
+		if ( id === 'default' ) {
+			setSmtp( ( prev ) => ( { ...prev, enabled: false } ) );
+			return;
+		}
+		setSmtp( ( prev ) => ( { ...prev, enabled: true, mailer: id } ) );
+	};
+
+	const handleSaveSmtp = async () => {
+		if ( smtpSaving ) return;
+		setSmtpSaving( true );
+		setSmtpTestResult( null );
+		try {
+			const port = parseInt( smtp.port, 10 );
+			const payload = {
+				enabled: !! smtp.enabled,
+				mailer: smtp.mailer || 'other',
+				host: ( smtp.host || '' ).trim(),
+				port: Number.isFinite( port ) && port > 0 ? port : 587,
+				secure: smtp.secure || 'tls',
+				username: ( smtp.username || '' ).trim(),
+				from_email: ( smtp.from_email || '' ).trim(),
+				from_name: ( smtp.from_name || '' ).trim(),
+				force_from_name: !! smtp.force_from_name,
+				oauth_client_id: ( smtp.oauth_client_id || '' ).trim(),
+			};
+			// Only send secrets the admin actually typed; empty values keep the
+			// encrypted values already stored server-side.
+			if ( smtp.password ) {
+				payload.password = smtp.password;
+			}
+			if ( smtp.oauth_client_secret ) {
+				payload.oauth_client_secret = smtp.oauth_client_secret;
+			}
+			const { res, json } = await apiFetch( '/smtp/settings', {
+				method: 'POST',
+				body: JSON.stringify( { settings: payload } ),
+			} );
+			if ( ! res.ok || ! json?.success ) throw new Error( json?.message || 'Save failed.' );
+			if ( smtp.password ) {
+				setSmtpHasPassword( true );
+			}
+			const saved = json?.data || {};
+			setSmtpMeta( {
+				connected: !! saved.connected,
+				oauth_email: saved.oauth_email || '',
+				hasClientSecret: !! saved.hasClientSecret,
+				redirect_uri: saved.redirect_uri || smtpMeta.redirect_uri,
+				authorize_urls: saved.authorize_urls || smtpMeta.authorize_urls,
+				disconnect_url: saved.disconnect_url || smtpMeta.disconnect_url,
+			} );
+			setSmtp( ( prev ) => ( { ...prev, password: '', oauth_client_secret: '' } ) );
+			setSuccessOpen( true );
+		} catch ( e ) {
+			showNotice( 'error', e?.message || 'Could not save SMTP settings.' );
+		} finally {
+			setSmtpSaving( false );
+		}
+	};
+
+	const handleTestSmtp = async () => {
+		if ( smtpTesting ) return;
+		const to = ( smtpTestEmail || '' ).trim();
+		if ( ! to || ! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test( to ) ) {
+			setSmtpTestResult( { ok: false, text: 'Enter a valid email address to send the test to.' } );
+			return;
+		}
+		setSmtpTesting( true );
+		setSmtpTestResult( null );
+		try {
+			const { res, json } = await apiFetch( '/smtp/test', {
+				method: 'POST',
+				body: JSON.stringify( { to, html: !! smtpTestHtml } ),
+			} );
+			if ( ! res.ok || ! json?.success ) {
+				throw new Error( json?.message || 'Test email failed.' );
+			}
+			setSmtpTestResult( { ok: true, text: `Test email sent to ${ to }. Check the inbox (and spam).` } );
+		} catch ( e ) {
+			setSmtpTestResult( { ok: false, text: e?.message || 'Test email failed.' } );
+		} finally {
+			setSmtpTesting( false );
+		}
+	};
 
 	// Report/PDF logo size: clamped value drives the slider + live preview; the raw
 	// field value is kept as-typed so the number input stays editable (normalized on blur).
@@ -626,6 +827,7 @@ export function SettingsPage() {
 		{ id: 'general', label: 'General & Navigation', icon: Layout },
 		{ id: 'popup', label: 'Auto PopUp Logic', icon: Zap },
 		{ id: 'chat', label: 'Livechat & Styling', icon: MessageCircle },
+		{ id: 'smtp', label: 'SMTP / Email', icon: Mail },
 		{ id: 'backup', label: 'Export Settings', icon: Database },
 	];
 
@@ -635,26 +837,37 @@ export function SettingsPage() {
 			subtitle="Global configuration & automation logic"
 			icon={ <Settings size={ 18 } /> }
 			footer={
-				[ 'general', 'popup', 'chat', 'backup' ].includes( activeTab ) ? (
+				[ 'general', 'popup', 'chat', 'backup', 'smtp' ].includes( activeTab ) ? (
 					<AdminStickyFooter
 						actions={
-							<>
+							activeTab === 'smtp' ? (
 								<button
 									type="button"
-									onClick={ () => setDiscardOpen( true ) }
-									className="font-bold text-[10px] uppercase tracking-widest text-slate-400 transition-colors duration-200 hover:text-white"
-								>
-									Discard Changes
-								</button>
-								<button
-									type="button"
-									disabled={ saving }
-									onClick={ handleSave }
+									disabled={ smtpSaving }
+									onClick={ handleSaveSmtp }
 									className="flex items-center gap-3 rounded-xl bg-[#2563EB] px-10 py-3 text-xs font-black text-white shadow-xl transition-all duration-200 hover:bg-blue-600 active:scale-95 disabled:opacity-60"
 								>
-									<Save size={ 16 } />{ saving ? 'Saving...' : 'Save Configuration' }
+									<Save size={ 16 } />{ smtpSaving ? 'Saving...' : 'Save SMTP Settings' }
 								</button>
-							</>
+							) : (
+								<>
+									<button
+										type="button"
+										onClick={ () => setDiscardOpen( true ) }
+										className="font-bold text-[10px] uppercase tracking-widest text-slate-400 transition-colors duration-200 hover:text-white"
+									>
+										Discard Changes
+									</button>
+									<button
+										type="button"
+										disabled={ saving }
+										onClick={ handleSave }
+										className="flex items-center gap-3 rounded-xl bg-[#2563EB] px-10 py-3 text-xs font-black text-white shadow-xl transition-all duration-200 hover:bg-blue-600 active:scale-95 disabled:opacity-60"
+									>
+										<Save size={ 16 } />{ saving ? 'Saving...' : 'Save Configuration' }
+									</button>
+								</>
+							)
 						}
 					/>
 				) : null
@@ -729,11 +942,10 @@ export function SettingsPage() {
 														<Layout size={ 16 } />
 													</span>
 													<div>
-														<span className="nexulesuite_sg-sec-title">Navigation &amp; Email</span>
-														<p className="nexulesuite_sg-sec-desc">Footer menu behaviour and activity notification routing.</p>
+														<span className="nexulesuite_sg-sec-title nexulesuite_sg-title-tip">Navigation &amp; Email <InfoTip text={ 'Footer menu behaviour and activity notification routing.' } /></span>
 													</div>
 												</div>
-												<div className="nexulesuite_sg-grid-2">
+												<div className="nexulesuite_sg-grid-2 nexulesuite_sg-grid-2-stretch">
 													<div className="nexulesuite_sg-stack">
 														<div className="nexulesuite_sg-toggle-card">
 															<div className="nexulesuite_sg-toggle-card-body">
@@ -757,7 +969,7 @@ export function SettingsPage() {
 															</div>
 														</div>
 														<div className="nexulesuite_sg-select-card">
-															<span className="lbl">Events Email Template</span>
+															<span className="lbl nexulesuite_lbl-tip">Events Email Template <InfoTip text={ 'Used for Activity Notifications only — form submission data is NOT sent via this notification email.' } /></span>
 															<select
 																className="sel"
 																value={ settings.selectedEmailTemplate }
@@ -794,7 +1006,7 @@ export function SettingsPage() {
 														</div>
 														<div className={ `nexulesuite_sg-client-panel${ ! settings.allowClientAccess ? ' is-disabled' : '' }` }>
 															<div className="nexulesuite_sg-field">
-																<span className="lbl">Report URL slug</span>
+																<span className="lbl nexulesuite_lbl-tip">Report URL slug <InfoTip text={ 'Pretty URL path (save settings, then generate the link). Plain permalinks use a query-string URL automatically.' } /></span>
 																<input
 																	type="text"
 																	className="inp"
@@ -802,9 +1014,6 @@ export function SettingsPage() {
 																	onChange={ ( e ) => updateSetting( 'clientAccessSlug', e.target.value ) }
 																	placeholder="report-access"
 																/>
-																<p className="hint">
-																	Pretty URL path (save settings, then generate link). Plain permalinks use a query-string URL automatically.
-																</p>
 															</div>
 															<div className="nexulesuite_sg-field">
 																<span className="lbl">Token TTL (Minutes)</span>
@@ -846,16 +1055,13 @@ export function SettingsPage() {
 														<ImageIcon size={ 16 } />
 													</span>
 													<div>
-														<span className="nexulesuite_sg-sec-title">Report &amp; PDF Logo</span>
-														<p className="nexulesuite_sg-sec-desc">
-															If uploaded, the logo appears above the site title in PDF reports; otherwise only the title shows.
-														</p>
+														<span className="nexulesuite_sg-sec-title nexulesuite_sg-title-tip">Report &amp; PDF Logo <InfoTip text={ 'If uploaded, the logo appears above the site title in PDF reports; otherwise only the title shows.' } /></span>
 													</div>
 												</div>
 												<div className="nexulesuite_sg-grid-2">
 													<div className="nexulesuite_sg-stack">
 														<div className="nexulesuite_sg-field">
-															<span className="lbl">Logo URL</span>
+															<span className="lbl nexulesuite_lbl-tip">Logo URL <InfoTip text={ 'Source file min. 700 × 700 px for sharp PDF · transparent PNG/WebP · max 3 MB · Preview uses 70 × 70 px (no cropping or stretch).' } /></span>
 															<div className="nexulesuite_sg-logo-row">
 																<input
 																	type="text"
@@ -883,18 +1089,14 @@ export function SettingsPage() {
 																	<X size={ 16 } /> Remove
 																</button>
 															</div>
-															<p className="hint">
-																Source file min. <strong>700 × 700 px</strong> for sharp PDF · transparent PNG/WebP · max 3 MB · Preview uses <strong>70 × 70 px</strong> (no cropping or stretch).
-															</p>
 														</div>
 														<div className="nexulesuite_sg-field">
-															<span className="lbl">Logo size in PDF</span>
+															<span className="lbl nexulesuite_lbl-tip">Logo size in PDF <InfoTip text={ `Controls how large the logo prints in PDF reports. Range ${ REPORT_LOGO_PDF_MIN }–${ REPORT_LOGO_PDF_MAX } · default ${ REPORT_LOGO_PDF_DEFAULT }. The preview updates as you drag.` } /></span>
 															<div className="nexulesuite_sg-logo-size-row">
 																<input type="range" min={ REPORT_LOGO_PDF_MIN } max={ REPORT_LOGO_PDF_MAX } step="10" value={ reportLogoPdfMax } onChange={ ( e ) => updateSetting( 'reportLogoPdfMax', Number( e.target.value ) ) } className="nexulesuite_sg-logo-size-range" aria-label="Logo size in PDF reports" />
 																<input type="number" min={ REPORT_LOGO_PDF_MIN } max={ REPORT_LOGO_PDF_MAX } step="10" value={ settings.reportLogoPdfMax ?? REPORT_LOGO_PDF_DEFAULT } onChange={ ( e ) => updateSetting( 'reportLogoPdfMax', e.target.value === '' ? '' : Number( e.target.value ) ) } onBlur={ () => updateSetting( 'reportLogoPdfMax', clampReportLogoPdfMax( settings.reportLogoPdfMax ) ) } className="inp nexulesuite_sg-logo-size-num" aria-label="Logo size in PDF reports (points)" />
 																<span className="nexulesuite_sg-logo-size-unit">pt</span>
 															</div>
-															<p className="hint">Controls how large the logo prints in PDF reports. Range <strong>{ REPORT_LOGO_PDF_MIN }–{ REPORT_LOGO_PDF_MAX }</strong> · default <strong>{ REPORT_LOGO_PDF_DEFAULT }</strong>. The preview updates as you drag.</p>
 														</div>
 													</div>
 													<div className="nexulesuite_sg-stack">
@@ -932,10 +1134,7 @@ export function SettingsPage() {
 														<FontIcon size={ 16 } />
 													</span>
 													<div>
-														<span className="nexulesuite_sg-sec-title">Global Font Settings</span>
-														<p className="nexulesuite_sg-sec-desc">
-															Applies to all plugin elements: Forms, Popups, Menu Items, Reports &amp; PDF.
-														</p>
+														<span className="nexulesuite_sg-sec-title nexulesuite_sg-title-tip">Global Font Settings <InfoTip text={ 'Font, size, weight & line height apply globally to all plugin frontend elements (Forms, Popups, Menu Items & Reports). Served via Google CDN — no files stored in the plugin.' } /></span>
 													</div>
 												</div>
 												<div className="nexulesuite_sg-grid-2">
@@ -991,26 +1190,10 @@ export function SettingsPage() {
 																<div className="nexulesuite_sg-font-input-fake">Type your name here...</div>
 															</div>
 														</div>
-														<div className="nexulesuite_sg-info-box">
-															<Info size={ 14 } className="nexulesuite_sg-info-ico" />
-															<p>
-																Font, size, weight &amp; line height apply globally to all plugin frontend elements: Forms, Popups, Menu Items &amp; Reports. Served via Google CDN — <strong>no files stored in plugin</strong>.
-															</p>
-														</div>
 													</div>
 												</div>
 											</section>
 
-											<div className="nexulesuite_sg-alert">
-												<span className="nexulesuite_sg-alert-ico" aria-hidden="true"><AlertTriangle size={ 18 } /></span>
-												<div>
-													<h6 className="nexulesuite_sg-alert-title">System Notification Logic Alert</h6>
-													<p className="nexulesuite_sg-alert-text">
-														The email template selected above is strictly for <strong>Activity Notifications only</strong>.
-														Submission data will NOT be sent via this notification email.
-													</p>
-												</div>
-											</div>
 										</div>
 									</div>
 								) }
@@ -1233,15 +1416,13 @@ export function SettingsPage() {
 																<MessageCircle size={ 16 } />
 															</span>
 															<div>
-																<span className="nexulesuite_lc-sec-title">Livechat Widget</span>
-																<p className="nexulesuite_lc-sec-desc">Enable the floating chat widget and configure header content shown in the panel.</p>
+																<span className="nexulesuite_lc-sec-title nexulesuite_sg-title-tip">Livechat Widget <InfoTip text={ 'Enable the floating chat widget and configure the header content shown in the panel.' } /></span>
 															</div>
 														</div>
 														<div className="nexulesuite_lc-stack">
 															<div className="nexulesuite_lc-toggle-card">
 																<div className="nexulesuite_lc-toggle-card-body">
 																	<span className="nexulesuite_lc-toggle-card-title">Enable Livechat Widget</span>
-																	<p className="hint">Show the floating chat launcher on the front-end</p>
 																</div>
 																<div
 																	className={ `nexulesuite_lc-toggle${ settings.enableLivechat ? ' on' : '' }` }
@@ -1261,14 +1442,13 @@ export function SettingsPage() {
 															</div>
 															<div className="nexulesuite_lc-grid-2">
 																<div className="nexulesuite_lc-field is-full">
-																	<span className="lbl">Livechat Button Image</span>
 																	<div className="nexulesuite_lc-upload-row">
 																		<input
 																			type="text"
 																			className="inp"
 																			value={ settings.chatButtonImage }
 																			onChange={ ( e ) => updateSetting( 'chatButtonImage', e.target.value ) }
-																			placeholder="URL or upload — chat panel header only (launcher uses chat icon)"
+																			placeholder="Livechat button image — URL or upload…"
 																		/>
 																		<input type="file" accept="image/*" className="hidden" ref={ fileInputRef } onChange={ handleImageUpload } />
 																		<button
@@ -1284,29 +1464,29 @@ export function SettingsPage() {
 																	</div>
 																</div>
 																<div className="nexulesuite_lc-field">
-																	<span className="lbl">Livechat Title</span>
 																	<input
 																		type="text"
 																		className="inp"
 																		value={ settings.chatTitle }
 																		onChange={ ( e ) => updateSetting( 'chatTitle', e.target.value ) }
+																		placeholder="Livechat Title"
 																	/>
 																</div>
 																<div className="nexulesuite_lc-field">
-																	<span className="lbl">Livechat Badge</span>
 																	<input
 																		type="text"
 																		className="inp"
 																		value={ settings.chatBadge }
 																		onChange={ ( e ) => updateSetting( 'chatBadge', e.target.value ) }
+																		placeholder="Livechat Badge"
 																	/>
 																</div>
 																<div className="nexulesuite_lc-field is-full">
-																	<span className="lbl">Livechat Content</span>
 																	<textarea
 																		className="ta"
 																		value={ settings.chatContent }
 																		onChange={ ( e ) => updateSetting( 'chatContent', e.target.value ) }
+																		placeholder="Livechat Content"
 																	/>
 																</div>
 															</div>
@@ -1319,8 +1499,7 @@ export function SettingsPage() {
 																<MousePointer2 size={ 16 } />
 															</span>
 															<div>
-																<span className="nexulesuite_lc-sec-title">Chat Buttons &amp; Redirects</span>
-																<p className="nexulesuite_lc-sec-desc">Configure button labels and where each action links — URL or popup.</p>
+																<span className="nexulesuite_lc-sec-title nexulesuite_sg-title-tip">Chat Buttons &amp; Redirects <InfoTip text={ 'Configure the button labels and where each action links — a URL or a popup.' } /></span>
 															</div>
 														</div>
 														<div className="nexulesuite_lc-btn-list">
@@ -1407,7 +1586,7 @@ export function SettingsPage() {
 																		) }
 																		{ isBtn1 && linkType === 'popup' && (
 																			<p className="nexulesuite_lc-info-note">
-																				Selected popup content is shown inside the chat bubble. Use <code>[nexulesuite_form id=&quot;…&quot;]</code> in the popup body. Set recipient email(s) on that form under <strong>Form Builder → Advanced → Submission notification email(s)</strong>.
+																				Popup form setup <InfoTip text={ 'Selected popup content is shown inside the chat bubble. Use [nexulesuite_form id="…"] in the popup body, and set recipient email(s) on that form under Form Builder → Advanced → Submission notification email(s).' } />
 																			</p>
 																		) }
 																	</div>
@@ -1422,13 +1601,12 @@ export function SettingsPage() {
 																<Paintbrush size={ 16 } />
 															</span>
 															<div>
-																<span className="nexulesuite_lc-sec-title">Button &amp; Widget Styling</span>
-																<p className="nexulesuite_lc-sec-desc">Position, colours, spacing, and hover effects for the chat widget and buttons.</p>
+																<span className="nexulesuite_lc-sec-title nexulesuite_sg-title-tip">Button &amp; Widget Styling <InfoTip text={ 'Position, colours, spacing and hover effects for the chat widget and buttons.' } /></span>
 															</div>
 														</div>
 														<div className="nexulesuite_lc-grid-2">
 															<div className="nexulesuite_lc-field is-full">
-																<span className="lbl">Widget Position</span>
+																<span className="lbl nexulesuite_lbl-tip">Widget Position <InfoTip text={ 'Pins the entire floating chat widget to the left or right edge of the site (same as the front-end).' } /></span>
 																<div className="nexulesuite_lc-seg">
 																	{ [
 																		{ id: 'left', label: 'Left side', Icon: AlignLeft },
@@ -1448,7 +1626,6 @@ export function SettingsPage() {
 																		);
 																	} ) }
 																</div>
-																<p className="hint">Pins the entire floating chat widget to the left or right edge of the site (same as front-end).</p>
 															</div>
 															<div className="nexulesuite_lc-color-field">
 																<span className="lbl">Button BG</span>
@@ -1476,14 +1653,13 @@ export function SettingsPage() {
 																</div>
 															</div>
 															<div className="nexulesuite_lc-color-field">
-																<span className="lbl">Online Blink Dot</span>
+																<span className="lbl nexulesuite_lbl-tip">Online Blink Dot <InfoTip text={ 'Header status indicator shown next to the badge text.' } /></span>
 																<div className="cgroup">
 																	<label className="cswatch" style={ { backgroundColor: settings.chatBlinkDotColor } }>
 																		<input type="color" value={ settings.chatBlinkDotColor } onChange={ ( e ) => updateSetting( 'chatBlinkDotColor', e.target.value ) } />
 																	</label>
 																	<input type="text" className="chex" value={ settings.chatBlinkDotColor } onChange={ ( e ) => updateSetting( 'chatBlinkDotColor', e.target.value ) } />
 																</div>
-																<p className="hint">Header status indicator next to the badge text.</p>
 															</div>
 															<div className="nexulesuite_lc-range-field">
 																<div className="nexulesuite_lc-range-head">
@@ -1554,6 +1730,245 @@ export function SettingsPage() {
 										</div>
 									</div>
 								) }
+
+								{ activeTab === 'smtp' && (
+									<div className="nexulesuite_settings-general-wrap nexulesuite_smtp-wrap">
+										<div className="nexulesuite_sg-card">
+											<section className="nexulesuite_sg-section is-first">
+												<div className="nexulesuite_sg-sec-head">
+													<span className="nexulesuite_sg-sec-ico">
+														<Mail size={ 16 } />
+													</span>
+													<div>
+														<span className="nexulesuite_sg-sec-title nexulesuite_sg-title-tip">Mail <InfoTip text={ 'The From address & name applied to every email this website sends (forms, reports & all WordPress mail).' } /></span>
+													</div>
+												</div>
+												<div className="nexulesuite_sg-grid-2">
+													<div className="nexulesuite_sg-field">
+														<span className="lbl nexulesuite_lbl-tip">From Email <InfoTip text={ 'Use an address on your sending domain — providers reject mismatched From addresses.' } /></span>
+														<input type="email" className="inp" value={ smtp.from_email } onChange={ ( e ) => updateSmtp( 'from_email', e.target.value ) } placeholder="no-reply@example.com" autoComplete="off" spellCheck={ false } />
+													</div>
+													<div className="nexulesuite_sg-field">
+														<span className="lbl">From Name</span>
+														<input type="text" className="inp" value={ smtp.from_name } onChange={ ( e ) => updateSmtp( 'from_name', e.target.value ) } placeholder={ window?.nexulesuite_Admin?.siteTitle || 'Your site name' } />
+														<label className="mt-2 flex cursor-pointer items-center gap-2 text-[11px] font-semibold text-slate-500">
+															<input type="checkbox" className="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" checked={ !! smtp.force_from_name } onChange={ ( e ) => updateSmtp( 'force_from_name', e.target.checked ) } />
+															Force From Name — override the name set by other plugins
+														</label>
+													</div>
+												</div>
+											</section>
+
+											<section className="nexulesuite_sg-section">
+												<div className="nexulesuite_sg-sec-head">
+													<span className="nexulesuite_sg-sec-ico">
+														<Server size={ 16 } />
+													</span>
+													<div>
+														<span className="nexulesuite_sg-sec-title nexulesuite_sg-title-tip">Mailer <InfoTip text={ 'Choose how email is delivered. Selecting a provider routes all site mail through it.' } /></span>
+													</div>
+												</div>
+												<div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+													{ SMTP_MAILERS.map( ( m ) => {
+														const selected = smtpCurrentMailer === m.id;
+														return (
+															<button
+																key={ m.id }
+																type="button"
+																onClick={ () => selectSmtpMailer( m.id ) }
+																className={ `flex flex-col items-start gap-1.5 rounded-2xl border-2 p-5 text-left transition-all ${ selected ? 'border-blue-500 bg-blue-50/60 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300' }` }
+																aria-pressed={ selected }
+															>
+																<span className={ `flex h-9 w-9 items-center justify-center rounded-lg border ${ SMTP_MAILER_ACCENTS[ m.accent ] }` }>
+																	{ m.id === 'gmail' || m.id === 'outlook' ? <Mail size={ 16 } /> : <Server size={ 16 } /> }
+																</span>
+																<span className="mt-1 text-[13px] font-bold text-slate-800">{ m.name }</span>
+																<span className="text-[10px] leading-tight text-slate-400">{ m.tagline }</span>
+															</button>
+														);
+													} ) }
+												</div>
+											</section>
+
+											{ smtpCurrentMailer === 'default' ? (
+												<section className="nexulesuite_sg-section">
+													<div className="nexulesuite_sg-info-box">
+														<Info size={ 14 } className="nexulesuite_sg-info-ico" />
+														<p>WordPress will keep using the default PHP <code>mail()</code> function. Choose a mailer above to deliver email reliably through your own provider.</p>
+													</div>
+												</section>
+											) : (
+												<section className="nexulesuite_sg-section">
+													<div className="nexulesuite_sg-sec-head">
+														<span className="nexulesuite_sg-sec-ico">
+															<Lock size={ 16 } />
+														</span>
+														<div>
+															<span className="nexulesuite_sg-sec-title nexulesuite_sg-title-tip">
+																{ ( SMTP_MAILERS.find( ( m ) => m.id === smtpCurrentMailer )?.name || 'SMTP' ) } Settings
+																<InfoTip text={ smtpCurrentMailer === 'gmail'
+																	? 'OAuth 2.0 — no password stored. Host auto-set to smtp.gmail.com:465 (SSL). Client secret & OAuth tokens are encrypted at rest and never sent to the browser.'
+																	: smtpCurrentMailer === 'outlook'
+																		? 'OAuth 2.0 — no password stored. Host auto-set to smtp.office365.com:587 (TLS). Client secret & OAuth tokens are encrypted at rest and never sent to the browser.'
+																		: 'Enter the SMTP host, port & credentials from your provider. Passwords are encrypted at rest; you can also define nexulesuite_SMTP_PASS in wp-config.php to keep them out of the database.' } />
+															</span>
+														</div>
+													</div>
+
+													{ smtpCurrentMailer === 'other' ? (
+														<div className="nexulesuite_sg-grid-2">
+															<div className="nexulesuite_sg-field">
+																<span className="lbl">SMTP Host</span>
+																<input type="text" className="inp" value={ smtp.host } onChange={ ( e ) => updateSmtp( 'host', e.target.value ) } placeholder="smtp.example.com" autoComplete="off" spellCheck={ false } />
+															</div>
+															<div className="nexulesuite_sg-field">
+																<span className="lbl">Port</span>
+																<input type="number" className="inp" value={ smtp.port } onChange={ ( e ) => updateSmtp( 'port', e.target.value ) } placeholder="587" />
+															</div>
+															<div className="nexulesuite_sg-field">
+																<span className="lbl">Encryption</span>
+																<select className="sel" value={ smtp.secure } onChange={ ( e ) => updateSmtp( 'secure', e.target.value ) }>
+																	<option value="tls">TLS — recommended (port 587)</option>
+																	<option value="ssl">SSL (port 465)</option>
+																	<option value="">None</option>
+																</select>
+															</div>
+															<div className="nexulesuite_sg-field">
+																<span className="lbl">SMTP Username</span>
+																<input type="text" className="inp" value={ smtp.username } onChange={ ( e ) => updateSmtp( 'username', e.target.value ) } placeholder="you@example.com" autoComplete="off" spellCheck={ false } />
+															</div>
+															<div className="nexulesuite_sg-field">
+																<span className="lbl">SMTP Password</span>
+																<input type="password" className="inp" value={ smtp.password } onChange={ ( e ) => updateSmtp( 'password', e.target.value ) } placeholder={ smtpHasPassword ? '•••••••• saved — leave blank to keep' : 'SMTP password' } autoComplete="new-password" />
+																<p className="hint">
+																	{ smtpHasPassword
+																		? 'A password is already saved (encrypted). Leave blank to keep it, or type a new one to replace.'
+																		: 'Stored encrypted (AES-256-GCM) — never shown again after saving.' }
+																</p>
+															</div>
+														</div>
+													) : (
+														<>
+															<div className="nexulesuite_sg-grid-2">
+																<div className="nexulesuite_sg-field">
+																	<span className="lbl">Client ID</span>
+																	<input type="text" className="inp" value={ smtp.oauth_client_id } onChange={ ( e ) => updateSmtp( 'oauth_client_id', e.target.value ) } placeholder={ smtpCurrentMailer === 'gmail' ? 'xxxx.apps.googleusercontent.com' : 'Application (client) ID' } autoComplete="off" spellCheck={ false } />
+																</div>
+																<div className="nexulesuite_sg-field">
+																	<span className="lbl">Client Secret</span>
+																	<input type="password" className="inp" value={ smtp.oauth_client_secret } onChange={ ( e ) => updateSmtp( 'oauth_client_secret', e.target.value ) } placeholder={ smtpMeta.hasClientSecret ? '•••••••• saved — leave blank to keep' : 'Client secret' } autoComplete="new-password" />
+																	<p className="hint">Leave blank to keep the saved one.</p>
+																</div>
+															</div>
+
+															<div className="nexulesuite_sg-field" style={ { marginTop: '22px' } }>
+																<span className="lbl nexulesuite_lbl-tip">Authorized Redirect URI <InfoTip text={ smtpCurrentMailer === 'gmail' ? 'Add this exact URL to your Google Cloud Console OAuth client as an authorized redirect URI.' : 'Add this exact URL to your Microsoft Entra app as an authorized redirect URI.' } /></span>
+																<div className="nexulesuite_sg-link-box">
+																	<span className="nexulesuite_sg-link-ico" aria-hidden="true"><LinkIcon size={ 16 } /></span>
+																	<div className="nexulesuite_sg-link-inner">
+																		<input readOnly value={ smtpMeta.redirect_uri } className="nexulesuite_sg-link-inp" onFocus={ ( e ) => e.target.select() } />
+																		<button type="button" onClick={ copyRedirectUri } className="nexulesuite_sg-link-copy" aria-label="Copy redirect URI">
+																			{ redirectCopied ? <Check size={ 16 } className="is-copied" /> : <Copy size={ 16 } /> }
+																		</button>
+																	</div>
+																</div>
+															</div>
+
+															<div style={ { marginTop: '24px' } }>
+																{ smtpMeta.connected ? (
+																	<div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+																		<span className="flex items-center gap-2 text-[12px] font-semibold text-emerald-700">
+																			<Check size={ 16 } /> Connected as { smtpMeta.oauth_email || 'your account' }
+																		</span>
+																		<a href={ smtpMeta.disconnect_url || '#' } className="rounded-lg border border-rose-200 bg-white px-3 py-1.5 text-[11px] font-bold text-rose-600 transition-colors hover:bg-rose-50">Disconnect</a>
+																	</div>
+																) : (
+																	<div className="flex flex-col gap-2">
+																		<a
+																			href={ ( smtpMeta.authorize_urls && smtpMeta.authorize_urls[ smtpCurrentMailer ] ) || '#' }
+																			className="nexulesuite_sg-btn nexulesuite_sg-btn-primary"
+																			style={ { alignSelf: 'flex-start' } }
+																		>
+																			<ShieldCheck size={ 14 } /> Authorize with { smtpCurrentMailer === 'gmail' ? 'Google' : 'Microsoft' }
+																		</a>
+																		<p className="hint">Save your Client ID &amp; Secret first, then Authorize.</p>
+																	</div>
+																) }
+															</div>
+														</>
+													) }
+
+												</section>
+											) }
+
+											<section className="nexulesuite_sg-section">
+												<div className="nexulesuite_sg-sec-head">
+													<span className="nexulesuite_sg-sec-ico">
+														<Send size={ 16 } />
+													</span>
+													<div>
+														<span className="nexulesuite_sg-sec-title nexulesuite_sg-title-tip">Send a Test Email <InfoTip text={ 'Sends a real message using the settings above — the result shown is the actual send outcome, not a demo.' } /></span>
+													</div>
+												</div>
+
+												{ ! smtp.enabled ? (
+													<div className="nexulesuite_sg-info-box" style={ { marginBottom: '20px' } }>
+														<Info size={ 14 } className="nexulesuite_sg-info-ico" />
+														<p>SMTP is currently <strong>off</strong> — this test uses the default WordPress <code>mail()</code>. Select and connect a mailer above to test your provider.</p>
+													</div>
+												) : null }
+
+												<div className="nexulesuite_sg-grid-2">
+													<div className="nexulesuite_sg-field">
+														<span className="lbl">Send To</span>
+														<input type="email" className="inp" value={ smtpTestEmail } onChange={ ( e ) => setSmtpTestEmail( e.target.value ) } placeholder="you@example.com" autoComplete="off" spellCheck={ false } />
+													</div>
+													<div className="nexulesuite_sg-field">
+														<span className="lbl">Format</span>
+														<div
+															className={ `nexulesuite_smtp-htmltoggle${ smtpTestHtml ? ' on' : '' }` }
+															role="switch"
+															aria-checked={ smtpTestHtml }
+															tabIndex={ 0 }
+															onClick={ () => setSmtpTestHtml( ( v ) => ! v ) }
+															onKeyDown={ ( e ) => {
+																if ( e.key === ' ' || e.key === 'Enter' ) {
+																	e.preventDefault();
+																	setSmtpTestHtml( ( v ) => ! v );
+																}
+															} }
+														>
+															<span className="nexulesuite_smtp-htmltoggle-label">Send as HTML</span>
+															<span className={ `nexulesuite_sg-toggle${ smtpTestHtml ? ' on' : '' }` }><span className="track"><span className="knob" /></span></span>
+														</div>
+													</div>
+												</div>
+
+												<button
+													type="button"
+													onClick={ handleTestSmtp }
+													disabled={ smtpTesting }
+													className="nexulesuite_sg-btn nexulesuite_sg-btn-secondary"
+													style={ { marginTop: '20px' } }
+												>
+													{ smtpTesting ? <Loader2 size={ 14 } className="animate-spin" /> : <Send size={ 14 } /> }
+													{ smtpTesting ? 'Sending…' : 'Send Test Email' }
+												</button>
+
+												{ smtpTestResult ? (
+													<div
+														className={ `mt-4 flex items-start gap-2 rounded-xl border px-4 py-3 text-[12px] font-semibold ${ smtpTestResult.ok ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700' }` }
+													>
+														{ smtpTestResult.ok ? <Check size={ 16 } className="mt-0.5 shrink-0" /> : <AlertTriangle size={ 16 } className="mt-0.5 shrink-0" /> }
+														<span>{ smtpTestResult.text }</span>
+													</div>
+												) : null }
+											</section>
+										</div>
+									</div>
+								) }
+
+
 
 								{/* ════════════════════════════════════════════
 								    EXPORT SETTINGS

@@ -1311,22 +1311,34 @@ final class Shortcodes {
 		$site_name = wp_strip_all_tags( $site_name );
 		$form_name = wp_strip_all_tags( $form_name );
 		$form_id   = wp_strip_all_tags( $form_id );
+		$initial   = '' !== $site_name ? strtoupper( function_exists( 'mb_substr' ) ? mb_substr( $site_name, 0, 1 ) : substr( $site_name, 0, 1 ) ) : 'N';
+		$home      = home_url( '/' );
+		$year      = gmdate( 'Y' );
 
 		ob_start();
-		echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head><body style="margin:0;padding:0;background:#f1f5f9;">';
-		echo '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f1f5f9;padding:20px 10px;"><tr><td align="center">';
-		echo '<table role="presentation" width="640" cellspacing="0" cellpadding="0" border="0" style="max-width:640px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;">';
+		echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /></head>';
+		echo '<body style="margin:0;padding:0;background-color:#eef2ff;">';
+		echo '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#eef2ff;padding:24px 10px;font-family:\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;"><tr><td align="center">';
+		echo '<table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;">';
 
-		echo '<tr><td style="background:#0f172a;padding:20px 22px;">';
-		echo '<p style="margin:0 0 6px;font:600 10px Arial,Helvetica,sans-serif;color:#94a3b8;letter-spacing:.1em;text-transform:uppercase;">' . esc_html__( 'New form submission', 'nexus-lead-suite' ) . '</p>';
-		echo '<p style="margin:0;font:700 20px Arial,Helvetica,sans-serif;color:#ffffff;">' . esc_html( $site_name ) . '</p>';
-		echo '</td></tr>';
+		// Header: site initial badge + name (left), SUBMISSION pill (right), indigo accent line.
+		echo '<tr><td style="background:#0f172a;border-bottom:3px solid #4f46e5;padding:22px 26px;">';
+		echo '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr>';
+		echo '<td align="left" style="vertical-align:middle;"><table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr>';
+		echo '<td style="background:#4f46e5;border-radius:9px;width:40px;height:40px;text-align:center;vertical-align:middle;color:#ffffff;font:700 18px \'Segoe UI\',Arial,sans-serif;">' . esc_html( $initial ) . '</td>';
+		echo '<td style="padding-left:12px;color:#f8fafc;font:700 17px \'Segoe UI\',Arial,sans-serif;vertical-align:middle;">' . esc_html( $site_name ) . '</td>';
+		echo '</tr></table></td>';
+		echo '<td align="right" style="vertical-align:middle;"><span style="display:inline-block;padding:6px 14px;border:1px solid #334155;border-radius:999px;color:#94a3b8;font:700 11px Arial,sans-serif;letter-spacing:0.1em;">' . esc_html__( 'SUBMISSION', 'nexus-lead-suite' ) . '</span></td>';
+		echo '</tr></table></td></tr>';
 
-		echo '<tr><td style="padding:22px 22px 26px;font:15px/1.55 Arial,Helvetica,sans-serif;color:#334155;">';
-		echo '<p style="margin:0 0 18px;"><strong style="color:#0f172a;">' . esc_html( $form_name ) . '</strong> — ' . esc_html__( 'responses are listed in the table below.', 'nexus-lead-suite' ) . '</p>';
-		echo '<p style="margin:0 0 8px;font:600 10px Arial,Helvetica,sans-serif;color:#64748b;letter-spacing:.08em;text-transform:uppercase;">' . esc_html__( 'Responses', 'nexus-lead-suite' ) . '</p>';
+		// Body: eyebrow, form name heading, intro, then the real submitted fields.
+		echo '<tr><td style="padding:32px 28px 8px;color:#475569;font:15px/1.65 \'Segoe UI\',Arial,sans-serif;">';
+		echo '<p style="margin:0 0 8px;font:700 12px Arial,sans-serif;letter-spacing:0.1em;text-transform:uppercase;color:#4f46e5;">' . esc_html__( 'New submission', 'nexus-lead-suite' ) . '</p>';
+		echo '<p style="margin:0 0 14px;font:800 24px \'Segoe UI\',Arial,sans-serif;color:#0f172a;line-height:1.25;">' . esc_html( $form_name ) . '</p>';
+		echo '<p style="margin:0 0 26px;">' . esc_html__( 'A new response was submitted on your site. The full details are below.', 'nexus-lead-suite' ) . '</p>';
 
-		echo '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">';
+		echo '<p style="margin:0 0 12px;font:700 12px Arial,sans-serif;letter-spacing:0.06em;color:#94a3b8;text-transform:uppercase;">' . esc_html__( 'Submission details', 'nexus-lead-suite' ) . '</p>';
+		echo '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">';
 
 		$n = count( $rows );
 		foreach ( $rows as $i => $row ) {
@@ -1335,25 +1347,33 @@ final class Shortcodes {
 			$br = ( $i < $n - 1 ) ? 'border-bottom:1px solid #e2e8f0;' : '';
 
 			echo '<tr>';
-			echo '<td valign="top" style="padding:11px 14px;width:34%;' . esc_attr( $br ) . 'background:#f8fafc;font:600 13px Arial,Helvetica,sans-serif;color:#475569;">' . esc_html( $lb ) . '</td>';
-			echo '<td valign="top" style="padding:11px 14px;' . esc_attr( $br ) . 'font:14px Arial,Helvetica,sans-serif;color:#0f172a;word-break:break-word;">' . nl2br( esc_html( $vl ), false ) . '</td>';
+			echo '<td valign="top" width="38%" style="padding:14px 16px;' . esc_attr( $br ) . 'background:#f8fafc;font:600 13px Arial,sans-serif;color:#64748b;">' . esc_html( $lb ) . '</td>';
+			echo '<td valign="top" style="padding:14px 16px;' . esc_attr( $br ) . 'font:14px \'Segoe UI\',Arial,sans-serif;color:#0f172a;word-break:break-word;">' . nl2br( esc_html( $vl ), false ) . '</td>';
 			echo '</tr>';
 		}
 
 		echo '</table>';
 
-		echo '<p style="margin:18px 0 0;font:12px Arial,Helvetica,sans-serif;color:#64748b;line-height:1.5;">';
-		echo esc_html( sprintf( /* translators: %s: form id */ __( 'Form ID: %s', 'nexus-lead-suite' ), $form_id ) );
-		echo '<br />';
-		echo esc_html( sprintf( /* translators: %s: datetime */ __( 'Submitted: %s', 'nexus-lead-suite' ), $submitted_at ) );
 		if ( '' !== $page_url ) {
-			echo '<br />';
-			echo esc_html__( 'Page:', 'nexus-lead-suite' ) . ' ';
-			echo '<a href="' . esc_url( $page_url ) . '" style="color:#2563eb;">' . esc_html( $page_url ) . '</a>';
+			echo '<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin-top:26px;"><tr><td style="border-radius:10px;background:#4f46e5;">';
+			echo '<a href="' . esc_url( $page_url ) . '" style="display:inline-block;padding:13px 24px;color:#ffffff;font:700 14px Arial,sans-serif;text-decoration:none;border-radius:10px;">' . esc_html__( 'View related page', 'nexus-lead-suite' ) . ' &#8594;</a>';
+			echo '</td></tr></table>';
 		}
-		echo '</p>';
+		echo '</td></tr>';
 
-		echo '</td></tr></table></td></tr></table></body></html>';
+		// Footer.
+		echo '<tr><td style="padding:24px 28px 26px;">';
+		echo '<div style="border-top:1px solid #e2e8f0;padding-top:20px;font:13px/1.6 Arial,sans-serif;color:#94a3b8;">';
+		echo '<p style="margin:0 0 10px;">' . sprintf(
+			/* translators: %s: linked site name */
+			esc_html__( 'This response was submitted on %s.', 'nexus-lead-suite' ),
+			'<a href="' . esc_url( $home ) . '" style="color:#4f46e5;text-decoration:none;font-weight:600;">' . esc_html( $site_name ) . '</a>'
+		) . '</p>';
+		echo '<p style="margin:0 0 8px;">' . esc_html( sprintf( /* translators: 1: form id, 2: datetime */ __( 'Form ID: %1$s · Submitted: %2$s', 'nexus-lead-suite' ), $form_id, $submitted_at ) ) . '</p>';
+		echo '<p style="margin:0;color:#cbd5e1;font-size:12px;">&copy; ' . esc_html( $year ) . ' ' . esc_html( $site_name ) . '. ' . esc_html__( 'All rights reserved.', 'nexus-lead-suite' ) . '</p>';
+		echo '</div></td></tr>';
+
+		echo '</table></td></tr></table></body></html>';
 
 		return (string) ob_get_clean();
 	}
@@ -3275,6 +3295,31 @@ final class Shortcodes {
 		}
 
 		echo '<div class="' . esc_attr( $field_class ) . '" data-module="' . esc_attr( $module_id ) . '"';
+		$field_uid = isset( $field['id'] ) ? (string) $field['id'] : '';
+		if ( '' !== $field_uid ) {
+			echo ' data-nexulesuite_field-id="' . esc_attr( $field_uid ) . '"';
+		}
+		$conditional_cfg = isset( $settings['conditional'] ) && is_array( $settings['conditional'] ) ? $settings['conditional'] : array();
+		if ( ! empty( $conditional_cfg['enabled'] ) && ! empty( $conditional_cfg['rules'] ) && is_array( $conditional_cfg['rules'] ) ) {
+			$cond_payload = array(
+				'action' => ( isset( $conditional_cfg['action'] ) && 'hide' === $conditional_cfg['action'] ) ? 'hide' : 'show',
+				'match'  => ( isset( $conditional_cfg['match'] ) && 'any' === $conditional_cfg['match'] ) ? 'any' : 'all',
+				'rules'  => array(),
+			);
+			foreach ( $conditional_cfg['rules'] as $cond_rule ) {
+				if ( ! is_array( $cond_rule ) || empty( $cond_rule['field'] ) ) {
+					continue;
+				}
+				$cond_payload['rules'][] = array(
+					'field'    => (string) $cond_rule['field'],
+					'operator' => isset( $cond_rule['operator'] ) ? (string) $cond_rule['operator'] : 'is',
+					'value'    => isset( $cond_rule['value'] ) ? (string) $cond_rule['value'] : '',
+				);
+			}
+			if ( ! empty( $cond_payload['rules'] ) ) {
+				echo ' data-nexulesuite_conditional="' . esc_attr( (string) wp_json_encode( $cond_payload ) ) . '"';
+			}
+		}
 		if ( '' !== $appearance['inline_style'] ) {
 			echo ' style="' . esc_attr( $appearance['inline_style'] ) . '"';
 		}

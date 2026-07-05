@@ -6,16 +6,24 @@ import {
 	Copy,
 	Eye,
 	EyeOff,
+	LayoutTemplate,
 	Plus,
 	Save,
 	Trash2,
+	X,
 } from 'lucide-react';
 import { PageShell } from '../components/PageShell.jsx';
 import { AdminStickyFooter } from '../components/AdminStickyFooter.jsx';
 import { SuccessModal, ErrorModal } from '../components/NexusModal.jsx';
 import { DynamicFieldsBuilder } from '../form-builder/DynamicFieldsBuilder.jsx';
 import { FieldSettingsInline } from '../form-builder/FieldSettingsInline.jsx';
+import { ConditionalLogicEditor } from '../form-builder/ConditionalLogic.jsx';
 import { FormPreviewModal } from '../form-builder/FormPreviewModal.jsx';
+import {
+	FORM_TEMPLATES,
+	BLANK_TEMPLATE_ICON,
+	buildTemplateFields,
+} from '../form-builder/formTemplates.jsx';
 
 const DEFAULT_STYLING = {
 	backgroundColor: '#ffffff',
@@ -87,6 +95,205 @@ function createBlankFormTemplate() {
 			},
 		],
 	};
+}
+
+/** Next non-colliding `form-N` id (survives deletes / duplicates). */
+function nextFormId( items ) {
+	const used = new Set( ( items || [] ).map( ( f ) => f.id ) );
+	let n = ( items?.length || 0 ) + 1;
+	while ( used.has( `form-${ n }` ) ) {
+		n += 1;
+	}
+	return `form-${ n }`;
+}
+
+/** Assemble a full form object from a premade template (or a blank form when template is null). */
+function buildFormFromTemplate( template, id ) {
+	const base = createBlankFormTemplate();
+	if ( ! template ) {
+		return { ...base, id, name: 'New Simple Form', formType: 'simple' };
+	}
+	return {
+		...base,
+		id,
+		name: template.name,
+		formType: 'simple',
+		submitBtnText: template.submitBtnText || base.submitBtnText,
+		steps: [
+			{
+				...base.steps[ 0 ],
+				id: `step-${ Date.now() }-${ Math.random().toString( 16 ).slice( 2, 8 ) }`,
+				title: template.stepTitle || template.name,
+				subtitle: template.stepSubtitle || '',
+				fields: buildTemplateFields( template ),
+			},
+		],
+	};
+}
+
+const TEMPLATE_ACCENTS = {
+	violet: 'bg-violet-50 text-violet-600',
+	blue: 'bg-blue-50 text-blue-600',
+	emerald: 'bg-emerald-50 text-emerald-600',
+	amber: 'bg-amber-50 text-amber-600',
+	pink: 'bg-pink-50 text-pink-600',
+	rose: 'bg-rose-50 text-rose-600',
+	slate: 'bg-slate-100 text-slate-600',
+};
+
+/** One field drawn as a tiny wireframe shape, keyed off its module type. */
+function MiniField( { moduleId } ) {
+	const box = 'rounded bg-white ring-1 ring-slate-200';
+	if ( moduleId === 'radio' || moduleId === 'checkbox' ) {
+		return (
+			<div className="flex gap-1.5">
+				<span className="h-2.5 w-8 rounded-full bg-slate-200" />
+				<span className="h-2.5 w-8 rounded-full bg-slate-100" />
+			</div>
+		);
+	}
+	if ( moduleId === 'terms-conditions' ) {
+		return (
+			<div className="flex items-center gap-1.5">
+				<span className="h-2.5 w-2.5 flex-none rounded-[3px] ring-1 ring-slate-300" />
+				<span className="h-1.5 flex-1 rounded-full bg-slate-200" />
+			</div>
+		);
+	}
+	if ( moduleId === 'dropdown' ) {
+		return (
+			<div className={ `flex h-3.5 items-center justify-end px-1 ${ box }` }>
+				<ChevronDown size={ 10 } className="text-slate-300" />
+			</div>
+		);
+	}
+	if ( moduleId === 'textarea' || moduleId === 'address' || moduleId === 'file-upload' ) {
+		return <div className={ `h-6 ${ box }` } />;
+	}
+	return <div className={ `h-3.5 ${ box }` } />;
+}
+
+/** A miniature, text-free wireframe of the template — a "display preview" thumbnail. */
+function TemplateMiniPreview( { fields } ) {
+	if ( ! fields?.length ) {
+		// Blank template — a "start from scratch" placeholder that fills the card.
+		return (
+			<div className="mt-3 flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50/50 py-10 text-slate-400">
+				<span className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+					<Plus size={ 22 } />
+				</span>
+				<span className="text-xs font-semibold text-slate-500">Start from scratch</span>
+				<span className="text-[11px] text-slate-400">Add your own fields</span>
+			</div>
+		);
+	}
+	return (
+		<div className="mt-3 rounded-lg border border-slate-200 bg-slate-50/70 p-2.5">
+			<div className="mb-2 flex flex-col items-center gap-1">
+				<span className="h-1.5 w-16 rounded-full bg-slate-300" />
+				<span className="h-1 w-24 rounded-full bg-slate-200" />
+			</div>
+			<div className="space-y-1.5">
+				{ fields.map( ( f, i ) => (
+					<MiniField key={ i } moduleId={ f.moduleId } />
+				) ) }
+			</div>
+			<div className="mt-2 h-3.5 rounded bg-slate-300" />
+		</div>
+	);
+}
+
+function TemplateCard( { icon, name, tagline, fields, onClick, onPreview } ) {
+	return (
+		<div className="group flex flex-col rounded-xl border border-slate-200 bg-white transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md">
+			<button
+				type="button"
+				onClick={ onClick }
+				className="flex flex-1 flex-col rounded-xl p-4 text-left focus:outline-none focus:ring-2 focus:ring-violet-200"
+			>
+				<div className="flex items-center gap-3">
+					<span className={ `flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg ${ icon.accent }` }>
+						{ icon.node }
+					</span>
+					<span className="min-w-0">
+						<span className="block truncate text-sm font-bold text-slate-800">{ name }</span>
+						<span className="mt-0.5 block truncate text-xs text-slate-500">{ tagline }</span>
+					</span>
+				</div>
+				<TemplateMiniPreview fields={ fields } />
+			</button>
+			{ onPreview ? (
+				<div className="flex items-center justify-between gap-2 border-t border-slate-100 px-4 py-2">
+					<span className="text-[11px] font-medium text-slate-400">Click card to use</span>
+					<button
+						type="button"
+						onClick={ onPreview }
+						className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-violet-600 transition-colors hover:bg-violet-50"
+					>
+						<Eye size={ 14 } />
+						Preview
+					</button>
+				</div>
+			) : null }
+		</div>
+	);
+}
+
+function FormTemplatePicker( { open, onClose, onSelect, onPreview } ) {
+	if ( ! open ) {
+		return null;
+	}
+	const BlankIcon = BLANK_TEMPLATE_ICON;
+	return (
+		<>
+			<div className="fixed inset-0 z-40 bg-black/50 transition-opacity" onClick={ onClose } />
+			<div className="fixed left-1/2 top-1/2 z-50 flex max-h-[85vh] w-[92vw] max-w-4xl -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl bg-white shadow-2xl">
+				<div className="flex items-start justify-between border-b border-slate-200 px-6 py-5">
+					<div>
+						<h2 className="text-xl font-bold text-slate-900">Add a Form</h2>
+						<p className="mt-0.5 text-xs text-slate-500">
+							Start from a ready-made template or build one from scratch.
+						</p>
+					</div>
+					<button
+						type="button"
+						onClick={ onClose }
+						className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100"
+						aria-label="Close"
+					>
+						<X size={ 20 } />
+					</button>
+				</div>
+
+				<div className="grid grid-cols-1 gap-3 overflow-y-auto px-6 py-5 sm:grid-cols-2 lg:grid-cols-3">
+					<TemplateCard
+						icon={ { node: <BlankIcon size={ 20 } />, accent: TEMPLATE_ACCENTS.slate } }
+						name="Blank Simple Form"
+						tagline="Start from scratch"
+						fields={ [] }
+						onClick={ () => onSelect( null ) }
+					/>
+					{ FORM_TEMPLATES.map( ( tpl ) => {
+						const Icon = tpl.Icon;
+						return (
+							<TemplateCard
+								key={ tpl.id }
+								icon={ {
+									node: <Icon size={ 20 } />,
+									accent: TEMPLATE_ACCENTS[ tpl.accent ] || TEMPLATE_ACCENTS.violet,
+								} }
+								name={ tpl.name }
+								tagline={ tpl.tagline }
+								fields={ tpl.fields.map( ( [ moduleId ] ) => ( { moduleId } ) ) }
+								onClick={ () => onSelect( tpl ) }
+								onPreview={ () => onPreview?.( tpl ) }
+							/>
+						);
+					} ) }
+				</div>
+			</div>
+		</>
+	);
 }
 
 function copyShortcode( formId, onCopied ) {
@@ -792,6 +999,17 @@ export function FormBuilderPage() {
 	const [ selectedCtx, setSelectedCtx ] = useState( null );
 	const [ previewFormId, setPreviewFormId ] = useState( null );
 	const [ loadingForms, setLoadingForms ] = useState( false );
+	const [ showTemplatePicker, setShowTemplatePicker ] = useState( false );
+	const [ templatePreview, setTemplatePreview ] = useState( null );
+
+	const addForm = ( template ) => {
+		const id = nextFormId( items );
+		setItems( ( prev ) => [ ...prev, buildFormFromTemplate( template, id ) ] );
+		setExpandedId( id );
+		setActiveTab( 'fields' );
+		setSelectedCtx( null );
+		setShowTemplatePicker( false );
+	};
 
 	useEffect( () => {
 		let alive = true;
@@ -915,7 +1133,7 @@ export function FormBuilderPage() {
 										if ( ! source ) {
 											return;
 										}
-										const newId = `form-${ items.length + 1 }`;
+										const newId = nextFormId( items );
 										setItems( ( prev ) => [ ...prev, { ...source, id: newId, name: `${ source.name } (Copy)` } ] );
 										setExpandedId( newId );
 										setSelectedCtx( null );
@@ -941,31 +1159,18 @@ export function FormBuilderPage() {
 						<div className="nexulesuite_form-builder-wrap nexulesuite_fb-add-wrap">
 							<button
 								type="button"
-								onClick={ () => {
-									const id = `form-${ items.length + 1 }`;
-									setItems( ( prev ) => [
-										...prev,
-										{
-											...createBlankFormTemplate(),
-											id,
-											name: 'New Simple Form',
-											formType: 'simple',
-										},
-									] );
-									setExpandedId( id );
-									setActiveTab( 'fields' );
-								} }
+								onClick={ () => setShowTemplatePicker( true ) }
 								className="nexulesuite_fb-add-dash"
 							>
-								<Plus size={ 16 } />
-								Add Simple Form
+								<LayoutTemplate size={ 16 } />
+								Add Form / Template
 							</button>
 						</div>
 					</div>
 				</div>
 
 				{ selectedCtx?.field ? (
-					<aside>
+					<aside className="space-y-4">
 						<div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 							<div className="border-b border-slate-200 px-4 py-3">
 								<p className="text-sm font-semibold text-slate-800">Field Settings</p>
@@ -983,11 +1188,35 @@ export function FormBuilderPage() {
 								/>
 							</div>
 						</div>
+						<ConditionalLogicEditor
+							field={ selectedCtx.field }
+							fields={ selectedCtx.fields || [] }
+							onChange={ ( conditional ) => {
+								selectedCtx.updateSettings( {
+									...( selectedCtx.field.settings || {} ),
+									conditional,
+								} );
+							} }
+						/>
 					</aside>
 				) : null }
 			</div>
 
 			<FormPreviewModal isOpen={ !! previewFormId } onClose={ () => setPreviewFormId( null ) } form={ previewForm } />
+
+			<FormTemplatePicker
+				open={ showTemplatePicker }
+				onClose={ () => setShowTemplatePicker( false ) }
+				onSelect={ addForm }
+				onPreview={ ( tpl ) => setTemplatePreview( buildFormFromTemplate( tpl, 'template-preview' ) ) }
+			/>
+
+			{ /* Rendered after the picker so it stacks on top when previewing a template. */ }
+			<FormPreviewModal
+				isOpen={ !! templatePreview }
+				onClose={ () => setTemplatePreview( null ) }
+				form={ templatePreview }
+			/>
 		</PageShell>
 	);
 }

@@ -2999,6 +2999,165 @@
 	border-top: none;
 }
 
+/* ── SMTP / Email tab: roomier, calmer spacing than the dense General tab ── */
+.nexulesuite_smtp-wrap .nexulesuite_sg-card {
+	padding: 34px 38px;
+}
+
+.nexulesuite_smtp-wrap .nexulesuite_sg-section + .nexulesuite_sg-section {
+	margin-top: 44px;
+	padding-top: 44px;
+}
+
+.nexulesuite_smtp-wrap .nexulesuite_sg-sec-head {
+	margin-bottom: 26px;
+}
+
+.nexulesuite_smtp-wrap .nexulesuite_sg-grid-2 {
+	gap: 28px;
+	row-gap: 26px;
+}
+
+.nexulesuite_smtp-wrap .nexulesuite_sg-field .hint {
+	margin-top: 8px;
+	line-height: 1.6;
+}
+
+.nexulesuite_smtp-wrap .nexulesuite_sg-info-box {
+	padding: 16px 18px;
+	line-height: 1.65;
+}
+
+/* WordPress admin caps every <select> at 25rem — let SMTP selects fill the field
+   like the inputs beside them so the Encryption box matches the others. */
+.nexulesuite_smtp-wrap .sel {
+	max-width: none;
+}
+
+/* Equal-height columns: the Events Email Template card fills its column so it
+   matches the taller Client Access (Report URL slug) card beside it. */
+.nexulesuite_settings-general-wrap .nexulesuite_sg-grid-2.nexulesuite_sg-grid-2-stretch {
+	align-items: stretch;
+}
+.nexulesuite_settings-general-wrap .nexulesuite_sg-grid-2.nexulesuite_sg-grid-2-stretch .nexulesuite_sg-stack {
+	height: 100%;
+}
+.nexulesuite_settings-general-wrap .nexulesuite_sg-grid-2.nexulesuite_sg-grid-2-stretch .nexulesuite_sg-select-card {
+	flex: 1 1 auto;
+}
+
+/* Inline heading / label + info tooltip on a single row (all settings tabs). */
+.nexulesuite_settings-general-wrap .nexulesuite_sg-sec-title.nexulesuite_sg-title-tip,
+.nexulesuite_settings-general-wrap .lbl.nexulesuite_lbl-tip,
+.nexulesuite_settings-livechat-wrap .nexulesuite_lc-sec-title.nexulesuite_sg-title-tip,
+.nexulesuite_settings-livechat-wrap .nexulesuite_lc-toggle-card-title.nexulesuite_sg-title-tip,
+.nexulesuite_settings-livechat-wrap .lbl.nexulesuite_lbl-tip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+/* Compact "Send as HTML" control sized to match the adjacent input (42px). */
+.nexulesuite_smtp-wrap .nexulesuite_smtp-htmltoggle {
+	box-sizing: border-box;
+	height: 42px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 0 12px 0 14px;
+	border: 1px solid var(--nexulesuite_sg-line);
+	border-radius: var(--nexulesuite_sg-r-sm);
+	background: #fff;
+	cursor: pointer;
+	transition: border-color 0.15s;
+}
+
+.nexulesuite_smtp-wrap .nexulesuite_smtp-htmltoggle:hover {
+	border-color: #cbd5e1;
+}
+
+.nexulesuite_smtp-wrap .nexulesuite_smtp-htmltoggle-label {
+	font-size: 14px;
+	font-weight: 700;
+	color: var( --nexulesuite_sg-ink );
+}
+
+@media ( max-width: 640px ) {
+	.nexulesuite_smtp-wrap .nexulesuite_sg-card {
+		padding: 22px 20px;
+	}
+	.nexulesuite_smtp-wrap .nexulesuite_sg-section + .nexulesuite_sg-section {
+		margin-top: 34px;
+		padding-top: 34px;
+	}
+}
+
+/* ── Info tooltip (hover / keyboard focus) ── */
+.nexulesuite_tip {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	background: transparent;
+	color: #94a3b8;
+	cursor: help;
+	line-height: 0;
+	vertical-align: middle;
+}
+
+.nexulesuite_tip:hover,
+.nexulesuite_tip:focus-visible {
+	color: #2563eb;
+	outline: none;
+}
+
+.nexulesuite_tip-bubble {
+	position: absolute;
+	top: calc( 100% + 8px );
+	left: 50%;
+	width: max-content;
+	max-width: 280px;
+	padding: 9px 11px;
+	transform: translateX( -50% ) translateY( 4px );
+	background: #0f172a;
+	color: #f8fafc;
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 1.55;
+	letter-spacing: 0;
+	text-transform: none;
+	text-align: left;
+	white-space: normal;
+	border-radius: 9px;
+	box-shadow: 0 10px 30px rgba( 15, 23, 42, 0.28 );
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.14s ease, transform 0.14s ease;
+	z-index: 60;
+}
+
+.nexulesuite_tip:hover .nexulesuite_tip-bubble,
+.nexulesuite_tip:focus-visible .nexulesuite_tip-bubble {
+	opacity: 1;
+	visibility: visible;
+	transform: translateX( -50% ) translateY( 0 );
+}
+
+.nexulesuite_tip-bubble::before {
+	content: '';
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX( -50% );
+	border: 5px solid transparent;
+	border-bottom-color: #0f172a;
+}
+
 .nexulesuite_settings-general-wrap .nexulesuite_sg-sec-head {
 	display: flex;
 	align-items: flex-start;
@@ -3181,6 +3340,7 @@
 	box-sizing: border-box;
 	flex: none;
 	width: 100%;
+	max-width: none;
 	min-width: 0;
 	height: 52px;
 	min-height: 52px;
@@ -4007,6 +4167,21 @@
 	align-items: flex-start;
 	gap: 12px;
 	margin-bottom: 22px;
+}
+
+/* Roomier spacing for the Livechat tab (overrides the base rules above). */
+.nexulesuite_settings-livechat-wrap .nexulesuite_lc-card {
+	padding: 32px 34px;
+}
+.nexulesuite_settings-livechat-wrap .nexulesuite_lc-section + .nexulesuite_lc-section {
+	margin-top: 42px;
+	padding-top: 42px;
+}
+.nexulesuite_settings-livechat-wrap .nexulesuite_lc-sec-head {
+	margin-bottom: 26px;
+}
+.nexulesuite_settings-livechat-wrap .nexulesuite_lc-stack {
+	gap: 20px;
 }
 
 .nexulesuite_settings-livechat-wrap .nexulesuite_lc-sec-ico {
@@ -5272,4 +5447,39 @@
 	.nexulesuite_activities-wrap * {
 		transition: none !important;
 	}
+}
+
+/*
+ * Form Builder — field PREVIEW (FormPreviewModal) leading icon.
+ * WordPress admin resizes bare <svg> (CSS width beats the width="24" attribute)
+ * and rewrites native input/select padding, which pushed the placeholder/value
+ * on top of the icon. Pin the icon to 20px and force a comfortable left gap.
+ * !important is required to beat WP admin's global input/select rules.
+ */
+.nexulesuite_fp-ico svg {
+	width: 20px !important;
+	height: 20px !important;
+}
+.nexulesuite_fp-inp {
+	padding-left: 44px !important;
+	max-width: none !important;
+}
+
+/*
+ * Captcha "Save Keys" button (reCAPTCHA + Turnstile field settings).
+ * Cloudflare orange with near-black text (~6.8:1 contrast, clearly legible —
+ * white on this orange would be only ~2.6:1). !important beats WP admin's
+ * button color rules, which otherwise recolor the label.
+ */
+.nexulesuite_fp-save-btn {
+	background-color: #f38020 !important;
+	color: #111827 !important;
+	border: none !important;
+}
+.nexulesuite_fp-save-btn:hover {
+	background-color: #db6e0a !important;
+}
+.nexulesuite_fp-save-btn.is-loading {
+	background-color: #f6a45c !important;
+	cursor: default;
 }
