@@ -562,12 +562,227 @@
       const gate = submitGateSyncByRoot.get(root);
       if (typeof gate === "function") gate();
     }
+    // After any draft values are restored so the first pass sees real values.
+    initConditionalLogic(root);
     bindFormDraftAutosave(root);
     flushFormDraftNow(root);
   }
 
   /** @type {WeakMap<Element, () => void>} */
   const submitGateSyncByRoot = new WeakMap();
+
+  /* ----------------------------------------------------------------------- *
+   * Conditional logic — show/hide fields based on other fields' live values.
+   * Config comes from the `data-nexulesuite_conditional` attribute on a field
+   * wrapper: { action:'show'|'hide', match:'all'|'any', rules:[{field,operator,value}] }.
+   * `rule.field` references another field wrapper's `data-nexulesuite_field-id`.
+   * ----------------------------------------------------------------------- */
+
+  /** @type {WeakMap<Element, () => void>} */
+  const conditionalEvalByRoot = new WeakMap();
+
+  /**
+   * Current value of a field (referenced by builder field-id) within a form.
+   *
+   * @param {Element} root
+   * @param {string} fieldId
+   * @returns {{ present: boolean, value: string, values: string[] }}
+   */
+  function readConditionalFieldValue(root, fieldId) {
+    const empty = { present: false, value: "", values: [] };
+    if (!fieldId) return empty;
+    let wrap = null;
+    for (const w of qsa(root, "[data-nexulesuite_field-id]")) {
+      if (w.getAttribute("data-nexulesuite_field-id") === fieldId) {
+        wrap = w;
+        break;
+      }
+    }
+    if (!wrap) return empty;
+    const controls = qsa(wrap, "input, select, textarea");
+    const radios = controls.filter((el) => el instanceof HTMLInputElement && el.type === "radio");
+    if (radios.length) {
+      const checked = radios.find((r) => r.checked);
+      const v = checked ? String(checked.value) : "";
+      return { present: true, value: v, values: v ? [v] : [] };
+    }
+    const checks = controls.filter((el) => el instanceof HTMLInputElement && el.type === "checkbox");
+    if (checks.length) {
+      const vals = checks.filter((c) => c.checked).map((c) => String(c.value));
+      return { present: true, value: vals.join(","), values: vals };
+    }
+    const sel = controls.find((el) => el instanceof HTMLSelectElement);
+    if (sel) {
+      const v = String(sel.value || "");
+      return { present: true, value: v, values: v ? [v] : [] };
+    }
+    const txt = controls.find(
+      (el) => el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement
+    );
+    if (txt) {
+      const v = String(txt.value || "");
+      return { present: true, value: v, values: v ? [v] : [] };
+    }
+    return { present: true, value: "", values: [] };
+  }
+
+  /**
+   * Parse a value as a number (pure numeric string) or a date (Date-parseable),
+   * for greater_than / less_than. Returns null when it is neither.
+   *
+   * @param {string} s
+   * @returns {number|null}
+   */
+  function conditionalToComparable(s) {
+    const str = String(s == null ? "" : s).trim();
+    if (str === "") return null;
+    if (/^-?\d+(\.\d+)?$/.test(str)) return parseFloat(str);
+    const d = Date.parse(str);
+    return isNaN(d) ? null : d;
+  }
+
+  /**
+   * @param {Element} root
+   * @param {{ field: string, operator: string, value: string }} rule
+   * @returns {boolean}
+   */
+  function conditionalRuleMatches(root, rule) {
+    const op = String(rule.operator || "is");
+    const rv = rule.value == null ? "" : String(rule.value);
+    const got = readConditionalFieldValue(root, String(rule.field || ""));
+    const v = got.value;
+    const vals = got.values || [];
+    switch (op) {
+      case "is":
+        return vals.length ? vals.indexOf(rv) !== -1 : v === rv;
+      case "is_not":
+        return vals.length ? vals.indexOf(rv) === -1 : v !== rv;
+      case "contains":
+        return v.toLowerCase().indexOf(rv.toLowerCase()) !== -1;
+      case "starts_with":
+        return v.toLowerCase().indexOf(rv.toLowerCase()) === 0;
+      case "ends_with": {
+        const a = v.toLowerCase();
+        const b = rv.toLowerCase();
+        return b.length <= a.length && a.lastIndexOf(b) === a.length - b.length;
+      }
+      case "greater_than": {
+        const a = conditionalToComparable(v);
+        const b = conditionalToComparable(rv);
+        return a !== null && b !== null && a > b;
+      }
+      case "less_than": {
+        const a = conditionalToComparable(v);
+        const b = conditionalToComparable(rv);
+        return a !== null && b !== null && a < b;
+      }
+      case "is_empty":
+        return v.trim() === "";
+      case "is_not_empty":
+        return v.trim() !== "";
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * @param {Element} root
+   * @param {{ match: string, rules: Array }} cfg
+   * @returns {boolean}
+   */
+  function conditionalConditionsMet(root, cfg) {
+    const rules = Array.isArray(cfg.rules) ? cfg.rules : [];
+    if (!rules.length) return false;
+    if (cfg.match === "any") return rules.some((r) => conditionalRuleMatches(root, r));
+    return rules.every((r) => conditionalRuleMatches(root, r));
+  }
+
+  /**
+   * Show/hide a field wrapper. Hidden fields have their controls disabled so the
+   * submit gate, per-step validation, draft serializer, and FormData all skip
+   * them (each already ignores disabled controls). We only re-enable controls we
+   * disabled ourselves so pre-disabled inputs are left untouched.
+   *
+   * @param {Element} wrap
+   * @param {boolean} visible
+   */
+  function setConditionalFieldVisible(wrap, visible) {
+    if (visible) {
+      wrap.style.display = "";
+      wrap.removeAttribute("aria-hidden");
+      wrap.removeAttribute("data-nexulesuite_cond-hidden");
+      qsa(wrap, "input, select, textarea").forEach((el) => {
+        if (el.getAttribute("data-nexulesuite_cond-disabled") === "1") {
+          el.disabled = false;
+          el.removeAttribute("data-nexulesuite_cond-disabled");
+        }
+      });
+    } else {
+      wrap.style.display = "none";
+      wrap.setAttribute("aria-hidden", "true");
+      wrap.setAttribute("data-nexulesuite_cond-hidden", "1");
+      qsa(wrap, "input, select, textarea").forEach((el) => {
+        if (!el.disabled) {
+          el.disabled = true;
+          el.setAttribute("data-nexulesuite_cond-disabled", "1");
+        }
+      });
+    }
+  }
+
+  /**
+   * Wire up conditional show/hide for one form root. Binds live re-evaluation to
+   * input/change and runs an initial pass.
+   *
+   * @param {Element} root .nexulesuite_st-form
+   */
+  function initConditionalLogic(root) {
+    const form = getFormFromRoot(root);
+    if (!form) return;
+    const deps = [];
+    for (const wrap of qsa(root, "[data-nexulesuite_conditional]")) {
+      let cfg = null;
+      try {
+        cfg = JSON.parse(wrap.getAttribute("data-nexulesuite_conditional") || "null");
+      } catch (_e) {
+        cfg = null;
+      }
+      if (cfg && Array.isArray(cfg.rules) && cfg.rules.length) {
+        deps.push({ wrap, cfg });
+      }
+    }
+    if (!deps.length) return;
+
+    function evaluate() {
+      // Iterate so chained conditions (a controller that is itself conditional)
+      // settle. Bounded by dependent count to avoid any pathological loop.
+      let changed = true;
+      let pass = 0;
+      while (changed && pass <= deps.length) {
+        changed = false;
+        pass++;
+        for (const d of deps) {
+          const met = conditionalConditionsMet(root, d.cfg);
+          const shouldShow = d.cfg.action === "hide" ? !met : met;
+          const isHidden = d.wrap.getAttribute("data-nexulesuite_cond-hidden") === "1";
+          if (shouldShow && isHidden) {
+            setConditionalFieldVisible(d.wrap, true);
+            changed = true;
+          } else if (!shouldShow && !isHidden) {
+            setConditionalFieldVisible(d.wrap, false);
+            changed = true;
+          }
+        }
+      }
+      const gate = submitGateSyncByRoot.get(root);
+      if (typeof gate === "function") gate();
+    }
+
+    conditionalEvalByRoot.set(root, evaluate);
+    form.addEventListener("input", evaluate, true);
+    form.addEventListener("change", evaluate, true);
+    evaluate();
+  }
 
   /**
    * Whether every constraint-validated control in the form passes the browser's validation API

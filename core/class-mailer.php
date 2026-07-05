@@ -36,6 +36,104 @@ final class Mailer {
 	}
 
 	/**
+	 * Prefix marking an AES-256-GCM encrypted secret produced by {@see encrypt_secret()}.
+	 */
+	private const SECRET_PREFIX = 'enc:v1:';
+
+	/**
+	 * Derives a 32-byte encryption key from the site's auth salt.
+	 *
+	 * The key never leaves the server and rotates automatically if the salts in
+	 * wp-config.php change (which invalidates any stored secret — expected).
+	 *
+	 * @return string Raw 32-byte key.
+	 */
+	private static function secret_key(): string {
+		return hash( 'sha256', wp_salt( 'auth' ), true );
+	}
+
+	/**
+	 * Encrypts a secret (e.g. SMTP password) for at-rest storage.
+	 *
+	 * Falls back to returning the plaintext unchanged when OpenSSL is unavailable,
+	 * so mail delivery keeps working on minimal hosts.
+	 *
+	 * @param string $plain Plaintext secret.
+	 * @return string Encrypted, prefixed token — or the original string on fallback.
+	 */
+	public static function encrypt_secret( string $plain ): string {
+		if ( '' === $plain ) {
+			return '';
+		}
+		if ( ! function_exists( 'openssl_encrypt' ) || ! function_exists( 'openssl_random_pseudo_bytes' ) ) {
+			return $plain;
+		}
+
+		$iv  = openssl_random_pseudo_bytes( 12 );
+		$tag = '';
+		$cipher = openssl_encrypt( $plain, 'aes-256-gcm', self::secret_key(), OPENSSL_RAW_DATA, $iv, $tag );
+		if ( false === $cipher || '' === $tag ) {
+			return $plain;
+		}
+
+		return self::SECRET_PREFIX . base64_encode( $iv . $tag . $cipher );
+	}
+
+	/**
+	 * Decrypts a secret previously stored with {@see encrypt_secret()}.
+	 *
+	 * Values without the encryption prefix (legacy plaintext, or secrets defined
+	 * via constants) are returned unchanged.
+	 *
+	 * @param string $stored Stored value.
+	 * @return string Plaintext secret ('' if decryption fails).
+	 */
+	public static function decrypt_secret( string $stored ): string {
+		if ( '' === $stored || 0 !== strpos( $stored, self::SECRET_PREFIX ) ) {
+			return $stored;
+		}
+		if ( ! function_exists( 'openssl_decrypt' ) ) {
+			return '';
+		}
+
+		$raw = base64_decode( substr( $stored, strlen( self::SECRET_PREFIX ) ), true );
+		if ( false === $raw || strlen( $raw ) < 29 ) {
+			return '';
+		}
+
+		$iv     = substr( $raw, 0, 12 );
+		$tag    = substr( $raw, 12, 16 );
+		$cipher = substr( $raw, 28 );
+		$plain  = openssl_decrypt( $cipher, 'aes-256-gcm', self::secret_key(), OPENSSL_RAW_DATA, $iv, $tag );
+
+		return false === $plain ? '' : $plain;
+	}
+
+	/**
+	 * Provider presets that map a mailer id to its official SMTP relay endpoint.
+	 *
+	 * Selecting one of these auto-configures host/port/encryption; the admin only
+	 * supplies the account email (username) and an App Password. This keeps the
+	 * plugin lightweight — every provider reuses the same PHPMailer SMTP path.
+	 *
+	 * @return array<string,array<string,mixed>>
+	 */
+	public static function mailer_presets(): array {
+		return array(
+			'gmail'   => array(
+				'host'   => 'smtp.gmail.com',
+				'port'   => 465,
+				'secure' => 'ssl',
+			),
+			'outlook' => array(
+				'host'   => 'smtp.office365.com',
+				'port'   => 587,
+				'secure' => 'tls',
+			),
+		);
+	}
+
+	/**
 	 * Reads SMTP settings (constants override options).
 	 *
 	 * @return array<string,mixed>
@@ -47,15 +145,28 @@ final class Mailer {
 		}
 
 		$settings = array(
-			'enabled'    => ! empty( $opt['enabled'] ),
-			'host'       => isset( $opt['host'] ) ? (string) $opt['host'] : '',
-			'port'       => isset( $opt['port'] ) ? (int) $opt['port'] : 587,
-			'secure'     => isset( $opt['secure'] ) ? (string) $opt['secure'] : 'tls',
-			'username'   => isset( $opt['username'] ) ? (string) $opt['username'] : '',
-			'password'   => isset( $opt['password'] ) ? (string) $opt['password'] : '',
-			'from_email' => isset( $opt['from_email'] ) ? (string) $opt['from_email'] : '',
-			'from_name'  => isset( $opt['from_name'] ) ? (string) $opt['from_name'] : '',
+			'enabled'         => ! empty( $opt['enabled'] ),
+			'mailer'          => isset( $opt['mailer'] ) ? (string) $opt['mailer'] : 'other',
+			'host'            => isset( $opt['host'] ) ? (string) $opt['host'] : '',
+			'port'            => isset( $opt['port'] ) ? (int) $opt['port'] : 587,
+			'secure'          => isset( $opt['secure'] ) ? (string) $opt['secure'] : 'tls',
+			'username'        => isset( $opt['username'] ) ? (string) $opt['username'] : '',
+			'password'        => isset( $opt['password'] ) ? self::decrypt_secret( (string) $opt['password'] ) : '',
+			'from_email'      => isset( $opt['from_email'] ) ? (string) $opt['from_email'] : '',
+			'from_name'       => isset( $opt['from_name'] ) ? (string) $opt['from_name'] : '',
+			'force_from_name' => ! empty( $opt['force_from_name'] ),
+			'oauth_email'     => isset( $opt['oauth_email'] ) ? (string) $opt['oauth_email'] : '',
+			'oauth_connected' => ! empty( $opt['oauth_refresh_token'] ),
 		);
+
+		// Provider preset (Gmail / Outlook): auto-configure the SMTP relay host/port/encryption.
+		// Applied before constants so a wp-config.php override still wins.
+		$presets = self::mailer_presets();
+		if ( isset( $presets[ $settings['mailer'] ] ) ) {
+			$settings['host']   = $presets[ $settings['mailer'] ]['host'];
+			$settings['port']   = $presets[ $settings['mailer'] ]['port'];
+			$settings['secure'] = $presets[ $settings['mailer'] ]['secure'];
+		}
 
 		if ( defined( 'nexulesuite_SMTP_ENABLED' ) ) {
 			$settings['enabled'] = (bool) nexulesuite_SMTP_ENABLED;
@@ -87,6 +198,7 @@ final class Mailer {
 		$settings['username']  = sanitize_text_field( $settings['username'] );
 		$settings['from_email'] = sanitize_email( $settings['from_email'] );
 		$settings['from_name']  = sanitize_text_field( $settings['from_name'] );
+		$settings['oauth_email'] = sanitize_email( $settings['oauth_email'] );
 
 		$allowed_secure = array( '', 'tls', 'ssl' );
 		if ( ! in_array( $settings['secure'], $allowed_secure, true ) ) {
@@ -133,6 +245,13 @@ final class Mailer {
 		}
 
 		$fn = isset( $settings['from_name'] ) ? trim( (string) $settings['from_name'] ) : '';
+
+		// When "Force From Name" is off, keep a name supplied by the caller (theme /
+		// other plugin) and only fall back to our configured name when none is set.
+		if ( empty( $settings['force_from_name'] ) && '' !== $name ) {
+			return $name;
+		}
+
 		if ( '' !== $fn ) {
 			return $fn;
 		}
@@ -154,7 +273,41 @@ final class Mailer {
 			return $user;
 		}
 
+		$oauth = isset( $settings['oauth_email'] ) ? trim( (string) $settings['oauth_email'] ) : '';
+		if ( '' !== $oauth && is_email( $oauth ) ) {
+			return $oauth;
+		}
+
 		return '';
+	}
+
+	/**
+	 * @param string $mailer Mailer id (kept in sync with Smtp_OAuth::providers()).
+	 * @return bool
+	 */
+	private static function is_oauth_mailer( string $mailer ): bool {
+		return 'gmail' === $mailer || 'outlook' === $mailer;
+	}
+
+	/**
+	 * Builds the XOAUTH2 token provider for a connected OAuth mailer.
+	 *
+	 * @param array<string,mixed> $settings Effective settings.
+	 * @return \nexulesuite_\Smtp_XOAuth2_Provider|null Null when unavailable (old PHPMailer / no email).
+	 */
+	private static function make_oauth_provider( array $settings ) {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-smtp-oauth.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-smtp-xoauth2-provider.php';
+		if ( ! class_exists( '\\nexulesuite_\\Smtp_XOAuth2_Provider' ) ) {
+			return null;
+		}
+		$email = '' !== (string) ( $settings['oauth_email'] ?? '' )
+			? (string) $settings['oauth_email']
+			: self::resolve_from_email( $settings );
+		if ( '' === $email ) {
+			return null;
+		}
+		return new Smtp_XOAuth2_Provider( $email );
 	}
 
 	/**
@@ -177,14 +330,36 @@ final class Mailer {
 			return;
 		}
 
+		$mailer      = (string) ( $settings['mailer'] ?? 'other' );
+		$is_oauth    = self::is_oauth_mailer( $mailer );
+
+		// OAuth mailers must be connected before we hijack delivery — otherwise fall
+		// back to WordPress default so mail is not silently dropped.
+		if ( $is_oauth && empty( $settings['oauth_connected'] ) ) {
+			return;
+		}
+
 		try {
 			$phpmailer->isSMTP();
 			$phpmailer->Host       = (string) $settings['host'];
 			$phpmailer->Port       = (int) $settings['port'];
-			$phpmailer->SMTPAuth   = ! empty( $settings['username'] ) && ! empty( $settings['password'] );
-			$phpmailer->Username   = (string) ( $settings['username'] ?? '' );
-			$phpmailer->Password   = (string) ( $settings['password'] ?? '' );
 			$phpmailer->SMTPSecure = (string) ( $settings['secure'] ?? '' );
+
+			if ( $is_oauth ) {
+				$provider = self::make_oauth_provider( $settings );
+				if ( null === $provider ) {
+					// OAuth requested but unusable (old PHPMailer / no email) — bail to default.
+					$phpmailer->isMail();
+					return;
+				}
+				$phpmailer->SMTPAuth = true;
+				$phpmailer->AuthType = 'XOAUTH2';
+				$phpmailer->setOAuth( $provider );
+			} else {
+				$phpmailer->SMTPAuth = ! empty( $settings['username'] ) && ! empty( $settings['password'] );
+				$phpmailer->Username = (string) ( $settings['username'] ?? '' );
+				$phpmailer->Password = (string) ( $settings['password'] ?? '' );
+			}
 
 			$phpmailer->CharSet     = 'UTF-8';
 			$phpmailer->Timeout    = 30;

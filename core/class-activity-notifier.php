@@ -200,21 +200,35 @@ final class Activity_Notifier {
 		$home      = home_url( '/' );
 		$page      = '' !== $context['page_url'] ? $context['page_url'] : $home;
 
+		$initial = '';
+		if ( '' !== $site_name ) {
+			$initial = function_exists( 'mb_substr' ) ? mb_substr( $site_name, 0, 1 ) : substr( $site_name, 0, 1 );
+		}
+		$initial  = '' !== $initial ? strtoupper( $initial ) : 'N';
+		$tz_label = function_exists( 'wp_timezone_string' ) ? (string) wp_timezone_string() : '';
+
 		$pairs = array(
-			'{btnName}'       => esc_html( $context['btn_name'] ),
-			'{eventId}'       => esc_html( $context['trigger_id'] ),
-			'{purpose}'       => esc_html( $context['purpose'] ),
-			'{dateTime}'      => esc_html( $ts ),
-			'{year}'          => esc_html( (string) gmdate( 'Y' ) ),
-			'{siteName}'      => esc_html( $site_name ),
-			'{siteUrl}'       => esc_url( $home ),
-			'{pageUrl}'       => esc_url( $page ),
-			'{userName}'      => esc_html( $dash ),
-			'{userEmail}'     => esc_html( $dash ),
-			'{ipAddress}'     => esc_html( $dash ),
-			'{userLocation}'  => esc_html( $dash ),
-			'{formName}'      => esc_html( self::form_name_for_event_type( $context['event_type'] ) ),
-			'{stepNo}'        => esc_html( '1' ),
+			'{btnName}'          => esc_html( $context['btn_name'] ),
+			'{eventId}'          => esc_html( $context['trigger_id'] ),
+			'{purpose}'          => esc_html( $context['purpose'] ),
+			'{dateTime}'         => esc_html( $ts ),
+			'{localDateTime}'    => esc_html( $ts ),
+			'{timezoneLabel}'    => esc_html( $tz_label ),
+			'{year}'             => esc_html( (string) gmdate( 'Y' ) ),
+			'{siteName}'         => esc_html( $site_name ),
+			'{siteInitial}'      => esc_html( $initial ),
+			'{siteUrl}'          => esc_url( $home ),
+			'{pageUrl}'          => esc_url( $page ),
+			'{recipientName}'    => '',
+			'{userName}'         => esc_html( $dash ),
+			'{userEmail}'        => esc_html( $dash ),
+			'{submittedByName}'  => esc_html( $dash ),
+			'{submittedByEmail}' => esc_html( $dash ),
+			'{ipAddress}'        => esc_html( $dash ),
+			'{userLocation}'     => esc_html( $dash ),
+			'{submitLocation}'   => esc_html( $dash ),
+			'{formName}'         => esc_html( self::form_name_for_event_type( $context['event_type'] ) ),
+			'{stepNo}'           => esc_html( '1' ),
 		);
 
 		foreach ( $pairs as $needle => $repl ) {

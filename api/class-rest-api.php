@@ -306,10 +306,15 @@ final class Rest_Api {
 				'callback'            => array( $this, 'smtp_send_test_email' ),
 				'permission_callback' => array( $this, 'can_manage_settings' ),
 				'args'                => array(
-					'to' => array(
+					'to'   => array(
 						'type'              => 'string',
 						'required'          => true,
 						'sanitize_callback' => 'sanitize_email',
+					),
+					'html' => array(
+						'type'     => 'boolean',
+						'required' => false,
+						'default'  => true,
 					),
 				),
 			)
@@ -3185,6 +3190,37 @@ final class Rest_Api {
 			$help_in = sanitize_text_field( (string) $settings['description'] );
 		}
 
+		$conditional_in  = isset( $settings['conditional'] ) && is_array( $settings['conditional'] ) ? $settings['conditional'] : array();
+		$cond_action     = isset( $conditional_in['action'] ) && 'hide' === $conditional_in['action'] ? 'hide' : 'show';
+		$cond_match       = isset( $conditional_in['match'] ) && 'any' === $conditional_in['match'] ? 'any' : 'all';
+		$allowed_cond_ops = array( 'is', 'is_not', 'contains', 'starts_with', 'ends_with', 'greater_than', 'less_than', 'is_empty', 'is_not_empty' );
+		$cond_rules_in    = isset( $conditional_in['rules'] ) && is_array( $conditional_in['rules'] ) ? $conditional_in['rules'] : array();
+		$cond_rules_out   = array();
+		foreach ( $cond_rules_in as $rule ) {
+			if ( ! is_array( $rule ) ) {
+				continue;
+			}
+			$rule_field = isset( $rule['field'] ) ? sanitize_text_field( (string) $rule['field'] ) : '';
+			if ( '' === $rule_field ) {
+				continue;
+			}
+			$rule_op = isset( $rule['operator'] ) ? sanitize_text_field( (string) $rule['operator'] ) : 'is';
+			if ( ! in_array( $rule_op, $allowed_cond_ops, true ) ) {
+				$rule_op = 'is';
+			}
+			$cond_rules_out[] = array(
+				'field'    => $rule_field,
+				'operator' => $rule_op,
+				'value'    => isset( $rule['value'] ) ? sanitize_text_field( (string) $rule['value'] ) : '',
+			);
+		}
+		$conditional_out = array(
+			'enabled' => ! empty( $conditional_in['enabled'] ) && ! empty( $cond_rules_out ),
+			'action'  => $cond_action,
+			'match'   => $cond_match,
+			'rules'   => $cond_rules_out,
+		);
+
 		$settings_out = array(
 			'label'           => sanitize_text_field( (string) ( $settings['label'] ?? '' ) ),
 			'showLabel'       => ! isset( $settings['showLabel'] ) ? true : ! empty( $settings['showLabel'] ),
@@ -3211,6 +3247,7 @@ final class Rest_Api {
 			),
 			'addressParts'    => $address_parts_out,
 			'consent'         => $consent_out,
+			'conditional'     => $conditional_out,
 			'columnSpan'      => $column_span,
 		);
 
@@ -3440,14 +3477,11 @@ final class Rest_Api {
 		if ( ! is_array( $opt ) ) {
 			$opt = array();
 		}
-		unset( $opt['password'] );
 
 		return rest_ensure_response(
 			array(
 				'success' => true,
-				'data'    => array(
-					'settings' => $opt,
-				),
+				'data'    => $this->smtp_public_payload( $opt ),
 			)
 		);
 	}
@@ -3468,20 +3502,54 @@ final class Rest_Api {
 
 		$prev = get_option( \nexulesuite_\Mailer::OPTION_KEY, array() );
 		$prev = is_array( $prev ) ? $prev : array();
-		$prev_pass = isset( $prev['password'] ) ? (string) $prev['password'] : '';
-		$new_pass  = isset( $settings['password'] ) ? (string) $settings['password'] : '';
+		$prev_pass   = isset( $prev['password'] ) ? (string) $prev['password'] : '';
+		$new_pass    = isset( $settings['password'] ) ? (string) $settings['password'] : '';
+		$prev_secret = isset( $prev['oauth_client_secret'] ) ? (string) $prev['oauth_client_secret'] : '';
+		$new_secret  = isset( $settings['oauth_client_secret'] ) ? (string) $settings['oauth_client_secret'] : '';
+
+		$mailer = sanitize_key( (string) ( $settings['mailer'] ?? 'other' ) );
+		$allowed_mailers = array( 'other', 'gmail', 'outlook' );
+		if ( ! in_array( $mailer, $allowed_mailers, true ) ) {
+			$mailer = 'other';
+		}
 
 		$clean = array(
-			'enabled'    => ! empty( $settings['enabled'] ),
-			'host'       => sanitize_text_field( (string) ( $settings['host'] ?? '' ) ),
-			'port'       => (int) ( $settings['port'] ?? 587 ),
-			'secure'     => sanitize_text_field( (string) ( $settings['secure'] ?? 'tls' ) ),
-			'username'   => sanitize_text_field( (string) ( $settings['username'] ?? '' ) ),
-			// Empty password in payload keeps the stored password (admin UI often omits it on save).
-			'password'   => '' !== $new_pass ? $new_pass : $prev_pass,
-			'from_email' => sanitize_email( (string) ( $settings['from_email'] ?? '' ) ),
-			'from_name'  => sanitize_text_field( (string) ( $settings['from_name'] ?? '' ) ),
+			'enabled'         => ! empty( $settings['enabled'] ),
+			'mailer'          => $mailer,
+			'host'            => sanitize_text_field( (string) ( $settings['host'] ?? '' ) ),
+			'port'            => (int) ( $settings['port'] ?? 587 ),
+			'secure'          => sanitize_text_field( (string) ( $settings['secure'] ?? 'tls' ) ),
+			'username'        => sanitize_text_field( (string) ( $settings['username'] ?? '' ) ),
+			// Empty password in payload keeps the stored (already-encrypted) password;
+			// a new password is encrypted at rest before storage.
+			'password'        => '' !== $new_pass ? \nexulesuite_\Mailer::encrypt_secret( $new_pass ) : $prev_pass,
+			'from_email'      => sanitize_email( (string) ( $settings['from_email'] ?? '' ) ),
+			'from_name'       => sanitize_text_field( (string) ( $settings['from_name'] ?? '' ) ),
+			'force_from_name' => ! empty( $settings['force_from_name'] ),
+			// OAuth app credentials (Gmail / Outlook). Secret is encrypted; empty keeps the stored one.
+			'oauth_client_id'     => sanitize_text_field( (string) ( $settings['oauth_client_id'] ?? '' ) ),
+			'oauth_client_secret' => '' !== $new_secret ? \nexulesuite_\Mailer::encrypt_secret( $new_secret ) : $prev_secret,
 		);
+
+		// Preserve tokens obtained via the OAuth flow — the settings form never sends these.
+		foreach ( array( 'oauth_refresh_token', 'oauth_access_token', 'oauth_expires', 'oauth_email' ) as $keep ) {
+			if ( isset( $prev[ $keep ] ) ) {
+				$clean[ $keep ] = $prev[ $keep ];
+			}
+		}
+		// Changing the OAuth app credentials invalidates any existing connection.
+		if ( '' !== $new_secret && $prev_secret !== $clean['oauth_client_secret'] ) {
+			unset( $clean['oauth_refresh_token'], $clean['oauth_access_token'], $clean['oauth_expires'], $clean['oauth_email'] );
+		}
+
+		// Provider presets own their relay endpoint — store the preset values so the
+		// saved record is self-consistent even though get_effective_settings() re-applies them.
+		$presets = \nexulesuite_\Mailer::mailer_presets();
+		if ( isset( $presets[ $mailer ] ) ) {
+			$clean['host']   = $presets[ $mailer ]['host'];
+			$clean['port']   = (int) $presets[ $mailer ]['port'];
+			$clean['secure'] = $presets[ $mailer ]['secure'];
+		}
 
 		if ( $clean['port'] <= 0 || $clean['port'] > 65535 ) {
 			$clean['port'] = 587;
@@ -3494,16 +3562,45 @@ final class Rest_Api {
 
 		update_option( \nexulesuite_\Mailer::OPTION_KEY, $clean, false );
 
-		$return = $clean;
-		unset( $return['password'] );
-
 		return rest_ensure_response(
 			array(
 				'success' => true,
-				'data'    => array(
-					'settings' => $return,
-				),
+				'data'    => $this->smtp_public_payload( $clean ),
 			)
+		);
+	}
+
+	/**
+	 * Builds the browser-safe SMTP payload: settings with every secret stripped,
+	 * plus non-sensitive status flags and OAuth action URLs.
+	 *
+	 * @param array<string,mixed> $opt Raw stored settings.
+	 * @return array<string,mixed>
+	 */
+	private function smtp_public_payload( array $opt ): array {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-smtp-oauth.php';
+
+		$public = $opt;
+		unset(
+			$public['password'],
+			$public['oauth_client_secret'],
+			$public['oauth_refresh_token'],
+			$public['oauth_access_token'],
+			$public['oauth_expires']
+		);
+
+		return array(
+			'settings'        => $public,
+			'hasPassword'     => ! empty( $opt['password'] ),
+			'hasClientSecret' => ! empty( $opt['oauth_client_secret'] ),
+			'connected'       => ! empty( $opt['oauth_refresh_token'] ),
+			'oauth_email'     => isset( $opt['oauth_email'] ) ? (string) $opt['oauth_email'] : '',
+			'redirect_uri'    => \nexulesuite_\Smtp_OAuth::redirect_uri(),
+			'authorize_urls'  => array(
+				'gmail'   => \nexulesuite_\Smtp_OAuth::authorize_url( 'gmail' ),
+				'outlook' => \nexulesuite_\Smtp_OAuth::authorize_url( 'outlook' ),
+			),
+			'disconnect_url'  => \nexulesuite_\Smtp_OAuth::disconnect_url(),
 		);
 	}
 
@@ -3519,14 +3616,22 @@ final class Rest_Api {
 			return new \WP_Error( 'nexulesuite_invalid_email', 'Invalid email address.' );
 		}
 
+		$as_html = (bool) $request->get_param( 'html' );
+
 		$site = get_bloginfo( 'name' );
 		$subject = sprintf(
 			/* translators: %s: site name */
 			__( 'SMTP Test - %s', 'nexus-lead-suite' ),
 			$site
 		);
-		$message = wpautop( esc_html__( 'This is a test email from Nexus Lead Suite SMTP settings.', 'nexus-lead-suite' ) );
-		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+		$body = __( 'This is a test email from Nexus Lead Suite SMTP settings.', 'nexus-lead-suite' );
+		if ( $as_html ) {
+			$message = wpautop( esc_html( $body ) );
+			$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+		} else {
+			$message = $body;
+			$headers = array( 'Content-Type: text/plain; charset=UTF-8' );
+		}
 
 		$last_mail_error = null;
 		$listener        = static function ( $wp_error ) use ( &$last_mail_error ) {

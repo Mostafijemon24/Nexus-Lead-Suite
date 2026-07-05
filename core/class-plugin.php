@@ -328,6 +328,10 @@ final class Plugin {
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-mailer.php';
 		$mailer = new \nexulesuite_\Mailer();
 		$mailer->register_hooks();
+
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-smtp-oauth.php';
+		$smtp_oauth = new \nexulesuite_\Smtp_OAuth();
+		$smtp_oauth->register_hooks();
 	}
 
 	/**

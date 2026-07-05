@@ -72,47 +72,69 @@ function makeTemplate() {
 		uuid,
 		recipients: [],
 		subject: 'Notification from {siteName}',
-		content: '<html><body><h1>Notification</h1><p>Triggered by {btnName}</p></body></html>',
+		content: DEFAULT_HTML,
 	};
 }
 
-const DEFAULT_HTML = `<html>
-<head>
-  <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f9fafb; color: #111827; }
-    .container { max-width: 600px; margin: 40px auto; background: white; border-radius: 16px; overflow: hidden; border: 1px solid #e5e7eb; }
-    .header { background: #2563eb; padding: 30px; color: white; text-align: center; }
-    .content { padding: 40px; }
-    .footer { padding: 20px; background: #f3f4f6; text-align: center; font-size: 12px; color: #6b7280; }
-  </style>
-</head>
+const DEFAULT_HTML = `<html lang="en">
+<head><meta charset="UTF-8" /><title>Activity notification</title></head>
 <body>
-  <div class="container">
-    <div class="header"><h1>Notification</h1></div>
-    <div class="content">
-      <p>Hello,</p>
-      <p>A user named <strong>{userName}</strong> ({userEmail}) has interacted with <strong>{btnName}</strong> on your site.</p>
-      <hr/>
-      <p><strong>Details:</strong></p>
-      <ul>
-        <li>IP: {ipAddress}</li>
-        <li>Page: {pageUrl}</li>
-      </ul>
-    </div>
-    <div class="footer">Sent via Smart Trigger Automation</div>
-  </div>
-</body>
-</html>`;
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#eef2ff;padding:24px 10px;font-family:'Segoe UI',Roboto,Arial,sans-serif">
+<tr><td align="center">
+<table role="presentation" cellpadding="0" cellspacing="0" width="600" style="max-width:600px;width:100%;background:#ffffff;border-radius:14px;border:1px solid #e2e8f0">
+<tr>
+<td style="background:#1e293b;padding:26px 28px;text-align:left">
+<p style="margin:0;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;font-weight:600">Activity notification</p>
+<p style="margin:10px 0 0;font-size:22px;font-weight:700;color:#f8fafc;line-height:1.25">{siteName}</p>
+</td>
+</tr>
+<tr>
+<td style="padding:28px 28px 8px;color:#334155;font-size:15px;line-height:1.65">
+<p style="margin:0 0 14px;font-size:17px;color:#0f172a"><strong>Hi,</strong></p>
+<p style="margin:0 0 22px">Someone has triggered <strong style="color:#0f172a">{btnName}</strong>. Here are the relevant details:</p>
+<p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:0.06em;color:#64748b;text-transform:uppercase">Event details</p>
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+<tr>
+<td style="padding:12px 16px;background:#f8fafc;font-size:12px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0">Purpose</td>
+<td style="padding:12px 16px;font-size:14px;color:#334155;border-bottom:1px solid #e2e8f0">{purpose}</td>
+</tr>
+<tr>
+<td style="padding:12px 16px;background:#f8fafc;font-size:12px;font-weight:600;color:#64748b">Date &#038; time</td>
+<td style="padding:12px 16px;font-size:14px;color:#334155">{dateTime}</td>
+</tr>
+</table>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:22px"><tr><td style="border-radius:10px;background:#2563eb">
+<a href="{pageUrl}" style="display:inline-block;padding:12px 22px;color:#ffffff!important;font-weight:700;font-size:14px;text-decoration:none;border-radius:10px">View related page</a>
+</td></tr></table>
+</td>
+</tr>
+<tr>
+<td style="padding:22px 28px;background:#f8fafc;border-top:1px solid #e2e8f0;font-size:12px;color:#64748b;line-height:1.6">
+<p style="margin:0">This message was sent from <a href="{siteUrl}" style="color:#2563eb;text-decoration:none">{siteName}</a>.</p>
+<p style="margin:14px 0 0">Copyright &copy; {year} <a href="{siteUrl}" style="color:#2563eb;text-decoration:none">{siteName}</a>. All rights reserved.</p>
+</td>
+</tr>
+</table>
+</td></tr>
+</table>
+</body></html>`;
 
 const TAGS = [
 	{ label: 'Button Name', val: '{btnName}', Icon: MousePointer2 },
 	{ label: 'Event ID', val: '{eventId}', Icon: Activity },
 	{ label: 'Date/Time', val: '{dateTime}', Icon: Calendar },
+	{ label: 'Local Date/Time', val: '{localDateTime}', Icon: Calendar },
+	{ label: 'Timezone', val: '{timezoneLabel}', Icon: Globe },
+	{ label: 'Recipient Name', val: '{recipientName}', Icon: UserPlus },
 	{ label: 'User Name', val: '{userName}', Icon: User },
 	{ label: 'User Email', val: '{userEmail}', Icon: Mail },
+	{ label: 'Submitted By', val: '{submittedByName}', Icon: User },
+	{ label: 'Submitted Email', val: '{submittedByEmail}', Icon: Mail },
 	{ label: 'IP Address', val: '{ipAddress}', Icon: Globe },
 	{ label: 'Location', val: '{userLocation}', Icon: MapPin },
+	{ label: 'Submit Location', val: '{submitLocation}', Icon: MapPin },
 	{ label: 'Site Name', val: '{siteName}', Icon: Layout },
+	{ label: 'Site Initial', val: '{siteInitial}', Icon: Hash },
 	{ label: 'Site URL', val: '{siteUrl}', Icon: Globe },
 	{ label: 'Page URL', val: '{pageUrl}', Icon: Code },
 	{ label: 'Form Name', val: '{formName}', Icon: Terminal },
@@ -154,15 +176,19 @@ export function EmailsPage() {
 				const loaded = Array.isArray( json?.data?.templates ) ? json.data.templates : [];
 
 				if ( cancelled ) return;
-				setTemplates( loaded );
+				// Always keep at least one editable template so the editor never
+				// renders frozen inputs (an empty list leaves `active` undefined).
+				const list = loaded.length ? loaded : [ makeTemplate() ];
+				setTemplates( list );
 				setSavedSnapshot( loaded );
-				setActiveId( loaded[ 0 ]?.id || null );
+				setActiveId( list[ 0 ]?.id || null );
 				setStatus( { loading: false, saving: false, error: '' } );
 			} catch ( e ) {
 				if ( cancelled ) return;
-				setTemplates( [] );
+				const fallback = [ makeTemplate() ];
+				setTemplates( fallback );
 				setSavedSnapshot( [] );
-				setActiveId( null );
+				setActiveId( fallback[ 0 ].id );
 				setStatus( { loading: false, saving: false, error: e?.message || 'Failed to load templates.' } );
 			}
 		}
@@ -173,7 +199,14 @@ export function EmailsPage() {
 	}, [] );
 
 	const patchActive = ( patch ) => {
-		if ( ! active ) return;
+		// Safety net: if there is somehow no active template, create one from the
+		// first edit so typing is never a no-op.
+		if ( ! active ) {
+			const tpl = { ...makeTemplate(), ...patch };
+			setTemplates( ( prev ) => [ ...prev, tpl ] );
+			setActiveId( tpl.id );
+			return;
+		}
 		setTemplates( ( prev ) => prev.map( ( t ) => ( t.id === active.id ? { ...t, ...patch } : t ) ) );
 	};
 

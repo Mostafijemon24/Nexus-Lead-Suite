@@ -89,7 +89,7 @@ const up = Search;
 const Ut = Eye;
 const EyeOffIcon = EyeOff;
 
-function createDefaultFieldSettings( e = 1 ) {
+export function createDefaultFieldSettings( e = 1 ) {
 	return {
         label: "",
         showLabel: !0,
@@ -162,8 +162,55 @@ function createDefaultFieldSettings( e = 1 ) {
                 label: "Last Name"
             }
         },
+        conditional: {
+            enabled: !1,
+            action: "show",
+            match: "all",
+            rules: []
+        },
 		columnSpan: e
 	};
+}
+
+/**
+ * Flatten a step's blocks into lightweight field descriptors used by the
+ * conditional-logic editor (id, label, moduleId, options). Layout columns are
+ * flattened; the currently-selected field is excluded so a rule can't target itself.
+ */
+export function collectStepFieldDescriptors( blocks, excludeId ) {
+	const out = [];
+	const pushField = ( fld ) => {
+		if ( ! fld || ! fld.id || fld.id === excludeId ) {
+			return;
+		}
+		if ( fld.kind === 'layout' ) {
+			return;
+		}
+		const st = fld.settings || {};
+		out.push( {
+			id: fld.id,
+			moduleId: fld.moduleId || '',
+			label: ( st.label && String( st.label ).trim() ) || fld.moduleId || 'Field',
+			options: Array.isArray( st.options )
+				? st.options
+						.filter( ( o ) => o && ( o.label || o.value ) )
+						.map( ( o ) => ( { label: o.label || o.value, value: o.value != null ? o.value : o.label } ) )
+				: [],
+		} );
+	};
+	for ( const b of Array.isArray( blocks ) ? blocks : [] ) {
+		if ( b && b.kind === 'layout' ) {
+			const items = ( b.layout && b.layout.items ) || [];
+			for ( const col of items ) {
+				for ( const fld of col || [] ) {
+					pushField( fld );
+				}
+			}
+		} else {
+			pushField( b );
+		}
+	}
+	return out;
 }
 
 function bh({
@@ -359,7 +406,13 @@ function gp({
                             }), ((h = e == null ? void 0 : e.settings) == null ? void 0 : h.required) && s.jsx("span", {
                                 className: "text-red-600 font-semibold",
                                 children: "Required"
-                            })]
+                            }), (((e == null ? void 0 : e.settings) == null ? void 0 : e.settings.conditional) && e.settings.conditional.enabled && Array.isArray(e.settings.conditional.rules) && e.settings.conditional.rules.length) ? s.jsxs("span", {
+                                className: "inline-flex items-center gap-1 font-semibold text-violet-600",
+                                children: [s.jsx(or, {
+                                    size: 12,
+                                    className: "rotate-90"
+                                }), "Conditional"]
+                            }) : null]
                         })]
                     })]
                 })
@@ -775,6 +828,7 @@ export function DynamicFieldsBuilder({
             }
             n({
                 field: C,
+                fields: collectStepFieldDescriptors(f, a),
                 updateSettings: m => d(a, m),
                 clear: () => i(null)
             })
@@ -1304,7 +1358,7 @@ export function FieldSettingsInline({
                                 o(!1)
                             }
                         },
-                        className: ["rounded-lg px-4 py-2 text-sm font-semibold text-white", i ? "bg-violet-400" : "bg-violet-600 hover:bg-violet-700"].join(" "),
+                        className: "nexulesuite_fp-save-btn rounded-lg px-4 py-2 text-sm font-semibold" + (i ? " is-loading" : ""),
                         children: i ? "Saving…" : "Save Keys"
                     }), c ? s.jsx("p", {
                         className: "text-xs font-semibold text-rose-600",
@@ -1379,7 +1433,7 @@ export function FieldSettingsInline({
                                 o(!1)
                             }
                         },
-                        className: ["rounded-lg px-4 py-2 text-sm font-semibold text-white", i ? "bg-violet-400" : "bg-violet-600 hover:bg-violet-700"].join(" "),
+                        className: "nexulesuite_fp-save-btn rounded-lg px-4 py-2 text-sm font-semibold" + (i ? " is-loading" : ""),
                         children: i ? "Saving…" : "Save Keys"
                     }), c ? s.jsx("p", {
                         className: "text-xs font-semibold text-rose-600",
@@ -1746,7 +1800,7 @@ function vp({
     return e ? s.jsxs("div", {
         className: "relative",
         children: [s.jsx("div", {
-            className: "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400",
+            className: "nexulesuite_fp-ico pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400",
             children: e
         }), t]
     }) : t
@@ -1756,8 +1810,10 @@ function po(e = {}, {
     hasLeftIcon: t = !1,
     rightPadPx: n = 12
 } = {}) {
+    // Left icon sits at 12px and is 24px wide (ends at 36px); clear it with a
+    // comfortable ~10px gap so the placeholder/value never touches the icon.
     const l = Number.isFinite(e.padding) ? e.padding : parseInt(e.padding ?? 12, 10) || 12,
-        r = t ? l + 28 : l;
+        r = t ? l + 34 : l;
     return {
         backgroundColor: e.backgroundColor || "#ffffff",
         color: e.textColor || "#0f172a",
@@ -1791,7 +1847,7 @@ function jl({
             type: e,
             required: n,
             placeholder: t,
-            className: "h-11 w-full outline-none",
+            className: (r ? "nexulesuite_fp-inp " : "") + "h-11 w-full outline-none",
             style: a
         })
     })
@@ -1909,7 +1965,8 @@ function Ih({
     type: e,
     options: t,
     inline: n,
-    required: l
+    required: l,
+    name: N
 }) {
     return s.jsx("div", {
         className: ["mt-2", n ? "flex flex-wrap gap-4" : "space-y-2"].join(" "),
@@ -1917,6 +1974,8 @@ function Ih({
             className: "flex items-center gap-2 text-sm text-slate-700",
             children: [s.jsx("input", {
                 type: e,
+                name: N || void 0,
+                value: r.value != null ? r.value : (r.label || ""),
                 required: l && e === "radio"
             }), s.jsx("span", {
                 children: r.label || r.value || `Option ${a+1}`
@@ -2052,7 +2111,8 @@ function Mc(e) {
                 type: t,
                 options: u,
                 inline: c,
-                required: r
+                required: r,
+                name: (e == null ? void 0 : e.id) || void 0
             })]
         })
     }
@@ -2069,10 +2129,15 @@ function Mc(e) {
             }), s.jsxs("div", {
                 className: "relative",
                 children: [s.jsx("div", {
-                    className: "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400",
+                    className: "nexulesuite_fp-ico pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400",
                     children: i
                 }), s.jsx("select", {
-                    className: "h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm",
+                    className: "nexulesuite_fp-inp h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm",
+                    style: {
+                        maxWidth: "none",
+                        // Inline so WP admin's `select { padding }` can't shrink it back onto the icon.
+                        paddingLeft: "2.875rem"
+                    },
                     required: r,
                     children: c.map((u, g) => s.jsx("option", {
                         value: u.value || "",
@@ -2126,6 +2191,167 @@ function Mc(e) {
     })
 }
 
+/**
+ * Conditional logic for the in-builder Preview modal. Mirrors the frontend
+ * runtime (public/js/forms-runtime.js) but works on the live preview DOM: reads
+ * a field's current value by its `data-field-id` and toggles wrapper display.
+ * Preview never submits, so we only hide/show (no need to disable inputs).
+ */
+function previewReadFieldValue( container, fieldId ) {
+	if ( ! container || ! fieldId ) {
+		return { value: '', values: [] };
+	}
+	let wrap = null;
+	container.querySelectorAll( '[data-field-id]' ).forEach( ( cand ) => {
+		if ( ! wrap && cand.getAttribute( 'data-field-id' ) === fieldId ) {
+			wrap = cand;
+		}
+	} );
+	if ( ! wrap ) {
+		return { value: '', values: [] };
+	}
+	const controls = Array.from( wrap.querySelectorAll( 'input, select, textarea' ) );
+	const radios = controls.filter( ( el ) => el.tagName === 'INPUT' && el.type === 'radio' );
+	if ( radios.length ) {
+		const ck = radios.find( ( r ) => r.checked );
+		const v = ck ? String( ck.value ) : '';
+		return { value: v, values: v ? [ v ] : [] };
+	}
+	const checks = controls.filter( ( el ) => el.tagName === 'INPUT' && el.type === 'checkbox' );
+	if ( checks.length ) {
+		const vals = checks.filter( ( c ) => c.checked ).map( ( c ) => String( c.value ) );
+		return { value: vals.join( ',' ), values: vals };
+	}
+	const sel = controls.find( ( el ) => el.tagName === 'SELECT' );
+	if ( sel ) {
+		const v = String( sel.value || '' );
+		return { value: v, values: v ? [ v ] : [] };
+	}
+	const txt = controls.find( ( el ) => el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' );
+	if ( txt ) {
+		const v = String( txt.value || '' );
+		return { value: v, values: v ? [ v ] : [] };
+	}
+	return { value: '', values: [] };
+}
+
+/** Number (pure numeric) or date (Date-parseable) for greater_than / less_than; else null. */
+function previewToComparable( s ) {
+	const str = String( s == null ? '' : s ).trim();
+	if ( str === '' ) {
+		return null;
+	}
+	if ( /^-?\d+(\.\d+)?$/.test( str ) ) {
+		return parseFloat( str );
+	}
+	const d = Date.parse( str );
+	return isNaN( d ) ? null : d;
+}
+
+function previewRuleMatches( container, rule ) {
+	const op = String( rule.operator || 'is' );
+	const rv = rule.value == null ? '' : String( rule.value );
+	const g = previewReadFieldValue( container, String( rule.field || '' ) );
+	const v = g.value;
+	const vals = g.values || [];
+	switch ( op ) {
+		case 'is':
+			return vals.length ? vals.indexOf( rv ) !== -1 : v === rv;
+		case 'is_not':
+			return vals.length ? vals.indexOf( rv ) === -1 : v !== rv;
+		case 'contains':
+			return v.toLowerCase().indexOf( rv.toLowerCase() ) !== -1;
+		case 'starts_with':
+			return v.toLowerCase().indexOf( rv.toLowerCase() ) === 0;
+		case 'ends_with': {
+			const a = v.toLowerCase();
+			const b = rv.toLowerCase();
+			return b.length <= a.length && a.lastIndexOf( b ) === a.length - b.length;
+		}
+		case 'greater_than': {
+			const a = previewToComparable( v );
+			const b = previewToComparable( rv );
+			return a !== null && b !== null && a > b;
+		}
+		case 'less_than': {
+			const a = previewToComparable( v );
+			const b = previewToComparable( rv );
+			return a !== null && b !== null && a < b;
+		}
+		case 'is_empty':
+			return v.trim() === '';
+		case 'is_not_empty':
+			return v.trim() !== '';
+		default:
+			return false;
+	}
+}
+
+function evaluatePreviewConditionals( container ) {
+	if ( ! container ) {
+		return;
+	}
+	const deps = [];
+	container.querySelectorAll( '[data-nexulesuite_conditional]' ).forEach( ( wrap ) => {
+		let cfg = null;
+		try {
+			cfg = JSON.parse( wrap.getAttribute( 'data-nexulesuite_conditional' ) || 'null' );
+		} catch ( _e ) {
+			cfg = null;
+		}
+		if ( cfg && Array.isArray( cfg.rules ) && cfg.rules.length ) {
+			deps.push( { wrap, cfg } );
+		}
+	} );
+	if ( ! deps.length ) {
+		return;
+	}
+	let changed = true;
+	let pass = 0;
+	while ( changed && pass <= deps.length ) {
+		changed = false;
+		pass++;
+		for ( const d of deps ) {
+			const rules = Array.isArray( d.cfg.rules ) ? d.cfg.rules : [];
+			const met = d.cfg.match === 'any'
+				? rules.some( ( r ) => previewRuleMatches( container, r ) )
+				: rules.every( ( r ) => previewRuleMatches( container, r ) );
+			const shouldShow = d.cfg.action === 'hide' ? ! met : met;
+			const hidden = d.wrap.style.display === 'none';
+			if ( shouldShow && hidden ) {
+				d.wrap.style.display = '';
+				changed = true;
+			} else if ( ! shouldShow && ! hidden ) {
+				d.wrap.style.display = 'none';
+				changed = true;
+			}
+		}
+	}
+}
+
+/** JSON conditional config for a preview field wrapper, or null when not enabled. */
+function previewFieldConditionalAttr( fld ) {
+	const c = fld && fld.settings && fld.settings.conditional;
+	if ( ! c || ! c.enabled || ! Array.isArray( c.rules ) || ! c.rules.length ) {
+		return null;
+	}
+	const rules = c.rules
+		.filter( ( r ) => r && r.field )
+		.map( ( r ) => ( {
+			field: String( r.field ),
+			operator: String( r.operator || 'is' ),
+			value: r.value == null ? '' : String( r.value ),
+		} ) );
+	if ( ! rules.length ) {
+		return null;
+	}
+	return JSON.stringify( {
+		action: c.action === 'hide' ? 'hide' : 'show',
+		match: c.match === 'any' ? 'any' : 'all',
+		rules,
+	} );
+}
+
 export function FormPreviewModal({
     isOpen: e,
     onClose: t,
@@ -2145,6 +2371,19 @@ export function FormPreviewModal({
             settings: (p == null ? void 0 : p.settings) || {},
             layout: p == null ? void 0 : p.layout
         })), [c]);
+    const previewRef = w.useRef(null);
+    w.useEffect(() => {
+        const container = previewRef.current;
+        if (!e || !container) return;
+        const run = () => evaluatePreviewConditionals(container);
+        run();
+        container.addEventListener("input", run, true);
+        container.addEventListener("change", run, true);
+        return () => {
+            container.removeEventListener("input", run, true);
+            container.removeEventListener("change", run, true);
+        };
+    }, [e, u, i]);
     if (!e) return null;
     const g = (n == null ? void 0 : n.styling) || {},
         y = {
@@ -2203,6 +2442,7 @@ export function FormPreviewModal({
                         children: o.subtitle
                     }) : null, s.jsx("div", {
                         className: "mt-5 space-y-5",
+                        ref: previewRef,
                         children: u.length === 0 ? s.jsx("p", {
                             className: "text-sm text-slate-500",
                             children: "No fields yet."
@@ -2233,15 +2473,23 @@ export function FormPreviewModal({
                                                 children: "Empty"
                                             }) : s.jsx("div", {
                                                 className: "space-y-4",
-                                                children: (x[h] || []).map(b => s.jsx("div", {
-                                                    children: Mc(b)
-                                                }, b.id))
+                                                children: (x[h] || []).map(b => {
+                                                    const bc = previewFieldConditionalAttr(b);
+                                                    return s.jsx("div", {
+                                                        "data-field-id": b == null ? void 0 : b.id,
+                                                        ...(bc ? { "data-nexulesuite_conditional": bc } : {}),
+                                                        children: Mc(b)
+                                                    }, b.id);
+                                                })
                                             })
                                         }, h))
                                     })]
                                 }, p.id)
                             }
+                            const pc = previewFieldConditionalAttr(p);
                             return s.jsx("div", {
+                                "data-field-id": p == null ? void 0 : p.id,
+                                ...(pc ? { "data-nexulesuite_conditional": pc } : {}),
                                 children: Mc(p)
                             }, p.id)
                         })
