@@ -12,6 +12,14 @@ const TABS = [
 	{ id: 'interactions', label: 'Interactions' },
 ];
 
+/* Must stay in sync with Report_Source::SECTIONS. */
+const PDF_SECTIONS = [
+	{ id: 'summary', label: 'Summary counts' },
+	{ id: 'forms', label: 'Form submissions (full answers)' },
+	{ id: 'chats', label: 'Chat transcripts' },
+	{ id: 'activities', label: 'Activity log' },
+];
+
 function PdfIcon( { className = 'h-4 w-4' } ) {
 	return (
 		<svg
@@ -102,6 +110,7 @@ function getRest() {
 function ActivitiesReportModal( { open, onClose, filters } ) {
 	const { restUrl, nonce, siteTitle } = getRest();
 	const [ generating, setGenerating ] = useState( false );
+	const [ pdfSections, setPdfSections ] = useState( [ 'summary', 'activities' ] );
 	const [ sending, setSending ] = useState( false );
 	const [ templates, setTemplates ] = useState( [] );
 	const [ customMessage, setCustomMessage ] = useState( '' );
@@ -162,13 +171,19 @@ function ActivitiesReportModal( { open, onClose, filters } ) {
 		[ selectedRecipients ]
 	);
 
+	const toggleSection = ( id ) => {
+		setPdfSections( ( current ) =>
+			current.includes( id ) ? current.filter( ( s ) => s !== id ) : [ ...current, id ]
+		);
+	};
+
 	const previewPdf = async () => {
-		if ( generating ) {
+		if ( generating || pdfSections.length === 0 ) {
 			return;
 		}
 		setGenerating( true );
 		try {
-			const response = await fetch( `${ restUrl }nexulesuite_/v1/reports/activities/pdf`, {
+			const response = await fetch( `${ restUrl }nexulesuite_/v1/reports/combined/pdf`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -180,6 +195,7 @@ function ActivitiesReportModal( { open, onClose, filters } ) {
 					dateFrom: filters.fromDate,
 					dateTo: filters.toDate,
 					search: filters.search,
+					sections: pdfSections,
 				} ),
 			} );
 			const json = await response.json();
@@ -315,10 +331,24 @@ function ActivitiesReportModal( { open, onClose, filters } ) {
 					</div>
 
 					<div className="nexulesuite_act-modal-body">
+						<h3 className="nexulesuite_act-modal-subtitle">Include in report</h3>
+						<div className="nexulesuite_act-sections">
+							{ PDF_SECTIONS.map( ( section ) => (
+								<label key={ section.id } className="nexulesuite_act-section">
+									<input
+										type="checkbox"
+										checked={ pdfSections.includes( section.id ) }
+										onChange={ () => toggleSection( section.id ) }
+									/>
+									<span>{ section.label }</span>
+								</label>
+							) ) }
+						</div>
+
 						<button
 							type="button"
 							onClick={ previewPdf }
-							disabled={ generating }
+							disabled={ generating || pdfSections.length === 0 }
 							className="nexulesuite_act-btn-primary nexulesuite_act-btn-primary--block"
 						>
 							{ generating ? 'Generating…' : 'Preview PDF Report' }

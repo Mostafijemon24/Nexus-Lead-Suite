@@ -34,6 +34,9 @@ RELEASE_NOTES_*
 /nexus-lead-suite-*.zip
 /preview.html
 
+# AI backend service — deployed separately to a VPS, NOT part of the plugin zip
+/ai-server
+
 # Release tooling
 /scripts
 /release

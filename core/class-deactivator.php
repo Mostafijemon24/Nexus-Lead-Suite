@@ -26,6 +26,7 @@ final class Deactivator {
 	 */
 	public static function deactivate(): void {
 		wp_clear_scheduled_hook( 'nexulesuite_purge_form_submissions' );
+		wp_clear_scheduled_hook( 'nexulesuite_purge_report_pdfs' );
 		flush_rewrite_rules();
 	}
 }

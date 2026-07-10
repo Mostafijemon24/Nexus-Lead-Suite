@@ -44,10 +44,37 @@ final class Plugin {
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'init', array( $this, 'schedule_form_submissions_purge' ), 25 );
 		add_action( 'nexulesuite_purge_form_submissions', array( \nexulesuite_\Core\Form_Submissions_Store::class, 'purge_expired' ) );
+		add_action( 'nexulesuite_purge_report_pdfs', array( $this, 'purge_report_pdfs' ) );
+		// Priority -10: ahead of maybe_gate_admin_pages(), which exits on our locked pages.
+		add_action( 'admin_init', array( $this, 'maybe_upgrade_db' ), -10 );
 		add_action( 'admin_init', array( $this, 'maybe_gate_admin_pages' ), 0 );
 		add_action( 'admin_enqueue_scripts', array( \nexulesuite_\Core\Access_Gate::class, 'maybe_enqueue_admin_assets' ) );
 		add_action( 'init', array( $this, 'init_admin' ) );
 		add_action( 'init', array( $this, 'init_public' ) );
+	}
+
+	/**
+	 * Runs pending DB schema upgrades for already-active installs (activation hook
+	 * only fires on (re)activation, so new tables need a version-gated check here).
+	 *
+	 * Admin-only by design: Activator::install_tables() pulls in
+	 * wp-admin/includes/upgrade.php, which loads the whole wp-admin include tree.
+	 * Running that on front-end and REST requests would issue DDL on public traffic.
+	 *
+	 * Failures are swallowed: a schema upgrade must never take wp-admin down, or the
+	 * user loses the screen they'd use to fix it.
+	 *
+	 * @return void
+	 */
+	public function maybe_upgrade_db(): void {
+		try {
+			require_once nexulesuite_PLUGIN_DIR . 'core/class-activator.php';
+			Activator::maybe_upgrade();
+		} catch ( \Throwable $e ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[Nexus Lead Suite] Schema upgrade failed: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- logged only when WP_DEBUG is enabled.
+			}
+		}
 	}
 
 	/**
@@ -150,6 +177,19 @@ final class Plugin {
 		if ( ! wp_next_scheduled( 'nexulesuite_purge_form_submissions' ) ) {
 			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'nexulesuite_purge_form_submissions' );
 		}
+		if ( ! wp_next_scheduled( 'nexulesuite_purge_report_pdfs' ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'nexulesuite_purge_report_pdfs' );
+		}
+	}
+
+	/**
+	 * Sweeps the report PDFs written into uploads, which nothing used to clean up.
+	 *
+	 * @return void
+	 */
+	public function purge_report_pdfs(): void {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-report-pdf.php';
+		\nexulesuite_\Core\Report_Pdf::purge_generated_files();
 	}
 
 	/**

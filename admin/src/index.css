@@ -5483,3 +5483,81 @@
 	background-color: #f6a45c !important;
 	cursor: default;
 }
+
+/* ── Client share links: section grants + revocable link table ─────────── */
+.nexulesuite_settings-general-wrap .nexulesuite_sg-checks {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+	gap: 0.4rem 1rem;
+	margin-top: 0.35rem;
+}
+.nexulesuite_settings-general-wrap .nexulesuite_sg-check {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.82rem;
+	color: #334155;
+	cursor: pointer;
+}
+.nexulesuite_settings-general-wrap .nexulesuite_sg-check input {
+	width: 0.95rem;
+	height: 0.95rem;
+	accent-color: #2563eb;
+}
+.nexulesuite_settings-general-wrap .nexulesuite_sg-links-table {
+	width: 100%;
+	margin-top: 1rem;
+	border-collapse: collapse;
+	font-size: 0.8rem;
+}
+.nexulesuite_settings-general-wrap .nexulesuite_sg-links-table th {
+	text-align: left;
+	font-size: 0.68rem;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: #94a3b8;
+	padding: 0.4rem 0.6rem;
+	border-bottom: 1px solid #e2e8f0;
+}
+.nexulesuite_settings-general-wrap .nexulesuite_sg-links-table td {
+	padding: 0.55rem 0.6rem;
+	border-bottom: 1px solid #f1f5f9;
+	color: #1e293b;
+}
+.nexulesuite_settings-general-wrap .nexulesuite_sg-links-sections {
+	color: #64748b;
+}
+.nexulesuite_settings-general-wrap .nexulesuite_sg-link-revoke {
+	border: 1px solid #fecaca;
+	background: #fef2f2;
+	color: #b91c1c;
+	border-radius: 0.5rem;
+	padding: 0.3rem 0.7rem;
+	font-size: 0.72rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+.nexulesuite_settings-general-wrap .nexulesuite_sg-link-revoke:hover {
+	background: #fee2e2;
+}
+
+/* Section picker inside the Activities → Report PDF modal. */
+.nexulesuite_act-sections {
+	display: grid;
+	gap: 0.4rem;
+	margin: 0.25rem 0 1rem;
+}
+.nexulesuite_act-section {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.82rem;
+	color: #334155;
+	cursor: pointer;
+}
+.nexulesuite_act-section input {
+	width: 0.95rem;
+	height: 0.95rem;
+	accent-color: #2563eb;
+}

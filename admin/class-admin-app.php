@@ -50,6 +50,7 @@ final class Admin_App {
 			self::MENU_SLUG . '-popups'       => 'popups',
 			self::MENU_SLUG . '-emails'       => 'emails',
 			self::MENU_SLUG . '-forms'        => 'form-builder',
+			self::MENU_SLUG . '-chatbot'      => 'chatbot',
 			self::MENU_SLUG . '-settings'     => 'settings',
 		);
 	}
@@ -76,6 +77,7 @@ final class Admin_App {
 			self::MENU_SLUG . '-popups'       => __( 'Popups', 'nexus-lead-suite' ),
 			self::MENU_SLUG . '-emails'       => __( 'Emails', 'nexus-lead-suite' ),
 			self::MENU_SLUG . '-forms'        => __( 'Forms', 'nexus-lead-suite' ),
+			self::MENU_SLUG . '-chatbot'      => __( 'Chatbot', 'nexus-lead-suite' ),
 			self::MENU_SLUG . '-settings'     => __( 'Settings', 'nexus-lead-suite' ),
 		);
 
@@ -268,18 +270,18 @@ final class Admin_App {
 			'nexulesuite_admin',
 			'(function(){' .
 			'"use strict";' .
-			'function getForms(){try{var p=window.nexulesuite_Admin&&window.nexulesuite_Admin.formsPayload;var f=p&&Array.isArray(p.forms)?p.forms:[];return f.map(function(x){return {id:String(x.id||\"\").trim(),name:String(x.name||\"\").trim()};}).filter(function(x){return x.id;});}catch(e){return [];}}' .
-			'function isChatButtonsPopupSelect(sel){if(!sel||sel.tagName!==\"SELECT\")return false;var opt0=sel.querySelector(\"option\");if(!opt0)return false;return (opt0.textContent||\"\").toLowerCase().indexOf(\"select a popup\")!==-1;}' .
+			'function getForms(){try{var p=window.nexulesuite_Admin&&window.nexulesuite_Admin.formsPayload;var f=p&&Array.isArray(p.forms)?p.forms:[];return f.map(function(x){return {id:String(x.id||"").trim(),name:String(x.name||"").trim()};}).filter(function(x){return x.id;});}catch(e){return [];}}' .
+			'function isChatButtonsPopupSelect(sel){if(!sel||sel.tagName!=="SELECT")return false;var opt0=sel.querySelector("option");if(!opt0)return false;return (opt0.textContent||"").toLowerCase().indexOf("select a popup")!==-1;}' .
 			'function inject(sel){if(!isChatButtonsPopupSelect(sel))return; if(sel.__nexulesuite_FormsInjected)return; var forms=getForms(); if(!forms.length)return;' .
 			// Only inject into the first chat-buttons select on the page (Button 01).
-			'var wrap=sel.closest(\"div.p-5\"); if(!wrap)return; var label=wrap.querySelector(\"label\"); if(!label)return; var txt=(label.textContent||\"\").toLowerCase(); if(txt.indexOf(\"button 01\")===-1)return;' .
+			'var wrap=sel.closest("div.p-5"); if(!wrap)return; var label=wrap.querySelector("label"); if(!label)return; var txt=(label.textContent||"").toLowerCase(); if(txt.indexOf("button 01")===-1)return;' .
 			// Add a visual separator (disabled option) once.
-			'var hasSep=false; Array.prototype.slice.call(sel.options).forEach(function(o){if(o && o.disabled && (o.value||\"\")===\"__forms__\") hasSep=true;});' .
-			'if(!hasSep){var sep=document.createElement(\"option\"); sep.value=\"__forms__\"; sep.disabled=true; sep.textContent=\"— Forms —\"; sel.appendChild(sep);} ' .
+			'var hasSep=false; Array.prototype.slice.call(sel.options).forEach(function(o){if(o && o.disabled && (o.value||"")==="__forms__") hasSep=true;});' .
+			'if(!hasSep){var sep=document.createElement("option"); sep.value="__forms__"; sep.disabled=true; sep.textContent="— Forms —"; sel.appendChild(sep);} ' .
 			// Append forms.
-			'forms.forEach(function(f){var v=\"form:\"+f.id; for(var i=0;i<sel.options.length;i++){if(sel.options[i] && sel.options[i].value===v) return;} var o=document.createElement(\"option\"); o.value=v; o.textContent=(f.name?f.name:f.id); sel.appendChild(o);});' .
+			'forms.forEach(function(f){var v="form:"+f.id; for(var i=0;i<sel.options.length;i++){if(sel.options[i] && sel.options[i].value===v) return;} var o=document.createElement("option"); o.value=v; o.textContent=(f.name?f.name:f.id); sel.appendChild(o);});' .
 			'sel.__nexulesuite_FormsInjected=true;}' .
-			'function scan(root){var r=root||document; var sels=r.querySelectorAll(\"select\"); for(var i=0;i<sels.length;i++){inject(sels[i]);}}' .
+			'function scan(root){var r=root||document; var sels=r.querySelectorAll("select"); for(var i=0;i<sels.length;i++){inject(sels[i]);}}' .
 			'scan(document);' .
 			'var mo=new MutationObserver(function(muts){muts.forEach(function(m){if(m.addedNodes){for(var i=0;i<m.addedNodes.length;i++){var n=m.addedNodes[i]; if(n&&n.nodeType===1){scan(n);}}}});});' .
 			'mo.observe(document.documentElement,{childList:true,subtree:true});' .

@@ -3656,6 +3656,31 @@ final class Shortcodes {
 	}
 
 	/**
+	 * Icon set for AI quick-reply / action buttons. Key => inner SVG markup
+	 * (24x24, stroke-based to inherit currentColor). Shared by widget + admin picker.
+	 *
+	 * @return array<string,string>
+	 */
+	public static function livechat_ai_icon_set(): array {
+		return array(
+			'stethoscope' => '<path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M6 3H4M14 3h2M10 13v3a5 5 0 0 0 10 0v-1"/><circle cx="20" cy="12" r="2"/>',
+			'dollar'      => '<path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+			'shield'      => '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+			'pin'         => '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+			'calendar'    => '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+			'phone'       => '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+			'directions'  => '<path d="M9 20l-6 3V6l6-3 6 3 6-3v17l-6 3-6-3z"/><path d="M9 3v17M15 6v17"/>',
+			'chat'        => '<path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/>',
+			'question'    => '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7"/><path d="M12 17h.01"/>',
+			'clock'       => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+			'info'        => '<circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/>',
+			'heart'       => '<path d="M20.8 6.6a5 5 0 0 0-7.1 0L12 8.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 22l8.8-8.3a5 5 0 0 0 0-7.1z"/>',
+			'mail'        => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+			'user'        => '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+		);
+	}
+
+	/**
 	 * Renders the floating livechat widget in wp_footer.
 	 * Reads general settings to build the widget; outputs scoped CSS + HTML + JS inline.
 	 *
@@ -3696,6 +3721,90 @@ final class Shortcodes {
 		$btn2_raw   = (string) ( $opt['chatButtonTwoLink']                       ?? '' );
 		$btn3_label = sanitize_text_field( (string) ( $opt['chatButtonThird'] ?? '' ) ) ?: 'E-mail';
 		$btn3_raw   = (string) ( $opt['chatButtonThirdLink']                     ?? '' );
+
+		/* ── AI chat mode: only usable when enabled AND a server URL is set ── */
+		$ai_enabled       = ! empty( $opt['aiEnabled'] ) && '' !== trim( (string) ( $opt['aiServerUrl'] ?? '' ) );
+		$ai_welcome       = sanitize_text_field( (string) ( $opt['aiWelcomeMessage'] ?? '' ) );
+		$ai_launch_label  = $btn1_label; // reuse the primary "Start Conversation" label.
+		$ai_allow_images  = $ai_enabled && ! empty( $opt['aiAllowImages'] );
+
+		/* ── FAQ / conditional quick-reply buttons (deterministic, client-side) ── */
+		$ai_icon_svgs = self::livechat_ai_icon_set();
+		$ai_faq_items = array();
+		if ( $ai_enabled && ! empty( $opt['aiFaqEnabled'] ) && ! empty( $opt['aiFaqFlows'] ) && is_array( $opt['aiFaqFlows'] ) ) {
+			foreach ( $opt['aiFaqFlows'] as $faq ) {
+				if ( ! is_array( $faq ) ) {
+					continue;
+				}
+				$faq_label = trim( sanitize_text_field( (string) ( $faq['label'] ?? '' ) ) );
+				if ( '' === $faq_label ) {
+					continue;
+				}
+				$faq_follow = array();
+				$raw_follow = isset( $faq['followups'] ) && is_array( $faq['followups'] ) ? $faq['followups'] : array();
+				foreach ( $raw_follow as $fu ) {
+					if ( ! is_array( $fu ) ) {
+						continue;
+					}
+					$fu_label = trim( sanitize_text_field( (string) ( $fu['label'] ?? '' ) ) );
+					if ( '' === $fu_label ) {
+						continue;
+					}
+					$faq_follow[] = array(
+						'label'  => $fu_label,
+						'answer' => sanitize_textarea_field( (string) ( $fu['answer'] ?? '' ) ),
+					);
+				}
+				$faq_icon = sanitize_key( (string) ( $faq['icon'] ?? '' ) );
+				if ( ! isset( $ai_icon_svgs[ $faq_icon ] ) ) {
+					$faq_icon = '';
+				}
+				$ai_faq_items[] = array(
+					'label'     => $faq_label,
+					'answer'    => sanitize_textarea_field( (string) ( $faq['answer'] ?? '' ) ),
+					'icon'      => $faq_icon,
+					'followups' => $faq_follow,
+				);
+			}
+		}
+
+		/* ── AI quick-action buttons (Book / Call / Directions, reference-style) ── */
+		$ai_actions = array();
+		if ( $ai_enabled && ! empty( $opt['aiActions'] ) && is_array( $opt['aiActions'] ) ) {
+			foreach ( $opt['aiActions'] as $act ) {
+				if ( ! is_array( $act ) ) {
+					continue;
+				}
+				$act_label = trim( sanitize_text_field( (string) ( $act['label'] ?? '' ) ) );
+				if ( '' === $act_label ) {
+					continue;
+				}
+				$act_icon = sanitize_key( (string) ( $act['icon'] ?? '' ) );
+				if ( ! isset( $ai_icon_svgs[ $act_icon ] ) ) {
+					$act_icon = '';
+				}
+				$ai_actions[] = array(
+					'label' => $act_label,
+					'icon'  => $act_icon,
+					'url'   => $this->sanitize_livechat_button_href( (string) ( $act['url'] ?? '' ) ),
+				);
+			}
+		}
+
+		$ai_disclaimer    = $ai_enabled ? sanitize_textarea_field( (string) ( $opt['aiDisclaimer'] ?? '' ) ) : '';
+		$ai_trigger_label = sanitize_text_field( (string) ( $opt['aiTriggerLabel'] ?? '' ) );
+		$ai_lead_enabled  = $ai_enabled && ! empty( $opt['aiLeadEnabled'] );
+		$ai_lead_offer    = sanitize_text_field( (string) ( $opt['aiLeadOffer'] ?? '' ) );
+		if ( '' === trim( $ai_lead_offer ) ) {
+			$ai_lead_offer = __( 'Would you like our team to reach out to you?', 'nexus-lead-suite' );
+		}
+
+		/* ── Contact-form shortcode for the "Get in Touch" action (url = #form) ── */
+		$ai_contact_shortcode = $ai_enabled ? trim( (string) ( $opt['aiContactShortcode'] ?? '' ) ) : '';
+		$ai_contact_form_html = '';
+		if ( '' !== $ai_contact_shortcode ) {
+			$ai_contact_form_html = do_shortcode( $ai_contact_shortcode );
+		}
 
 		/*
 		 * Parse a raw link value into type + resolved value:
@@ -3784,8 +3893,54 @@ final class Shortcodes {
 		.nexulesuite_chat-widget{position:fixed;bottom:24px;z-index:99997;display:flex;flex-direction:column;align-items:flex-end;gap:12px;<?php echo esc_attr( $float_css ); ?>font-family:'<?php echo esc_attr( $font ); ?>',sans-serif;}
 		.nexulesuite_chat-widget.nexulesuite_chat--left{align-items:flex-start;}
 
+		/* Design tokens — mirror the admin SPA (slate surfaces, 8/12/16px radii, sm/md shadows). */
+		.nexulesuite_chat-widget{
+			--nls-primary:<?php echo esc_attr( $btn_bg ); ?>;
+			--nls-on-primary:<?php echo esc_attr( $btn_text_col ); ?>;
+			--nls-primary-tint:#eff6ff;
+			--nls-primary-tint:color-mix(in srgb, var(--nls-primary), #fff 90%);
+			--nls-primary-ring:rgba(37,99,235,.18);
+			--nls-primary-ring:color-mix(in srgb, var(--nls-primary), transparent 82%);
+			--nls-surface:#ffffff;
+			--nls-canvas:#f6f7fb;
+			--nls-border:#e2e8f0;
+			--nls-border-soft:#f1f5f9;
+			--nls-field-border:#cbd5e1;
+			--nls-ink:#0f172a;
+			--nls-ink-2:#1e293b;
+			--nls-ink-3:#475569;
+			--nls-muted:#94a3b8;
+			/* Timestamp metrics, shared so the bot avatar can be centred on the bubble rather than the column. */
+			--nls-time-size:10.5px;
+			--nls-bubble-gap:4px;
+			--nls-radius-xs:6px;
+			--nls-radius-sm:8px;
+			--nls-radius:12px;
+			--nls-radius-lg:16px;
+			--nls-shadow-sm:0 1px 2px 0 rgba(15,23,42,.05);
+			--nls-shadow-md:0 4px 12px -2px rgba(15,23,42,.10);
+			--nls-shadow-lg:0 12px 32px -8px rgba(15,23,42,.18);
+		}
+
+		/*
+		 * Theme isolation. Themes style the bare `button` element — Astra ships
+		 * `button{padding:16px 28px;text-transform:uppercase;letter-spacing:1px;line-height:1em}` —
+		 * and every property the widget does not itself declare leaks in, which is what turned the
+		 * quick-reply labels into ALL CAPS and stretched the icon-only buttons into ovals.
+		 * :where() keeps this reset at plain class specificity, so the component rules below still
+		 * win, while a theme's element selector never does. Matching on the class prefix leaves any
+		 * form embedded in the chat (its own stylesheet) untouched.
+		 */
+		.nexulesuite_chat-widget :where([class*="nexulesuite_chat-"]){box-sizing:border-box;}
+		.nexulesuite_chat-widget :where(
+			button[class*="nexulesuite_chat-"],
+			input[class*="nexulesuite_chat-"],
+			textarea[class*="nexulesuite_chat-"],
+			a[class*="nexulesuite_chat-"]
+		){margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:inherit;font-family:inherit;font-size:inherit;font-weight:inherit;line-height:1.45;letter-spacing:normal;text-transform:none;text-align:inherit;text-decoration:none;min-width:0;min-height:0;width:auto;height:auto;-webkit-appearance:none;appearance:none;}
+
 		/* Panel — taller default home view; compact height when inline form is open (no dead space below short forms). */
-		.nexulesuite_chat-panel{display:none;width:420px;min-height:560px;background:<?php echo esc_attr( $chat_bubble_bg ); ?>;border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.2);overflow:hidden;flex-direction:column;}
+		.nexulesuite_chat-panel{display:none;width:420px;min-height:560px;max-height:min(640px,calc(100vh - 130px));background:<?php echo esc_attr( $chat_bubble_bg ); ?>;border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.2);overflow:hidden;flex-direction:column;}
 		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form{min-height:0;}
 		.nexulesuite_chat-panel.nexulesuite_chat--open{display:flex;animation:nexulesuite_chat-pop-in .22s ease;}
 		@keyframes nexulesuite_chat-pop-in{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -3842,6 +3997,9 @@ final class Shortcodes {
 		.nexulesuite_chat-trigger{width:66px;height:66px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(0,0,0,.2);background:<?php echo esc_attr( $btn_bg ); ?>;overflow:hidden;position:relative;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
 		.nexulesuite_chat-trigger svg{width:26px;height:26px;fill:none;stroke:<?php echo esc_attr( $btn_text_col ); ?>;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1;}
 		.nexulesuite_chat-trigger .nexulesuite_chat-online-dot{position:absolute;right:10px;top:10px;z-index:3;}
+		button.nexulesuite_chat-trigger--labeled{width:auto;height:auto;min-height:58px;border-radius:32px;padding:0 22px 0 20px;gap:11px;overflow:visible;}
+		button.nexulesuite_chat-trigger--labeled .nexulesuite_chat-online-dot{right:16px;top:12px;}
+		.nexulesuite_chat-trigger__label{color:<?php echo esc_attr( $btn_text_col ); ?>;font-family:inherit;font-weight:700;font-size:15.5px;line-height:1;white-space:nowrap;position:relative;z-index:1;}
 
 		/* Hover effects */
 		.nexulesuite_chat-btn--lift:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.22);}
@@ -3899,6 +4057,152 @@ final class Shortcodes {
 		.nexulesuite_chat-panel__body,.nexulesuite_chat-panel__btns{padding-left:12px;padding-right:12px;}
 		.nexulesuite_chat-inline-popup-body{padding-left:12px;padding-right:12px;}
 		}
+
+		/* ── AI chat view ── */
+		.nexulesuite_chat-ai-view{display:none;flex-direction:column;flex:1 1 auto;min-height:0;}
+		.nexulesuite_chat-panel--ai-active .nexulesuite_chat-ai-view{display:flex;}
+		.nexulesuite_chat-ai-view__head{display:flex;align-items:center;gap:12px;padding:16px 18px;background:var(--nls-primary);color:var(--nls-on-primary);flex:0 0 auto;}
+		/* Back and reset are both 34px icon buttons, so the header reads as one row of controls. */
+		.nexulesuite_chat-ai-view__back{flex:0 0 auto;width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.14);color:inherit;font-size:17px;line-height:1;border-radius:var(--nls-radius-sm);cursor:pointer;transition:background .15s;}
+		.nexulesuite_chat-ai-view__back:hover{background:rgba(255,255,255,.28);}
+		.nexulesuite_chat-ai-view__avatar{width:36px;height:36px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+		.nexulesuite_chat-ai-view__avatar img{width:100%;height:100%;object-fit:cover;}
+		.nexulesuite_chat-ai-view__avatar svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-ai-view__info{min-width:0;}
+		.nexulesuite_chat-ai-view__heading{margin:0;font-weight:700;font-size:15px;line-height:1.2;}
+		.nexulesuite_chat-ai-view__badge{margin:3px 0 0;font-size:10.5px;font-weight:700;opacity:.85;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.05em;}
+		.nexulesuite_chat-ai-view__tools{margin-left:auto;flex:0 0 auto;display:flex;align-items:center;gap:6px;}
+		.nexulesuite_chat-ai-view__tts,
+		.nexulesuite_chat-ai-view__reset{flex:0 0 auto;background:rgba(255,255,255,.14);color:inherit;width:34px;height:34px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;}
+		.nexulesuite_chat-ai-view__tts:hover,
+		.nexulesuite_chat-ai-view__reset:hover{background:rgba(255,255,255,.28);}
+		/* Higher specificity than the display:flex above, so JS can keep the button hidden where the browser has no speech synthesis. */
+		.nexulesuite_chat-ai-view__tts[hidden]{display:none;}
+		.nexulesuite_chat-ai-view__tts.is-on{background:rgba(255,255,255,.34);}
+		.nexulesuite_chat-ai-view__tts.is-speaking{animation:nexulesuite_ai-tts-pulse 1.2s ease-in-out infinite;}
+		@keyframes nexulesuite_ai-tts-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.45)}50%{box-shadow:0 0 0 5px rgba(255,255,255,0)}}
+		@media (prefers-reduced-motion: reduce){.nexulesuite_chat-ai-view__tts.is-speaking{animation:none}}
+		.nexulesuite_chat-ai-view__tts svg,
+		.nexulesuite_chat-ai-view__reset svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-ai-view__tts .nexulesuite_chat-ai-tts__on{display:none;}
+		.nexulesuite_chat-ai-view__tts.is-on .nexulesuite_chat-ai-tts__on{display:block;}
+		.nexulesuite_chat-ai-view__tts.is-on .nexulesuite_chat-ai-tts__off{display:none;}
+		.nexulesuite_chat-ai-messages{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:18px 16px;display:flex;flex-direction:column;gap:12px;background:var(--nls-canvas);}
+		/* Centred, not bottom-aligned: otherwise the bot avatar lines up with the timestamp, not the bubble. */
+		.nexulesuite_chat-ai-row{display:flex;gap:8px;max-width:100%;align-items:center;}
+		.nexulesuite_chat-ai-row--user{justify-content:flex-end;}
+		.nexulesuite_chat-ai-row--bot{justify-content:flex-start;}
+		.nexulesuite_chat-ai-bubavatar{width:28px;height:28px;border-radius:50%;flex:0 0 auto;background:var(--nls-primary);color:var(--nls-on-primary);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:var(--nls-shadow-sm);}
+		/* The timestamp sits below the bubble in the same column; offsetting the avatar by its
+		   full height makes the centred avatar line up with the bubble, not the column. */
+		.nexulesuite_chat-ai-row--bot .nexulesuite_chat-ai-bubavatar{margin-bottom:calc(var(--nls-time-size) + var(--nls-bubble-gap));}
+		.nexulesuite_chat-ai-bubavatar img{width:100%;height:100%;object-fit:cover;}
+		.nexulesuite_chat-ai-bubavatar svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;}
+		.nexulesuite_chat-ai-col{display:flex;flex-direction:column;gap:var(--nls-bubble-gap);max-width:80%;min-width:0;}
+		.nexulesuite_chat-ai-row--bot .nexulesuite_chat-ai-col{align-items:flex-start;}
+		.nexulesuite_chat-ai-row--user .nexulesuite_chat-ai-col{align-items:flex-end;}
+		.nexulesuite_chat-ai-time{font-size:var(--nls-time-size);color:var(--nls-muted);padding:0 6px;line-height:1;}
+		/* rounded-2xl with a 6px tail — the same bubble shape the admin transcript uses. */
+		.nexulesuite_chat-ai-msg{max-width:100%;padding:10px 14px;border-radius:var(--nls-radius-lg);font-size:14px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;box-shadow:var(--nls-shadow-sm);}
+		.nexulesuite_chat-ai-msg--bot{background:var(--nls-surface);color:var(--nls-ink-2);border:1px solid var(--nls-border);border-bottom-left-radius:6px;}
+		.nexulesuite_chat-ai-msg--bot strong{font-weight:700;color:var(--nls-ink);}
+		.nexulesuite_chat-ai-msg--bot em{font-style:italic;}
+		.nexulesuite_chat-ai-msg--bot code{background:var(--nls-border-soft);color:var(--nls-ink);padding:1px 5px;border-radius:var(--nls-radius-xs);font-size:.9em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+		.nexulesuite_chat-ai-msg--bot a{color:var(--nls-primary);text-decoration:underline;word-break:break-word;}
+		.nexulesuite_chat-ai-msg--bot ul,.nexulesuite_chat-ai-msg--bot ol{margin:6px 0;padding-left:20px;}
+		.nexulesuite_chat-ai-msg--bot li{margin:3px 0;}
+		.nexulesuite_chat-ai-msg--bot p{margin:6px 0;}
+		.nexulesuite_chat-ai-msg--user{background:var(--nls-primary);color:var(--nls-on-primary);border-bottom-right-radius:6px;}
+		.nexulesuite_chat-ai-msg--error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;border-bottom-left-radius:6px;}
+		.nexulesuite_chat-ai-sources{align-self:flex-start;display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 0 36px;}
+		.nexulesuite_chat-ai-sources a{font-size:11px;font-weight:500;color:var(--nls-primary);text-decoration:none;border:1px solid var(--nls-border);border-radius:var(--nls-radius-xs);padding:3px 8px;background:var(--nls-surface);transition:border-color .15s;}
+		.nexulesuite_chat-ai-sources a:hover{border-color:var(--nls-primary);}
+		.nexulesuite_chat-ai-suggest{align-self:stretch;margin:2px 0 2px 6px;}
+		.nexulesuite_chat-ai-suggest--followup{margin-top:0;}
+		/* Section label: the admin's `text-xs font-bold uppercase tracking-wide text-slate-400`. */
+		.nexulesuite_chat-ai-suggest__label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--nls-muted);margin:0 0 8px 2px;}
+		.nexulesuite_chat-ai-chips{display:flex;flex-wrap:wrap;gap:8px;}
+		.nexulesuite_chat-ai-chip{display:inline-flex;align-items:center;gap:8px;text-align:left;max-width:100%;font-size:13px;font-weight:600;line-height:1.3;color:var(--nls-ink-2);background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:var(--nls-radius);padding:8px 12px;cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .05s;font-family:inherit;box-shadow:var(--nls-shadow-sm);}
+		.nexulesuite_chat-ai-chip:hover{border-color:var(--nls-primary);box-shadow:var(--nls-shadow-md);}
+		.nexulesuite_chat-ai-chip:active{transform:translateY(1px);}
+		.nexulesuite_chat-ai-chip:focus-visible{outline:none;border-color:var(--nls-primary);box-shadow:0 0 0 3px var(--nls-primary-ring);}
+		/* Tinted icon square — the admin's `bg-blue-50 text-blue-600` icon chip, keyed off the brand colour. */
+		.nexulesuite_chat-ai-chip__ic{flex:0 0 auto;width:24px;height:24px;border-radius:var(--nls-radius-sm);display:flex;align-items:center;justify-content:center;background:var(--nls-primary-tint);color:var(--nls-primary);}
+		.nexulesuite_chat-ai-chip__ic svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-ai-chip__tx{flex:0 1 auto;min-width:0;}
+		.nexulesuite_chat-ai-actions{align-self:stretch;display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px 6px;}
+		.nexulesuite_chat-ai-action{flex:1 1 auto;min-width:132px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;font-size:13.5px;font-weight:600;line-height:1.2;color:var(--nls-primary);background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:var(--nls-radius);padding:11px 16px;cursor:pointer;box-shadow:var(--nls-shadow-sm);transition:border-color .15s,box-shadow .15s,transform .12s,background .15s;}
+		.nexulesuite_chat-ai-action:hover{border-color:var(--nls-primary);box-shadow:var(--nls-shadow-md);transform:translateY(-1px);}
+		.nexulesuite_chat-ai-action:active{transform:translateY(0);}
+		.nexulesuite_chat-ai-action:focus-visible{outline:none;border-color:var(--nls-primary);box-shadow:0 0 0 3px var(--nls-primary-ring);}
+		.nexulesuite_chat-ai-action--primary{background:var(--nls-primary);color:var(--nls-on-primary);border-color:var(--nls-primary);box-shadow:var(--nls-shadow-md);}
+		.nexulesuite_chat-ai-action--primary:hover{filter:brightness(.94);box-shadow:var(--nls-shadow-lg);border-color:var(--nls-primary);}
+		.nexulesuite_chat-ai-action__ic{display:flex;flex:0 0 auto;}
+		.nexulesuite_chat-ai-action__ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-ai-typing{align-self:flex-start;display:inline-flex;gap:4px;padding:12px 14px;background:var(--nls-border-soft);border:1px solid var(--nls-border);border-radius:var(--nls-radius-lg);border-bottom-left-radius:6px;}
+		.nexulesuite_chat-ai-typing span{width:7px;height:7px;border-radius:50%;background:var(--nls-muted);animation:nexulesuite_ai-bounce 1.2s infinite ease-in-out;}
+		.nexulesuite_chat-ai-typing span:nth-child(2){animation-delay:.15s;}
+		.nexulesuite_chat-ai-typing span:nth-child(3){animation-delay:.3s;}
+		@keyframes nexulesuite_ai-bounce{0%,60%,100%{transform:translateY(0);opacity:.5;}30%{transform:translateY(-5px);opacity:1;}}
+		.nexulesuite_chat-ai-form{position:relative;padding:12px;border-top:1px solid var(--nls-border);background:<?php echo esc_attr( $chat_bubble_bg ); ?>;flex:0 0 auto;}
+		.nexulesuite_chat-ai-disclaimer{margin:9px 6px 1px;font-size:11px;line-height:1.45;color:var(--nls-muted);text-align:center;}
+		.nexulesuite_chat-ai-leadcard{align-self:stretch;margin:2px 0 2px 36px;display:flex;flex-direction:column;gap:10px;background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:var(--nls-radius-lg);padding:14px;box-shadow:var(--nls-shadow-sm);}
+		.nexulesuite_chat-ai-leadinput{width:100%;border:1px solid var(--nls-field-border);border-radius:var(--nls-radius-sm);padding:10px 12px;font-size:14px;font-family:inherit;color:var(--nls-ink-2);transition:border-color .15s,box-shadow .15s;}
+		.nexulesuite_chat-ai-leadinput:focus{outline:none;border-color:var(--nls-primary);box-shadow:0 0 0 3px var(--nls-primary-ring);}
+		.nexulesuite_chat-ai-leaderr{display:none;font-size:12px;color:#b91c1c;}
+		.nexulesuite_chat-ai-leadsend{align-self:flex-start;border-radius:var(--nls-radius);background:var(--nls-primary);color:var(--nls-on-primary);font-family:inherit;font-size:13.5px;font-weight:600;line-height:1.2;padding:11px 20px;cursor:pointer;box-shadow:var(--nls-shadow-sm);transition:filter .15s;}
+		.nexulesuite_chat-ai-leadsend:hover{filter:brightness(.94);}
+		.nexulesuite_chat-ai-leadsend:disabled{opacity:.6;cursor:default;}
+		.nexulesuite_chat-ai-products{align-self:stretch;display:flex;gap:10px;overflow-x:auto;padding:2px 0 6px 36px;scrollbar-width:thin;-webkit-overflow-scrolling:touch;}
+		.nexulesuite_chat-ai-pcard{flex:0 0 148px;width:148px;display:flex;flex-direction:column;text-decoration:none;border:1px solid var(--nls-border);border-radius:var(--nls-radius-lg);overflow:hidden;background:var(--nls-surface);box-shadow:var(--nls-shadow-sm);transition:box-shadow .15s,border-color .15s,transform .05s;}
+		.nexulesuite_chat-ai-pcard:hover{border-color:var(--nls-primary);box-shadow:var(--nls-shadow-md);}
+		.nexulesuite_chat-ai-pcard:active{transform:translateY(1px);}
+		.nexulesuite_chat-ai-pcard__img{position:relative;display:block;height:110px;background:var(--nls-border-soft) center/cover no-repeat;}
+		.nexulesuite_chat-ai-pcard__sale{position:absolute;top:6px;left:6px;background:#dc2626;color:#fff;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:var(--nls-radius-xs);}
+		.nexulesuite_chat-ai-pcard__body{display:flex;flex-direction:column;gap:3px;padding:10px;}
+		.nexulesuite_chat-ai-pcard__title{font-size:12.5px;font-weight:600;line-height:1.3;color:var(--nls-ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+		.nexulesuite_chat-ai-pcard__price{font-size:12.5px;font-weight:700;color:var(--nls-primary);}
+		.nexulesuite_chat-ai-inputbar{display:flex;align-items:center;gap:4px;background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:var(--nls-radius-lg);padding:4px 6px;box-shadow:var(--nls-shadow-sm);transition:border-color .15s,box-shadow .15s;}
+		.nexulesuite_chat-ai-inputbar:focus-within{border-color:var(--nls-primary);box-shadow:0 0 0 3px var(--nls-primary-ring);}
+		.nexulesuite_chat-ai-input{flex:1 1 auto;min-width:0;background:transparent;padding:8px 4px;font-size:14px;line-height:1.45;font-family:inherit;color:var(--nls-ink-2);}
+		.nexulesuite_chat-ai-input:focus{outline:none;}
+		.nexulesuite_chat-ai-clip,.nexulesuite_chat-ai-emoji{flex:0 0 auto;cursor:pointer;width:34px;height:34px;border-radius:var(--nls-radius-sm);display:flex;align-items:center;justify-content:center;color:var(--nls-ink-3);padding:0;transition:background .15s,color .15s;}
+		.nexulesuite_chat-ai-clip:hover,.nexulesuite_chat-ai-emoji:hover{background:var(--nls-border-soft);color:var(--nls-ink);}
+		.nexulesuite_chat-ai-clip.is-armed{background:var(--nls-primary-tint);color:var(--nls-primary);}
+		.nexulesuite_chat-ai-clip svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-ai-emoji svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-ai-send{flex:0 0 auto;cursor:pointer;background:var(--nls-border);color:var(--nls-muted);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;padding:0;transition:background .15s,color .15s;}
+		.nexulesuite_chat-ai-send.is-active{background:var(--nls-primary);color:var(--nls-on-primary);}
+		.nexulesuite_chat-ai-send svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-ai-send:disabled{cursor:default;opacity:.7;}
+		/* Emoji popover */
+		.nexulesuite_chat-ai-emoji-wrap{position:relative;flex:0 0 auto;display:flex;}
+		.nexulesuite_chat-ai-emoji-pop{position:absolute;bottom:calc(100% + 12px);right:0;width:238px;background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:var(--nls-radius-lg);box-shadow:var(--nls-shadow-lg);padding:6px;display:none;z-index:6;}
+		.nexulesuite_chat-ai-emoji-pop.is-open{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;}
+		.nexulesuite_chat-ai-emoji-pop button{border:0;background:transparent;cursor:pointer;font-size:20px;line-height:1;padding:6px;border-radius:var(--nls-radius-sm);text-transform:none;letter-spacing:normal;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;}
+		.nexulesuite_chat-ai-emoji-pop button:hover{background:var(--nls-border-soft);}
+		/* Attachment preview + in-bubble image */
+		.nexulesuite_chat-ai-attach{position:relative;display:inline-block;margin:0 0 10px 6px;}
+		/* Author display beats the UA [hidden] rule, so restate it or the empty preview's ✕ floats over the composer. */
+		.nexulesuite_chat-ai-attach[hidden]{display:none;}
+		.nexulesuite_chat-ai-attach img{max-width:120px;max-height:120px;border-radius:var(--nls-radius);border:1px solid var(--nls-border);display:block;}
+		.nexulesuite_chat-ai-attach-x{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;border:2px solid var(--nls-surface);background:var(--nls-ink);color:#fff;cursor:pointer;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;box-shadow:var(--nls-shadow-md);}
+		.nexulesuite_chat-ai-msg-img{max-width:200px;max-height:200px;border-radius:var(--nls-radius);margin-top:6px;display:block;}
+		/* Document attachment: a card, since a PDF has no thumbnail to preview. */
+		.nexulesuite_chat-ai-doc{display:flex;align-items:center;gap:10px;margin:0 6px 10px;padding:8px 10px;background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:var(--nls-radius);box-shadow:var(--nls-shadow-sm);}
+		.nexulesuite_chat-ai-doc[hidden]{display:none;}
+		.nexulesuite_chat-ai-doc__ic{flex:0 0 auto;width:30px;height:30px;border-radius:var(--nls-radius-sm);display:flex;align-items:center;justify-content:center;background:var(--nls-primary-tint);color:var(--nls-primary);}
+		.nexulesuite_chat-ai-doc__ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-ai-doc__meta{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1 1 auto;}
+		.nexulesuite_chat-ai-doc__name{font-size:12.5px;font-weight:600;color:var(--nls-ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+		.nexulesuite_chat-ai-doc__size{font-size:11px;color:var(--nls-muted);}
+		.nexulesuite_chat-ai-doc__x{flex:0 0 auto;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;color:var(--nls-muted);font-size:11px;line-height:1;transition:background .15s,color .15s;}
+		.nexulesuite_chat-ai-doc__x:hover{background:var(--nls-border-soft);color:var(--nls-ink);}
+		/* Same card, inside a sent bubble. */
+		.nexulesuite_chat-ai-msg .nexulesuite_chat-ai-doc{margin:6px 0 0;background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.28);box-shadow:none;}
+		.nexulesuite_chat-ai-msg .nexulesuite_chat-ai-doc__ic{background:rgba(255,255,255,.22);color:inherit;}
+		.nexulesuite_chat-ai-msg .nexulesuite_chat-ai-doc__name{color:inherit;}
+		.nexulesuite_chat-ai-msg .nexulesuite_chat-ai-doc__size{color:inherit;opacity:.75;}
 		<?php
 		$chat_css = (string) ob_get_clean();
 		$this->enqueue_footer_inline_style( 'nexulesuite_livechat-widget', $chat_css );
@@ -3933,8 +4237,18 @@ final class Shortcodes {
 				<?php endif; ?>
 
 				<?php /* ─ Action Buttons ─ */ ?>
-				<?php if ( $has_any_action_btn ) : ?>
+				<?php if ( $has_any_action_btn || $ai_enabled ) : ?>
 					<div class="nexulesuite_chat-panel__btns">
+
+						<?php /* AI launcher — opens the conversational AI chat view */ ?>
+						<?php if ( $ai_enabled ) : ?>
+							<button type="button"
+								class="<?php echo esc_attr( $hover_cls ); ?>"
+								style="<?php echo esc_attr( $btn_style ); ?>"
+								data-nexulesuite_chat-open-ai="1">
+								<?php echo esc_html( $ai_launch_label ); ?>
+							</button>
+						<?php endif; ?>
 
 						<?php
 						/*
@@ -4043,17 +4357,115 @@ final class Shortcodes {
 					</div>
 				<?php endif; ?>
 
+				<?php /* ── AI chat view: conversational RAG assistant ── */ ?>
+				<?php if ( $ai_enabled ) : ?>
+					<div class="nexulesuite_chat-ai-view" id="nexulesuite_chat-ai-view" aria-label="<?php echo esc_attr( $chat_title ); ?>">
+
+						<div class="nexulesuite_chat-ai-view__head">
+							<button type="button" class="nexulesuite_chat-ai-view__back" id="nexulesuite_chat-ai-back" aria-label="<?php esc_attr_e( 'Back', 'nexus-lead-suite' ); ?>">&#8592;</button>
+							<div class="nexulesuite_chat-ai-view__avatar">
+								<?php if ( '' !== $btn_image ) : ?>
+									<img src="<?php echo preg_match( '#^data:image/(jpeg|jpg|png|gif|webp);base64,#i', $btn_image ) ? esc_attr( $btn_image ) : esc_url( $btn_image ); ?>" alt="" />
+								<?php else : ?>
+									<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M21 16c0 1.1-.9 2-2 2H7l-4 4V6a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>
+								<?php endif; ?>
+							</div>
+							<div class="nexulesuite_chat-ai-view__info">
+								<p class="nexulesuite_chat-ai-view__heading"><?php echo esc_html( $chat_title ); ?></p>
+								<?php if ( '' !== $chat_badge ) : ?>
+									<p class="nexulesuite_chat-ai-view__badge"><span class="nexulesuite_chat-online-dot" aria-hidden="true"></span><?php echo esc_html( $chat_badge ); ?></p>
+								<?php endif; ?>
+							</div>
+							<span class="nexulesuite_chat-ai-view__tools">
+								<?php /* Unhidden by JS only where the browser exposes speech synthesis. */ ?>
+								<button type="button" class="nexulesuite_chat-ai-view__tts" id="nexulesuite_chat-ai-tts" hidden aria-pressed="false" aria-label="<?php esc_attr_e( 'Read replies aloud', 'nexus-lead-suite' ); ?>" title="<?php esc_attr_e( 'Read replies aloud', 'nexus-lead-suite' ); ?>">
+									<svg class="nexulesuite_chat-ai-tts__off" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>
+									<svg class="nexulesuite_chat-ai-tts__on" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.7 5.3a9 9 0 0 1 0 13.4"/></svg>
+								</button>
+								<button type="button" class="nexulesuite_chat-ai-view__reset" id="nexulesuite_chat-ai-reset" aria-label="<?php esc_attr_e( 'Start a new chat', 'nexus-lead-suite' ); ?>" title="<?php esc_attr_e( 'New chat', 'nexus-lead-suite' ); ?>">
+									<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+								</button>
+							</span>
+						</div>
+
+						<div class="nexulesuite_chat-ai-messages" id="nexulesuite_chat-ai-messages" role="log" aria-live="polite"></div>
+
+						<?php if ( '' !== trim( (string) $ai_contact_form_html ) ) : ?>
+							<?php /* Rendered once (so form scripts init); moved into the chat on demand by aiShowContactForm(). */ ?>
+							<div id="nexulesuite_chat-ai-contactsrc" style="display:none;">
+								<?php
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_shortcode() output; shortcode callbacks escape their own markup.
+								echo $ai_contact_form_html;
+								?>
+							</div>
+						<?php endif; ?>
+
+						<form class="nexulesuite_chat-ai-form" id="nexulesuite_chat-ai-form">
+
+							<?php if ( $ai_allow_images ) : ?>
+								<input type="file" id="nexulesuite_chat-ai-file" accept="image/png,image/jpeg,image/gif,image/webp,application/pdf,text/plain,text/markdown,.md,text/csv,text/html,application/json" hidden />
+								<div class="nexulesuite_chat-ai-attach" id="nexulesuite_chat-ai-attach" hidden>
+									<img id="nexulesuite_chat-ai-attach-img" alt="" />
+									<button type="button" class="nexulesuite_chat-ai-attach-x" id="nexulesuite_chat-ai-attach-x" aria-label="<?php esc_attr_e( 'Remove image', 'nexus-lead-suite' ); ?>">&#x2715;</button>
+								</div>
+								<div class="nexulesuite_chat-ai-doc" id="nexulesuite_chat-ai-doc" hidden>
+									<span class="nexulesuite_chat-ai-doc__ic" aria-hidden="true">
+										<svg viewBox="0 0 24 24"><path d="M13 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9z"/><path d="M13 3v6h6"/></svg>
+									</span>
+									<span class="nexulesuite_chat-ai-doc__meta">
+										<span class="nexulesuite_chat-ai-doc__name" id="nexulesuite_chat-ai-doc-name"></span>
+										<span class="nexulesuite_chat-ai-doc__size" id="nexulesuite_chat-ai-doc-size"></span>
+									</span>
+									<button type="button" class="nexulesuite_chat-ai-doc__x" id="nexulesuite_chat-ai-doc-x" aria-label="<?php esc_attr_e( 'Remove file', 'nexus-lead-suite' ); ?>">&#x2715;</button>
+								</div>
+							<?php endif; ?>
+
+							<div class="nexulesuite_chat-ai-inputbar">
+
+								<?php if ( $ai_allow_images ) : ?>
+									<button type="button" class="nexulesuite_chat-ai-clip" id="nexulesuite_chat-ai-clip" aria-label="<?php esc_attr_e( 'Attach an image for the assistant to read', 'nexus-lead-suite' ); ?>" title="<?php esc_attr_e( 'Attach an image', 'nexus-lead-suite' ); ?>">
+										<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.4 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+									</button>
+								<?php endif; ?>
+
+								<input type="text" class="nexulesuite_chat-ai-input" id="nexulesuite_chat-ai-input" autocomplete="off"
+									placeholder="<?php esc_attr_e( 'Write a message…', 'nexus-lead-suite' ); ?>"
+									aria-label="<?php esc_attr_e( 'Message', 'nexus-lead-suite' ); ?>" maxlength="2000" />
+
+								<span class="nexulesuite_chat-ai-emoji-wrap">
+									<button type="button" class="nexulesuite_chat-ai-emoji" id="nexulesuite_chat-ai-emoji" aria-label="<?php esc_attr_e( 'Emoji', 'nexus-lead-suite' ); ?>" aria-haspopup="true" aria-expanded="false">
+										<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14a4 4 0 007 0"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>
+									</button>
+									<span class="nexulesuite_chat-ai-emoji-pop" id="nexulesuite_chat-ai-emoji-pop" role="menu"></span>
+								</span>
+
+								<button type="submit" class="nexulesuite_chat-ai-send" id="nexulesuite_chat-ai-send" aria-label="<?php esc_attr_e( 'Send', 'nexus-lead-suite' ); ?>">
+									<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+								</button>
+
+							</div>
+							<?php if ( '' !== $ai_disclaimer ) : ?>
+								<p class="nexulesuite_chat-ai-disclaimer"><?php echo esc_html( $ai_disclaimer ); ?></p>
+							<?php endif; ?>
+						</form>
+
+					</div>
+				<?php endif; ?>
+
 			</div>
 
 			<?php /* ── Floating trigger bubble ── */ ?>
 			<button type="button"
-				class="nexulesuite_chat-trigger <?php echo esc_attr( $hover_cls ); ?>"
+				class="nexulesuite_chat-trigger <?php echo esc_attr( $hover_cls ); ?><?php echo '' !== $ai_trigger_label ? ' nexulesuite_chat-trigger--labeled' : ''; ?>"
 				id="nexulesuite_chat-trigger"
 				aria-expanded="false"
 				aria-controls="nexulesuite_chat-panel"
 				aria-label="<?php esc_attr_e( 'Open chat', 'nexus-lead-suite' ); ?>">
 				<span class="nexulesuite_chat-online-dot" aria-hidden="true"></span>
 				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M21 16c0 1.1-.9 2-2 2H7l-4 4V6a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>
+				<?php if ( '' !== $ai_trigger_label ) : ?>
+					<span class="nexulesuite_chat-trigger__label"><?php echo esc_html( $ai_trigger_label ); ?></span>
+				<?php endif; ?>
 			</button>
 
 		</div>
@@ -4068,6 +4480,106 @@ final class Shortcodes {
 			var closeBtn   = document.getElementById('nexulesuite_chat-close');
 			var formView   = document.getElementById('nexulesuite_chat-form-view');
 			var formBack   = document.getElementById('nexulesuite_chat-form-back');
+
+			var aiView     = document.getElementById('nexulesuite_chat-ai-view');
+			var aiBack     = document.getElementById('nexulesuite_chat-ai-back');
+			var aiResetBtn = document.getElementById('nexulesuite_chat-ai-reset');
+			var aiMessages = document.getElementById('nexulesuite_chat-ai-messages');
+			var aiForm     = document.getElementById('nexulesuite_chat-ai-form');
+			var aiInput    = document.getElementById('nexulesuite_chat-ai-input');
+			var aiSend     = document.getElementById('nexulesuite_chat-ai-send');
+			var aiCfg      = {
+				endpoint:  '<?php echo esc_url_raw( rest_url( 'nexulesuite_/v1/ai/chat' ) ); ?>',
+				nonce:     '<?php echo esc_js( wp_create_nonce( 'nexulesuite_ai' ) ); ?>',
+				restNonce: '<?php echo esc_js( wp_create_nonce( 'wp_rest' ) ); ?>',
+				welcome:   '<?php echo esc_js( $ai_welcome ); ?>',
+				faq:       <?php echo wp_json_encode( array_values( $ai_faq_items ) ); ?>,
+				actions:   <?php echo wp_json_encode( array_values( $ai_actions ) ); ?>,
+				icons:     <?php echo wp_json_encode( $ai_icon_svgs ); ?>,
+				suggestLabel: '<?php echo esc_js( __( 'Try asking', 'nexus-lead-suite' ) ); ?>',
+				leadEndpoint: '<?php echo esc_url_raw( rest_url( 'nexulesuite_/v1/ai/lead' ) ); ?>',
+				lead:      { enabled: <?php echo $ai_lead_enabled ? 'true' : 'false'; ?>, offer: '<?php echo esc_js( $ai_lead_offer ); ?>' },
+				i18n:      {
+					lead_cta:  '<?php echo esc_js( __( 'Leave your contact', 'nexus-lead-suite' ) ); ?>',
+					lead_name: '<?php echo esc_js( __( 'Your name', 'nexus-lead-suite' ) ); ?>',
+					lead_email:'<?php echo esc_js( __( 'Email', 'nexus-lead-suite' ) ); ?>',
+					lead_phone:'<?php echo esc_js( __( 'Phone', 'nexus-lead-suite' ) ); ?>',
+					lead_send: '<?php echo esc_js( __( 'Send', 'nexus-lead-suite' ) ); ?>',
+					lead_need: '<?php echo esc_js( __( 'Please add an email or phone.', 'nexus-lead-suite' ) ); ?>'
+				}
+			};
+			/* Stable per-visitor conversation id so the admin report can group turns. */
+			var aiSessionId = (function(){
+				try {
+					var k = 'nexulesuite_ai_sid';
+					var v = window.localStorage.getItem(k);
+					if(!v){
+						v = 'sid-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+						window.localStorage.setItem(k, v);
+					}
+					return v;
+				} catch(e){
+					return 'sid-' + Date.now().toString(36) + '-' + Math.floor(Math.random()*1e6).toString(36);
+				}
+			})();
+			var aiHistory  = [];
+			var aiBusy     = false;
+			var aiLeadDone = false;
+			var aiLastQuestion = '';
+			var aiLastBotText  = '';
+
+			/* ── Read replies aloud (Web Speech API; absent on some browsers) ── */
+			var aiTtsBtn = document.getElementById('nexulesuite_chat-ai-tts');
+			var aiSpeech = (window.speechSynthesis && typeof window.SpeechSynthesisUtterance === 'function') ? window.speechSynthesis : null;
+			var aiTtsOn  = false;
+			var aiTtsLang = (document.documentElement.getAttribute('lang') || 'en-US').replace('_', '-');
+
+			function aiStopSpeech(){
+				if(!aiSpeech) return;
+				try { aiSpeech.cancel(); } catch(e){}
+				if(aiTtsBtn){ aiTtsBtn.classList.remove('is-speaking'); }
+			}
+			/* Speaks plain text — strip the markdown the bubble renders, or it gets read out as punctuation. */
+			function aiSpeakableText(text){
+				return String(text || '')
+					.replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+					.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+					.replace(/[*_`#>]/g, '')
+					.replace(/\s+/g, ' ')
+					.trim();
+			}
+			function aiSpeak(text){
+				if(!aiSpeech || !aiTtsOn) return;
+				var say = aiSpeakableText(text);
+				if(!say) return;
+				aiStopSpeech();
+				try {
+					var u = new window.SpeechSynthesisUtterance(say);
+					u.lang = aiTtsLang;
+					u.onstart = function(){ if(aiTtsBtn){ aiTtsBtn.classList.add('is-speaking'); } };
+					u.onend   = function(){ if(aiTtsBtn){ aiTtsBtn.classList.remove('is-speaking'); } };
+					u.onerror = u.onend;
+					aiSpeech.speak(u);
+				} catch(e){}
+			}
+			/* Every bot line funnels through here, so the toggle can replay the latest one. */
+			function aiBotSaid(text){
+				aiLastBotText = String(text || '');
+				aiSpeak(aiLastBotText);
+			}
+			if(aiTtsBtn && aiSpeech){
+				aiTtsBtn.hidden = false;
+				aiTtsBtn.addEventListener('click', function(ev){
+					ev.preventDefault();
+					aiTtsOn = !aiTtsOn;
+					aiTtsBtn.classList.toggle('is-on', aiTtsOn);
+					aiTtsBtn.setAttribute('aria-pressed', aiTtsOn ? 'true' : 'false');
+					if(aiTtsOn){ aiSpeak(aiLastBotText); }
+					else { aiStopSpeech(); }
+				});
+			}
+			/* Browsers keep speaking after the tab goes away otherwise. */
+			window.addEventListener('pagehide', aiStopSpeech);
 
 			if(!trigger||!panel) return;
 
@@ -4101,9 +4613,10 @@ final class Shortcodes {
 				formView.classList.add('nexulesuite_chat-form--active');
 			}
 			function showMainView(){
-				if(!formView) return;
+				aiStopSpeech();
 				panel.classList.remove('nexulesuite_chat-panel--inline-form');
-				formView.classList.remove('nexulesuite_chat-form--active');
+				panel.classList.remove('nexulesuite_chat-panel--ai-active');
+				if(formView){ formView.classList.remove('nexulesuite_chat-form--active'); }
 				['.nexulesuite_chat-panel__head','.nexulesuite_chat-panel__body','.nexulesuite_chat-panel__btns'].forEach(function(sel){
 					var el = panel.querySelector(sel);
 					if(el) el.style.display='';
@@ -4117,6 +4630,654 @@ final class Shortcodes {
 			var openFormBtns = panel.querySelectorAll('[data-nexulesuite_chat-open-form]');
 			openFormBtns.forEach(function(btn){
 				btn.addEventListener('click', showFormView);
+			});
+
+			/* ── AI chat view (RAG assistant) ── */
+			var AI_CHIP_ICON  = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/></svg>';
+			var AI_CHIP_ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
+			var aiAvatarHtml  = (function(){
+				var h = aiView ? aiView.querySelector('.nexulesuite_chat-ai-view__avatar') : null;
+				return (h && h.innerHTML.trim()) ? h.innerHTML : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M21 16c0 1.1-.9 2-2 2H7l-4 4V6a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>';
+			})();
+			function aiNow(){
+				try { return new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }); }
+				catch(e){ return ''; }
+			}
+			function aiBotAvatar(){
+				var a = document.createElement('span');
+				a.className = 'nexulesuite_chat-ai-bubavatar';
+				a.innerHTML = aiAvatarHtml;
+				return a;
+			}
+			function aiScrollToEnd(){ if(aiMessages){ aiMessages.scrollTop = aiMessages.scrollHeight; } }
+			function aiAddBubble(role, text){
+				if(!aiMessages) return null;
+				var isUser = (role === 'user');
+				var row = document.createElement('div');
+				row.className = 'nexulesuite_chat-ai-row nexulesuite_chat-ai-row--' + (isUser ? 'user' : 'bot');
+				if(!isUser){ row.appendChild(aiBotAvatar()); }
+				var col = document.createElement('div');
+				col.className = 'nexulesuite_chat-ai-col';
+				var div = document.createElement('div');
+				div.className = 'nexulesuite_chat-ai-msg nexulesuite_chat-ai-msg--' + role;
+				div.textContent = text;
+				col.appendChild(div);
+				var time = document.createElement('span');
+				time.className = 'nexulesuite_chat-ai-time';
+				time.textContent = aiNow();
+				col.appendChild(time);
+				row.appendChild(col);
+				aiMessages.appendChild(row);
+				aiScrollToEnd();
+				return div;
+			}
+			function aiAddSources(sources){
+				if(!aiMessages || !sources || !sources.length) return;
+				var wrap = document.createElement('div');
+				wrap.className = 'nexulesuite_chat-ai-sources';
+				sources.forEach(function(s){
+					if(!s || !s.url) return;
+					var a = document.createElement('a');
+					a.href = s.url; a.target = '_blank'; a.rel = 'noopener nofollow';
+					a.textContent = s.title || s.url;
+					wrap.appendChild(a);
+				});
+				if(wrap.childNodes.length){ aiMessages.appendChild(wrap); aiScrollToEnd(); }
+			}
+			/* ── FAQ / conditional quick-reply buttons (card style) ── */
+			function aiIconSvg(key){
+				return (key && aiCfg.icons && aiCfg.icons[key]) ? '<svg viewBox="0 0 24 24" aria-hidden="true">' + aiCfg.icons[key] + '</svg>' : AI_CHIP_ICON;
+			}
+			function aiMakeChip(item, container){
+				var b = document.createElement('button');
+				b.type = 'button';
+				b.className = 'nexulesuite_chat-ai-chip';
+				var ic = document.createElement('span');
+				ic.className = 'nexulesuite_chat-ai-chip__ic';
+				ic.innerHTML = aiIconSvg(item.icon);
+				var tx = document.createElement('span');
+				tx.className = 'nexulesuite_chat-ai-chip__tx';
+				tx.textContent = item.label;
+				b.appendChild(ic); b.appendChild(tx);
+				b.addEventListener('click', function(){
+					if(aiBusy) return;
+					aiHandleChip(item, container);
+				});
+				return b;
+			}
+			function aiAddActions(){
+				if(!aiMessages || !aiCfg.actions || !aiCfg.actions.length) return;
+				var row = document.createElement('div');
+				row.className = 'nexulesuite_chat-ai-actions';
+				aiCfg.actions.forEach(function(act, i){
+					if(!act || !act.label) return;
+					var b = document.createElement('button');
+					b.type = 'button';
+					b.className = 'nexulesuite_chat-ai-action' + (i === 0 ? ' nexulesuite_chat-ai-action--primary' : '');
+					var ic = document.createElement('span');
+					ic.className = 'nexulesuite_chat-ai-action__ic';
+					ic.innerHTML = aiIconSvg(act.icon);
+					var tx = document.createElement('span');
+					tx.textContent = act.label;
+					b.appendChild(ic); b.appendChild(tx);
+					b.addEventListener('click', function(){ aiRunAction(act); });
+					row.appendChild(b);
+				});
+				if(row.childNodes.length){ aiMessages.appendChild(row); aiScrollToEnd(); }
+			}
+			function aiShowContactForm(){
+				var src = document.getElementById('nexulesuite_chat-ai-contactsrc');
+				if(!src || !src.innerHTML.trim()){ aiShowLeadForm(); return; } /* no shortcode → built-in lead form */
+				if(document.getElementById('nexulesuite_chat-ai-embedform')) return; /* already shown */
+				var card = document.createElement('div');
+				card.className = 'nexulesuite_chat-ai-leadcard nexulesuite_chat-ai-embedform';
+				card.id = 'nexulesuite_chat-ai-embedform';
+				while(src.firstChild){ card.appendChild(src.firstChild); } /* move nodes → preserves the form's own JS bindings */
+				aiMessages.appendChild(card);
+				aiScrollToEnd();
+			}
+			function aiRunAction(act){
+				var url = (act && act.url) ? String(act.url) : '';
+				if(!url) return;
+				if(url === '#lead' || url === '#contact'){ aiShowLeadForm(); return; }
+				if(url === '#form' || url === '#contact-form' || url === '#contactform'){ aiShowContactForm(); return; }
+				if(url.charAt(0) === '#' || url.indexOf('form') === 0){ if(typeof showFormView === 'function'){ showFormView(); } return; }
+				if(/^tel:|^mailto:|^sms:/i.test(url)){ window.location.href = url; return; }
+				window.open(url, '_blank', 'noopener');
+			}
+			function aiRenderHome(){
+				if(!aiMessages) return;
+				if(aiCfg.welcome){ aiAddBubble('bot', aiCfg.welcome); aiBotSaid(aiCfg.welcome); }
+				if(aiCfg.faq && aiCfg.faq.length){ aiAddChips(aiCfg.faq); }
+				aiAddActions();
+			}
+			function aiResetChat(){
+				if(aiBusy) return;
+				aiStopSpeech();
+				aiHistory = [];
+				aiLeadDone = false;
+				aiLastBotText = '';
+				if(aiMessages){ aiMessages.innerHTML = ''; }
+				try {
+					var nid = 'sid-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+					window.localStorage.setItem('nexulesuite_ai_sid', nid);
+					aiSessionId = nid;
+				} catch(e){}
+				aiRenderHome();
+			}
+
+			/* ── Smart lead capture / human handoff ── */
+			function aiOfferLead(){
+				if(aiLeadDone || !aiMessages) return;
+				if(document.getElementById('nexulesuite_chat-ai-leadform')) return;
+				var offer = (aiCfg.lead && aiCfg.lead.offer) || 'Would you like our team to reach out to you?';
+				aiAddBubble('bot', offer);
+				aiBotSaid(offer);
+				var block = document.createElement('div');
+				block.className = 'nexulesuite_chat-ai-suggest';
+				var wrap = document.createElement('div');
+				wrap.className = 'nexulesuite_chat-ai-chips';
+				var b = document.createElement('button');
+				b.type = 'button';
+				b.className = 'nexulesuite_chat-ai-chip';
+				var ic = document.createElement('span');
+				ic.className = 'nexulesuite_chat-ai-chip__ic';
+				ic.innerHTML = aiIconSvg('mail');
+				var tx = document.createElement('span');
+				tx.className = 'nexulesuite_chat-ai-chip__tx';
+				tx.textContent = aiCfg.i18n.lead_cta;
+				b.appendChild(ic); b.appendChild(tx);
+				b.addEventListener('click', function(){ if(block.parentNode){ block.parentNode.removeChild(block); } aiShowLeadForm(); });
+				wrap.appendChild(b); block.appendChild(wrap);
+				aiMessages.appendChild(block); aiScrollToEnd();
+			}
+			function aiShowLeadForm(){
+				if(aiLeadDone || !aiMessages) return;
+				if(document.getElementById('nexulesuite_chat-ai-leadform')) return;
+				var card = document.createElement('div');
+				card.className = 'nexulesuite_chat-ai-leadcard';
+				card.id = 'nexulesuite_chat-ai-leadform';
+				var n = document.createElement('input'); n.type='text'; n.placeholder=aiCfg.i18n.lead_name; n.className='nexulesuite_chat-ai-leadinput';
+				var e = document.createElement('input'); e.type='email'; e.placeholder=aiCfg.i18n.lead_email; e.className='nexulesuite_chat-ai-leadinput';
+				var p = document.createElement('input'); p.type='tel'; p.placeholder=aiCfg.i18n.lead_phone; p.className='nexulesuite_chat-ai-leadinput';
+				var err = document.createElement('div'); err.className='nexulesuite_chat-ai-leaderr';
+				var btn = document.createElement('button'); btn.type='button'; btn.className='nexulesuite_chat-ai-leadsend'; btn.textContent=aiCfg.i18n.lead_send;
+				btn.addEventListener('click', function(){
+					var email=(e.value||'').trim(), phone=(p.value||'').trim();
+					if(!email && !phone){ err.textContent=aiCfg.i18n.lead_need; err.style.display='block'; return; }
+					err.style.display='none'; btn.disabled=true; btn.textContent='…';
+					aiSubmitLead({ name:(n.value||'').trim(), email:email, phone:phone }, card, btn);
+				});
+				card.appendChild(n); card.appendChild(e); card.appendChild(p); card.appendChild(err); card.appendChild(btn);
+				aiMessages.appendChild(card); aiScrollToEnd();
+				setTimeout(function(){ try{ n.focus(); }catch(x){} }, 60);
+			}
+			function aiSubmitLead(data, card, btn){
+				fetch(aiCfg.leadEndpoint, {
+					method: 'POST',
+					headers: { 'Content-Type':'application/json', 'X-WP-Nonce': aiCfg.restNonce },
+					credentials: 'same-origin',
+					body: JSON.stringify({ nonce: aiCfg.nonce, name:data.name, email:data.email, phone:data.phone, message: aiLastQuestion, session_id: aiSessionId, page_url: (window.location ? window.location.href : '') })
+				}).then(function(r){
+					return r.json().then(function(j){ return { ok:r.ok, j:j }; }, function(){ return { ok:r.ok, j:null }; });
+				}).then(function(res){
+					var j = res.j || {};
+					if(res.ok && j.success){
+						if(card && card.parentNode){ card.parentNode.removeChild(card); }
+						aiLeadDone = true;
+						var thanks = j.message || 'Thanks! Our team will reach out to you shortly.';
+						aiAddBubble('bot', thanks);
+						aiBotSaid(thanks);
+					} else {
+						if(btn){ btn.disabled=false; btn.textContent=aiCfg.i18n.lead_send; }
+						aiAddBubble('error', (j && j.message) ? j.message : 'Something went wrong. Please try again.');
+					}
+				}).catch(function(){
+					if(btn){ btn.disabled=false; btn.textContent=aiCfg.i18n.lead_send; }
+					aiAddBubble('error', 'Network error. Please try again.');
+				});
+			}
+			function aiBuildSuggestBlock(items, isFollowup, labelText){
+				var block = document.createElement('div');
+				block.className = 'nexulesuite_chat-ai-suggest' + (isFollowup ? ' nexulesuite_chat-ai-suggest--followup' : '');
+				if(isFollowup){ block.setAttribute('data-nexulesuite_followup', '1'); }
+				if(labelText){
+					var lbl = document.createElement('div');
+					lbl.className = 'nexulesuite_chat-ai-suggest__label';
+					lbl.textContent = labelText;
+					block.appendChild(lbl);
+				}
+				var wrap = document.createElement('div');
+				wrap.className = 'nexulesuite_chat-ai-chips';
+				items.forEach(function(item){
+					if(!item || !item.label) return;
+					wrap.appendChild(aiMakeChip(item, block));
+				});
+				block.appendChild(wrap);
+				return wrap.childNodes.length ? block : null;
+			}
+			function aiAddChips(items){
+				if(!aiMessages || !items || !items.length) return;
+				var block = aiBuildSuggestBlock(items, false, aiCfg.suggestLabel || '');
+				if(block){ aiMessages.appendChild(block); aiScrollToEnd(); }
+			}
+			function aiHandleChip(item, container){
+				/* Follow-up chips are one-shot: remove the whole block once a choice is made. */
+				if(container && container.getAttribute('data-nexulesuite_followup') === '1' && container.parentNode){
+					container.parentNode.removeChild(container);
+				}
+				var answer = (item.answer || '').trim();
+				var hasFollow = !!(item.followups && item.followups.length);
+				/* No canned answer and no branch → send the question to the live AI. */
+				if(!answer && !hasFollow){
+					sendAiMessage(item.label);
+					return;
+				}
+				aiAddBubble('user', item.label);
+				aiHistory.push({ role:'user', content: item.label });
+				if(answer){
+					aiAddBubble('bot', answer);
+					aiBotSaid(answer);
+					aiHistory.push({ role:'assistant', content: answer });
+					if(aiHistory.length > 16){ aiHistory = aiHistory.slice(-16); }
+				}
+				if(hasFollow){
+					var fu = aiBuildSuggestBlock(item.followups, true, '');
+					if(fu){ aiMessages.appendChild(fu); aiScrollToEnd(); }
+				}
+			}
+
+			/* WooCommerce product cards (horizontal carousel under the answer). */
+			function aiAddProducts(products){
+				if(!aiMessages || !products || !products.length) return;
+				var row = document.createElement('div');
+				row.className = 'nexulesuite_chat-ai-products';
+				products.forEach(function(p){
+					if(!p || !p.title) return;
+					var card = document.createElement('a');
+					card.className = 'nexulesuite_chat-ai-pcard';
+					card.href = p.url || '#'; card.target = '_blank'; card.rel = 'noopener nofollow';
+					if(p.image){
+						var im = document.createElement('span');
+						im.className = 'nexulesuite_chat-ai-pcard__img';
+						im.style.backgroundImage = 'url("' + String(p.image).replace(/["\\]/g,'') + '")';
+						if(p.onSale){ var b=document.createElement('span'); b.className='nexulesuite_chat-ai-pcard__sale'; b.textContent='Sale'; im.appendChild(b); }
+						card.appendChild(im);
+					}
+					var body = document.createElement('span'); body.className='nexulesuite_chat-ai-pcard__body';
+					var t = document.createElement('span'); t.className='nexulesuite_chat-ai-pcard__title'; t.textContent=p.title; body.appendChild(t);
+					if(p.price){ var pr=document.createElement('span'); pr.className='nexulesuite_chat-ai-pcard__price'; pr.textContent=p.price; body.appendChild(pr); }
+					card.appendChild(body);
+					row.appendChild(card);
+				});
+				if(row.childNodes.length){ aiMessages.appendChild(row); aiScrollToEnd(); }
+			}
+
+			/* Safe markdown → HTML (escape first, then a small whitelist): bold, italic,
+			   inline code, links, and bullet/numbered lists. */
+			function aiEscHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+			function aiRenderMarkdown(text){
+				var esc = aiEscHtml(text);
+				esc = esc.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener nofollow">$1</a>');
+				esc = esc.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+				esc = esc.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+				esc = esc.replace(/(^|[\s(])\*([^*\s][^*\n]*?)\*(?=[\s.,!?)]|$)/g, '$1<em>$2</em>');
+				var lines = esc.split('\n');
+				var out = [];
+				var i = 0;
+				while(i < lines.length){
+					if(/^\s*[-*•]\s+/.test(lines[i])){
+						var ul = [];
+						while(i < lines.length && /^\s*[-*•]\s+/.test(lines[i])){ ul.push('<li>' + lines[i].replace(/^\s*[-*•]\s+/, '') + '</li>'); i++; }
+						out.push('<ul>' + ul.join('') + '</ul>');
+					} else if(/^\s*\d+[.)]\s+/.test(lines[i])){
+						var ol = [];
+						while(i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])){ ol.push('<li>' + lines[i].replace(/^\s*\d+[.)]\s+/, '') + '</li>'); i++; }
+						out.push('<ol>' + ol.join('') + '</ol>');
+					} else { out.push({ t: lines[i] }); i++; }
+				}
+				var html = '';
+				out.forEach(function(seg){
+					if(typeof seg === 'string'){ html += seg; }
+					else { html += (html && html.slice(-1) === '>' ? '' : (html ? '<br>' : '')) + seg.t; }
+				});
+				return html;
+			}
+
+			/* Progressive reveal — animates the answer word-by-word, then renders markdown. */
+			function aiTypeOut(el, text, done){
+				if(!el){ if(done){ done(); } return; }
+				var reduce = false;
+				try { reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
+				text = String(text || '');
+				function finish(){ try { el.innerHTML = aiRenderMarkdown(text); } catch(e){ el.textContent = text; } aiScrollToEnd(); if(done){ done(); } }
+				if(reduce || text.length > 1400){ finish(); return; }
+				var tokens = text.split(/(\s+)/);
+				var i = 0;
+				el.textContent = '';
+				(function step(){
+					if(i >= tokens.length){ finish(); return; }
+					el.textContent += tokens[i++];
+					aiScrollToEnd();
+					setTimeout(step, 16);
+				})();
+			}
+
+			function aiShowTyping(){
+				if(!aiMessages) return;
+				var row = document.createElement('div');
+				row.className = 'nexulesuite_chat-ai-row nexulesuite_chat-ai-row--bot';
+				row.id = 'nexulesuite_chat-ai-typing';
+				row.appendChild(aiBotAvatar());
+				var t = document.createElement('div');
+				t.className = 'nexulesuite_chat-ai-typing';
+				t.appendChild(document.createElement('span'));
+				t.appendChild(document.createElement('span'));
+				t.appendChild(document.createElement('span'));
+				row.appendChild(t);
+				aiMessages.appendChild(row);
+				aiScrollToEnd();
+			}
+			function aiRemoveTyping(){
+				var t = document.getElementById('nexulesuite_chat-ai-typing');
+				if(t && t.parentNode){ t.parentNode.removeChild(t); }
+			}
+			function openAiView(){
+				if(!aiView) return;
+				['.nexulesuite_chat-panel__head','.nexulesuite_chat-panel__body','.nexulesuite_chat-panel__btns'].forEach(function(sel){
+					var el = panel.querySelector(sel);
+					if(el) el.style.display='none';
+				});
+				if(formView){ formView.classList.remove('nexulesuite_chat-form--active'); }
+				panel.classList.remove('nexulesuite_chat-panel--inline-form');
+				panel.classList.add('nexulesuite_chat-panel--ai-active');
+				if(aiMessages && !aiMessages.childNodes.length){ aiRenderHome(); }
+				if(aiInput){ setTimeout(function(){ aiInput.focus(); }, 60); }
+			}
+			/* Mirrors the composer's file card inside the sent bubble. */
+			function aiDocChip(file){
+				var chip = document.createElement('span');
+				chip.className = 'nexulesuite_chat-ai-doc';
+				var ic = document.createElement('span');
+				ic.className = 'nexulesuite_chat-ai-doc__ic';
+				ic.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9z"/><path d="M13 3v6h6"/></svg>';
+				var meta = document.createElement('span');
+				meta.className = 'nexulesuite_chat-ai-doc__meta';
+				var nm = document.createElement('span');
+				nm.className = 'nexulesuite_chat-ai-doc__name';
+				nm.textContent = file.name;
+				var sz = document.createElement('span');
+				sz.className = 'nexulesuite_chat-ai-doc__size';
+				sz.textContent = aiHumanSize(file.size);
+				meta.appendChild(nm); meta.appendChild(sz);
+				chip.appendChild(ic); chip.appendChild(meta);
+				return chip;
+			}
+			function sendAiMessage(text){
+				text = (text||'').trim();
+				var sendImage = aiPendingImage;
+				var sendFile  = aiPendingFile;
+				if((!text && !sendImage && !sendFile) || aiBusy) return;
+				if(text){ aiLastQuestion = text; }
+				aiBusy = true;
+				if(aiSend){ aiSend.disabled = true; }
+				var userBubble = aiAddBubble('user', text);
+				if(sendImage && userBubble){
+					var im = document.createElement('img');
+					im.className = 'nexulesuite_chat-ai-msg-img';
+					im.src = sendImage;
+					userBubble.appendChild(im);
+					aiScrollToEnd();
+				}
+				if(sendFile && userBubble){
+					userBubble.appendChild(aiDocChip(sendFile));
+					aiScrollToEnd();
+				}
+				aiHistory.push({ role:'user', content: text || (sendFile ? ('[file: ' + sendFile.name + ']') : '[image]') });
+				if(aiInput){ aiInput.value = ''; }
+				if(typeof aiClearImage === 'function'){ aiClearImage(); }
+				else if(typeof aiUpdateSendState === 'function'){ aiUpdateSendState(); }
+				aiShowTyping();
+
+				fetch(aiCfg.endpoint, {
+					method: 'POST',
+					headers: { 'Content-Type':'application/json', 'X-WP-Nonce': aiCfg.restNonce },
+					credentials: 'same-origin',
+					body: JSON.stringify({ nonce: aiCfg.nonce, message: text, history: aiHistory.slice(0, -1), image: sendImage || '', file: sendFile ? { name: sendFile.name, mime: sendFile.mime, data: sendFile.data } : null, session_id: aiSessionId, page_url: (window.location ? window.location.href : '') })
+				}).then(function(r){
+					return r.json().then(function(j){ return { ok:r.ok, j:j }; }, function(){ return { ok:r.ok, j:null }; });
+				}).then(function(res){
+					aiRemoveTyping();
+					var j = res.j || {};
+					if(res.ok && j.success && j.data){
+						var answer = (j.data.answer || '').trim() || '…';
+						var wantsHuman = !!j.data.handoff;
+						var srcs = j.data.sources;
+						var prods = j.data.products;
+						var botBubble = aiAddBubble('bot', '');
+						aiHistory.push({ role:'assistant', content:answer });
+						if(aiHistory.length > 16){ aiHistory = aiHistory.slice(-16); }
+						/* Speak as soon as the answer lands — the type-out animation runs alongside it. */
+						aiBotSaid(answer);
+						aiTypeOut(botBubble, answer, function(){
+							aiAddSources(srcs);
+							aiAddProducts(prods);
+							/* Only open the contact form when the visitor actually asks for a human/callback. */
+							if(wantsHuman && aiCfg.lead && aiCfg.lead.enabled && !aiLeadDone){ setTimeout(aiShowLeadForm, 300); }
+						});
+					} else {
+						aiAddBubble('error', (j && j.message) ? j.message : 'Sorry, something went wrong. Please try again.');
+					}
+				}).catch(function(){
+					aiRemoveTyping();
+					aiAddBubble('error', 'Network error. Please try again.');
+				}).then(function(){
+					aiBusy = false;
+					if(aiSend){ aiSend.disabled = false; }
+				});
+			}
+
+			var openAiBtns = panel.querySelectorAll('[data-nexulesuite_chat-open-ai]');
+			openAiBtns.forEach(function(btn){ btn.addEventListener('click', openAiView); });
+			if(aiBack){ aiBack.addEventListener('click', showMainView); }
+			if(aiResetBtn){ aiResetBtn.addEventListener('click', aiResetChat); }
+			if(aiForm){
+				aiForm.addEventListener('submit', function(ev){
+					ev.preventDefault();
+					sendAiMessage(aiInput ? aiInput.value : '');
+				});
+			}
+
+			/* ── Input bar controls: send-state, emoji picker, image attachment ── */
+			var aiClip     = document.getElementById('nexulesuite_chat-ai-clip');
+			var aiEmojiBtn = document.getElementById('nexulesuite_chat-ai-emoji');
+			var aiEmojiPop = document.getElementById('nexulesuite_chat-ai-emoji-pop');
+			var aiPendingImage = null;
+			var aiPendingFile  = null;
+
+			function aiUpdateSendState(){
+				if( ! aiSend || ! aiInput ) return;
+				var armed = !! ( aiPendingImage || aiPendingFile );
+				if( ! aiBusy && ( aiInput.value.trim() || armed ) ){ aiSend.classList.add('is-active'); }
+				else { aiSend.classList.remove('is-active'); }
+				if(aiClip){ aiClip.classList.toggle('is-armed', armed); }
+			}
+			function aiCloseMenus(){
+				if(aiEmojiPop) aiEmojiPop.classList.remove('is-open');
+				if(aiEmojiBtn) aiEmojiBtn.setAttribute('aria-expanded','false');
+			}
+			if(aiInput){ aiInput.addEventListener('input', aiUpdateSendState); }
+
+			/* Emoji picker (functional) */
+			if(aiEmojiPop){
+				var EMOJIS = ['😀','😃','😄','😁','😊','🙂','😉','😍','😘','😎','🤩','🤔','🙌','👍','👎','👏','🙏','💪','🔥','✨','🎉','❤️','💯','✅','❓','⚠️','😅','😢','😮','🥳','🚀','📎'];
+				EMOJIS.forEach(function(em){
+					var b = document.createElement('button');
+					b.type = 'button';
+					b.textContent = em;
+					b.addEventListener('click', function(ev){
+						ev.preventDefault();
+						if(aiInput){ aiInput.value += em; aiInput.focus(); aiUpdateSendState(); }
+						aiCloseMenus();
+					});
+					aiEmojiPop.appendChild(b);
+				});
+			}
+			if(aiEmojiBtn){
+				aiEmojiBtn.addEventListener('click', function(ev){
+					ev.preventDefault(); ev.stopPropagation();
+					var open = aiEmojiPop.classList.toggle('is-open');
+					aiEmojiBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+				});
+			}
+
+			/* Attachments: paperclip / clipboard paste. Images go to the vision model; documents are text-extracted server-side. */
+			var aiFile      = document.getElementById('nexulesuite_chat-ai-file');
+			var aiAttach    = document.getElementById('nexulesuite_chat-ai-attach');
+			var aiAttachImg = document.getElementById('nexulesuite_chat-ai-attach-img');
+			var aiAttachX   = document.getElementById('nexulesuite_chat-ai-attach-x');
+			var aiDoc       = document.getElementById('nexulesuite_chat-ai-doc');
+			var aiDocName   = document.getElementById('nexulesuite_chat-ai-doc-name');
+			var aiDocSize   = document.getElementById('nexulesuite_chat-ai-doc-size');
+			var aiDocX      = document.getElementById('nexulesuite_chat-ai-doc-x');
+
+			/* Keep full 4K detail: only shrink what exceeds it, and never re-encode a small file. */
+			var AI_IMAGE_MAX_EDGE   = 4096;
+			var AI_IMAGE_REENCODE   = 6 * 1024 * 1024;  /* bytes above which we re-encode as JPEG */
+			var AI_IMAGE_MAX_BASE64 = 20971520;         /* must match RestApi::AI_IMAGE_MAX_BASE64 */
+			var AI_DOC_MAX_BYTES    = 10 * 1024 * 1024;
+			var AI_DOC_MIMES = {
+				'application/pdf': 1, 'text/plain': 1, 'text/markdown': 1,
+				'text/csv': 1, 'text/html': 1, 'application/json': 1
+			};
+
+			function aiHumanSize(bytes){
+				if(bytes < 1024){ return bytes + ' B'; }
+				if(bytes < 1048576){ return Math.round(bytes/1024) + ' KB'; }
+				return (bytes/1048576).toFixed(1) + ' MB';
+			}
+			function aiDocMime(file){
+				var type = (file.type || '').toLowerCase();
+				if(AI_DOC_MIMES[type]){ return type; }
+				/* Browsers leave .md and some .csv files with an empty type. */
+				var name = (file.name || '').toLowerCase();
+				if(/\.md$|\.markdown$/.test(name)){ return 'text/markdown'; }
+				if(/\.txt$/.test(name)){ return 'text/plain'; }
+				if(/\.csv$/.test(name)){ return 'text/csv'; }
+				if(/\.json$/.test(name)){ return 'application/json'; }
+				if(/\.pdf$/.test(name)){ return 'application/pdf'; }
+				return '';
+			}
+			function aiClearImage(){
+				aiPendingImage = null;
+				aiPendingFile  = null;
+				if(aiFile){ aiFile.value = ''; }
+				if(aiAttach){ aiAttach.hidden = true; }
+				if(aiAttachImg){ aiAttachImg.removeAttribute('src'); }
+				if(aiDoc){ aiDoc.hidden = true; }
+				aiUpdateSendState();
+			}
+			function aiAttachError(text){
+				aiAddBubble('error', text);
+			}
+			function aiLoadImageFile(file){
+				if(!file || (file.type || '').indexOf('image/') !== 0){ return; }
+				var reader = new FileReader();
+				reader.onload = function(){
+					var img = new Image();
+					img.onload = function(){
+						var w = img.width, h = img.height;
+						var tooBig    = (w > AI_IMAGE_MAX_EDGE || h > AI_IMAGE_MAX_EDGE);
+						var tooHeavy  = (file.size > AI_IMAGE_REENCODE);
+
+						if(!tooBig && !tooHeavy){
+							/* Small enough: send the original bytes, preserving PNG/WebP quality. */
+							aiPendingImage = reader.result;
+						} else {
+							if(tooBig){ var r = Math.min(AI_IMAGE_MAX_EDGE/w, AI_IMAGE_MAX_EDGE/h); w = Math.round(w*r); h = Math.round(h*r); }
+							var canvas = document.createElement('canvas');
+							canvas.width = w; canvas.height = h;
+							canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+							try { aiPendingImage = canvas.toDataURL('image/jpeg', 0.9); }
+							catch(e){ aiPendingImage = reader.result; }
+						}
+
+						if(aiPendingImage.length > AI_IMAGE_MAX_BASE64){
+							aiPendingImage = null;
+							aiAttachError('That image is too large (max ~15 MB).');
+							return;
+						}
+						aiPendingFile = null;
+						if(aiDoc){ aiDoc.hidden = true; }
+						if(aiAttachImg){ aiAttachImg.src = aiPendingImage; }
+						if(aiAttach){ aiAttach.hidden = false; }
+						aiUpdateSendState();
+						if(aiInput){ aiInput.focus(); }
+					};
+					img.onerror = function(){ aiAttachError('That image could not be read.'); };
+					img.src = reader.result;
+				};
+				reader.readAsDataURL(file);
+			}
+			function aiLoadDocFile(file, mime){
+				if(file.size > AI_DOC_MAX_BYTES){
+					aiAttachError('That file is too large (max 10 MB).');
+					return;
+				}
+				var reader = new FileReader();
+				reader.onload = function(){
+					var result = String(reader.result || '');
+					var comma  = result.indexOf(',');
+					if(comma === -1){ aiAttachError('That file could not be read.'); return; }
+					aiPendingImage = null;
+					aiPendingFile  = { name: file.name || 'attachment', mime: mime, data: result.slice(comma + 1), size: file.size };
+					if(aiAttach){ aiAttach.hidden = true; }
+					if(aiDocName){ aiDocName.textContent = aiPendingFile.name; }
+					if(aiDocSize){ aiDocSize.textContent = aiHumanSize(file.size); }
+					if(aiDoc){ aiDoc.hidden = false; }
+					aiUpdateSendState();
+					if(aiInput){ aiInput.focus(); }
+				};
+				reader.onerror = function(){ aiAttachError('That file could not be read.'); };
+				reader.readAsDataURL(file);
+			}
+			function aiLoadAttachment(file){
+				if(!file){ return; }
+				if((file.type || '').indexOf('image/') === 0){ aiLoadImageFile(file); return; }
+				var mime = aiDocMime(file);
+				if(mime){ aiLoadDocFile(file, mime); return; }
+				aiAttachError('That file type is not supported. Attach an image, PDF, TXT, MD, CSV, HTML or JSON file.');
+			}
+
+			if(aiFile){
+				aiFile.addEventListener('change', function(){
+					if(aiFile.files && aiFile.files[0]){ aiLoadAttachment(aiFile.files[0]); }
+				});
+				if(aiAttachX){ aiAttachX.addEventListener('click', aiClearImage); }
+				if(aiDocX){ aiDocX.addEventListener('click', aiClearImage); }
+				if(aiClip){
+					aiClip.addEventListener('click', function(ev){
+						ev.preventDefault();
+						aiCloseMenus();
+						aiFile.click();
+					});
+				}
+				if(aiInput){
+					aiInput.addEventListener('paste', function(ev){
+						var items = (ev.clipboardData && ev.clipboardData.items) || [];
+						for(var i=0;i<items.length;i++){
+							if(items[i].type && items[i].type.indexOf('image/') === 0){
+								var f = items[i].getAsFile();
+								if(f){ ev.preventDefault(); aiLoadImageFile(f); break; }
+							}
+						}
+					});
+				}
+			}
+
+			/* Close popovers when clicking outside the chat view */
+			document.addEventListener('click', function(ev){
+				if(aiView && ! aiView.contains(ev.target)){ aiCloseMenus(); }
 			});
 
 			/* ── Buttons 2 & 3: open external nexus popup (data-nexulesuite_chat-popup) ── */
