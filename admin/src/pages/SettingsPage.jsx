@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { PageShell } from '../components/PageShell.jsx';
 import { AdminStickyFooter } from '../components/AdminStickyFooter.jsx';
 import { ConfirmDiscardModal, ErrorModal, SuccessModal } from '../components/NexusModal.jsx';
@@ -13,7 +13,7 @@ import {
 	Image as ImageIcon, MessageCircle, Clock, X,
 	Mail, Link as LinkIcon, ShieldCheck, Wand2, Copy, Check, AlertTriangle,
 	FileX, Paintbrush, Info, Type as FontIcon, Loader2, Plus, Trash2, Layers,
-	Send, Lock,
+	Send, Lock, Bot, RefreshCw,
 } from 'lucide-react';
 
 /* ─────────────────────────────────────────────────────────────
@@ -78,9 +78,38 @@ const GOOGLE_FONTS = [
 
 const FONT_CATEGORIES = [ 'Sans-serif', 'Serif', 'Display', 'Handwriting', 'Monospace' ];
 
+/* Must stay in sync with Report_Source::SECTIONS. */
+const REPORT_SECTIONS = [
+	{ id: 'summary', label: 'Summary counts' },
+	{ id: 'forms', label: 'Form submissions (full answers)' },
+	{ id: 'chats', label: 'Chat transcripts' },
+	{ id: 'activities', label: 'Activity log' },
+];
+
 /* ─────────────────────────────────────────────────────────────
    Defaults & API helpers
 ───────────────────────────────────────────────────────────── */
+
+/* The provider catalogue (labels, endpoints, default models, capabilities) is owned by
+   PHP — Rest_Api::get_general_settings() ships Llm_Client::ui_registry() as
+   `settings.aiProviders`. Nothing here needs to know a base URL. */
+const aiProviders = ( settings ) => settings.aiProviders || {};
+
+/* `direct` mode talks to the vendor's API; `server` mode proxies through a self-hosted
+   Nexus AI Server, which only knows a subset of vendors. */
+const aiChatProviders = ( settings, mode ) =>
+	Object.entries( aiProviders( settings ) )
+		.filter( ( [ , p ] ) => p.chat && ( mode === 'direct' ? p.direct : p.server ) )
+		.map( ( [ id, p ] ) => ( { id, ...p } ) );
+
+const aiEmbedProviders = ( settings ) =>
+	Object.entries( aiProviders( settings ) )
+		.filter( ( [ , p ] ) => p.embed && p.direct )
+		.map( ( [ id, p ] ) => ( { id, ...p } ) );
+
+const aiProvider = ( settings, id ) => aiProviders( settings )[ id ] || null;
+const aiProviderLabel = ( settings, id ) => aiProvider( settings, id )?.label || id || '—';
+
 const DEFAULT_SETTINGS = {
 	enableNavigation: false,
 	selectedEmailTemplate: '',
@@ -114,6 +143,33 @@ const DEFAULT_SETTINGS = {
 	reportLogo: '',
 	reportLogoPdfMax: 400,
 	autoPopupFormIds: [],
+	// AI Chatbot (RAG)
+	aiEnabled: false,
+	// 'direct' = call the model vendor's API from WordPress; 'server' = self-hosted AI server.
+	aiConnMode: 'direct',
+	aiServerUrl: '',
+	aiApiKey: '',
+	hasAiKey: false,
+	// Chat model provider.
+	aiLlmProvider: '',
+	aiLlmModel: '',
+	aiLlmApiKey: '',
+	hasLlmKey: false,
+	aiLlmProviders: [],
+	aiProviders: {},
+	// Embedding provider — powers retrieval over the WordPress-stored knowledge base.
+	aiEmbedProvider: '',
+	aiEmbedModel: '',
+	aiEmbedApiKey: '',
+	hasEmbedKey: false,
+	aiIndex: { chunks: 0, documents: 0, dims: 0 },
+	aiSystemPrompt: '',
+	aiWelcomeMessage: "Hi! Ask me anything about our site and I'll help right away.",
+	aiChatModel: '',
+	aiVisionModel: 'llava',
+	aiAllowImages: false,
+	aiMaxChunks: 4,
+	aiManualQa: '',
 };
 
 const DEFAULT_SMTP = {
@@ -361,6 +417,10 @@ export function SettingsPage() {
 	const [ activeTab, setActiveTab ] = useState( 'general' );
 	const [ generatedLink, setGeneratedLink ] = useState( '' );
 	const [ copySuccess, setCopySuccess ] = useState( false );
+	const [ clientLinks, setClientLinks ] = useState( [] );
+	const [ linkLabel, setLinkLabel ] = useState( '' );
+	const [ linkExpiryDays, setLinkExpiryDays ] = useState( '0' );
+	const [ linkSections, setLinkSections ] = useState( [ 'summary', 'activities' ] );
 	const fileInputRef = useRef( null );
 	const [ uploadingChatImg, setUploadingChatImg ] = useState( false );
 	const reportLogoInputRef = useRef( null );
@@ -388,6 +448,11 @@ export function SettingsPage() {
 	const [ smtpTestHtml, setSmtpTestHtml ] = useState( true );
 	const [ smtpMeta, setSmtpMeta ] = useState( DEFAULT_SMTP_META );
 	const [ redirectCopied, setRedirectCopied ] = useState( false );
+	const [ aiTesting, setAiTesting ] = useState( false );
+	const [ aiTestResult, setAiTestResult ] = useState( null );
+	const [ aiTraining, setAiTraining ] = useState( false );
+	const [ aiTrainResult, setAiTrainResult ] = useState( null );
+	const [ aiResetting, setAiResetting ] = useState( false );
 
 	const showNotice = ( type, text ) => {
 		if ( type === 'success' ) {
@@ -600,6 +665,122 @@ export function SettingsPage() {
 		}
 	};
 
+	/* ── AI Chatbot: uses SAVED settings — remind the user to Save first. ── */
+	const handleAiTest = async () => {
+		if ( aiTesting ) return;
+		setAiTesting( true );
+		setAiTestResult( null );
+		try {
+			const { res, json } = await apiFetch( '/ai/test', { method: 'POST' } );
+			const d = json?.data || {};
+
+			// A direct-mode failure still ships diagnostics, so read `data` before throwing.
+			if ( ! res.ok || ! json?.success ) {
+				throw new Error( json?.message || 'Connection failed.' );
+			}
+
+			if ( d.mode === 'direct' ) {
+				const parts = [ `Provider: ${ d.provider }`, `Model: ${ d.chat_model }` ];
+				if ( d.providerTest?.latency_ms ) parts.push( `key verified in ${ d.providerTest.latency_ms } ms` );
+				parts.push( `Images: ${ d.capabilities?.vision ? 'yes' : 'no' }` );
+				if ( d.embed?.ok ) parts.push( `Embeddings: ${ d.embed.provider } (${ d.embed.dims }d)` );
+				parts.push( `Knowledge base: ${ d.documents || 0 } doc(s), ${ d.chunks || 0 } chunk(s)` );
+
+				const note = ! d.chunks ? ' Click Train Now to index your site content.' : '';
+				setAiTestResult( { ok: true, text: `Connected. ${ parts.join( ' · ' ) }.${ note }` } );
+				return;
+			}
+
+			// Self-hosted server mode.
+			const caps = d.capabilities || {};
+			const probe = d.providerTest || null;
+			const parts = [ `Provider: ${ d.provider || '—' }`, `Model: ${ d.chat_model || '—' }` ];
+			parts.push( `Tools: ${ caps.tools ? 'yes' : 'no' }` );
+			parts.push( `Images: ${ caps.vision ? 'yes' : 'no' }` );
+			if ( probe?.ok && probe.latency_ms ) parts.push( `key verified in ${ probe.latency_ms } ms` );
+
+			// Ollama serves embeddings (and Ollama-only vision), so it matters even on a cloud provider —
+			// but a cloud chat model still answers without it, so this is a warning, not a failure.
+			const notes = [];
+			if ( ! d.ollama ) notes.push( 'Ollama is not responding — training/retrieval will fail until it is running.' );
+			if ( ! probe && ! d.has_credential ) notes.push( 'No provider key configured here or on the server.' );
+			if ( ! caps.tools ) notes.push( 'This model cannot call tools — the assistant will use the basic reply path.' );
+
+			setAiTestResult( {
+				ok: notes.length === 0,
+				text: `Connected. ${ parts.join( ' · ' ) }${ notes.length ? '. ' + notes.join( ' ' ) : '.' }`,
+			} );
+		} catch ( e ) {
+			setAiTestResult( { ok: false, text: e?.message || 'Connection failed.' } );
+		} finally {
+			setAiTesting( false );
+		}
+	};
+
+	const handleAiTrain = async () => {
+		if ( aiTraining ) return;
+		setAiTraining( true );
+		setAiTrainResult( null );
+		try {
+			let offset = 0;
+			let reset = true;
+			let totalChunks = 0;
+			let total = 0;
+			let processedTotal = 0;
+			// Batched loop so large sites don't time out (server pages posts/pages).
+			for ( let i = 0; i < 500; i++ ) {
+				const { res, json } = await apiFetch( '/ai/train', {
+					method: 'POST',
+					body: JSON.stringify( { offset, reset } ),
+				} );
+				if ( ! res.ok || ! json?.success ) {
+					throw new Error( json?.message || 'Training failed.' );
+				}
+				const d = json.data || {};
+				totalChunks = d.totalChunks || totalChunks;
+				total = d.total || total;
+				processedTotal += d.processed || 0;
+				setAiTrainResult( { ok: true, text: `Training… ${ processedTotal }/${ total || '?' } items processed.` } );
+				reset = false;
+				if ( d.done || d.nextOffset == null ) break;
+				offset = d.nextOffset;
+			}
+			setAiTrainResult( { ok: true, text: `Training complete — ${ total } item(s) indexed, ${ totalChunks } chunk(s) in memory.` } );
+		} catch ( e ) {
+			setAiTrainResult( { ok: false, text: e?.message || 'Training failed. Save your settings and test the connection first.' } );
+		} finally {
+			setAiTraining( false );
+		}
+	};
+
+	const handleAiReset = async () => {
+		if ( aiResetting ) return;
+		setAiResetting( true );
+		try {
+			const { res, json } = await apiFetch( '/ai/reset', { method: 'POST' } );
+			if ( ! res.ok || ! json?.success ) {
+				throw new Error( json?.message || 'Failed to clear memory.' );
+			}
+			setAiTrainResult( { ok: true, text: 'Memory cleared. Re-train to rebuild the knowledge base.' } );
+		} catch ( e ) {
+			setAiTrainResult( { ok: false, text: e?.message || 'Failed to clear memory.' } );
+		} finally {
+			setAiResetting( false );
+		}
+	};
+
+	/* ── AI tab: derived provider + embedding state (mirrors Rest_Api::ai_embed_config). ── */
+	const aiMode = settings.aiConnMode || 'direct';
+	const aiActiveProvider = aiProvider( settings, settings.aiLlmProvider );
+	// A blank embedding provider means "reuse the chat provider", which only works when it can embed.
+	const aiEmbedId = settings.aiEmbedProvider || ( aiActiveProvider?.embed ? settings.aiLlmProvider : '' );
+	const aiEmbedDef = aiProvider( settings, aiEmbedId );
+	const aiEmbedSharesChatKey = !! aiEmbedId && aiEmbedId === settings.aiLlmProvider;
+	const aiEmbedHasKey = aiEmbedSharesChatKey
+		? ( settings.hasLlmKey || !! settings.aiLlmApiKey )
+		: ( settings.hasEmbedKey || !! settings.aiEmbedApiKey );
+	const aiEmbedReady = !! aiEmbedId && aiEmbedHasKey;
+
 	// Report/PDF logo size: clamped value drives the slider + live preview; the raw
 	// field value is kept as-typed so the number input stays editable (normalized on blur).
 	const reportLogoPdfMax = clampReportLogoPdfMax( settings.reportLogoPdfMax );
@@ -624,7 +805,8 @@ export function SettingsPage() {
 			if ( ! res.ok || ! json?.success ) throw new Error( json?.message || 'Save failed.' );
 			const saved = json?.data?.settings;
 			if ( saved && typeof saved === 'object' ) {
-				setSettings( ( prev ) => ( { ...prev, ...saved } ) );
+				// `saved` omits the API keys (masked) and carries hasAiKey/hasLlmKey/hasEmbedKey — clear the inputs so the masked placeholders show.
+				setSettings( ( prev ) => ( { ...prev, ...saved, aiApiKey: '', aiLlmApiKey: '', aiEmbedApiKey: '' } ) );
 				setAutoPopupFormRows( rowsFromSavedAutoPopupSettings( saved ) );
 			}
 			setSuccessOpen( true );
@@ -766,13 +948,38 @@ export function SettingsPage() {
 		}
 	};
 
+	const loadClientLinks = useCallback( async () => {
+		try {
+			const { res, json } = await apiFetch( '/settings/client-links' );
+			if ( res.ok && json?.success ) {
+				setClientLinks( json.data.links || [] );
+			}
+		} catch ( err ) {
+			// Silent: the panel simply shows no links.
+		}
+	}, [] );
+
+	useEffect( () => {
+		loadClientLinks();
+	}, [ loadClientLinks ] );
+
+	const toggleLinkSection = ( id ) => {
+		setLinkSections( ( current ) =>
+			current.includes( id ) ? current.filter( ( s ) => s !== id ) : [ ...current, id ]
+		);
+	};
+
 	const handleGenerateLink = async ( e ) => {
 		if ( e ) e.preventDefault();
 		try {
-			const ttl = parseInt( String( settings.tokenTTL || '5' ), 10 );
-			const { res, json } = await apiFetch( '/settings/generate-client-access-link', {
+			const days = parseInt( String( linkExpiryDays || '0' ), 10 );
+			const { res, json } = await apiFetch( '/settings/client-links', {
 				method: 'POST',
-				body: JSON.stringify( { tokenTTL: Number.isFinite( ttl ) ? ttl : 5 } ),
+				body: JSON.stringify( {
+					label: linkLabel,
+					expiresDays: Number.isFinite( days ) ? days : 0,
+					sections: linkSections,
+				} ),
 			} );
 			if ( ! res.ok || ! json?.success ) {
 				let msg = json?.message || json?.code || 'Could not generate link.';
@@ -783,11 +990,31 @@ export function SettingsPage() {
 			}
 			const url = json?.data?.url || '';
 			setGeneratedLink( url );
+			setLinkLabel( '' );
+			await loadClientLinks();
 			if ( url ) {
-				showNotice( 'success', 'Access link generated. Open it before it expires (TTL).' );
+				showNotice( 'success', 'Share link created. Copy it now — it is shown only once.' );
 			}
 		} catch ( err ) {
 			showNotice( 'error', err?.message || 'Could not generate link.' );
+		}
+	};
+
+	const handleRevokeLink = async ( id ) => {
+		// eslint-disable-next-line no-alert
+		if ( ! window.confirm( 'Revoke this link? Anyone holding it loses access immediately.' ) ) {
+			return;
+		}
+		try {
+			const { res, json } = await apiFetch( `/settings/client-links/${ id }`, { method: 'DELETE' } );
+			if ( ! res.ok || ! json?.success ) {
+				throw new Error( 'Could not revoke link.' );
+			}
+			setGeneratedLink( '' );
+			await loadClientLinks();
+			showNotice( 'success', 'Link revoked.' );
+		} catch ( err ) {
+			showNotice( 'error', err?.message || 'Could not revoke link.' );
 		}
 	};
 
@@ -827,6 +1054,7 @@ export function SettingsPage() {
 		{ id: 'general', label: 'General & Navigation', icon: Layout },
 		{ id: 'popup', label: 'Auto PopUp Logic', icon: Zap },
 		{ id: 'chat', label: 'Livechat & Styling', icon: MessageCircle },
+		{ id: 'ai', label: 'AI Chatbot', icon: Bot },
 		{ id: 'smtp', label: 'SMTP / Email', icon: Mail },
 		{ id: 'backup', label: 'Export Settings', icon: Database },
 	];
@@ -837,7 +1065,7 @@ export function SettingsPage() {
 			subtitle="Global configuration & automation logic"
 			icon={ <Settings size={ 18 } /> }
 			footer={
-				[ 'general', 'popup', 'chat', 'backup', 'smtp' ].includes( activeTab ) ? (
+				[ 'general', 'popup', 'chat', 'ai', 'backup', 'smtp' ].includes( activeTab ) ? (
 					<AdminStickyFooter
 						actions={
 							activeTab === 'smtp' ? (
@@ -1015,22 +1243,55 @@ export function SettingsPage() {
 																	placeholder="report-access"
 																/>
 															</div>
-															<div className="nexulesuite_sg-field">
-																<span className="lbl">Token TTL (Minutes)</span>
-																<input
-																	type="number"
-																	className="inp"
-																	value={ settings.tokenTTL }
-																	onChange={ ( e ) => updateSetting( 'tokenTTL', e.target.value ) }
-																/>
+															<div className="nexulesuite_sg-grid-2">
+																<div className="nexulesuite_sg-field">
+																	<span className="lbl">Link name</span>
+																	<input
+																		type="text"
+																		className="inp"
+																		value={ linkLabel }
+																		onChange={ ( e ) => setLinkLabel( e.target.value ) }
+																		placeholder="Acme Corp"
+																	/>
+																</div>
+																<div className="nexulesuite_sg-field">
+																	<span className="lbl nexulesuite_lbl-tip">Expires in (days) <InfoTip text={ '0 keeps the link alive until you revoke it.' } /></span>
+																	<input
+																		type="number"
+																		min="0"
+																		max="730"
+																		className="inp"
+																		value={ linkExpiryDays }
+																		onChange={ ( e ) => setLinkExpiryDays( e.target.value ) }
+																	/>
+																</div>
 															</div>
+
+															<div className="nexulesuite_sg-field">
+																<span className="lbl nexulesuite_lbl-tip">Sections this client may see <InfoTip text={ 'Chat transcripts and form answers contain visitor personal data. The link only exposes what you tick here, and the export endpoint enforces it too.' } /></span>
+																<div className="nexulesuite_sg-checks">
+																	{ REPORT_SECTIONS.map( ( section ) => (
+																		<label key={ section.id } className="nexulesuite_sg-check">
+																			<input
+																				type="checkbox"
+																				checked={ linkSections.includes( section.id ) }
+																				onChange={ () => toggleLinkSection( section.id ) }
+																			/>
+																			<span>{ section.label }</span>
+																		</label>
+																	) ) }
+																</div>
+															</div>
+
 															<button
 																type="button"
 																onClick={ handleGenerateLink }
 																className="nexulesuite_sg-btn nexulesuite_sg-btn-primary"
 															>
-																<Wand2 size={ 14 } /> Generate Dynamic Access Link
+																<Wand2 size={ 14 } /> Create share link
 															</button>
+
+															{ /* Shown once: the token lives only in this URL, never in the database. */ }
 															<div className="nexulesuite_sg-link-box">
 																<span className="nexulesuite_sg-link-ico" aria-hidden="true"><Globe size={ 16 } /></span>
 																{ generatedLink ? (
@@ -1041,9 +1302,42 @@ export function SettingsPage() {
 																		</button>
 																	</div>
 																) : (
-																	<span className="nexulesuite_sg-link-placeholder">Link will appear here after generation...</span>
+																	<span className="nexulesuite_sg-link-placeholder">Copy the link now — it is shown only once.</span>
 																) }
 															</div>
+
+															{ clientLinks.length > 0 ? (
+																<table className="nexulesuite_sg-links-table">
+																	<thead>
+																		<tr>
+																			<th>Name</th>
+																			<th>Sections</th>
+																			<th>Expires</th>
+																			<th>Opened</th>
+																			<th />
+																		</tr>
+																	</thead>
+																	<tbody>
+																		{ clientLinks.map( ( link ) => (
+																			<tr key={ link.id }>
+																				<td>{ link.label }</td>
+																				<td className="nexulesuite_sg-links-sections">{ link.sections.join( ', ' ) || '—' }</td>
+																				<td>{ link.expires ? new Date( link.expires * 1000 ).toLocaleDateString() : 'Never' }</td>
+																				<td>{ link.uses }×</td>
+																				<td>
+																					<button
+																						type="button"
+																						className="nexulesuite_sg-link-revoke"
+																						onClick={ () => handleRevokeLink( link.id ) }
+																					>
+																						Revoke
+																					</button>
+																				</td>
+																			</tr>
+																		) ) }
+																	</tbody>
+																</table>
+															) : null }
 														</div>
 													</div>
 												</div>
@@ -1727,6 +2021,393 @@ export function SettingsPage() {
 													</div>
 												</div>
 											</aside>
+										</div>
+									</div>
+								) }
+
+								{/* ════════════════════════════════════════════
+								    AI CHATBOT (RAG)
+								════════════════════════════════════════════ */}
+								{ activeTab === 'ai' && (
+									<div className="nexulesuite_settings-general-wrap">
+										<div className="nexulesuite_sg-card">
+
+											{/* ── Connection: a model vendor's API (default) or a self-hosted server ── */}
+											<section className="nexulesuite_sg-section is-first">
+												<div className="nexulesuite_sg-sec-head">
+													<span className="nexulesuite_sg-sec-ico">
+														<Bot size={ 16 } />
+													</span>
+													<div>
+														<span className="nexulesuite_sg-sec-title nexulesuite_sg-title-tip">AI Connection <InfoTip text={ 'Choose which AI model answers your visitors. In Model API mode WordPress calls the provider directly — no server to run. Keys are encrypted at rest and never sent to the browser.' } /></span>
+													</div>
+												</div>
+
+												<div className="nexulesuite_sg-field" style={ { marginBottom: '18px' } }>
+													<div
+														className={ `nexulesuite_smtp-htmltoggle${ settings.aiEnabled ? ' on' : '' }` }
+														role="switch"
+														aria-checked={ !! settings.aiEnabled }
+														tabIndex={ 0 }
+														onClick={ () => updateSetting( 'aiEnabled', ! settings.aiEnabled ) }
+														onKeyDown={ ( e ) => {
+															if ( e.key === ' ' || e.key === 'Enter' ) {
+																e.preventDefault();
+																updateSetting( 'aiEnabled', ! settings.aiEnabled );
+															}
+														} }
+													>
+														<span className="nexulesuite_smtp-htmltoggle-label">Enable AI chat mode in the Livechat widget</span>
+														<span className={ `nexulesuite_sg-toggle${ settings.aiEnabled ? ' on' : '' }` }><span className="track"><span className="knob" /></span></span>
+													</div>
+												</div>
+
+												{/* Mode picker */}
+												<div className="grid gap-3 sm:grid-cols-2" style={ { marginBottom: '18px' } }>
+													{ [
+														{ id: 'direct', icon: <Bot size={ 16 } />, title: 'Model API', copy: 'Connect straight to OpenAI, Claude, Gemini, Groq and more with an API key. Nothing to host.' },
+														{ id: 'server', icon: <Server size={ 16 } />, title: 'Self-hosted server', copy: 'Proxy through your own Nexus AI Server (FastAPI + Ollama) on a VPS or localhost.' },
+													].map( ( m ) => {
+														const active = ( settings.aiConnMode || 'direct' ) === m.id;
+														return (
+															<button
+																key={ m.id }
+																type="button"
+																onClick={ () => updateSetting( 'aiConnMode', m.id ) }
+																className={ `flex flex-col items-start gap-1 rounded-xl border px-4 py-3 text-left transition ${ active ? 'border-indigo-400 bg-indigo-50 ring-1 ring-indigo-300' : 'border-slate-200 bg-white hover:border-slate-300' }` }
+															>
+																<span className={ `flex items-center gap-2 text-[13px] font-bold ${ active ? 'text-indigo-700' : 'text-slate-700' }` }>
+																	{ m.icon }{ m.title }
+																	{ active ? <Check size={ 14 } className="ml-auto" /> : null }
+																</span>
+																<span className="text-[11.5px] font-medium leading-snug text-slate-500">{ m.copy }</span>
+															</button>
+														);
+													} ) }
+												</div>
+
+												<div className="nexulesuite_sg-info-box" style={ { marginBottom: '18px' } }>
+													<Info size={ 14 } className="nexulesuite_sg-info-ico" />
+													<p>Test &amp; Train use your <strong>saved</strong> settings — click <strong>Save Configuration</strong> (bottom bar) after changing anything here, then Test.</p>
+												</div>
+
+												{ ( settings.aiConnMode || 'direct' ) === 'server' ? (
+													<div className="nexulesuite_sg-grid-2">
+														<div className="nexulesuite_sg-field">
+															<span className="lbl nexulesuite_lbl-tip">Server URL <InfoTip text={ 'Base URL of your AI server, e.g. https://ai.your-domain.com — no trailing path.' } /></span>
+															<input type="url" className="inp" value={ settings.aiServerUrl } onChange={ ( e ) => updateSetting( 'aiServerUrl', e.target.value ) } placeholder="https://ai.your-domain.com" autoComplete="off" spellCheck={ false } />
+														</div>
+														<div className="nexulesuite_sg-field">
+															<span className="lbl">Server API Key</span>
+															<input type="password" className="inp" value={ settings.aiApiKey } onChange={ ( e ) => updateSetting( 'aiApiKey', e.target.value ) } placeholder={ settings.hasAiKey ? '•••••••• saved — leave blank to keep' : 'Bearer API key (from your server .env)' } autoComplete="new-password" />
+															<p className="hint">{ settings.hasAiKey ? 'A key is saved (encrypted). Leave blank to keep it, or type a new one to replace.' : 'Stored encrypted (AES-256-GCM) — never shown again after saving.' }</p>
+														</div>
+													</div>
+												) : null }
+
+												{/* Chat provider + model + key */}
+												<div className="nexulesuite_sg-grid-2" style={ { marginTop: ( settings.aiConnMode || 'direct' ) === 'server' ? '18px' : 0 } }>
+													<div className="nexulesuite_sg-field">
+														<span className="lbl nexulesuite_lbl-tip">Chat provider <InfoTip text={ 'Which company’s model writes the replies. In self-hosted mode only the provider name is sent to your server — it resolves the endpoint itself.' } /></span>
+														<select
+															className="inp"
+															value={ settings.aiLlmProvider }
+															onChange={ ( e ) => {
+																const id = e.target.value;
+																const def = aiProvider( settings, id )?.chatModel || '';
+																updateSetting( 'aiLlmProvider', id );
+																// Follow the provider's default model unless the admin typed their own.
+																if ( ! settings.aiLlmModel && def ) updateSetting( 'aiLlmModel', def );
+															} }
+														>
+															<option value="">
+																{ ( settings.aiConnMode || 'direct' ) === 'direct' ? 'Select a provider…' : "Use the AI server's own setting" }
+															</option>
+															{ aiChatProviders( settings, settings.aiConnMode || 'direct' ).map( ( p ) => (
+																<option key={ p.id } value={ p.id }>{ p.label }</option>
+															) ) }
+														</select>
+													</div>
+
+													<div className="nexulesuite_sg-field">
+														<span className="lbl nexulesuite_lbl-tip">Model <InfoTip text={ 'Exact model id, e.g. gpt-4o-mini. Any id the provider accepts works — the list is only a shortcut.' } /></span>
+														<input
+															type="text"
+															className="inp"
+															list="nexulesuite_ai-model-suggestions"
+															value={ settings.aiLlmModel }
+															onChange={ ( e ) => updateSetting( 'aiLlmModel', e.target.value ) }
+															placeholder={ aiProvider( settings, settings.aiLlmProvider )?.chatModel || 'gpt-4o-mini' }
+															autoComplete="off"
+															spellCheck={ false }
+														/>
+														<datalist id="nexulesuite_ai-model-suggestions">
+															{ ( aiProvider( settings, settings.aiLlmProvider )?.chatModels || [] ).map( ( m ) => <option key={ m } value={ m } /> ) }
+														</datalist>
+													</div>
+												</div>
+
+												{ settings.aiLlmProvider && settings.aiLlmProvider !== 'ollama' ? (
+													<div className="nexulesuite_sg-field" style={ { marginTop: '18px' } }>
+														<span className="lbl">{ aiProviderLabel( settings, settings.aiLlmProvider ) } API Key</span>
+														<input
+															type="password"
+															className="inp"
+															value={ settings.aiLlmApiKey }
+															onChange={ ( e ) => updateSetting( 'aiLlmApiKey', e.target.value ) }
+															placeholder={ settings.hasLlmKey ? '•••••••• saved — leave blank to keep' : ( aiProvider( settings, settings.aiLlmProvider )?.keyHint || 'Provider API key' ) }
+															autoComplete="new-password"
+														/>
+														<p className="hint">
+															{ settings.hasLlmKey
+																? 'A key is saved (encrypted). Leave blank to keep it, or type a new one to replace.'
+																: 'Stored encrypted (AES-256-GCM), never sent to the browser.' }
+															{ aiProvider( settings, settings.aiLlmProvider )?.keyUrl ? (
+																<> Get one at <a href={ aiProvider( settings, settings.aiLlmProvider ).keyUrl } target="_blank" rel="noreferrer">{ aiProvider( settings, settings.aiLlmProvider ).keyUrl.replace( /^https:\/\//, '' ) }</a>.</>
+															) : null }
+														</p>
+													</div>
+												) : null }
+
+												{ settings.aiLlmProvider && ! aiProvider( settings, settings.aiLlmProvider )?.vision && settings.aiAllowImages ? (
+													<div className="mt-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[12px] font-semibold text-amber-800">
+														<AlertTriangle size={ 16 } className="mt-0.5 shrink-0" />
+														<span>{ aiProviderLabel( settings, settings.aiLlmProvider ) } cannot read images with this model. Visitors can still attach one, but the assistant will ask them to describe it instead.</span>
+													</div>
+												) : null }
+
+												{ ( settings.aiConnMode || 'direct' ) === 'server' && settings.aiLlmProvider && settings.aiLlmProvider !== 'ollama' && /^http:\/\//i.test( settings.aiServerUrl || '' ) && ! /^http:\/\/(localhost|127\.0\.0\.1)/i.test( settings.aiServerUrl || '' ) ? (
+													<div className="mt-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[12px] font-semibold text-amber-800">
+														<AlertTriangle size={ 16 } className="mt-0.5 shrink-0" />
+														<span>Your AI server URL is plain http:// — the provider key is sent to it on every message. Use https:// for a remote server.</span>
+													</div>
+												) : null }
+
+												<button type="button" onClick={ handleAiTest } disabled={ aiTesting } className="nexulesuite_sg-btn nexulesuite_sg-btn-secondary" style={ { marginTop: '20px' } }>
+													{ aiTesting ? <Loader2 size={ 14 } className="animate-spin" /> : <ShieldCheck size={ 14 } /> }
+													{ aiTesting ? 'Testing…' : 'Test Connection' }
+												</button>
+
+												{ aiTestResult ? (
+													<div className={ `mt-4 flex items-start gap-2 rounded-xl border px-4 py-3 text-[12px] font-semibold ${ aiTestResult.ok ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700' }` }>
+														{ aiTestResult.ok ? <Check size={ 16 } className="mt-0.5 shrink-0" /> : <AlertTriangle size={ 16 } className="mt-0.5 shrink-0" /> }
+														<span>{ aiTestResult.text }</span>
+													</div>
+												) : null }
+											</section>
+
+											{/* ── Knowledge base / training ── */}
+											<section className="nexulesuite_sg-section">
+												<div className="nexulesuite_sg-sec-head">
+													<span className="nexulesuite_sg-sec-ico">
+														<Database size={ 16 } />
+													</span>
+													<div>
+														<span className="nexulesuite_sg-sec-title nexulesuite_sg-title-tip">Knowledge Base (Training) <InfoTip text={ 'Train Now chunks your published posts, pages and products, turns each chunk into a vector, and stores it so the chatbot can quote your real content.' } /></span>
+													</div>
+												</div>
+
+												{ aiMode === 'direct' ? (
+													<>
+														<div className="nexulesuite_sg-grid-2" style={ { marginBottom: '18px' } }>
+															<div className="nexulesuite_sg-field">
+																<span className="lbl nexulesuite_lbl-tip">Embedding provider <InfoTip text={ 'Turns your content into vectors so the chatbot can find the right passage. Claude and Groq have no embeddings API — pair them with OpenAI, Gemini, Mistral or Voyage.' } /></span>
+																<select
+																	className="inp"
+																	value={ settings.aiEmbedProvider }
+																	onChange={ ( e ) => {
+																		const id = e.target.value;
+																		updateSetting( 'aiEmbedProvider', id );
+																		updateSetting( 'aiEmbedModel', aiProvider( settings, id )?.embedModel || '' );
+																	} }
+																>
+																	<option value="">
+																		{ aiActiveProvider?.embed
+																			? `Same as chat provider (${ aiActiveProvider.label })`
+																			: 'Select an embedding provider…' }
+																	</option>
+																	{ aiEmbedProviders( settings ).map( ( p ) => (
+																		<option key={ p.id } value={ p.id }>{ p.label }</option>
+																	) ) }
+																</select>
+															</div>
+
+															<div className="nexulesuite_sg-field">
+																<span className="lbl nexulesuite_lbl-tip">Embedding model <InfoTip text={ 'Leave blank for the provider default. Changing this changes the vector size, which invalidates everything already indexed — re-train after switching.' } /></span>
+																<input
+																	type="text"
+																	className="inp"
+																	list="nexulesuite_ai-embed-suggestions"
+																	value={ settings.aiEmbedModel }
+																	onChange={ ( e ) => updateSetting( 'aiEmbedModel', e.target.value ) }
+																	placeholder={ aiEmbedDef?.embedModel || 'text-embedding-3-small' }
+																	autoComplete="off"
+																	spellCheck={ false }
+																/>
+																<datalist id="nexulesuite_ai-embed-suggestions">
+																	{ ( aiEmbedDef?.embedModels || [] ).map( ( m ) => <option key={ m } value={ m } /> ) }
+																</datalist>
+															</div>
+														</div>
+
+														{ aiEmbedId && ! aiEmbedSharesChatKey ? (
+															<div className="nexulesuite_sg-field" style={ { marginBottom: '18px' } }>
+																<span className="lbl">{ aiProviderLabel( settings, aiEmbedId ) } API Key (embeddings)</span>
+																<input
+																	type="password"
+																	className="inp"
+																	value={ settings.aiEmbedApiKey }
+																	onChange={ ( e ) => updateSetting( 'aiEmbedApiKey', e.target.value ) }
+																	placeholder={ settings.hasEmbedKey ? '•••••••• saved — leave blank to keep' : ( aiEmbedDef?.keyHint || 'Embedding provider API key' ) }
+																	autoComplete="new-password"
+																/>
+																<p className="hint">
+																	{ settings.hasEmbedKey
+																		? 'A key is saved (encrypted). Leave blank to keep it, or type a new one to replace.'
+																		: 'Stored encrypted (AES-256-GCM), never sent to the browser.' }
+																	{ aiEmbedDef?.keyUrl ? (
+																		<> Get one at <a href={ aiEmbedDef.keyUrl } target="_blank" rel="noreferrer">{ aiEmbedDef.keyUrl.replace( /^https:\/\//, '' ) }</a>.</>
+																	) : null }
+																</p>
+															</div>
+														) : null }
+
+														{ ! aiEmbedReady ? (
+															<div className="mb-[18px] flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[12px] font-semibold text-amber-800">
+																<AlertTriangle size={ 16 } className="mt-0.5 shrink-0" />
+																<span>
+																	{ aiEmbedId
+																		? 'Add the embedding provider’s API key, then Save — until then the chatbot answers without knowing your site content.'
+																		: 'Pick an embedding provider, then Save. Without one the chatbot cannot search your pages and will answer from general knowledge only.' }
+																</span>
+															</div>
+														) : null }
+
+														<div className="mb-[18px] flex flex-wrap items-center gap-x-5 gap-y-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[12px] font-semibold text-slate-600">
+															<span className="flex items-center gap-1.5"><Database size={ 13 } />Indexed now:</span>
+															<span>{ settings.aiIndex?.documents || 0 } document(s)</span>
+															<span>{ settings.aiIndex?.chunks || 0 } chunk(s)</span>
+															{ settings.aiIndex?.dims ? <span>{ settings.aiIndex.dims }-dimension vectors</span> : null }
+														</div>
+													</>
+												) : null }
+
+												<div className="nexulesuite_sg-field">
+													<span className="lbl">Extra notes / Q&amp;A (optional)</span>
+													<textarea className="inp" rows={ 5 } value={ settings.aiManualQa } onChange={ ( e ) => updateSetting( 'aiManualQa', e.target.value ) } placeholder={ 'Add facts the chatbot should always know, e.g.\nQ: What is your refund policy?\nA: 30-day money-back guarantee on annual plans.' } />
+													<p className="hint">Included in training alongside your posts &amp; pages. Save first, then Train.</p>
+												</div>
+
+												<div className="flex flex-wrap gap-3" style={ { marginTop: '20px' } }>
+													<button type="button" onClick={ handleAiTrain } disabled={ aiTraining || aiResetting } className="nexulesuite_sg-btn nexulesuite_sg-btn-primary">
+														{ aiTraining ? <Loader2 size={ 14 } className="animate-spin" /> : <RefreshCw size={ 14 } /> }
+														{ aiTraining ? 'Training…' : 'Train Now' }
+													</button>
+													<button type="button" onClick={ handleAiReset } disabled={ aiTraining || aiResetting } className="nexulesuite_sg-btn nexulesuite_sg-btn-secondary">
+														{ aiResetting ? <Loader2 size={ 14 } className="animate-spin" /> : <Trash2 size={ 14 } /> }
+														{ aiResetting ? 'Clearing…' : 'Clear Memory' }
+													</button>
+												</div>
+
+												{ aiTrainResult ? (
+													<div className={ `mt-4 flex items-start gap-2 rounded-xl border px-4 py-3 text-[12px] font-semibold ${ aiTrainResult.ok ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700' }` }>
+														{ aiTrainResult.ok ? <Check size={ 16 } className="mt-0.5 shrink-0" /> : <AlertTriangle size={ 16 } className="mt-0.5 shrink-0" /> }
+														<span>{ aiTrainResult.text }</span>
+													</div>
+												) : null }
+											</section>
+
+											{/* ── Assistant behaviour ── */}
+											<section className="nexulesuite_sg-section">
+												<div className="nexulesuite_sg-sec-head">
+													<span className="nexulesuite_sg-sec-ico">
+														<Wand2 size={ 16 } />
+													</span>
+													<div>
+														<span className="nexulesuite_sg-sec-title nexulesuite_sg-title-tip">Assistant Behavior <InfoTip text={ 'Controls how the assistant greets visitors and answers. Leave the system prompt blank to use a safe default that answers only from your content.' } /></span>
+													</div>
+												</div>
+
+												<div className="nexulesuite_sg-field">
+													<span className="lbl">Welcome message</span>
+													<input type="text" className="inp" value={ settings.aiWelcomeMessage } onChange={ ( e ) => updateSetting( 'aiWelcomeMessage', e.target.value ) } placeholder="Hi! Ask me anything about our site." />
+												</div>
+
+												<div className="nexulesuite_sg-field" style={ { marginTop: '18px' } }>
+													<span className="lbl nexulesuite_lbl-tip">System prompt <InfoTip text={ 'The instruction the model follows. Keep the "answer only from context" rule to reduce made-up answers.' } /></span>
+													<textarea className="inp" rows={ 4 } value={ settings.aiSystemPrompt } onChange={ ( e ) => updateSetting( 'aiSystemPrompt', e.target.value ) } placeholder={ 'You are the support assistant for our website. Answer ONLY from the provided context; if unknown, say so and offer a human.' } />
+												</div>
+
+												<div className="nexulesuite_sg-grid-2" style={ { marginTop: '18px' } }>
+													{ aiMode === 'server' ? (
+														<div className="nexulesuite_sg-field">
+															<span className="lbl nexulesuite_lbl-tip">Ollama model override <InfoTip text={ 'Optional. Only used when your AI server falls back to Ollama. Must be pulled on that server.' } /></span>
+															<input type="text" className="inp" value={ settings.aiChatModel } onChange={ ( e ) => updateSetting( 'aiChatModel', e.target.value ) } placeholder="llama3.1:8b (default)" autoComplete="off" spellCheck={ false } />
+														</div>
+													) : null }
+													<div className="nexulesuite_sg-field">
+														<span className="lbl nexulesuite_lbl-tip">Context snippets <InfoTip text={ 'How many of the most relevant chunks to feed the model per question (1–10). More = richer context but slower.' } /></span>
+														<input type="number" className="inp" min={ 1 } max={ 10 } value={ settings.aiMaxChunks } onChange={ ( e ) => updateSetting( 'aiMaxChunks', e.target.value ) } />
+													</div>
+												</div>
+											</section>
+
+											{/* ── Image understanding (vision) ── */}
+											<section className="nexulesuite_sg-section">
+												<div className="nexulesuite_sg-sec-head">
+													<span className="nexulesuite_sg-sec-ico">
+														<ImageIcon size={ 16 } />
+													</span>
+													<div>
+														<span className="nexulesuite_sg-sec-title nexulesuite_sg-title-tip">Attachments (Vision &amp; Documents) <InfoTip text={ 'Let visitors attach an image, screenshot, or document (PDF, TXT, MD, CSV, HTML, JSON). Images go to the vision model — in Model API mode the chat model reads them directly, no extra setup. Document text is extracted on your server, so it works with any provider. Scanned PDFs hold no text; attach them as an image instead.' } /></span>
+													</div>
+												</div>
+
+												<div className="nexulesuite_sg-field" style={ { marginBottom: '18px' } }>
+													<div
+														className={ `nexulesuite_smtp-htmltoggle${ settings.aiAllowImages ? ' on' : '' }` }
+														role="switch"
+														aria-checked={ !! settings.aiAllowImages }
+														tabIndex={ 0 }
+														onClick={ () => updateSetting( 'aiAllowImages', ! settings.aiAllowImages ) }
+														onKeyDown={ ( e ) => {
+															if ( e.key === ' ' || e.key === 'Enter' ) {
+																e.preventDefault();
+																updateSetting( 'aiAllowImages', ! settings.aiAllowImages );
+															}
+														} }
+													>
+														<span className="nexulesuite_smtp-htmltoggle-label">Allow visitors to attach images and documents</span>
+														<span className={ `nexulesuite_sg-toggle${ settings.aiAllowImages ? ' on' : '' }` }><span className="track"><span className="knob" /></span></span>
+													</div>
+												</div>
+
+												{ aiMode === 'server' ? (
+													<>
+														<div className="nexulesuite_sg-grid-2">
+															<div className="nexulesuite_sg-field">
+																<span className="lbl nexulesuite_lbl-tip">Vision model <InfoTip text={ 'The Ollama model used to read attached images (e.g. llava, llava:13b, bakllava). Must be pulled on your server.' } /></span>
+																<input type="text" className="inp" value={ settings.aiVisionModel } onChange={ ( e ) => updateSetting( 'aiVisionModel', e.target.value ) } placeholder="llava" autoComplete="off" spellCheck={ false } />
+															</div>
+														</div>
+
+														<div className="nexulesuite_sg-info-box" style={ { marginTop: '16px' } }>
+															<Info size={ 14 } className="nexulesuite_sg-info-ico" />
+															<p>On your VPS run <code>ollama pull llava</code> first. Image analysis is slower &amp; uses more memory than text.</p>
+														</div>
+													</>
+												) : (
+													<div className="nexulesuite_sg-info-box" style={ { marginTop: '16px' } }>
+														<Info size={ 14 } className="nexulesuite_sg-info-ico" />
+														<p>
+															{ aiActiveProvider?.vision
+																? <>Images go straight to <strong>{ aiActiveProvider.label }</strong> with the question — nothing else to configure. Image turns cost more tokens than text.</>
+																: <>Pick a provider that supports images (OpenAI, Claude, Gemini, Mistral, OpenRouter or xAI) to enable this. Other providers will ask the visitor to describe the image instead.</> }
+														</p>
+													</div>
+												) }
+											</section>
+
 										</div>
 									</div>
 								) }

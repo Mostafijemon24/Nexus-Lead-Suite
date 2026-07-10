@@ -1,0 +1,35 @@
+# Optional: run the AI server + Ollama together with Docker.
+# `docker compose up -d`, then: `docker compose exec ollama ollama pull nomic-embed-text`
+#                                `docker compose exec ollama ollama pull llama3.1:8b`
+#                                `docker compose exec ollama ollama pull llava`
+services:
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ollama:/root/.ollama
+    # Uncomment to expose Ollama on the host (not required — the app talks to it
+    # over the internal compose network at http://ollama:11434).
+    # ports:
+    #   - "11434:11434"
+
+  ai-server:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    environment:
+      API_KEY: ${API_KEY:?set API_KEY in your .env}
+      OLLAMA_HOST: http://ollama:11434
+      EMBED_MODEL: nomic-embed-text
+      CHAT_MODEL: llama3.1:8b
+      VISION_MODEL: llava
+      CHROMA_DIR: /data/chroma
+    volumes:
+      - chroma:/data
+    ports:
+      - "8000:8000"
+
+volumes:
+  ollama:
+  chroma:

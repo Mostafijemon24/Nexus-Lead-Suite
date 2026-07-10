@@ -106,6 +106,184 @@ final class Form_Submissions_Store {
 	}
 
 	/**
+	 * Reads stored submissions with their full field values, newest first.
+	 *
+	 * Note the {@see RETENTION_DAYS} purge: rows older than the window are gone, so a
+	 * report can only show discrete field values for recent submissions. Older ones
+	 * survive as one-line summaries in {@see Activities_Store}.
+	 *
+	 * @param string $from   `Y-m-d` lower bound, or ''.
+	 * @param string $to     `Y-m-d` upper bound, or ''.
+	 * @param string $search Free text matched against the form key and payload.
+	 * @param int    $limit  Row cap (1..1000).
+	 * @return array<int, array{id:int, formKey:string, formName:string, submittedAt:string, pageUrl:string, mailSent:?bool, fields:array<int,array{label:string,value:string}>}>
+	 */
+	public static function list_submissions( string $from = '', string $to = '', string $search = '', int $limit = 500 ): array {
+		global $wpdb;
+
+		$table = self::table();
+		$limit = max( 1, min( 1000, $limit ) );
+
+		$where  = array( '1=1' );
+		$params = array();
+
+		if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $from ) ) {
+			$where[]  = 'DATE(created_at) >= %s';
+			$params[] = $from;
+		}
+		if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $to ) ) {
+			$where[]  = 'DATE(created_at) <= %s';
+			$params[] = $to;
+		}
+		if ( '' !== $search ) {
+			$like     = '%' . $wpdb->esc_like( $search ) . '%';
+			$where[]  = '(form_key LIKE %s OR payload LIKE %s)';
+			$params[] = $like;
+			$params[] = $like;
+		}
+
+		$params[] = $limit;
+		$sql      = 'SELECT id, form_key, payload, created_at FROM ' . $table
+			. ' WHERE ' . implode( ' AND ', $where )
+			. ' ORDER BY created_at DESC, id DESC LIMIT %d';
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- table from trusted prefix; values bound below.
+		$rows = $wpdb->get_results( $wpdb->prepare( $sql, $params ), ARRAY_A );
+		if ( ! is_array( $rows ) ) {
+			return array();
+		}
+
+		$out = array();
+		foreach ( $rows as $row ) {
+			$payload = json_decode( (string) ( $row['payload'] ?? '' ), true );
+			if ( ! is_array( $payload ) ) {
+				$payload = array();
+			}
+
+			$out[] = array(
+				'id'          => (int) ( $row['id'] ?? 0 ),
+				'formKey'     => (string) ( $row['form_key'] ?? '' ),
+				'formName'    => self::submission_form_name( (string) ( $row['form_key'] ?? '' ), $payload ),
+				'submittedAt' => (string) ( $row['created_at'] ?? '' ),
+				'pageUrl'     => (string) ( $payload['page_url'] ?? '' ),
+				'mailSent'    => array_key_exists( 'mail_sent', $payload ) ? (bool) $payload['mail_sent'] : null,
+				'fields'      => self::submission_fields( $payload ),
+			);
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Counts stored submissions in a date window.
+	 *
+	 * @param string $from `Y-m-d` or ''.
+	 * @param string $to   `Y-m-d` or ''.
+	 * @return int
+	 */
+	public static function count_submissions( string $from = '', string $to = '' ): int {
+		global $wpdb;
+
+		$table  = self::table();
+		$where  = array( '1=1' );
+		$params = array();
+
+		if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $from ) ) {
+			$where[]  = 'DATE(created_at) >= %s';
+			$params[] = $from;
+		}
+		if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $to ) ) {
+			$where[]  = 'DATE(created_at) <= %s';
+			$params[] = $to;
+		}
+
+		$sql = 'SELECT COUNT(*) FROM ' . $table . ' WHERE ' . implode( ' AND ', $where );
+		if ( empty( $params ) ) {
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- no user input in this branch.
+			return (int) $wpdb->get_var( $sql );
+		}
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- values bound below.
+		return (int) $wpdb->get_var( $wpdb->prepare( $sql, $params ) );
+	}
+
+	/**
+	 * Human label for a stored submission.
+	 *
+	 * @param string              $form_key Stored form key.
+	 * @param array<string,mixed> $payload  Decoded payload.
+	 * @return string
+	 */
+	private static function submission_form_name( string $form_key, array $payload ): string {
+		if ( isset( $payload['form']['name'] ) && '' !== (string) $payload['form']['name'] ) {
+			return (string) $payload['form']['name'];
+		}
+		if ( 'ai_chat_lead' === $form_key ) {
+			return __( 'AI chat lead', 'nexus-lead-suite' );
+		}
+
+		return '' !== $form_key ? $form_key : __( 'Submission', 'nexus-lead-suite' );
+	}
+
+	/**
+	 * Flattens a payload into ordered label/value pairs.
+	 *
+	 * Two writers produce two shapes: the Form Builder nests everything under
+	 * {@see PAYLOAD_ENTRY_KEY}, while the AI chat lead capture stores name/email/phone
+	 * at the top level with no `entry` key at all. Handle both, or chat leads read as blank.
+	 *
+	 * @param array<string,mixed> $payload Decoded payload.
+	 * @return array<int, array{label:string, value:string}>
+	 */
+	private static function submission_fields( array $payload ): array {
+		$entry = array();
+
+		if ( isset( $payload[ self::PAYLOAD_ENTRY_KEY ] ) && is_array( $payload[ self::PAYLOAD_ENTRY_KEY ] ) ) {
+			$entry = $payload[ self::PAYLOAD_ENTRY_KEY ];
+		} else {
+			foreach ( array( 'name', 'email', 'phone', 'message' ) as $key ) {
+				if ( isset( $payload[ $key ] ) && '' !== (string) $payload[ $key ] ) {
+					$entry[ ucfirst( $key ) ] = $payload[ $key ];
+				}
+			}
+		}
+
+		$fields = array();
+		foreach ( $entry as $label => $value ) {
+			$fields[] = array(
+				'label' => (string) $label,
+				'value' => self::flatten_value( $value ),
+			);
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Renders a submitted value as one string (checkbox groups arrive as arrays).
+	 *
+	 * @param mixed $value Raw value.
+	 * @return string
+	 */
+	private static function flatten_value( $value ): string {
+		if ( is_array( $value ) ) {
+			$parts = array();
+			foreach ( $value as $item ) {
+				$parts[] = self::flatten_value( $item );
+			}
+			return implode( ', ', array_filter( $parts, 'strlen' ) );
+		}
+		if ( is_bool( $value ) ) {
+			return $value ? __( 'Yes', 'nexus-lead-suite' ) : __( 'No', 'nexus-lead-suite' );
+		}
+		if ( is_scalar( $value ) ) {
+			return trim( (string) $value );
+		}
+
+		return '';
+	}
+
+	/**
 	 * Non-blocking POST of JSON to each HTTPS webhook (CRM automation, Zapier, etc.).
 	 *
 	 * @param array<int,string>   $urls    Absolute URLs.

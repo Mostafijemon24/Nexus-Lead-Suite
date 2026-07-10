@@ -191,3 +191,172 @@ tr:last-child td {
 	border-radius: .75rem;
 	border: 1px dashed #cbd5e1;
 }
+
+/* ── Print / Save as PDF ──────────────────────────────────────────────
+   The browser shapes scripts the embedded PDF font cannot (Bengali, Arabic,
+   Devanagari), so this view is the supported path for non-Latin reports. */
+.btn-print {
+	background: #fff;
+	color: #4f46e5;
+	border: 1px solid #cbd5e1;
+}
+.btn-print:hover {
+	border-color: #4f46e5;
+}
+
+/* ── Report sections ─────────────────────────────────────────────────── */
+.nexulesuite_ca-section {
+	margin: 1.75rem 0;
+}
+.nexulesuite_ca-section h2,
+.nexulesuite_ca-section-title {
+	margin: 0 0 .85rem;
+	font-size: 1.05rem;
+	color: #0f172a;
+	border-bottom: 1px solid #e2e8f0;
+	padding-bottom: .5rem;
+}
+.nexulesuite_ca-note {
+	margin: -.35rem 0 .85rem;
+	font-size: .78rem;
+	color: #64748b;
+}
+
+.nexulesuite_ca-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+	gap: .75rem;
+}
+.nexulesuite_ca-stat {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: .75rem;
+	padding: .85rem 1rem;
+}
+.nexulesuite_ca-stat__value {
+	display: block;
+	font-size: 1.6rem;
+	font-weight: 700;
+	line-height: 1.1;
+	color: #0f172a;
+}
+.nexulesuite_ca-stat__label {
+	display: block;
+	margin-top: .25rem;
+	font-size: .7rem;
+	font-weight: 700;
+	letter-spacing: .05em;
+	text-transform: uppercase;
+	color: #94a3b8;
+}
+
+.nexulesuite_ca-card {
+	background: #fff;
+	border: 1px solid #e2e8f0;
+	border-radius: .75rem;
+	padding: 1rem 1.15rem;
+	margin-bottom: .75rem;
+	break-inside: avoid;
+}
+.nexulesuite_ca-card h3 {
+	margin: 0;
+	font-size: .95rem;
+	color: #0f172a;
+}
+.nexulesuite_ca-meta {
+	margin: .2rem 0 .75rem;
+	font-size: .75rem;
+	color: #64748b;
+}
+.nexulesuite_ca-fields {
+	display: grid;
+	grid-template-columns: minmax(7rem, 12rem) 1fr;
+	gap: .3rem .9rem;
+	margin: 0;
+}
+.nexulesuite_ca-fields dt {
+	color: #64748b;
+	font-size: .82rem;
+}
+.nexulesuite_ca-fields dd {
+	margin: 0;
+	color: #1e293b;
+	font-size: .85rem;
+	overflow-wrap: anywhere;
+}
+
+.nexulesuite_ca-chat {
+	background: #fff;
+	border: 1px solid #e2e8f0;
+	border-radius: .75rem;
+	padding: .75rem 1rem;
+	margin-bottom: .6rem;
+	break-inside: avoid;
+}
+.nexulesuite_ca-chat summary {
+	cursor: pointer;
+	font-size: .88rem;
+	color: #0f172a;
+}
+.nexulesuite_ca-chat summary .nexulesuite_ca-meta {
+	display: block;
+	margin: .2rem 0 0;
+}
+.nexulesuite_ca-transcript {
+	margin-top: .75rem;
+	border-top: 1px solid #f1f5f9;
+	padding-top: .75rem;
+}
+.nexulesuite_ca-turn {
+	margin: 0 0 .5rem;
+	font-size: .85rem;
+	color: #1e293b;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+.nexulesuite_ca-turn span {
+	display: block;
+	font-size: .68rem;
+	font-weight: 700;
+	letter-spacing: .05em;
+	text-transform: uppercase;
+	margin-bottom: .15rem;
+}
+.nexulesuite_ca-turn--user span {
+	color: #4f46e5;
+}
+.nexulesuite_ca-turn--bot span {
+	color: #64748b;
+}
+.nexulesuite_ca-time {
+	margin: 0 0 .9rem;
+	font-size: .68rem;
+	color: #94a3b8;
+}
+
+@media print {
+	.toolbar,
+	.tabs,
+	.btn,
+	.nexulesuite_client-pdf-msg {
+		display: none !important;
+	}
+	body.nexulesuite_client-gateway {
+		background: #fff;
+	}
+	.wrap {
+		max-width: none;
+		padding: 0;
+	}
+	.nexulesuite_ca-card,
+	.nexulesuite_ca-chat,
+	table {
+		break-inside: avoid;
+	}
+	.nexulesuite_ca-chat[open] summary {
+		list-style: none;
+	}
+	a[href]::after {
+		content: "";
+	}
+}

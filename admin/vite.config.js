@@ -17,8 +17,14 @@ export default defineConfig( {
 		rollupOptions: {
 			input: path.join( __dirname, 'src/main.jsx' ),
 			output: {
-				// Match Downloads release bundle (ES — single React tree, form icons render correctly).
-				format: 'es',
+				/*
+				 * IIFE, not ES: wp_enqueue_script() emits a classic <script>, whose top-level
+				 * const/let land in the global lexical scope. An ES bundle therefore leaks every
+				 * top-level name, and a minified one colliding with a global from an earlier
+				 * script (e.g. wp-i18n's `var wp`) is a hard SyntaxError that blanks the app.
+				 * inlineDynamicImports keeps this a single chunk, so React stays a single tree.
+				 */
+				format: 'iife',
 				entryFileNames: 'js/main.js',
 				assetFileNames: 'css/main.css',
 				inlineDynamicImports: true,

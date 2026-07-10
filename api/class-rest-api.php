@@ -36,6 +36,36 @@ final class Rest_Api {
 	private const GENERAL_SETTINGS_OPTION_KEY = 'nexulesuite_general_settings_v1';
 
 	/**
+	 * How the chatbot reaches a model: straight to the vendor's HTTPS API (`direct`,
+	 * the default) or through a self-hosted Nexus AI Server (`server`, the legacy path).
+	 */
+	private const AI_MODES = array( 'direct', 'server' );
+
+	/**
+	 * Base64 length ceiling for an attached image, sized so a 4096px (4K) photo fits.
+	 * Base64 inflates by 4/3, so this is roughly a 15 MB file.
+	 */
+	private const AI_IMAGE_MAX_BASE64 = 20971520;
+
+	/**
+	 * Retrieval thresholds for `direct` mode. Cosine similarity from hosted embedding
+	 * models runs lower than the scores ChromaDB reported, so these are NOT the 0.4/0.5
+	 * cut-offs the server path uses — a relevant page typically lands around 0.35-0.60.
+	 *
+	 * MIN gates what reaches the model at all; CITE (higher) gates what gets a source chip.
+	 * RELATIVE additionally drops chunks far weaker than the best one, so a single strong
+	 * match never drags its neighbours into the prompt.
+	 */
+	private const AI_DIRECT_MIN_SCORE  = 0.30;
+	private const AI_DIRECT_CITE_SCORE = 0.34;
+	private const AI_DIRECT_RELATIVE   = 0.75;
+
+	/**
+	 * Chunks embedded per request while training.
+	 */
+	private const AI_EMBED_BATCH = 32;
+
+	/**
 	 * Post meta: Visual Editor DOM patches when markup is not in post_content (theme/header/builders).
 	 */
 	private const VE_DOM_PATCHES_META_KEY = '_nexulesuite_ve_dom_patches';
@@ -142,6 +172,56 @@ final class Rest_Api {
 						'type'              => 'integer',
 						'required'          => false,
 						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/settings/client-links',
+			array(
+				array(
+					'methods'             => 'GET',
+					'callback'            => array( $this, 'list_client_links' ),
+					'permission_callback' => array( $this, 'can_manage_settings' ),
+				),
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'create_client_link' ),
+					'permission_callback' => array( $this, 'can_manage_settings' ),
+					'args'                => array(
+						'label'        => array(
+							'type'              => 'string',
+							'required'          => false,
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+						'expiresDays'  => array(
+							'type'              => 'integer',
+							'required'          => false,
+							'sanitize_callback' => 'absint',
+						),
+						'sections'     => array(
+							'type'     => 'array',
+							'required' => false,
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/settings/client-links/(?P<id>[A-Za-z0-9]+)',
+			array(
+				'methods'             => 'DELETE',
+				'callback'            => array( $this, 'revoke_client_link' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+				'args'                => array(
+					'id' => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
 					),
 				),
 			)
@@ -528,6 +608,51 @@ final class Rest_Api {
 						'type'     => 'array',
 						'required' => false,
 					),
+					'sections' => array(
+						'type'     => 'array',
+						'required' => false,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/reports/combined/pdf',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'generate_activities_pdf' ),
+				'permission_callback' => array( $this, 'can_access_reports_rest' ),
+				'args'                => array(
+					'token'    => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'tab'      => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'dateFrom' => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'dateTo'   => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'search'   => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'sections' => array(
+						'type'     => 'array',
+						'required' => false,
+					),
 				),
 			)
 		);
@@ -599,6 +724,235 @@ final class Rest_Api {
 						'type'     => 'array',
 						'required' => false,
 					),
+				),
+			)
+		);
+
+		/* ── AI Chatbot (RAG) ── */
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/ai/test',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'ai_test_connection' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/ai/train',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'ai_train' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+				'args'                => array(
+					'offset' => array(
+						'type'              => 'integer',
+						'required'          => false,
+						'sanitize_callback' => 'absint',
+					),
+					'limit'  => array(
+						'type'              => 'integer',
+						'required'          => false,
+						'sanitize_callback' => 'absint',
+					),
+					'reset'  => array(
+						'type'     => 'boolean',
+						'required' => false,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/ai/reset',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'ai_reset' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/ai/chat',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'ai_chat' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'nonce'   => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'message' => array(
+						'type'     => 'string',
+						'required' => false,
+					),
+					'history' => array(
+						'type'     => 'array',
+						'required' => false,
+					),
+					'image'   => array(
+						'type'     => 'string',
+						'required' => false,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/ai/lead',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'ai_lead' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'nonce'      => array( 'type' => 'string', 'required' => false, 'sanitize_callback' => 'sanitize_text_field' ),
+					'name'       => array( 'type' => 'string', 'required' => false ),
+					'email'      => array( 'type' => 'string', 'required' => false ),
+					'phone'      => array( 'type' => 'string', 'required' => false ),
+					'message'    => array( 'type' => 'string', 'required' => false ),
+					'page_url'   => array( 'type' => 'string', 'required' => false ),
+					'session_id' => array( 'type' => 'string', 'required' => false ),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/ai/logs',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'ai_logs_report' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+				'args'                => array(
+					'dateFrom' => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'dateTo'   => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'search'   => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/ai/logs/detail',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'ai_logs_detail' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+				'args'                => array(
+					'session' => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/ai/logs/clear',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'ai_logs_clear' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/ai/faq',
+			array(
+				array(
+					'methods'             => 'GET',
+					'callback'            => array( $this, 'get_ai_faq' ),
+					'permission_callback' => array( $this, 'can_manage_settings' ),
+				),
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'save_ai_faq' ),
+					'permission_callback' => array( $this, 'can_manage_settings' ),
+					'args'                => array(
+						'enabled'      => array(
+							'type'     => 'boolean',
+							'required' => false,
+						),
+						'logChats'     => array(
+							'type'     => 'boolean',
+							'required' => false,
+						),
+						'items'        => array(
+							'type'     => 'array',
+							'required' => false,
+						),
+						'actions'      => array(
+							'type'     => 'array',
+							'required' => false,
+						),
+						'disclaimer'    => array(
+							'type'              => 'string',
+							'required'          => false,
+							'sanitize_callback' => 'sanitize_textarea_field',
+						),
+						'triggerLabel'  => array(
+							'type'              => 'string',
+							'required'          => false,
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+						'leadEnabled'   => array( 'type' => 'boolean', 'required' => false ),
+						'leadOffer'     => array( 'type' => 'string', 'required' => false, 'sanitize_callback' => 'sanitize_text_field' ),
+						'leadRecipient' => array( 'type' => 'string', 'required' => false, 'sanitize_callback' => 'sanitize_text_field' ),
+						'wooCards'         => array( 'type' => 'boolean', 'required' => false ),
+						'extraUrls'        => array( 'type' => 'string', 'required' => false ),
+						'contactShortcode' => array( 'type' => 'string', 'required' => false ),
+						'examples'         => array( 'type' => 'string', 'required' => false, 'sanitize_callback' => 'sanitize_textarea_field' ),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/ai/autogen',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'ai_autogen' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/ai/autogen/apply',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'ai_autogen_apply' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+				'args'                => array(
+					'applyPrompt'    => array( 'type' => 'boolean', 'required' => false ),
+					'applyQuestions' => array( 'type' => 'boolean', 'required' => false ),
+					'applyActions'   => array( 'type' => 'boolean', 'required' => false ),
+					'systemPrompt'   => array( 'type' => 'string', 'required' => false ),
+					'questions'      => array( 'type' => 'array', 'required' => false ),
+					'actions'        => array( 'type' => 'array', 'required' => false ),
 				),
 			)
 		);
@@ -1262,6 +1616,20 @@ final class Rest_Api {
 			'formFieldBorderWidth'  => 2,
 			'formFieldBorderRadius' => 10,
 			'submissionWebhookUrl'  => '',
+			'aiEnabled'             => false,
+			'aiConnMode'            => 'direct',
+			'aiServerUrl'           => '',
+			'aiSystemPrompt'        => '',
+			'aiWelcomeMessage'      => 'Hi! Ask me anything about our site and I\'ll help right away.',
+			'aiChatModel'           => '',
+			'aiVisionModel'         => 'llava',
+			'aiMaxChunks'           => 4,
+			'aiManualQa'            => '',
+			'aiAllowImages'         => false,
+			'aiLlmProvider'         => '',
+			'aiLlmModel'            => '',
+			'aiEmbedProvider'       => '',
+			'aiEmbedModel'          => '',
 		);
 
 		$merged = array_merge( $defaults, $opt );
@@ -1276,6 +1644,30 @@ final class Rest_Api {
 		$merged['formFieldBorderWidth']  = max( 0, min( 10, (int) ( $merged['formFieldBorderWidth'] ?? 2 ) ) );
 		$merged['formFieldBorderRadius'] = max( 0, min( 30, (int) ( $merged['formFieldBorderRadius'] ?? 10 ) ) );
 		unset( $merged['chatHeaderTagline'], $merged['popupShowDuration'], $merged['popupDisappearTime'] );
+
+		/* AI: never expose a stored API key to the browser — return a boolean instead. */
+		self::ai_load_llm_client();
+		self::ai_load_vector_store();
+		$stored_ai_key         = isset( $opt['aiApiKey'] ) ? trim( (string) $opt['aiApiKey'] ) : '';
+		$merged['hasAiKey']    = ( '' !== $stored_ai_key );
+		unset( $merged['aiApiKey'] );
+		$stored_llm_key        = isset( $opt['aiLlmApiKey'] ) ? trim( (string) $opt['aiLlmApiKey'] ) : '';
+		$merged['hasLlmKey']   = ( '' !== $stored_llm_key );
+		unset( $merged['aiLlmApiKey'] );
+		$stored_embed_key      = isset( $opt['aiEmbedApiKey'] ) ? trim( (string) $opt['aiEmbedApiKey'] ) : '';
+		$merged['hasEmbedKey'] = ( '' !== $stored_embed_key );
+		unset( $merged['aiEmbedApiKey'] );
+		$merged['aiProviders']    = \nexulesuite_\AI\Llm_Client::ui_registry();
+		$merged['aiLlmProviders'] = \nexulesuite_\AI\Llm_Client::provider_ids();
+		$merged['aiConnMode']     = self::ai_resolve_mode( $opt );
+		$merged['aiEnabled']      = ! empty( $merged['aiEnabled'] );
+		$merged['aiAllowImages']  = ! empty( $merged['aiAllowImages'] );
+		$merged['aiMaxChunks']    = max( 1, min( 10, (int) ( $merged['aiMaxChunks'] ?? 4 ) ) );
+		$merged['aiIndex']        = array(
+			'chunks'    => \nexulesuite_\Core\Vector_Store::count(),
+			'documents' => \nexulesuite_\Core\Vector_Store::documents(),
+			'dims'      => \nexulesuite_\Core\Vector_Store::dims(),
+		);
 
 		$forms_list = $this->get_forms_list_for_dropdown();
 
@@ -1623,6 +2015,42 @@ final class Rest_Api {
 			? $this->sanitize_integration_webhook_url( (string) ( $input['submissionWebhookUrl'] ?? '' ) )
 			: ( isset( $prev['submissionWebhookUrl'] ) ? $this->sanitize_integration_webhook_url( (string) $prev['submissionWebhookUrl'] ) : '' );
 
+		/* AI API keys: blank incoming => keep the previously stored (encrypted) value; a new value is encrypted at rest. */
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-mailer.php';
+		$prev_ai_key = isset( $prev['aiApiKey'] ) ? (string) $prev['aiApiKey'] : '';
+		$new_ai_key  = isset( $input['aiApiKey'] ) ? trim( (string) $input['aiApiKey'] ) : '';
+		$ai_key_store = ( '' === $new_ai_key ) ? $prev_ai_key : \nexulesuite_\Mailer::encrypt_secret( $new_ai_key );
+		$ai_server_url = isset( $input['aiServerUrl'] ) ? esc_url_raw( trim( (string) $input['aiServerUrl'] ) ) : '';
+		$ai_max_chunks = max( 1, min( 10, (int) ( $input['aiMaxChunks'] ?? 4 ) ) );
+
+		/* Provider (LLM) credentials — same masked/encrypted contract as the AI-server key. */
+		self::ai_load_llm_client();
+		$prev_llm_key  = isset( $prev['aiLlmApiKey'] ) ? (string) $prev['aiLlmApiKey'] : '';
+		$new_llm_key   = isset( $input['aiLlmApiKey'] ) ? trim( (string) $input['aiLlmApiKey'] ) : '';
+		$llm_key_store = ( '' === $new_llm_key ) ? $prev_llm_key : \nexulesuite_\Mailer::encrypt_secret( $new_llm_key );
+		$llm_provider  = strtolower( sanitize_text_field( (string) ( $input['aiLlmProvider'] ?? '' ) ) );
+		if ( null === \nexulesuite_\AI\Llm_Client::provider( $llm_provider ) ) {
+			$llm_provider = '';
+		}
+		$llm_model = sanitize_text_field( (string) ( $input['aiLlmModel'] ?? '' ) );
+		$llm_model = mb_substr( trim( $llm_model ), 0, 128 );
+
+		/* Embedding provider — only vendors with a real embeddings endpoint are accepted. */
+		$prev_embed_key  = isset( $prev['aiEmbedApiKey'] ) ? (string) $prev['aiEmbedApiKey'] : '';
+		$new_embed_key   = isset( $input['aiEmbedApiKey'] ) ? trim( (string) $input['aiEmbedApiKey'] ) : '';
+		$embed_key_store = ( '' === $new_embed_key ) ? $prev_embed_key : \nexulesuite_\Mailer::encrypt_secret( $new_embed_key );
+		$embed_provider  = strtolower( sanitize_text_field( (string) ( $input['aiEmbedProvider'] ?? '' ) ) );
+		if ( ! \nexulesuite_\AI\Llm_Client::supports_embeddings( $embed_provider ) ) {
+			$embed_provider = '';
+		}
+		$embed_model = mb_substr( trim( sanitize_text_field( (string) ( $input['aiEmbedModel'] ?? '' ) ) ), 0, 128 );
+
+		// An older client that omits the field must not flip a working server install to direct.
+		$conn_mode = strtolower( sanitize_text_field( (string) ( $input['aiConnMode'] ?? '' ) ) );
+		if ( ! in_array( $conn_mode, self::AI_MODES, true ) ) {
+			$conn_mode = self::ai_resolve_mode( $prev );
+		}
+
 		$clean = array(
 			'enableNavigation'      => ! empty( $input['enableNavigation'] ),
 			'selectedEmailTemplate' => sanitize_text_field( (string) ( $input['selectedEmailTemplate'] ?? '' ) ),
@@ -1664,6 +2092,37 @@ final class Rest_Api {
 			'formFieldBorderWidth'  => (int) $form_border_width,
 			'formFieldBorderRadius' => (int) $form_border_radius,
 			'submissionWebhookUrl'  => $submission_webhook,
+			'aiEnabled'             => ! empty( $input['aiEnabled'] ),
+			'aiConnMode'            => $conn_mode,
+			'aiServerUrl'           => $ai_server_url,
+			'aiApiKey'              => $ai_key_store,
+			'aiLlmProvider'         => $llm_provider,
+			'aiLlmModel'            => $llm_model,
+			'aiLlmApiKey'           => $llm_key_store,
+			'aiEmbedProvider'       => $embed_provider,
+			'aiEmbedModel'          => $embed_model,
+			'aiEmbedApiKey'         => $embed_key_store,
+			'aiSystemPrompt'        => sanitize_textarea_field( (string) ( $input['aiSystemPrompt'] ?? '' ) ),
+			'aiWelcomeMessage'      => sanitize_text_field( (string) ( $input['aiWelcomeMessage'] ?? '' ) ),
+			'aiChatModel'           => sanitize_text_field( (string) ( $input['aiChatModel'] ?? '' ) ),
+			'aiVisionModel'         => sanitize_text_field( (string) ( $input['aiVisionModel'] ?? 'llava' ) ),
+			'aiMaxChunks'           => $ai_max_chunks,
+			'aiManualQa'            => sanitize_textarea_field( (string) ( $input['aiManualQa'] ?? '' ) ),
+			'aiAllowImages'         => ! empty( $input['aiAllowImages'] ),
+			/* Chatbot report + FAQ config own their own editor (Chatbot tab); preserve across Settings saves. */
+			'aiLogChats'            => array_key_exists( 'aiLogChats', $input ) ? ! empty( $input['aiLogChats'] ) : ! empty( $prev['aiLogChats'] ),
+			'aiFaqEnabled'          => array_key_exists( 'aiFaqEnabled', $input ) ? ! empty( $input['aiFaqEnabled'] ) : ! empty( $prev['aiFaqEnabled'] ),
+			'aiFaqFlows'            => $this->sanitize_ai_faq_items( array_key_exists( 'aiFaqFlows', $input ) ? $input['aiFaqFlows'] : ( $prev['aiFaqFlows'] ?? array() ) ),
+			'aiActions'             => $this->sanitize_ai_actions( array_key_exists( 'aiActions', $input ) ? $input['aiActions'] : ( $prev['aiActions'] ?? array() ) ),
+			'aiDisclaimer'          => array_key_exists( 'aiDisclaimer', $input ) ? mb_substr( sanitize_textarea_field( (string) $input['aiDisclaimer'] ), 0, 300 ) : (string) ( $prev['aiDisclaimer'] ?? '' ),
+			'aiTriggerLabel'        => array_key_exists( 'aiTriggerLabel', $input ) ? mb_substr( sanitize_text_field( (string) $input['aiTriggerLabel'] ), 0, 40 ) : (string) ( $prev['aiTriggerLabel'] ?? '' ),
+			'aiLeadEnabled'         => array_key_exists( 'aiLeadEnabled', $input ) ? ! empty( $input['aiLeadEnabled'] ) : ! empty( $prev['aiLeadEnabled'] ),
+			'aiLeadOffer'           => array_key_exists( 'aiLeadOffer', $input ) ? mb_substr( sanitize_text_field( (string) $input['aiLeadOffer'] ), 0, 200 ) : (string) ( $prev['aiLeadOffer'] ?? '' ),
+			'aiLeadRecipient'       => (string) ( $prev['aiLeadRecipient'] ?? '' ),
+			'aiWooCards'            => array_key_exists( 'aiWooCards', $input ) ? ! empty( $input['aiWooCards'] ) : ( ! isset( $prev['aiWooCards'] ) || ! empty( $prev['aiWooCards'] ) ),
+			'aiExtraUrls'           => $this->sanitize_ai_urls( array_key_exists( 'aiExtraUrls', $input ) ? $input['aiExtraUrls'] : ( $prev['aiExtraUrls'] ?? array() ) ),
+			'aiContactShortcode'    => array_key_exists( 'aiContactShortcode', $input ) ? mb_substr( sanitize_text_field( (string) $input['aiContactShortcode'] ), 0, 500 ) : (string) ( $prev['aiContactShortcode'] ?? '' ),
+			'aiExamples'            => array_key_exists( 'aiExamples', $input ) ? mb_substr( sanitize_textarea_field( (string) $input['aiExamples'] ), 0, 20000 ) : (string) ( $prev['aiExamples'] ?? '' ),
 		);
 
 		update_option( self::GENERAL_SETTINGS_OPTION_KEY, $clean, false );
@@ -1681,11 +2140,2135 @@ final class Rest_Api {
 			flush_rewrite_rules( false );
 		}
 
+		/* Mask every secret before echoing settings back to the browser. */
+		$public_settings                = $clean;
+		$public_settings['hasAiKey']    = ( '' !== trim( (string) $ai_key_store ) );
+		$public_settings['hasLlmKey']   = ( '' !== trim( (string) $llm_key_store ) );
+		$public_settings['hasEmbedKey'] = ( '' !== trim( (string) $embed_key_store ) );
+		unset( $public_settings['aiApiKey'], $public_settings['aiLlmApiKey'], $public_settings['aiEmbedApiKey'] );
+
 		return rest_ensure_response(
 			array(
 				'success' => true,
 				'data'    => array(
-					'settings' => $clean,
+					'settings' => $public_settings,
+				),
+			)
+		);
+	}
+
+	/**
+	 * Stable per-site collection id sent to the AI server (one ChromaDB collection per site).
+	 *
+	 * @return string
+	 */
+	private function ai_site_id(): string {
+		return substr( md5( home_url() ), 0, 16 );
+	}
+
+	/**
+	 * Loads the direct-to-provider LLM adapter on demand.
+	 *
+	 * @return void
+	 */
+	private static function ai_load_llm_client(): void {
+		require_once nexulesuite_PLUGIN_DIR . 'ai/class-llm-client.php';
+	}
+
+	/**
+	 * Which connection mode a stored settings array means.
+	 *
+	 * `aiConnMode` did not exist before direct-to-provider support, so an install that
+	 * predates it has no value. Those sites were, by definition, pointed at a self-hosted
+	 * AI server — infer that from the saved URL rather than silently moving a working
+	 * chatbot onto the direct path on upgrade. Genuinely fresh installs get `direct`.
+	 *
+	 * @param array<string,mixed> $opt Stored general settings.
+	 * @return string 'direct'|'server'
+	 */
+	private static function ai_resolve_mode( array $opt ): string {
+		$mode = strtolower( trim( (string) ( $opt['aiConnMode'] ?? '' ) ) );
+		if ( in_array( $mode, self::AI_MODES, true ) ) {
+			return $mode;
+		}
+
+		return '' !== trim( (string) ( $opt['aiServerUrl'] ?? '' ) ) ? 'server' : 'direct';
+	}
+
+	/**
+	 * Loads the WP-database vector store on demand.
+	 *
+	 * @return void
+	 */
+	private static function ai_load_vector_store(): void {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-vector-store.php';
+	}
+
+	/**
+	 * Resolves which provider/model/key embeds text in `direct` mode.
+	 *
+	 * When no dedicated embedding provider is chosen, the chat provider is reused if it
+	 * can embed (OpenAI, Gemini, Mistral) — Claude and Groq have no embeddings API, so
+	 * those installs must pick one explicitly. Returns null when nothing is usable, which
+	 * is a soft failure: the assistant still answers, just without site context.
+	 *
+	 * @param array<string,mixed> $s Pre-read AI settings.
+	 * @return array{provider:string,model:string,key:string}|null
+	 */
+	private function ai_embed_config( array $s ): ?array {
+		self::ai_load_llm_client();
+
+		$provider = (string) $s['embed_provider'];
+		$key      = (string) $s['embed_key'];
+
+		if ( '' === $provider ) {
+			$chat_provider = (string) $s['llm_provider'];
+			if ( '' === $chat_provider || ! \nexulesuite_\AI\Llm_Client::supports_embeddings( $chat_provider ) ) {
+				return null;
+			}
+			$provider = $chat_provider;
+			$key      = '' !== $key ? $key : (string) $s['llm_key'];
+		} elseif ( '' === $key && $provider === (string) $s['llm_provider'] ) {
+			// Same vendor for chat and embeddings — one key covers both.
+			$key = (string) $s['llm_key'];
+		}
+
+		if ( '' === trim( $key ) ) {
+			return null;
+		}
+
+		$model = (string) $s['embed_model'];
+		if ( '' === $model ) {
+			$model = \nexulesuite_\AI\Llm_Client::default_embed_model( $provider );
+		}
+
+		return array( 'provider' => $provider, 'model' => $model, 'key' => $key );
+	}
+
+	/**
+	 * Reads AI settings from the general option, decrypting the stored API key.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function ai_settings(): array {
+		$opt = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
+		if ( ! is_array( $opt ) ) {
+			$opt = array();
+		}
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-mailer.php';
+		self::ai_load_llm_client();
+		$key_stored       = isset( $opt['aiApiKey'] ) ? (string) $opt['aiApiKey'] : '';
+		$llm_key_stored   = isset( $opt['aiLlmApiKey'] ) ? (string) $opt['aiLlmApiKey'] : '';
+		$embed_key_stored = isset( $opt['aiEmbedApiKey'] ) ? (string) $opt['aiEmbedApiKey'] : '';
+		$llm_provider     = strtolower( trim( (string) ( $opt['aiLlmProvider'] ?? '' ) ) );
+		$embed_provider   = strtolower( trim( (string) ( $opt['aiEmbedProvider'] ?? '' ) ) );
+
+		return array(
+			'enabled'    => ! empty( $opt['aiEnabled'] ),
+			'mode'       => self::ai_resolve_mode( $opt ),
+			'url'        => isset( $opt['aiServerUrl'] ) ? untrailingslashit( trim( (string) $opt['aiServerUrl'] ) ) : '',
+			'key'        => \nexulesuite_\Mailer::decrypt_secret( $key_stored ),
+			'llm_provider' => null !== \nexulesuite_\AI\Llm_Client::provider( $llm_provider ) ? $llm_provider : '',
+			'llm_model'    => trim( (string) ( $opt['aiLlmModel'] ?? '' ) ),
+			'llm_key'      => \nexulesuite_\Mailer::decrypt_secret( $llm_key_stored ),
+			'embed_provider' => \nexulesuite_\AI\Llm_Client::supports_embeddings( $embed_provider ) ? $embed_provider : '',
+			'embed_model'    => trim( (string) ( $opt['aiEmbedModel'] ?? '' ) ),
+			'embed_key'      => \nexulesuite_\Mailer::decrypt_secret( $embed_key_stored ),
+			'system'     => (string) ( $opt['aiSystemPrompt'] ?? '' ),
+			'welcome'      => (string) ( $opt['aiWelcomeMessage'] ?? '' ),
+			'model'        => trim( (string) ( $opt['aiChatModel'] ?? '' ) ),
+			'vision_model' => trim( (string) ( $opt['aiVisionModel'] ?? '' ) ),
+			'allow_images' => ! empty( $opt['aiAllowImages'] ),
+			'max_chunks'   => max( 1, min( 10, (int) ( $opt['aiMaxChunks'] ?? 4 ) ) ),
+			'manual_qa'    => (string) ( $opt['aiManualQa'] ?? '' ),
+			'log_chats'    => ! empty( $opt['aiLogChats'] ),
+			'faq_enabled'  => ! empty( $opt['aiFaqEnabled'] ),
+			'faq_items'    => $this->sanitize_ai_faq_items( $opt['aiFaqFlows'] ?? array() ),
+			'faq_actions'  => $this->sanitize_ai_actions( $opt['aiActions'] ?? array() ),
+			'disclaimer'   => (string) ( $opt['aiDisclaimer'] ?? '' ),
+			'trigger_label' => (string) ( $opt['aiTriggerLabel'] ?? '' ),
+			'lead_enabled' => ! empty( $opt['aiLeadEnabled'] ),
+			'lead_offer'   => (string) ( $opt['aiLeadOffer'] ?? '' ),
+			'lead_recipient' => (string) ( $opt['aiLeadRecipient'] ?? '' ),
+			// Product cards default ON when WooCommerce is active; only an explicit false disables.
+			'woo_cards'    => ! isset( $opt['aiWooCards'] ) || ! empty( $opt['aiWooCards'] ),
+			'extra_urls'   => isset( $opt['aiExtraUrls'] ) && is_array( $opt['aiExtraUrls'] ) ? $opt['aiExtraUrls'] : array(),
+			'contact_shortcode' => (string) ( $opt['aiContactShortcode'] ?? '' ),
+			'examples'     => (string) ( $opt['aiExamples'] ?? '' ),
+		);
+	}
+
+	/**
+	 * Parses admin few-shot examples ("User: …" / "Assistant: …" blocks, optional
+	 * "---" separators) into `[{role, content}]` turns for the AI server.
+	 *
+	 * @param string $raw Raw textarea value.
+	 * @return array<int,array<string,string>>
+	 */
+	private function ai_parse_examples( string $raw ): array {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			return array();
+		}
+
+		$out  = array();
+		$role = '';
+		$buf  = '';
+		$push = static function ( array &$out, string $role, string $buf ): void {
+			$buf = trim( $buf );
+			if ( '' !== $role && '' !== $buf ) {
+				$out[] = array( 'role' => $role, 'content' => mb_substr( $buf, 0, 1000 ) );
+			}
+		};
+
+		foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
+			$t = trim( (string) $line );
+			if ( '' !== $t && preg_match( '/^-{3,}$/', $t ) ) {
+				$push( $out, $role, $buf );
+				$role = '';
+				$buf  = '';
+				continue;
+			}
+			if ( preg_match( '/^\s*user\s*:\s*(.*)$/i', (string) $line, $m ) ) {
+				$push( $out, $role, $buf );
+				$role = 'user';
+				$buf  = $m[1];
+				continue;
+			}
+			if ( preg_match( '/^\s*(?:assistant|bot|ai)\s*:\s*(.*)$/i', (string) $line, $m ) ) {
+				$push( $out, $role, $buf );
+				$role = 'assistant';
+				$buf  = $m[1];
+				continue;
+			}
+			if ( '' !== $role ) {
+				$buf .= "\n" . $line;
+			}
+		}
+		$push( $out, $role, $buf );
+
+		return array_slice( $out, 0, 100 );
+	}
+
+	/**
+	 * Sanitizes a list of external "learn from" URLs (newline string or array).
+	 *
+	 * @param mixed $raw URLs.
+	 * @return array<int,string>
+	 */
+	private function sanitize_ai_urls( $raw ): array {
+		if ( is_string( $raw ) ) {
+			$raw = preg_split( '/[\r\n]+/', $raw );
+		}
+		if ( ! is_array( $raw ) ) {
+			return array();
+		}
+		$urls = array();
+		foreach ( $raw as $u ) {
+			$u = esc_url_raw( trim( (string) $u ), array( 'http', 'https' ) );
+			if ( '' !== $u && wp_http_validate_url( $u ) ) {
+				$urls[] = $u;
+			}
+			if ( count( $urls ) >= 10 ) {
+				break;
+			}
+		}
+		return array_values( array_unique( $urls ) );
+	}
+
+	/**
+	 * Extracts readable text from an HTML document (drops scripts/nav/footer chrome).
+	 *
+	 * @param string $html Raw HTML.
+	 * @return string
+	 */
+	private function ai_html_to_text( string $html ): string {
+		$html = (string) preg_replace( '#<(script|style|noscript|template|svg)\b[^>]*>.*?</\1>#is', ' ', $html );
+		$html = (string) preg_replace( '#<(nav|footer|header|aside|form)\b[^>]*>.*?</\1>#is', ' ', $html );
+		$text = wp_strip_all_tags( $html );
+		$text = (string) preg_replace( '/\s+/u', ' ', html_entity_decode( $text, ENT_QUOTES, 'UTF-8' ) );
+		return trim( $text );
+	}
+
+	/**
+	 * Fetches the admin's extra "learn from" URLs and returns ingest documents.
+	 *
+	 * @return array<int,array<string,string>>
+	 */
+	private function ai_fetch_url_docs(): array {
+		$docs = array();
+		foreach ( $this->ai_settings()['extra_urls'] as $url ) {
+			$resp = wp_remote_get( $url, array( 'timeout' => 15, 'redirection' => 3 ) );
+			if ( is_wp_error( $resp ) || (int) wp_remote_retrieve_response_code( $resp ) >= 400 ) {
+				continue;
+			}
+			$text = $this->ai_html_to_text( (string) wp_remote_retrieve_body( $resp ) );
+			if ( '' === $text ) {
+				continue;
+			}
+			$docs[] = array(
+				'id'          => 'url-' . md5( $url ),
+				'source_type' => 'url',
+				'source_ref'  => $url,
+				'title'       => $url,
+				'url'         => $url,
+				'text'        => mb_substr( $text, 0, 20000 ),
+			);
+		}
+		return $docs;
+	}
+
+	/**
+	 * Searches WooCommerce products matching a visitor message and returns compact
+	 * card data. Empty when Woo is inactive, disabled, or the message isn't product-y.
+	 *
+	 * @param string $message Visitor message.
+	 * @return array<int,array<string,mixed>>
+	 */
+	private function ai_woo_product_cards( string $message ): array {
+		$message = trim( $message );
+		if ( '' === $message || ! function_exists( 'wc_get_products' ) || ! post_type_exists( 'product' ) ) {
+			return array();
+		}
+		if ( empty( $this->ai_settings()['woo_cards'] ) ) {
+			return array();
+		}
+
+		$limit = 8;
+		$args  = array(
+			'status' => 'publish',
+			'limit'  => $limit,
+		);
+
+		$is_new  = (bool) preg_match( '/\b(new\s*arrivals?|newest|latest|recently\s*(?:added|arrived)|just\s*(?:in|arrived))\b/i', $message );
+		$is_best = (bool) preg_match( '/\b(best[\s-]?sell\w*|top[\s-]?(?:rated|selling)|most\s*(?:popular|viewed)|popular|trending|hot|featured|recommend\w*|suggest\w*)\b/i', $message );
+		// Generic "browse" terms (product, products, catalog, shop, deals, bundle, sale…) — user's product vocabulary.
+		$is_browse = (bool) preg_match( '/\b(products?|items?|catalog\w*|shop|store|browse|collection|listing|goods|merchandise|inventory|buy|purchase|order|deals?|clearance|bundle|combo|package|sale|checkout|cart)\b/i', $message );
+		// A specific product query (price/stock/size or a short product name like "organic honey").
+		$word_count  = str_word_count( $message );
+		$is_specific = (bool) preg_match( '/\b(price|pricing|cost|cheap|expensive|afford|available|stock|size|colou?r|model|do you (?:have|sell|carry)|show me|looking for)\b/i', $message );
+		$is_shortname = $word_count >= 1 && $word_count <= 3
+			&& ! preg_match( '/^\s*(?:hi|hey+|hello|thanks?|thank you|ok(?:ay)?|yes|no|bye|help|support|agent|live|human|price)\b/i', $message );
+
+		if ( $is_new ) {
+			$args['orderby'] = 'date';
+			$args['order']   = 'DESC';
+		} elseif ( $is_best || $is_browse ) {
+			$args['orderby'] = 'popularity';
+		} elseif ( $is_specific || $is_shortname ) {
+			$args['s'] = $message;
+		} else {
+			return array();
+		}
+
+		$products = wc_get_products( $args );
+
+		$cards = array();
+		foreach ( (array) $products as $product ) {
+			if ( ! is_object( $product ) || ! method_exists( $product, 'is_visible' ) || ! $product->is_visible() ) {
+				continue;
+			}
+			$img_id  = $product->get_image_id();
+			$img     = $img_id ? (string) wp_get_attachment_image_url( $img_id, 'woocommerce_thumbnail' ) : '';
+			// Clean the price: drop the "screen-reader-text" span, strip tags, decode entities ($, –).
+			$price_html = (string) $product->get_price_html();
+			$price_html = (string) preg_replace( '#<span class="screen-reader-text">.*?</span>#is', '', $price_html );
+			$price      = trim( html_entity_decode( wp_strip_all_tags( $price_html ), ENT_QUOTES, 'UTF-8' ) );
+			$cards[] = array(
+				'title'   => wp_strip_all_tags( (string) $product->get_name() ),
+				'url'     => (string) $product->get_permalink(),
+				'image'   => esc_url_raw( $img ),
+				'price'   => $price,
+				'onSale'  => (bool) $product->is_on_sale(),
+				'inStock' => (bool) $product->is_in_stock(),
+			);
+			if ( count( $cards ) >= $limit ) {
+				break;
+			}
+		}
+
+		return $cards;
+	}
+
+	/**
+	 * Resolves the lead-notification recipient (falls back to the site admin email).
+	 *
+	 * @return string
+	 */
+	private function ai_lead_recipient(): string {
+		$to = trim( (string) $this->ai_settings()['lead_recipient'] );
+		if ( '' === $to || ! is_email( $to ) ) {
+			$to = (string) get_option( 'admin_email' );
+		}
+		return $to;
+	}
+
+	/**
+	 * Allowed icon keys for FAQ / action buttons (mirrors
+	 * {@see \nexulesuite_\Public\Shortcodes::livechat_ai_icon_set()} keys).
+	 *
+	 * @return array<int,string>
+	 */
+	private function ai_allowed_icon_keys(): array {
+		return array(
+			'stethoscope', 'dollar', 'shield', 'pin', 'calendar', 'phone',
+			'directions', 'chat', 'question', 'clock', 'info', 'heart', 'mail', 'user',
+		);
+	}
+
+	/**
+	 * Sanitizes AI quick-action buttons (Book / Call / Directions, reference-style).
+	 *
+	 * Shape: array of `{ label, icon, url }`.
+	 *
+	 * @param mixed $raw Raw actions array.
+	 * @return array<int,array<string,string>>
+	 */
+	private function sanitize_ai_actions( $raw ): array {
+		if ( ! is_array( $raw ) ) {
+			return array();
+		}
+
+		$allowed = $this->ai_allowed_icon_keys();
+		$out     = array();
+		foreach ( $raw as $act ) {
+			if ( ! is_array( $act ) ) {
+				continue;
+			}
+			$label = trim( sanitize_text_field( (string) ( $act['label'] ?? '' ) ) );
+			if ( '' === $label ) {
+				continue;
+			}
+			$icon = sanitize_key( (string) ( $act['icon'] ?? '' ) );
+			if ( ! in_array( $icon, $allowed, true ) ) {
+				$icon = '';
+			}
+			$out[] = array(
+				'label' => mb_substr( $label, 0, 60 ),
+				'icon'  => $icon,
+				'url'   => esc_url_raw( trim( (string) ( $act['url'] ?? '' ) ), array( 'http', 'https', 'tel', 'mailto', 'sms' ) ),
+			);
+			if ( count( $out ) >= 5 ) {
+				break;
+			}
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Sanitizes the two-level FAQ / conditional-button config.
+	 *
+	 * Shape: array of items, each `{ id, label, answer, followups:[{label, answer}] }`.
+	 * Used both when reading settings and before persisting from the editor.
+	 *
+	 * @param mixed $raw Raw items array (or anything).
+	 * @return array<int,array<string,mixed>>
+	 */
+	private function sanitize_ai_faq_items( $raw ): array {
+		if ( ! is_array( $raw ) ) {
+			return array();
+		}
+
+		$items = array();
+		$index = 0;
+		foreach ( $raw as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+			$label = trim( sanitize_text_field( (string) ( $item['label'] ?? '' ) ) );
+			if ( '' === $label ) {
+				continue;
+			}
+			++$index;
+
+			$followups = array();
+			$raw_follow = isset( $item['followups'] ) && is_array( $item['followups'] ) ? $item['followups'] : array();
+			foreach ( array_slice( $raw_follow, 0, 8 ) as $fu ) {
+				if ( ! is_array( $fu ) ) {
+					continue;
+				}
+				$fu_label = trim( sanitize_text_field( (string) ( $fu['label'] ?? '' ) ) );
+				if ( '' === $fu_label ) {
+					continue;
+				}
+				$followups[] = array(
+					'label'  => mb_substr( $fu_label, 0, 120 ),
+					'answer' => mb_substr( sanitize_textarea_field( (string) ( $fu['answer'] ?? '' ) ), 0, 2000 ),
+				);
+			}
+
+			$id = sanitize_key( (string) ( $item['id'] ?? '' ) );
+			if ( '' === $id ) {
+				$id = 'faq' . $index;
+			}
+
+			$icon = sanitize_key( (string) ( $item['icon'] ?? '' ) );
+			if ( ! in_array( $icon, $this->ai_allowed_icon_keys(), true ) ) {
+				$icon = '';
+			}
+
+			$items[] = array(
+				'id'        => substr( $id, 0, 40 ),
+				'label'     => mb_substr( $label, 0, 120 ),
+				'answer'    => mb_substr( sanitize_textarea_field( (string) ( $item['answer'] ?? '' ) ), 0, 2000 ),
+				'icon'      => $icon,
+				'followups' => $followups,
+			);
+
+			if ( count( $items ) >= 20 ) {
+				break;
+			}
+		}
+
+		return $items;
+	}
+
+	/**
+	 * Lightweight heuristic intent + sentiment classifier (no LLM call — fast/free).
+	 * Used to tag logged conversations for the Reports analytics.
+	 *
+	 * @param string $text Visitor message.
+	 * @return array{intent:string,sentiment:string}
+	 */
+	private function ai_classify( string $text ): array {
+		$t = ' ' . strtolower( $text ) . ' ';
+
+		$intent = 'question';
+		if ( preg_match( '/\b(hi|hello|hey|good morning|good afternoon|good evening|salam|assalam)\b/', $t ) ) {
+			$intent = 'greeting';
+		} elseif ( preg_match( '/\b(price|prices|pricing|cost|costs|how much|quote|fee|fees|charge|charges)\b/', $t ) ) {
+			$intent = 'pricing';
+		} elseif ( preg_match( '/\b(book|booking|appointment|appointments|schedule|reserve|reservation|availability|slot|slots)\b/', $t ) ) {
+			$intent = 'booking';
+		} elseif ( preg_match( '/\b(buy|order|orders|product|products|purchase|shop|cart|checkout|stock|delivery|shipping)\b/', $t ) ) {
+			$intent = 'product';
+		} elseif ( preg_match( '/\b(refund|complaint|complain|broken|not working|doesn.?t work|cancel|cancellation|disappointed)\b/', $t ) ) {
+			$intent = 'complaint';
+		} elseif ( preg_match( '/\b(contact|call|phone|email|reach|talk to|human|agent|representative|support)\b/', $t ) ) {
+			$intent = 'contact';
+		}
+
+		$sentiment = 'neutral';
+		if ( preg_match( '/\b(thanks|thank you|great|awesome|love|excellent|perfect|helpful|amazing|wonderful|good)\b/', $t ) ) {
+			$sentiment = 'positive';
+		}
+		if ( preg_match( '/\b(angry|terrible|worst|hate|awful|useless|disappointed|frustrated|not working|broken|bad)\b/', $t ) ) {
+			$sentiment = 'negative';
+		}
+		if ( preg_match( '/\b(urgent|asap|emergency|immediately|right now|as soon as possible)\b/', $t ) || substr_count( $text, '!' ) >= 2 ) {
+			$sentiment = 'urgent';
+		}
+
+		return array( 'intent' => $intent, 'sentiment' => $sentiment );
+	}
+
+	/**
+	 * Default grounding system prompt (used when the admin leaves it blank).
+	 *
+	 * @return string
+	 */
+	private function ai_default_system_prompt(): string {
+		$name = trim( wp_strip_all_tags( (string) get_bloginfo( 'name' ) ) );
+		if ( '' === $name ) {
+			$name = 'our company';
+		}
+		return sprintf(
+			/* translators: %1$s: site name (repeated). */
+			'You are the AI Support Specialist for %1$s. Always speak on behalf of %1$s using "we" and "our" — you represent this business, not a generic tool. When a visitor greets you (e.g. "hi", "hello") or asks who you are or your name, introduce yourself as "%1$s Support Specialist" and briefly offer to help; never call yourself a generic AI/chatbot and never mention the platform or CMS the website is built on (e.g. WordPress). Answer using the provided context about our services, products, pricing, booking, appointments, consultations, location, hours and contact details. If a visitor asks what we do or what services we offer, summarise our actual services and offerings from the context — never say we do not provide services. Match the answer length to the question: a simple question gets 1-2 short sentences; a normal question gets one concise paragraph; only a genuinely complex question gets a short structured answer with bullet points. Use bullet points for any list (multiple services, steps, options). Never write long paragraphs, never repeat yourself, and never add information the visitor did not ask for. Be specific and factual: state only services, prices and details actually present in the context, and never pad with marketing filler, vague reassurances, or invented offerings. If a specific detail is genuinely not in the context, briefly say you do not have that particular detail and offer to connect a human or take the visitor\'s contact details. Stay warm and professional, and always reply in the same language the visitor used.',
+			$name
+		);
+	}
+
+	/**
+	 * Low-level request to the configured AI server (adds the Bearer key server-side).
+	 *
+	 * @param string             $method HTTP method.
+	 * @param string             $path   Path (e.g. '/chat').
+	 * @param array<string,mixed>|null $body Optional JSON body.
+	 * @param int                $timeout Request timeout in seconds.
+	 * @return array<string,mixed>|\WP_Error Decoded JSON, or WP_Error.
+	 */
+	/**
+	 * Per-request LLM provider override for the AI server.
+	 *
+	 * Returns null when nothing is configured here, in which case the AI server
+	 * falls back to its own `.env`. Only the provider *name* is sent — the server
+	 * resolves the base URL itself, so this can never point it at another host.
+	 * The decrypted key leaves WordPress only on this server-to-server hop.
+	 *
+	 * @param array<string,mixed>|null $s Pre-read AI settings, to avoid re-decrypting.
+	 * @return array<string,string>|null
+	 */
+	private function ai_llm_override( ?array $s = null ): ?array {
+		$s = $s ?? $this->ai_settings();
+		if ( '' === (string) $s['llm_provider'] ) {
+			return null;
+		}
+
+		/*
+		 * The AI server only knows a subset of the providers offered in `direct` mode.
+		 * Switching direct→server with, say, Gemini selected would make it raise on an
+		 * unknown provider; fall back to the server's own credential instead.
+		 */
+		self::ai_load_llm_client();
+		$definition = \nexulesuite_\AI\Llm_Client::provider( (string) $s['llm_provider'] );
+		if ( null === $definition || empty( $definition['server'] ) ) {
+			return null;
+		}
+
+		$override = array( 'provider' => (string) $s['llm_provider'] );
+		if ( '' !== (string) $s['llm_model'] ) {
+			$override['model'] = (string) $s['llm_model'];
+		}
+		if ( '' !== (string) $s['llm_key'] ) {
+			$override['api_key'] = (string) $s['llm_key'];
+		}
+		return $override;
+	}
+
+	private function ai_server_request( string $method, string $path, ?array $body = null, int $timeout = 45 ) {
+		$s    = $this->ai_settings();
+		$base = $s['url'];
+		if ( '' === $base ) {
+			return new \WP_Error( 'nexulesuite_ai_noserver', __( 'AI server URL is not configured.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
+		}
+
+		/*
+		 * The admin's AI server may be on localhost / a private IP and/or a non-standard
+		 * port (e.g. http://localhost:8000) during local development. WordPress blocks
+		 * loopback/private hosts and ports outside {80,443,8080} in wp_http_validate_url()
+		 * as an SSRF guard. Since only `manage_options` users set this URL and it targets
+		 * their own infrastructure, whitelist JUST the configured host + port for this one
+		 * request, then restore the defaults.
+		 */
+		$parsed    = wp_parse_url( $base );
+		$ai_host   = isset( $parsed['host'] ) ? (string) $parsed['host'] : '';
+		$ai_port   = isset( $parsed['port'] ) ? (int) $parsed['port'] : 0;
+		$allow_host = static function ( $is_external, $check_host ) use ( $ai_host ) {
+			return ( '' !== $ai_host && $check_host === $ai_host ) ? true : $is_external;
+		};
+		$allow_port = static function ( $ports ) use ( $ai_port ) {
+			if ( $ai_port > 0 && is_array( $ports ) && ! in_array( $ai_port, $ports, true ) ) {
+				$ports[] = $ai_port;
+			}
+			return $ports;
+		};
+		add_filter( 'http_request_host_is_external', $allow_host, 10, 2 );
+		add_filter( 'http_allowed_safe_ports', $allow_port, 10, 1 );
+
+		$restore = static function () use ( $allow_host, $allow_port ) {
+			remove_filter( 'http_request_host_is_external', $allow_host, 10 );
+			remove_filter( 'http_allowed_safe_ports', $allow_port, 10 );
+		};
+
+		if ( ! wp_http_validate_url( $base ) ) {
+			$restore();
+			return new \WP_Error( 'nexulesuite_ai_badurl', __( 'AI server URL is invalid.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
+		}
+
+		$args = array(
+			'method'  => $method,
+			'timeout' => $timeout,
+			'headers' => array(
+				'Content-Type'  => 'application/json',
+				'Authorization' => 'Bearer ' . $s['key'],
+			),
+		);
+		if ( null !== $body ) {
+			$args['body'] = wp_json_encode( $body );
+		}
+
+		$res = wp_remote_request( $base . '/' . ltrim( $path, '/' ), $args );
+		$restore();
+		if ( is_wp_error( $res ) ) {
+			return new \WP_Error( 'nexulesuite_ai_unreachable', $res->get_error_message(), array( 'status' => 502 ) );
+		}
+
+		$code = (int) wp_remote_retrieve_response_code( $res );
+		$json = json_decode( (string) wp_remote_retrieve_body( $res ), true );
+		if ( $code < 200 || $code >= 300 ) {
+			$msg = ( is_array( $json ) && isset( $json['detail'] ) ) ? (string) $json['detail'] : sprintf(
+				/* translators: %d: HTTP status code. */
+				__( 'AI server returned an error (%d).', 'nexus-lead-suite' ),
+				$code
+			);
+			return new \WP_Error( 'nexulesuite_ai_http', $msg, array( 'status' => $code > 0 ? $code : 502 ) );
+		}
+
+		return is_array( $json ) ? $json : array();
+	}
+
+	/**
+	 * Admin: test connectivity to the AI server (`GET /health`).
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function ai_test_connection( \WP_REST_Request $request ): \WP_REST_Response {
+		unset( $request );
+		$s = $this->ai_settings();
+
+		if ( 'direct' === $s['mode'] ) {
+			return rest_ensure_response( $this->ai_test_direct( $s ) );
+		}
+
+		/* Ask the server about the provider+model configured HERE, not its own default. */
+		$path = '/health';
+		if ( '' !== (string) $s['llm_provider'] || '' !== (string) $s['llm_model'] ) {
+			$path = add_query_arg(
+				array_filter(
+					array(
+						'provider' => (string) $s['llm_provider'],
+						'model'    => (string) $s['llm_model'],
+					)
+				),
+				$path
+			);
+		}
+
+		$res = $this->ai_server_request( 'GET', $path, null, 20 );
+		if ( is_wp_error( $res ) ) {
+			return rest_ensure_response( array( 'success' => false, 'message' => $res->get_error_message() ) );
+		}
+
+		/*
+		 * A reachable server proves nothing about the model provider's key. When a
+		 * provider is configured here, make one tiny real completion so a bad key
+		 * surfaces now instead of on a visitor's first message.
+		 */
+		$llm_override = $this->ai_llm_override( $s );
+		if ( null !== $llm_override ) {
+			$probe = $this->ai_server_request( 'POST', '/provider/test', array( 'llm' => $llm_override ), 45 );
+			if ( is_wp_error( $probe ) ) {
+				$res['providerTest'] = array( 'ok' => false, 'error' => $probe->get_error_message() );
+			} else {
+				$res['providerTest'] = $probe;
+			}
+			if ( empty( $res['providerTest']['ok'] ) ) {
+				return rest_ensure_response(
+					array(
+						'success' => false,
+						'message' => sprintf(
+							/* translators: 1: provider name, 2: upstream error message. */
+							__( 'Server reachable, but the %1$s key was rejected: %2$s', 'nexus-lead-suite' ),
+							(string) $s['llm_provider'],
+							(string) ( $res['providerTest']['error'] ?? __( 'unknown error', 'nexus-lead-suite' ) )
+						),
+						'data'    => $res,
+					)
+				);
+			}
+		}
+
+		return rest_ensure_response( array( 'success' => true, 'data' => $res ) );
+	}
+
+	/**
+	 * Admin: verify the direct provider connection.
+	 *
+	 * Runs one real 8-token completion so a bad key fails here rather than on a visitor's
+	 * first message, then embeds one short string to prove the retrieval half works too.
+	 *
+	 * @param array<string,mixed> $s Pre-read AI settings.
+	 * @return array<string,mixed>
+	 */
+	private function ai_test_direct( array $s ): array {
+		self::ai_load_llm_client();
+		self::ai_load_vector_store();
+
+		$provider = (string) $s['llm_provider'];
+		if ( '' === $provider || ! \nexulesuite_\AI\Llm_Client::supports_direct_chat( $provider ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Choose an AI provider (e.g. OpenAI, Claude, Gemini) and click Save Configuration first.', 'nexus-lead-suite' ),
+			);
+		}
+
+		$model = '' !== (string) $s['llm_model'] ? (string) $s['llm_model'] : \nexulesuite_\AI\Llm_Client::default_chat_model( $provider );
+		$probe = \nexulesuite_\AI\Llm_Client::test_chat( $provider, $model, (string) $s['llm_key'] );
+		if ( is_wp_error( $probe ) ) {
+			return array(
+				'success' => false,
+				'message' => sprintf(
+					/* translators: 1: provider label, 2: upstream error message. */
+					__( '%1$s rejected the request: %2$s', 'nexus-lead-suite' ),
+					\nexulesuite_\AI\Llm_Client::label( $provider ),
+					$probe->get_error_message()
+				),
+			);
+		}
+
+		$data = array(
+			'mode'         => 'direct',
+			'provider'     => \nexulesuite_\AI\Llm_Client::label( $provider ),
+			'chat_model'   => $model,
+			'capabilities' => array( 'vision' => \nexulesuite_\AI\Llm_Client::supports_vision( $provider ) ),
+			'providerTest' => array( 'ok' => true, 'latency_ms' => (int) $probe['latency_ms'] ),
+			'chunks'       => \nexulesuite_\Core\Vector_Store::count(),
+			'documents'    => \nexulesuite_\Core\Vector_Store::documents(),
+		);
+
+		$embed = $this->ai_embed_config( $s );
+		if ( null === $embed ) {
+			$data['embed'] = array(
+				'ok'      => false,
+				'message' => __( 'No embedding provider is configured, so the chatbot cannot search your site content. Pick one under Knowledge Base.', 'nexus-lead-suite' ),
+			);
+
+			return array( 'success' => false, 'message' => (string) $data['embed']['message'], 'data' => $data );
+		}
+
+		$vectors = \nexulesuite_\AI\Llm_Client::embed( $embed['provider'], $embed['model'], $embed['key'], array( 'connection test' ) );
+		if ( is_wp_error( $vectors ) || empty( $vectors[0] ) ) {
+			$reason        = is_wp_error( $vectors ) ? $vectors->get_error_message() : __( 'the provider returned no vector', 'nexus-lead-suite' );
+			$data['embed'] = array( 'ok' => false, 'message' => $reason );
+
+			return array(
+				'success' => false,
+				'message' => sprintf(
+					/* translators: 1: provider label, 2: upstream error message. */
+					__( 'Chat works, but embeddings failed on %1$s: %2$s', 'nexus-lead-suite' ),
+					\nexulesuite_\AI\Llm_Client::label( $embed['provider'] ),
+					$reason
+				),
+				'data'    => $data,
+			);
+		}
+
+		$dims          = count( $vectors[0] );
+		$indexed_dims  = \nexulesuite_\Core\Vector_Store::dims();
+		$data['embed'] = array(
+			'ok'       => true,
+			'provider' => \nexulesuite_\AI\Llm_Client::label( $embed['provider'] ),
+			'model'    => $embed['model'],
+			'dims'     => $dims,
+		);
+
+		// A vector is only comparable with vectors of the same width — swapping the
+		// embedding model silently orphans everything already indexed.
+		if ( $indexed_dims > 0 && $indexed_dims !== $dims ) {
+			return array(
+				'success' => false,
+				'message' => sprintf(
+					/* translators: 1: dimensions of the indexed vectors, 2: dimensions the current model produces. */
+					__( 'Chat and embeddings both work, but your knowledge base was built with %1$d-dimension vectors and this model produces %2$d. Click Train Now to rebuild it.', 'nexus-lead-suite' ),
+					$indexed_dims,
+					$dims
+				),
+				'data'    => $data,
+			);
+		}
+
+		return array( 'success' => true, 'data' => $data );
+	}
+
+	/**
+	 * Admin: push a batch of site content to the AI server for training (`POST /ingest`).
+	 *
+	 * Batches published posts + pages by offset/limit so large sites don't time out.
+	 * Manual Q&A / notes are included on the first batch only. `reset` wipes the
+	 * collection before the first batch.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	/**
+	 * Post types eligible for AI training: pages + posts, WooCommerce products
+	 * (when active), and other public custom post types. Filterable.
+	 *
+	 * @return array<int,string>
+	 */
+	private function ai_trainable_post_types(): array {
+		$types = array( 'page', 'post' );
+
+		if ( post_type_exists( 'product' ) ) {
+			$types[] = 'product';
+		}
+
+		$exclude = array( 'attachment', 'nav_menu_item', 'elementor_library', 'e-landing-page', 'wp_block', 'wp_template', 'wp_template_part', 'wp_navigation', 'shop_order', 'shop_coupon', 'product_variation' );
+		$cpts    = get_post_types( array( 'public' => true, '_builtin' => false ), 'names' );
+		foreach ( (array) $cpts as $cpt ) {
+			if ( ! in_array( $cpt, $types, true ) && ! in_array( $cpt, $exclude, true ) ) {
+				$types[] = $cpt;
+			}
+		}
+
+		/**
+		 * Filters the post types the AI trainer ingests.
+		 *
+		 * @param array<int,string> $types Post type slugs.
+		 */
+		$filtered = apply_filters( 'nexulesuite_ai_trainable_post_types', $types );
+		return is_array( $filtered ) && ! empty( $filtered ) ? array_values( array_unique( array_map( 'strval', $filtered ) ) ) : $types;
+	}
+
+	/**
+	 * Appends WooCommerce product facts (price, SKU, stock, short description) to
+	 * a product's training text. Returns '' for non-products or when Woo is absent.
+	 *
+	 * @param \WP_Post $post Post object.
+	 * @return string
+	 */
+	private function ai_product_extra_text( \WP_Post $post ): string {
+		if ( 'product' !== $post->post_type || ! function_exists( 'wc_get_product' ) ) {
+			return '';
+		}
+		$product = wc_get_product( $post->ID );
+		if ( ! $product ) {
+			return '';
+		}
+
+		$bits  = array();
+		$price = wp_strip_all_tags( (string) $product->get_price_html() );
+		if ( '' !== trim( $price ) ) {
+			$bits[] = 'Price: ' . $price;
+		}
+		$sku = (string) $product->get_sku();
+		if ( '' !== $sku ) {
+			$bits[] = 'SKU: ' . $sku;
+		}
+		$bits[] = $product->is_in_stock() ? 'Availability: in stock' : 'Availability: out of stock';
+		$short  = trim( wp_strip_all_tags( (string) $product->get_short_description() ) );
+		if ( '' !== $short ) {
+			$bits[] = $short;
+		}
+
+		return $bits ? "\n\n" . implode( ' | ', $bits ) : '';
+	}
+
+	public function ai_train( \WP_REST_Request $request ): \WP_REST_Response {
+		$offset = max( 0, (int) $request->get_param( 'offset' ) );
+		$limit  = (int) $request->get_param( 'limit' );
+		if ( $limit <= 0 || $limit > 50 ) {
+			$limit = 20;
+		}
+		$reset = ! empty( $request->get_param( 'reset' ) ) && 0 === $offset;
+
+		$s    = $this->ai_settings();
+		$docs = array();
+
+		// Manual Q&A / notes + external "learn from" URLs — first batch only.
+		if ( 0 === $offset ) {
+			$manual = trim( (string) $s['manual_qa'] );
+			if ( '' !== $manual ) {
+				$docs[] = array(
+					'id'          => 'manual-qa',
+					'source_type' => 'qa',
+					'source_ref'  => 'manual',
+					'title'       => __( 'Manual notes', 'nexus-lead-suite' ),
+					'url'         => '',
+					'text'        => $manual,
+				);
+			}
+			foreach ( $this->ai_fetch_url_docs() as $url_doc ) {
+				$docs[] = $url_doc;
+			}
+		}
+
+		$query = new \WP_Query(
+			array(
+				'post_type'           => $this->ai_trainable_post_types(),
+				'post_status'         => 'publish',
+				'posts_per_page'      => $limit,
+				'offset'              => $offset,
+				'orderby'             => 'ID',
+				'order'               => 'ASC',
+				'ignore_sticky_posts' => true,
+			)
+		);
+
+		$total = (int) $query->found_posts;
+		foreach ( $query->posts as $post ) {
+			// Products can trigger heavy Woo loops via the_content — use raw content for them.
+			$content = ( 'product' === $post->post_type ) ? $post->post_content : apply_filters( 'the_content', $post->post_content );
+			$body    = trim( wp_strip_all_tags( (string) $content ) );
+			$extra   = $this->ai_product_extra_text( $post );
+			if ( '' === $body && '' === $extra ) {
+				continue;
+			}
+			$title = (string) get_the_title( $post );
+			$docs[] = array(
+				'id'          => 'post-' . (int) $post->ID,
+				'source_type' => (string) $post->post_type,
+				'source_ref'  => (string) $post->ID,
+				'title'       => $title,
+				'url'         => (string) get_permalink( $post ),
+				'text'        => trim( $title . "\n\n" . $body . $extra ),
+			);
+		}
+		wp_reset_postdata();
+
+		$next_offset = $offset + $limit;
+		$done        = $next_offset >= $total;
+
+		if ( 'direct' === $s['mode'] ) {
+			$indexed = $this->ai_index_documents_direct( $s, $docs, $reset );
+			if ( is_wp_error( $indexed ) ) {
+				return rest_ensure_response( array( 'success' => false, 'message' => $indexed->get_error_message() ) );
+			}
+			$chunks       = (int) $indexed;
+			$total_chunks = \nexulesuite_\Core\Vector_Store::count();
+		} else {
+			$res = $this->ai_server_request(
+				'POST',
+				'/ingest',
+				array(
+					'site_id'   => $this->ai_site_id(),
+					'reset'     => $reset,
+					'documents' => $docs,
+				),
+				90
+			);
+			if ( is_wp_error( $res ) ) {
+				return rest_ensure_response( array( 'success' => false, 'message' => $res->get_error_message() ) );
+			}
+			$chunks       = (int) ( $res['chunks'] ?? 0 );
+			$total_chunks = (int) ( $res['total_chunks'] ?? 0 );
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'processed'   => count( $query->posts ),
+					'offset'      => $offset,
+					'nextOffset'  => $done ? null : $next_offset,
+					'total'       => $total,
+					'done'        => $done,
+					'chunks'      => $chunks,
+					'totalChunks' => $total_chunks,
+				),
+			)
+		);
+	}
+
+	/**
+	 * Chunks + embeds a batch of documents into the WordPress vector store.
+	 *
+	 * Each document replaces its own previous chunks, so re-training one batch never
+	 * blanks the rest of the knowledge base. `$reset` wipes everything up front.
+	 *
+	 * @param array<string,mixed>            $s     Pre-read AI settings.
+	 * @param array<int,array<string,mixed>> $docs  Documents from {@see ai_train()}.
+	 * @param bool                           $reset Wipe the index before writing.
+	 * @return int|\WP_Error Chunks written, or the first embedding failure.
+	 */
+	private function ai_index_documents_direct( array $s, array $docs, bool $reset ) {
+		self::ai_load_llm_client();
+		self::ai_load_vector_store();
+
+		$embed = $this->ai_embed_config( $s );
+		if ( null === $embed ) {
+			return new \WP_Error(
+				'nexulesuite_ai_noembed',
+				__( 'Pick an embedding provider and save its API key (Settings → AI Chatbot → Knowledge Base) before training.', 'nexus-lead-suite' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		if ( $reset ) {
+			\nexulesuite_\Core\Vector_Store::delete_all();
+		}
+
+		$written = 0;
+		foreach ( $docs as $doc ) {
+			$chunks = \nexulesuite_\Core\Vector_Store::chunk_text( (string) ( $doc['text'] ?? '' ) );
+			if ( empty( $chunks ) ) {
+				continue;
+			}
+
+			$vectors = array();
+			foreach ( array_chunk( $chunks, self::AI_EMBED_BATCH ) as $batch ) {
+				$embedded = \nexulesuite_\AI\Llm_Client::embed( $embed['provider'], $embed['model'], $embed['key'], $batch );
+				if ( is_wp_error( $embedded ) ) {
+					return $embedded;
+				}
+				if ( count( $embedded ) !== count( $batch ) ) {
+					return new \WP_Error(
+						'nexulesuite_ai_embedcount',
+						__( 'The embedding provider returned fewer vectors than chunks sent. Try again.', 'nexus-lead-suite' ),
+						array( 'status' => 502 )
+					);
+				}
+				$vectors = array_merge( $vectors, $embedded );
+			}
+
+			$written += \nexulesuite_\Core\Vector_Store::replace_document(
+				(string) ( $doc['id'] ?? '' ),
+				array(
+					'source_type' => (string) ( $doc['source_type'] ?? '' ),
+					'source_ref'  => (string) ( $doc['source_ref'] ?? '' ),
+					'title'       => (string) ( $doc['title'] ?? '' ),
+					'url'         => (string) ( $doc['url'] ?? '' ),
+				),
+				$chunks,
+				$vectors
+			);
+		}
+
+		return $written;
+	}
+
+	/**
+	 * Admin: wipe this site's trained memory on the AI server (`POST /reset`).
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function ai_reset( \WP_REST_Request $request ): \WP_REST_Response {
+		unset( $request );
+		$s = $this->ai_settings();
+
+		if ( 'direct' === $s['mode'] ) {
+			self::ai_load_vector_store();
+			$removed = \nexulesuite_\Core\Vector_Store::delete_all();
+
+			return rest_ensure_response( array( 'success' => true, 'data' => array( 'removed' => $removed ) ) );
+		}
+
+		$res = $this->ai_server_request( 'POST', '/reset', array( 'site_id' => $this->ai_site_id() ), 20 );
+		if ( is_wp_error( $res ) ) {
+			return rest_ensure_response( array( 'success' => false, 'message' => $res->get_error_message() ) );
+		}
+		return rest_ensure_response( array( 'success' => true, 'data' => $res ) );
+	}
+
+	/**
+	 * Public: answer a visitor's question (`POST /ai/chat`).
+	 *
+	 * Guarded by the custom `nexulesuite_ai` nonce + a per-IP rate limit, mirroring
+	 * {@see receive_track_events()}. The AI server URL, Bearer key and system prompt
+	 * are injected server-side; the browser never sees them.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function ai_chat( \WP_REST_Request $request ) {
+		$nonce      = sanitize_text_field( (string) $request->get_param( 'nonce' ) );
+		$message    = (string) $request->get_param( 'message' );
+		$history    = $request->get_param( 'history' );
+		$image      = (string) $request->get_param( 'image' );
+		$file       = $request->get_param( 'file' );
+		$session_id = sanitize_text_field( (string) $request->get_param( 'session_id' ) );
+
+		$json = $request->get_json_params();
+		if ( is_array( $json ) ) {
+			if ( '' === $nonce && isset( $json['nonce'] ) ) {
+				$nonce = sanitize_text_field( (string) $json['nonce'] );
+			}
+			if ( '' === $message && isset( $json['message'] ) ) {
+				$message = (string) $json['message'];
+			}
+			if ( ! is_array( $history ) && isset( $json['history'] ) && is_array( $json['history'] ) ) {
+				$history = $json['history'];
+			}
+			if ( '' === $image && isset( $json['image'] ) ) {
+				$image = (string) $json['image'];
+			}
+			if ( ! is_array( $file ) && isset( $json['file'] ) && is_array( $json['file'] ) ) {
+				$file = $json['file'];
+			}
+			if ( '' === $session_id && isset( $json['session_id'] ) ) {
+				$session_id = sanitize_text_field( (string) $json['session_id'] );
+			}
+		}
+
+		if ( ! wp_verify_nonce( $nonce, 'nexulesuite_ai' ) ) {
+			return new \WP_Error(
+				'nexulesuite_ai_nonce',
+				__( 'Your session expired. Please refresh the page and try again.', 'nexus-lead-suite' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$s = $this->ai_settings();
+		if ( empty( $s['enabled'] ) ) {
+			return new \WP_Error( 'nexulesuite_ai_disabled', __( 'AI chat is not available.', 'nexus-lead-suite' ), array( 'status' => 403 ) );
+		}
+
+		$message = trim( wp_strip_all_tags( $message ) );
+		if ( strlen( $message ) > 2000 ) {
+			$message = substr( $message, 0, 2000 );
+		}
+
+		/* Validate an optional attached image (base64 data URI). Only allowed when the admin enabled it. */
+		$image = trim( $image );
+		if ( '' !== $image ) {
+			if ( empty( $s['allow_images'] ) ) {
+				$image = '';
+			} elseif ( ! preg_match( '#^data:image/(png|jpe?g|gif|webp);base64,[A-Za-z0-9+/=\r\n]+$#', $image ) ) {
+				return new \WP_Error( 'nexulesuite_ai_badimage', __( 'Unsupported image format.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
+			} elseif ( strlen( $image ) > self::AI_IMAGE_MAX_BASE64 ) {
+				return new \WP_Error( 'nexulesuite_ai_bigimage', __( 'Image is too large (max ~15 MB).', 'nexus-lead-suite' ), array( 'status' => 413 ) );
+			}
+		}
+
+		/* Validate an optional attached document and read its text (same admin gate as images). */
+		$document = null;
+		if ( is_array( $file ) && empty( $s['allow_images'] ) ) {
+			$file = null;
+		}
+		if ( is_array( $file ) ) {
+			$document = $this->ai_read_attached_file( $file );
+			if ( is_wp_error( $document ) ) {
+				return $document;
+			}
+		}
+
+		if ( '' === $message && '' === $image && null === $document ) {
+			return new \WP_Error( 'nexulesuite_ai_empty', __( 'Please type a message or attach a file.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
+		}
+
+		// Per-IP rate limit (mirror the tracking endpoint).
+		$ip     = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( (string) $_SERVER['REMOTE_ADDR'] ) ) : '';
+		$rl_key = 'nexulesuite_airl_' . md5( $ip );
+		$burst  = (int) get_transient( $rl_key );
+		if ( $burst >= 30 ) {
+			return new \WP_Error( 'nexulesuite_ai_ratelimit', __( 'Too many messages. Please wait a moment.', 'nexus-lead-suite' ), array( 'status' => 429 ) );
+		}
+		set_transient( $rl_key, $burst + 1, MINUTE_IN_SECONDS );
+
+		// Sanitize the incoming short conversation history.
+		$clean_history = array();
+		if ( is_array( $history ) ) {
+			foreach ( array_slice( $history, -8 ) as $turn ) {
+				if ( ! is_array( $turn ) ) {
+					continue;
+				}
+				$role    = ( isset( $turn['role'] ) && 'assistant' === $turn['role'] ) ? 'assistant' : 'user';
+				$content = trim( wp_strip_all_tags( (string) ( $turn['content'] ?? '' ) ) );
+				if ( '' === $content ) {
+					continue;
+				}
+				$clean_history[] = array( 'role' => $role, 'content' => substr( $content, 0, 2000 ) );
+			}
+		}
+
+		$system  = trim( (string) $s['system'] );
+		if ( '' === $system ) {
+			$system = $this->ai_default_system_prompt();
+		}
+
+		/*
+		 * Attached-document text rides in the prompt rather than a separate field, so both
+		 * transports carry it without the AI server needing to know about attachments.
+		 */
+		$prompt = $message;
+		if ( null !== $document ) {
+			$prompt = sprintf(
+				/* translators: 1: file name, 2: extracted text, 3: the visitor's own message. */
+				__( "The visitor attached a file named \"%1\$s\". Its text is between the markers below. Answer using it.\n\n<<<FILE>>>\n%2\$s\n<<<END FILE>>>\n\n%3\$s", 'nexus-lead-suite' ),
+				$document['name'],
+				$document['text'],
+				'' !== $message ? $message : __( 'Summarise this file and list its key points.', 'nexus-lead-suite' )
+			);
+		}
+
+		if ( 'direct' === $s['mode'] ) {
+			$res      = $this->ai_chat_direct( $s, $prompt, $clean_history, $image, $system );
+			$cite_min = self::AI_DIRECT_CITE_SCORE;
+		} else {
+			$payload = array(
+				'site_id'       => $this->ai_site_id(),
+				'message'       => $prompt,
+				'history'       => $clean_history,
+				'system_prompt' => $system,
+				'max_chunks'    => (int) $s['max_chunks'],
+			);
+			$examples = $this->ai_parse_examples( (string) $s['examples'] );
+			if ( ! empty( $examples ) ) {
+				$payload['examples'] = $examples;
+			}
+			if ( '' !== $s['model'] ) {
+				$payload['chat_model'] = $s['model'];
+			}
+			$llm_override = $this->ai_llm_override( $s );
+			if ( null !== $llm_override ) {
+				$payload['llm'] = $llm_override;
+			}
+			if ( '' !== $image ) {
+				$payload['image'] = $image;
+				if ( '' !== $s['vision_model'] ) {
+					$payload['vision_model'] = $s['vision_model'];
+				}
+			}
+
+			$res      = $this->ai_server_request( 'POST', '/chat', $payload, ( '' !== $image || null !== $document ) ? 120 : 60 );
+			$cite_min = 0.5;
+		}
+
+		if ( is_wp_error( $res ) ) {
+			// This endpoint is public: never surface the provider's error text to a visitor.
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Sorry, the assistant is unavailable right now. Please try again shortly.', 'nexus-lead-suite' ),
+				)
+			);
+		}
+
+		$answer   = (string) ( $res['answer'] ?? '' );
+		$sources  = array();
+		$seen_src = array();
+		if ( isset( $res['sources'] ) && is_array( $res['sources'] ) ) {
+			foreach ( $res['sources'] as $src ) {
+				if ( ! is_array( $src ) ) {
+					continue;
+				}
+				// Only cite genuinely relevant pages — hides "Hello world!"/"Sample Page"
+				// noise on greetings and weak matches; deduped and capped at 3. The floor
+				// differs per mode because the two retrieval stacks score on different scales.
+				if ( (float) ( $src['score'] ?? 0 ) < $cite_min ) {
+					continue;
+				}
+				$url = esc_url_raw( (string) ( $src['url'] ?? '' ) );
+				if ( '' === $url || isset( $seen_src[ $url ] ) ) {
+					continue;
+				}
+				$seen_src[ $url ] = true;
+				$sources[]        = array(
+					'title' => sanitize_text_field( (string) ( $src['title'] ?? '' ) ),
+					'url'   => $url,
+				);
+				if ( count( $sources ) >= 3 ) {
+					break;
+				}
+			}
+		}
+
+		// Classify the turn (intent + sentiment) for analytics.
+		$tags = $this->ai_classify( $message );
+
+		// Human-handoff intent: open the lead form when the visitor wants a person /
+		// callback / to book a call — NOT on generic low confidence. Three signals:
+		//  (a) the message matches a handoff phrase,
+		//  (b) a short message is a strong handoff keyword (agent / live / support…),
+		//  (c) the AI's own answer decided to escalate ("connect you with a human…").
+		$handoff_user = (bool) preg_match(
+			'/\b(?:talk|speak|chat|connect)\s+(?:to|with)\s+(?:a\s+|an\s+|the\s+)?(?:human|person|someone|somebody|agent|representative|rep|staff|team|advisor|expert|specialist|consultant|doctor|lawyer)\b'
+			. '|\b(?:live|human|real)\s+(?:support|agent|person|chat|help|assistance|rep|representative)\b'
+			. '|\b(?:human|agent|representative|advisor)\b'
+			. '|\breal\s+person\b'
+			. '|\b(?:call|contact|email|phone|text|reach)\s+me\b'
+			. '|\breach\s+out\s+to\s+me\b|\bget\s+in\s+touch\b|\bcall\s?back\b|\bcallback\b'
+			. '|\bbook\s+(?:an?\s+)?(?:call|meeting|consultation|demo|appointment)\b|\bschedule\s+(?:an?\s+)?(?:call|meeting|consultation|appointment)\b'
+			. '|\bhave\s+(?:someone|somebody)\s+(?:call|contact|email|reach)\b'
+			. '|\bi\s+(?:want|need|would\s+like|wanna)\s+(?:to\s+)?(?:talk|speak|chat|be\s+contacted|a\s+callback)\b/i',
+			$message
+		);
+		// A short message that is a support/live/agent/booking keyword — but NOT an
+		// informational question ("what services do you provide?" must be answered, not a form).
+		$word_count  = str_word_count( $message );
+		$is_question = (bool) preg_match( '/^\s*(?:what|what\'?s|how|where|when|which|who|why|do you|does|is there|are there|can i|could you|would you|tell me|explain|list|show me)\b/i', $message );
+		$handoff_short = ! $is_question && $word_count > 0 && $word_count <= 4 && (bool) preg_match(
+			'/\b(?:live\s*chat|live\s*support|live\s*agent|live\s*help|live|human|real\s+person|agent|representative|rep|advisor|consultant|specialist|receptionist|concierge|operator|executive|coordinator|technician'
+			. '|escalate|escalation|handoff|hand-?off|callback|call\s?back|help\s*desk|helpdesk|service\s*desk'
+			. '|support(?:\s*(?:agent|team|desk|staff|rep))?|customer\s+(?:support|service|care)|customer\s+care'
+			. '|ticket|complaint|talk\s+to|speak\s+to|contact\s+(?:me|us|support|agent|sales|team)'
+			. '|sales\s+(?:agent|rep|representative|consultant|team|executive)|booking|appointment|reservation|consultation)\b/i',
+			$message
+		);
+		$handoff_answer = (bool) preg_match(
+			'/\bconnect\s+you\s+(?:with|to)\b|\bescalat\w+|\bhuman\s+(?:representative|agent|colleague|being)\b'
+			. '|\bput\s+you\s+in\s+touch\b|\bhold\s+(?:on\s+)?for\s+(?:a|just\s+a)\s+(?:moment|second)\b'
+			. '|\bour\s+team\s+will\s+(?:reach|contact|get\s+back|be\s+in\s+touch)\b'
+			. '|\b(?:someone|a\s+(?:team\s+member|colleague|specialist|representative))\s+(?:will|can)\s+(?:reach|contact|call|assist|help)\b'
+			. '|\breach\s+out\s+to\s+you\s+(?:shortly|soon)\b/i',
+			$answer
+		);
+		$handoff = $handoff_user || $handoff_short || $handoff_answer;
+
+		// Store the transcript when the admin opted in (for the Chatbot report dashboard).
+		if ( ! empty( $s['log_chats'] ) && '' !== trim( $answer ) ) {
+			require_once nexulesuite_PLUGIN_DIR . 'core/class-chat-store.php';
+			$page_url = '';
+			if ( is_array( $json ) && isset( $json['page_url'] ) ) {
+				$page_url = esc_url_raw( (string) $json['page_url'] );
+			}
+			// Log what the visitor typed, not the prompt with the whole document inlined.
+			$logged = $message;
+			if ( null !== $document ) {
+				/* translators: %s: attached file name. */
+				$logged = trim( $logged . ' ' . sprintf( __( '[attached: %s]', 'nexus-lead-suite' ), $document['name'] ) );
+			}
+			\nexulesuite_\Core\Chat_Store::record_exchange( $session_id, $logged, $answer, $sources, '' !== $image, $page_url, $tags['intent'], $tags['sentiment'] );
+		}
+
+		// Citations are noise on greetings/social turns, handoff requests, or weak matches — hide them there.
+		$is_social = (bool) preg_match(
+			'/^\s*(?:hi|hey+|hello|hiya|yo|sup|hola|namaste|salam|assalam[ou]*|good\s+(?:morning|afternoon|evening|day)'
+			. '|thanks?|thank\s+you|thx|ok(?:ay)?|cool|great|nice|bye|goodbye|see\s+ya|yes|no|yeah|nope|hmm+)\b/i',
+			$message
+		);
+		if ( $is_social || $handoff || ! empty( $res['low_confidence'] ) ) {
+			$sources = array();
+		}
+
+		// WooCommerce product cards (guarded — empty unless Woo active + product-y message).
+		$products = $this->ai_woo_product_cards( $message );
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'answer'        => $answer,
+					'sources'       => $sources,
+					'lowConfidence' => ! empty( $res['low_confidence'] ),
+					'handoff'       => $handoff,
+					'intent'        => $tags['intent'],
+					'sentiment'     => $tags['sentiment'],
+					'products'      => $products,
+				),
+			)
+		);
+	}
+
+	/**
+	 * Decodes an attached document and extracts its text.
+	 *
+	 * Images take the vision path instead; this handles PDFs and plain-text formats,
+	 * whose text is folded into the prompt so every provider can read them.
+	 *
+	 * @param array<string,mixed> $file Browser payload: name, mime, base64 data.
+	 * @return array{name:string,mime:string,text:string}|\WP_Error
+	 */
+	private function ai_read_attached_file( array $file ) {
+		require_once nexulesuite_PLUGIN_DIR . 'ai/class-file-text.php';
+
+		$name = sanitize_file_name( (string) ( $file['name'] ?? '' ) );
+		$mime = strtolower( trim( (string) ( $file['mime'] ?? '' ) ) );
+		$data = (string) ( $file['data'] ?? '' );
+
+		if ( '' === $name ) {
+			$name = 'attachment';
+		}
+
+		// Accept a bare base64 payload or a full data: URI.
+		if ( 0 === strncmp( $data, 'data:', 5 ) ) {
+			$comma = strpos( $data, ',' );
+			if ( false === $comma ) {
+				return new \WP_Error( 'nexulesuite_ai_badfile', \nexulesuite_\AI\File_Text::error_message( 'unsupported' ), array( 'status' => 400 ) );
+			}
+			$data = substr( $data, $comma + 1 );
+		}
+		$data = preg_replace( '/\s+/', '', $data );
+
+		if ( ! is_string( $data ) || '' === $data ) {
+			return new \WP_Error( 'nexulesuite_ai_badfile', \nexulesuite_\AI\File_Text::error_message( 'empty' ), array( 'status' => 400 ) );
+		}
+		// 4/3 inflation, plus padding slack.
+		if ( strlen( $data ) > (int) ceil( \nexulesuite_\AI\File_Text::MAX_BYTES * 4 / 3 ) + 1024 ) {
+			return new \WP_Error( 'nexulesuite_ai_bigfile', \nexulesuite_\AI\File_Text::error_message( 'too_large' ), array( 'status' => 413 ) );
+		}
+
+		$bytes = base64_decode( $data, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- transport encoding, validated below.
+		if ( false === $bytes ) {
+			return new \WP_Error( 'nexulesuite_ai_badfile', \nexulesuite_\AI\File_Text::error_message( 'corrupt' ), array( 'status' => 400 ) );
+		}
+
+		try {
+			$text = \nexulesuite_\AI\File_Text::extract( $mime, $bytes );
+		} catch ( \Throwable $e ) {
+			$status = in_array( $e->getMessage(), array( 'too_large' ), true ) ? 413 : 400;
+			return new \WP_Error( 'nexulesuite_ai_filetext', \nexulesuite_\AI\File_Text::error_message( $e->getMessage() ), array( 'status' => $status ) );
+		}
+
+		return array(
+			'name' => $name,
+			'mime' => $mime,
+			'text' => $text,
+		);
+	}
+
+	/**
+	 * Answers one turn by calling the model provider's API directly (no AI server).
+	 *
+	 * Retrieval happens here: the visitor's message is embedded, the WordPress vector
+	 * store returns the closest chunks, and they ride on the *final user turn* inside a
+	 * `<reference_context>` block rather than in the system prompt. That keeps the
+	 * system + few-shot prefix byte-identical between turns (so provider-side prompt
+	 * caching can hit) and clearly delimits untrusted page text from instructions.
+	 *
+	 * Returns the same shape the AI server's `/chat` does, so the caller's
+	 * source/handoff/logging code is identical for both modes.
+	 *
+	 * @param array<string,mixed>              $s       Pre-read AI settings.
+	 * @param string                           $message Visitor message (may be empty when image-only).
+	 * @param array<int,array<string,string>>  $history Sanitized prior turns.
+	 * @param string                           $image   Optional validated data-URI.
+	 * @param string                           $system  Resolved system prompt.
+	 * @return array{answer:string,sources:array<int,array<string,mixed>>,low_confidence:bool}|\WP_Error
+	 */
+	private function ai_chat_direct( array $s, string $message, array $history, string $image, string $system ) {
+		self::ai_load_llm_client();
+		self::ai_load_vector_store();
+
+		$provider = (string) $s['llm_provider'];
+		if ( '' === $provider || ! \nexulesuite_\AI\Llm_Client::supports_direct_chat( $provider ) ) {
+			return new \WP_Error( 'nexulesuite_ai_noprovider', __( 'No AI provider is configured.', 'nexus-lead-suite' ), array( 'status' => 500 ) );
+		}
+
+		// ── Retrieve. A missing embedding provider is not fatal: the assistant still
+		// answers, it just has no site context to ground the reply in.
+		$hits  = array();
+		$embed = $this->ai_embed_config( $s );
+		if ( null !== $embed && '' !== $message && \nexulesuite_\Core\Vector_Store::count() > 0 ) {
+			$vectors = \nexulesuite_\AI\Llm_Client::embed( $embed['provider'], $embed['model'], $embed['key'], array( $message ) );
+			if ( ! is_wp_error( $vectors ) && ! empty( $vectors[0] ) ) {
+				$hits = \nexulesuite_\Core\Vector_Store::search( $vectors[0], (int) $s['max_chunks'] );
+			}
+		}
+
+		/*
+		 * `search()` is a pure top-k — it always returns k rows, however poor the match.
+		 * Feeding an unrelated passage to the model is worse than feeding none, so drop
+		 * anything under the absolute floor or far below the best hit before it becomes
+		 * context. What survives here is also what may be cited.
+		 */
+		if ( ! empty( $hits ) ) {
+			$floor = max( self::AI_DIRECT_MIN_SCORE, (float) $hits[0]['score'] * self::AI_DIRECT_RELATIVE );
+			$hits  = array_values(
+				array_filter(
+					$hits,
+					static function ( $hit ) use ( $floor ) {
+						return (float) $hit['score'] >= $floor;
+					}
+				)
+			);
+		}
+
+		// ── Assemble the turns: admin few-shot examples, then history, then this message.
+		$messages = array();
+		foreach ( $this->ai_parse_examples( (string) $s['examples'] ) as $example ) {
+			$messages[] = $example;
+		}
+		foreach ( $history as $turn ) {
+			$messages[] = $turn;
+		}
+
+		$final = $message;
+		if ( ! empty( $hits ) ) {
+			$context = '';
+			foreach ( $hits as $hit ) {
+				$context .= '## ' . $hit['title'] . "\n" . $hit['content'] . "\n\n";
+			}
+			$final = "<reference_context>\n" . trim( $context ) . "\n</reference_context>\n\n" . $message;
+		}
+
+		$can_see = \nexulesuite_\AI\Llm_Client::supports_vision( $provider );
+		if ( '' !== $image && ! $can_see ) {
+			$final = trim( $final . "\n\n[The visitor attached an image, but this model cannot read images. Ask them to describe it in words.]" );
+		}
+
+		$messages[] = array(
+			'role'    => 'user',
+			'content' => $final,
+			'image'   => $can_see ? $image : '',
+		);
+
+		$reply = \nexulesuite_\AI\Llm_Client::chat(
+			$provider,
+			(string) $s['llm_model'],
+			(string) $s['llm_key'],
+			array(
+				'system'      => $system,
+				'messages'    => $messages,
+				'max_tokens'  => 800,
+				'temperature' => 0.2,
+				'timeout'     => ( '' !== $image && $can_see ) ? 120 : 60,
+			)
+		);
+		if ( is_wp_error( $reply ) ) {
+			return $reply;
+		}
+
+		$sources = array();
+		foreach ( $hits as $hit ) {
+			$sources[] = array(
+				'title' => (string) $hit['title'],
+				'url'   => (string) $hit['url'],
+				'score' => (float) $hit['score'],
+			);
+		}
+
+		return array(
+			'answer'  => (string) $reply['text'],
+			'sources' => $sources,
+			// Everything under AI_DIRECT_MIN_SCORE was already filtered out above, so an
+			// empty hit list means nothing on the site was relevant to the question.
+			'low_confidence' => empty( $hits ),
+		);
+	}
+
+	/**
+	 * Public: capture a chat lead (name / email / phone) and notify the business.
+	 *
+	 * Guarded like {@see ai_chat()} (custom nonce + per-IP rate limit). Stored via
+	 * the existing submissions store and surfaced in the Activities log.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function ai_lead( \WP_REST_Request $request ) {
+		$json  = $request->get_json_params();
+		$json  = is_array( $json ) ? $json : array();
+		$get   = static function ( $key ) use ( $request, $json ) {
+			$v = $request->get_param( $key );
+			if ( ( null === $v || '' === $v ) && isset( $json[ $key ] ) ) {
+				$v = $json[ $key ];
+			}
+			return is_string( $v ) ? $v : '';
+		};
+
+		$nonce = sanitize_text_field( $get( 'nonce' ) );
+		if ( ! wp_verify_nonce( $nonce, 'nexulesuite_ai' ) ) {
+			return new \WP_Error( 'nexulesuite_ai_nonce', __( 'Your session expired. Please refresh and try again.', 'nexus-lead-suite' ), array( 'status' => 403 ) );
+		}
+
+		$s = $this->ai_settings();
+		if ( empty( $s['enabled'] ) || empty( $s['lead_enabled'] ) ) {
+			return new \WP_Error( 'nexulesuite_ai_lead_off', __( 'Lead capture is not available.', 'nexus-lead-suite' ), array( 'status' => 403 ) );
+		}
+
+		// Per-IP rate limit (reuse the chat limiter key space, lighter cap).
+		$ip     = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( (string) $_SERVER['REMOTE_ADDR'] ) ) : '';
+		$rl_key = 'nexulesuite_aileadrl_' . md5( $ip );
+		if ( (int) get_transient( $rl_key ) >= 5 ) {
+			return new \WP_Error( 'nexulesuite_ai_lead_rl', __( 'Too many requests. Please wait a moment.', 'nexus-lead-suite' ), array( 'status' => 429 ) );
+		}
+		set_transient( $rl_key, ( (int) get_transient( $rl_key ) ) + 1, 5 * MINUTE_IN_SECONDS );
+
+		$name    = mb_substr( sanitize_text_field( $get( 'name' ) ), 0, 120 );
+		$email   = sanitize_email( $get( 'email' ) );
+		$phone   = mb_substr( sanitize_text_field( $get( 'phone' ) ), 0, 40 );
+		$message = mb_substr( sanitize_textarea_field( $get( 'message' ) ), 0, 1000 );
+		$page    = esc_url_raw( $get( 'page_url' ) );
+		$session = preg_replace( '/[^A-Za-z0-9_\-]/', '', $get( 'session_id' ) );
+		$session = mb_substr( (string) $session, 0, 64 );
+
+		if ( '' !== $email && ! is_email( $email ) ) {
+			$email = '';
+		}
+		if ( '' === $email && '' === $phone ) {
+			return new \WP_Error( 'nexulesuite_ai_lead_empty', __( 'Please provide an email or phone number.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
+		}
+
+		$payload = array(
+			'source'     => 'ai_chat',
+			'name'       => $name,
+			'email'      => $email,
+			'phone'      => $phone,
+			'message'    => $message,
+			'page_url'   => $page,
+			'session_id' => $session,
+		);
+
+		// Store via the existing submissions store (retention/purge/export already handle it).
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-form-submissions-store.php';
+		\nexulesuite_\Core\Form_Submissions_Store::insert( 'ai_chat_lead', $payload );
+
+		// Surface in the Activities dashboard.
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-activities-store.php';
+		\nexulesuite_\Core\Activities_Store::record_interaction(
+			'ai_lead',
+			$email ? $email : $phone,
+			$page,
+			array(
+				'name'    => $name,
+				'email'   => $email,
+				'phone'   => $phone,
+				'message' => $message,
+			)
+		);
+
+		// Notify the business.
+		$to      = $this->ai_lead_recipient();
+		$site    = wp_strip_all_tags( (string) get_bloginfo( 'name' ) );
+		$subject = sprintf( /* translators: %s: site name. */ __( 'New chat lead from %s', 'nexus-lead-suite' ), $site );
+		$lines   = array(
+			__( 'A visitor left their details in the AI chat:', 'nexus-lead-suite' ),
+			'',
+			$name ? __( 'Name: ', 'nexus-lead-suite' ) . $name : '',
+			$email ? __( 'Email: ', 'nexus-lead-suite' ) . $email : '',
+			$phone ? __( 'Phone: ', 'nexus-lead-suite' ) . $phone : '',
+			$message ? __( 'Question: ', 'nexus-lead-suite' ) . $message : '',
+			$page ? __( 'Page: ', 'nexus-lead-suite' ) . $page : '',
+		);
+		$body = implode( "\n", array_filter( $lines, static function ( $l ) { return '' !== $l; } ) );
+		if ( $to && is_email( $to ) ) {
+			wp_mail( $to, $subject, $body );
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'message' => __( 'Thanks! Our team will reach out to you shortly.', 'nexus-lead-suite' ),
+			)
+		);
+	}
+
+	/**
+	 * Admin: chatbot report dashboard data — aggregate stats + conversation list.
+	 *
+	 * @param \WP_REST_Request $request Request (dateFrom, dateTo, search).
+	 * @return \WP_REST_Response
+	 */
+	public function ai_logs_report( \WP_REST_Request $request ): \WP_REST_Response {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-chat-store.php';
+
+		$from   = sanitize_text_field( (string) $request->get_param( 'dateFrom' ) );
+		$to     = sanitize_text_field( (string) $request->get_param( 'dateTo' ) );
+		$search = sanitize_text_field( (string) $request->get_param( 'search' ) );
+
+		if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $from ) ) {
+			$from = '';
+		}
+		if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $to ) ) {
+			$to = '';
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'loggingEnabled' => ! empty( $this->ai_settings()['log_chats'] ),
+					'stats'          => \nexulesuite_\Core\Chat_Store::stats(),
+					'conversations'  => \nexulesuite_\Core\Chat_Store::list_conversations( $from, $to, $search ),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Admin: full transcript for one conversation.
+	 *
+	 * @param \WP_REST_Request $request Request (session).
+	 * @return \WP_REST_Response
+	 */
+	public function ai_logs_detail( \WP_REST_Request $request ): \WP_REST_Response {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-chat-store.php';
+
+		$session = sanitize_text_field( (string) $request->get_param( 'session' ) );
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'sessionId'  => $session,
+					'transcript' => \nexulesuite_\Core\Chat_Store::get_transcript( $session ),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Admin: purge all stored chat transcripts.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function ai_logs_clear( \WP_REST_Request $request ): \WP_REST_Response {
+		unset( $request );
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-chat-store.php';
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array( 'deleted' => \nexulesuite_\Core\Chat_Store::clear_all() ),
+			)
+		);
+	}
+
+	/**
+	 * Admin: read the FAQ / conditional-button config + logging toggle.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function get_ai_faq( \WP_REST_Request $request ): \WP_REST_Response {
+		unset( $request );
+		$s = $this->ai_settings();
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'enabled'       => (bool) $s['faq_enabled'],
+					'logChats'      => (bool) $s['log_chats'],
+					'items'         => $s['faq_items'],
+					'actions'       => $s['faq_actions'],
+					'disclaimer'    => (string) $s['disclaimer'],
+					'triggerLabel'  => (string) $s['trigger_label'],
+					'leadEnabled'   => (bool) $s['lead_enabled'],
+					'leadOffer'     => (string) $s['lead_offer'],
+					'leadRecipient' => (string) $s['lead_recipient'],
+					'wooCards'         => (bool) $s['woo_cards'],
+					'wooActive'        => function_exists( 'wc_get_product' ),
+					'extraUrls'        => implode( "\n", $s['extra_urls'] ),
+					'contactShortcode' => (string) $s['contact_shortcode'],
+					'examples'         => (string) $s['examples'],
+					'iconKeys'         => $this->ai_allowed_icon_keys(),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Admin: save the FAQ config + logging toggle (granular update, preserves the rest).
+	 *
+	 * @param \WP_REST_Request $request Request (enabled, logChats, items, actions, disclaimer, triggerLabel).
+	 * @return \WP_REST_Response
+	 */
+	public function save_ai_faq( \WP_REST_Request $request ): \WP_REST_Response {
+		$opt = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
+		if ( ! is_array( $opt ) ) {
+			$opt = array();
+		}
+
+		$opt['aiFaqEnabled']   = ! empty( $request->get_param( 'enabled' ) );
+		$opt['aiLogChats']     = ! empty( $request->get_param( 'logChats' ) );
+		$opt['aiFaqFlows']     = $this->sanitize_ai_faq_items( $request->get_param( 'items' ) );
+		$opt['aiActions']      = $this->sanitize_ai_actions( $request->get_param( 'actions' ) );
+		$opt['aiDisclaimer']   = mb_substr( sanitize_textarea_field( (string) $request->get_param( 'disclaimer' ) ), 0, 300 );
+		$opt['aiTriggerLabel'] = mb_substr( sanitize_text_field( (string) $request->get_param( 'triggerLabel' ) ), 0, 40 );
+		$opt['aiLeadEnabled']  = ! empty( $request->get_param( 'leadEnabled' ) );
+		$opt['aiLeadOffer']    = mb_substr( sanitize_text_field( (string) $request->get_param( 'leadOffer' ) ), 0, 200 );
+		$lead_to               = sanitize_email( (string) $request->get_param( 'leadRecipient' ) );
+		$opt['aiLeadRecipient'] = ( '' !== $lead_to && is_email( $lead_to ) ) ? $lead_to : '';
+		$opt['aiWooCards']     = ! empty( $request->get_param( 'wooCards' ) );
+		if ( $request->has_param( 'extraUrls' ) ) {
+			$opt['aiExtraUrls'] = $this->sanitize_ai_urls( $request->get_param( 'extraUrls' ) );
+		}
+		if ( $request->has_param( 'contactShortcode' ) ) {
+			$opt['aiContactShortcode'] = mb_substr( sanitize_text_field( (string) $request->get_param( 'contactShortcode' ) ), 0, 500 );
+		}
+		if ( $request->has_param( 'examples' ) ) {
+			$opt['aiExamples'] = mb_substr( sanitize_textarea_field( (string) $request->get_param( 'examples' ) ), 0, 20000 );
+		}
+
+		update_option( self::GENERAL_SETTINGS_OPTION_KEY, $opt, false );
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'enabled'       => (bool) $opt['aiFaqEnabled'],
+					'logChats'      => (bool) $opt['aiLogChats'],
+					'items'         => $opt['aiFaqFlows'],
+					'actions'       => $opt['aiActions'],
+					'disclaimer'    => (string) $opt['aiDisclaimer'],
+					'triggerLabel'  => (string) $opt['aiTriggerLabel'],
+					'leadEnabled'   => (bool) $opt['aiLeadEnabled'],
+					'leadOffer'     => (string) $opt['aiLeadOffer'],
+					'leadRecipient' => (string) $opt['aiLeadRecipient'],
+				),
+			)
+		);
+	}
+
+	/**
+	 * Builds a compact text sample of the site (name, tagline, page/post titles +
+	 * excerpts) for the business-analysis endpoint. Capped so requests stay small.
+	 *
+	 * @return string
+	 */
+	private function ai_build_content_sample(): string {
+		$parts = array();
+
+		$tagline = wp_strip_all_tags( (string) get_bloginfo( 'description' ) );
+		if ( '' !== trim( $tagline ) ) {
+			$parts[] = 'Tagline: ' . $tagline;
+		}
+
+		$query = new \WP_Query(
+			array(
+				'post_type'           => array( 'page', 'post' ),
+				'post_status'         => 'publish',
+				'posts_per_page'      => 25,
+				'orderby'             => 'comment_count', // roughly prioritise popular pages.
+				'order'               => 'DESC',
+				'ignore_sticky_posts' => true,
+				'no_found_rows'       => true,
+			)
+		);
+
+		foreach ( $query->posts as $post ) {
+			$title = trim( wp_strip_all_tags( (string) get_the_title( $post ) ) );
+			$body  = trim( wp_strip_all_tags( (string) $post->post_content ) );
+			$body  = wp_trim_words( $body, 55, '' );
+			$line  = '[' . $post->post_type . '] ' . $title;
+			if ( '' !== $body ) {
+				$line .= ': ' . $body;
+			}
+			$parts[] = $line;
+		}
+		wp_reset_postdata();
+
+		return mb_substr( implode( "\n\n", $parts ), 0, 14000 );
+	}
+
+	/**
+	 * Admin: analyse the site and propose a tailored persona + suggested questions + actions.
+	 * Purely a preview — nothing is saved until {@see ai_autogen_apply()}.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function ai_autogen( \WP_REST_Request $request ): \WP_REST_Response {
+		unset( $request );
+
+		$s = $this->ai_settings();
+		if ( empty( $s['enabled'] ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Enable the AI Chatbot (Settings) first, then Save.', 'nexus-lead-suite' ),
+				)
+			);
+		}
+
+		if ( 'direct' === $s['mode'] ) {
+			$res = $this->ai_autogen_direct( $s );
+		} else {
+			if ( '' === $s['url'] ) {
+				return rest_ensure_response(
+					array(
+						'success' => false,
+						'message' => __( 'Set the AI server URL (Settings) first, then Save.', 'nexus-lead-suite' ),
+					)
+				);
+			}
+
+			$payload = array(
+				'site_id'        => $this->ai_site_id(),
+				'site_name'      => wp_strip_all_tags( (string) get_bloginfo( 'name' ) ),
+				'content_sample' => $this->ai_build_content_sample(),
+			);
+			if ( '' !== $s['model'] ) {
+				$payload['chat_model'] = $s['model'];
+			}
+			$llm_override = $this->ai_llm_override( $s );
+			if ( null !== $llm_override ) {
+				$payload['llm'] = $llm_override;
+			}
+
+			$res = $this->ai_server_request( 'POST', '/analyze', $payload, 120 );
+		}
+
+		if ( is_wp_error( $res ) ) {
+			return rest_ensure_response( array( 'success' => false, 'message' => $res->get_error_message() ) );
+		}
+
+		$allowed = $this->ai_allowed_icon_keys();
+		$map     = static function ( $list, $cap ) use ( $allowed ) {
+			$out = array();
+			if ( is_array( $list ) ) {
+				foreach ( $list as $row ) {
+					if ( ! is_array( $row ) ) {
+						continue;
+					}
+					$label = trim( sanitize_text_field( (string) ( $row['label'] ?? '' ) ) );
+					if ( '' === $label ) {
+						continue;
+					}
+					$icon = sanitize_key( (string) ( $row['icon'] ?? '' ) );
+					$out[] = array(
+						'label' => mb_substr( $label, 0, 120 ),
+						'icon'  => in_array( $icon, $allowed, true ) ? $icon : '',
+					);
+					if ( count( $out ) >= $cap ) {
+						break;
+					}
+				}
+			}
+			return $out;
+		};
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'businessType' => sanitize_text_field( (string) ( $res['business_type'] ?? '' ) ),
+					'summary'      => sanitize_text_field( (string) ( $res['summary'] ?? '' ) ),
+					'systemPrompt' => sanitize_textarea_field( (string) ( $res['system_prompt'] ?? '' ) ),
+					'questions'    => $map( $res['questions'] ?? array(), 6 ),
+					'actions'      => $map( $res['actions'] ?? array(), 3 ),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Auto-Setup against a provider API, mirroring the AI server's `/analyze` response.
+	 *
+	 * The model is asked only for the *classification* (business type, summary, suggested
+	 * questions and actions). The system prompt is then assembled deterministically from
+	 * that summary — models asked to write their own prompt return nested objects and
+	 * wildly variable prose, which is unusable as a stored setting.
+	 *
+	 * @param array<string,mixed> $s Pre-read AI settings.
+	 * @return array<string,mixed>|\WP_Error
+	 */
+	private function ai_autogen_direct( array $s ) {
+		self::ai_load_llm_client();
+
+		$provider = (string) $s['llm_provider'];
+		if ( '' === $provider || ! \nexulesuite_\AI\Llm_Client::supports_direct_chat( $provider ) ) {
+			return new \WP_Error(
+				'nexulesuite_ai_noprovider',
+				__( 'Choose an AI provider and save its API key (Settings → AI Chatbot) first.', 'nexus-lead-suite' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$site_name = wp_strip_all_tags( (string) get_bloginfo( 'name' ) );
+		$icons     = implode( ', ', $this->ai_allowed_icon_keys() );
+
+		$instruction = sprintf(
+			/* translators: 1: site name, 2: allowed icon keys, 3: site content sample. */
+			"You are analysing the website \"%1\$s\" to configure its support chatbot.\n\n"
+			. "Return ONLY a JSON object with exactly these keys:\n"
+			. "  \"business_type\": a two-to-four word label for what this business does.\n"
+			. "  \"summary\": one or two sentences describing what they offer, in the third person.\n"
+			. "  \"questions\": 4-6 objects {\"label\", \"icon\"} — questions a real visitor would ask this business.\n"
+			. "  \"actions\": 2-3 objects {\"label\", \"icon\"} — short call-to-action button labels.\n\n"
+			. "Every \"icon\" MUST be one of: %2\$s\n"
+			. "Base everything strictly on the content below. Do not invent services.\n\n"
+			. "<site_content>\n%3\$s\n</site_content>",
+			$site_name,
+			$icons,
+			$this->ai_build_content_sample()
+		);
+
+		$reply = \nexulesuite_\AI\Llm_Client::chat(
+			$provider,
+			(string) $s['llm_model'],
+			(string) $s['llm_key'],
+			array(
+				'system'      => 'You are a precise analyst. You reply with a single JSON object and nothing else.',
+				'messages'    => array( array( 'role' => 'user', 'content' => $instruction ) ),
+				'max_tokens'  => 900,
+				'temperature' => 0.1,
+				'json'        => true,
+				'timeout'     => 120,
+			)
+		);
+		if ( is_wp_error( $reply ) ) {
+			return $reply;
+		}
+
+		$parsed = $this->ai_extract_json( (string) $reply['text'] );
+		if ( null === $parsed ) {
+			return new \WP_Error(
+				'nexulesuite_ai_badjson',
+				__( 'The model did not return usable JSON. Try again, or pick a stronger model.', 'nexus-lead-suite' ),
+				array( 'status' => 502 )
+			);
+		}
+
+		$summary = trim( (string) ( $parsed['summary'] ?? '' ) );
+		$prompt  = $this->ai_default_system_prompt();
+		if ( '' !== $summary ) {
+			$prompt .= "\n\nAbout us: " . $summary;
+		}
+
+		return array(
+			'business_type' => (string) ( $parsed['business_type'] ?? '' ),
+			'summary'       => $summary,
+			'system_prompt' => $prompt,
+			'questions'     => isset( $parsed['questions'] ) && is_array( $parsed['questions'] ) ? $parsed['questions'] : array(),
+			'actions'       => isset( $parsed['actions'] ) && is_array( $parsed['actions'] ) ? $parsed['actions'] : array(),
+		);
+	}
+
+	/**
+	 * Decodes a JSON object from a model reply, tolerating ```json fences and prose around
+	 * it (providers without a native JSON mode — Anthropic — wrap the object).
+	 *
+	 * @param string $text Raw model output.
+	 * @return array<string,mixed>|null
+	 */
+	private function ai_extract_json( string $text ): ?array {
+		$text = trim( $text );
+
+		$decoded = json_decode( $text, true );
+		if ( is_array( $decoded ) ) {
+			return $decoded;
+		}
+
+		$start = strpos( $text, '{' );
+		$end   = strrpos( $text, '}' );
+		if ( false === $start || false === $end || $end <= $start ) {
+			return null;
+		}
+
+		$decoded = json_decode( substr( $text, $start, $end - $start + 1 ), true );
+
+		return is_array( $decoded ) ? $decoded : null;
+	}
+
+	/**
+	 * Admin: apply selected auto-generated suggestions to the live config.
+	 * Only the chosen parts are written; other settings are preserved.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function ai_autogen_apply( \WP_REST_Request $request ): \WP_REST_Response {
+		$opt = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
+		if ( ! is_array( $opt ) ) {
+			$opt = array();
+		}
+
+		$applied = array();
+
+		if ( ! empty( $request->get_param( 'applyPrompt' ) ) ) {
+			$prompt = trim( sanitize_textarea_field( (string) $request->get_param( 'systemPrompt' ) ) );
+			if ( '' !== $prompt ) {
+				$opt['aiSystemPrompt'] = mb_substr( $prompt, 0, 1500 );
+				$applied[]             = 'prompt';
+			}
+		}
+
+		if ( ! empty( $request->get_param( 'applyQuestions' ) ) ) {
+			$raw_q = $request->get_param( 'questions' );
+			$items = array();
+			if ( is_array( $raw_q ) ) {
+				foreach ( $raw_q as $q ) {
+					if ( ! is_array( $q ) ) {
+						continue;
+					}
+					// Suggested questions have no canned answer — clicking sends them to the AI.
+					$items[] = array(
+						'label'     => (string) ( $q['label'] ?? '' ),
+						'answer'    => '',
+						'icon'      => (string) ( $q['icon'] ?? '' ),
+						'followups' => array(),
+					);
+				}
+			}
+			$opt['aiFaqFlows']   = $this->sanitize_ai_faq_items( $items );
+			$opt['aiFaqEnabled'] = true;
+			$applied[]           = 'questions';
+		}
+
+		if ( ! empty( $request->get_param( 'applyActions' ) ) ) {
+			$opt['aiActions'] = $this->sanitize_ai_actions( $request->get_param( 'actions' ) );
+			$applied[]        = 'actions';
+		}
+
+		update_option( self::GENERAL_SETTINGS_OPTION_KEY, $opt, false );
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'applied'      => $applied,
+					'faqEnabled'   => ! empty( $opt['aiFaqEnabled'] ),
+					'items'        => $opt['aiFaqFlows'] ?? array(),
+					'actions'      => $opt['aiActions'] ?? array(),
+					'systemPrompt' => (string) ( $opt['aiSystemPrompt'] ?? '' ),
 				),
 			)
 		);
@@ -1727,6 +4310,104 @@ final class Rest_Api {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Lists the named share links. Tokens are never returned — they exist only in the
+	 * URL handed over at creation time.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function list_client_links(): \WP_REST_Response {
+		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-report-source.php';
+
+		$links = array();
+		foreach ( \nexulesuite_\Public\Client_Access::all_links() as $link ) {
+			$links[] = array(
+				'id'       => (string) ( $link['id'] ?? '' ),
+				'label'    => (string) ( $link['label'] ?? '' ),
+				'created'  => (int) ( $link['created'] ?? 0 ),
+				'expires'  => (int) ( $link['expires'] ?? 0 ),
+				'sections' => \nexulesuite_\Core\Report_Source::sanitize_sections( $link['sections'] ?? array() ),
+				'uses'     => (int) ( $link['uses'] ?? 0 ),
+				'lastUsed' => (int) ( $link['last_used'] ?? 0 ),
+			);
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'links'    => $links,
+					'sections' => \nexulesuite_\Core\Report_Source::SECTIONS,
+				),
+			)
+		);
+	}
+
+	/**
+	 * Creates a share link. The URL is returned once and cannot be recovered later.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function create_client_link( \WP_REST_Request $request ) {
+		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-report-source.php';
+
+		if ( ! \nexulesuite_\Public\Client_Access::is_allowed_from_db() ) {
+			return new \WP_Error(
+				'nexulesuite_client_access_disabled',
+				__( 'Save settings with "Allow Client Access" enabled before generating a link.', 'nexus-lead-suite' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$label = trim( sanitize_text_field( (string) $request->get_param( 'label' ) ) );
+		if ( '' === $label ) {
+			$label = __( 'Client link', 'nexus-lead-suite' );
+		}
+
+		// 0 means "never expires"; otherwise cap at two years.
+		$expires_days = min( 730, absint( $request->get_param( 'expiresDays' ) ) );
+
+		$sections = \nexulesuite_\Core\Report_Source::sanitize_sections( $request->get_param( 'sections' ) );
+		if ( empty( $sections ) ) {
+			$sections = \nexulesuite_\Core\Report_Source::DEFAULT_SHARED_SECTIONS;
+		}
+
+		$created = \nexulesuite_\Public\Client_Access::create_link( $label, $expires_days, $sections );
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'id'       => $created['id'],
+					'url'      => $created['url'],
+					'label'    => $label,
+					'expires'  => (int) $created['link']['expires'],
+					'sections' => $sections,
+				),
+			)
+		);
+	}
+
+	/**
+	 * Revokes a share link.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function revoke_client_link( \WP_REST_Request $request ) {
+		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
+
+		$id = sanitize_text_field( (string) $request->get_param( 'id' ) );
+		if ( ! \nexulesuite_\Public\Client_Access::revoke_link( $id ) ) {
+			return new \WP_Error( 'nexulesuite_link_not_found', __( 'That link no longer exists.', 'nexus-lead-suite' ), array( 'status' => 404 ) );
+		}
+
+		return rest_ensure_response( array( 'success' => true ) );
 	}
 
 	/**
@@ -3985,52 +6666,60 @@ final class Rest_Api {
 	}
 
 	/**
-	 * Builds PDF table rows from stored interactions (never trusts client-supplied row payloads).
+	 * Sections this request may render.
 	 *
-	 * @param string $tab       Tab filter.
-	 * @param string $date_from Start date Y-m-d or empty.
-	 * @param string $date_to   End date Y-m-d or empty.
-	 * @param string $search    Search string.
-	 * @return array<int,array<string,string>>
+	 * An admin gets whatever they ask for; a share link is confined to the sections it
+	 * was created with, so a link that cannot see chats never renders one — even if the
+	 * client edits the request body.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return string[]
 	 */
-	private function build_pdf_table_rows_from_filters( string $tab, string $date_from, string $date_to, string $search ): array {
-		require_once nexulesuite_PLUGIN_DIR . 'core/class-activities-store.php';
+	private function permitted_report_sections( \WP_REST_Request $request ): array {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-report-source.php';
 
-		$db_rows    = \nexulesuite_\Core\Activities_Store::fetch_report_rows(
-			$tab,
-			$date_from,
-			$date_to,
-			$search,
-			\nexulesuite_\Core\Activities_Store::PDF_EXPORT_ROW_LIMIT
-		);
-		$table_rows = array();
-
-		foreach ( $db_rows as $row ) {
-			$act          = \nexulesuite_\Core\Activities_Store::map_db_row_to_activity( $row );
-			$table_rows[] = array(
-				'identifier'  => $act['actionName'],
-				'reference'   => $act['pageUrl'],
-				'mail_status' => isset( $act['mailStatus'] ) ? (string) $act['mailStatus'] : '',
-			);
+		$requested = \nexulesuite_\Core\Report_Source::sanitize_sections( $request->get_param( 'sections' ) );
+		if ( empty( $requested ) ) {
+			$requested = array( 'summary', 'activities' );
 		}
 
-		return $table_rows;
+		if ( current_user_can( 'manage_options' ) ) {
+			return $requested;
+		}
+
+		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
+		$granted = \nexulesuite_\Public\Client_Access::token_sections( (string) $request->get_param( 'token' ) );
+
+		return array_values( array_intersect( $requested, $granted ) );
 	}
 
 	/**
-	 * Generates an Activities PDF report and returns a URL.
+	 * Generates a report PDF and returns its URL.
+	 *
+	 * Serves both `/reports/activities/pdf` (legacy, defaults to summary + activity) and
+	 * `/reports/combined/pdf`, which may also carry form submissions and chat transcripts.
 	 *
 	 * @param \WP_REST_Request $request Request.
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function generate_activities_pdf( \WP_REST_Request $request ) {
-		require_once nexulesuite_PLUGIN_DIR . 'core/class-simple-pdf.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-report-source.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-report-pdf.php';
 
 		try {
 			$tab       = $this->sanitize_activity_tab( (string) $request->get_param( 'tab' ) );
 			$date_from = sanitize_text_field( (string) $request->get_param( 'dateFrom' ) );
 			$date_to   = sanitize_text_field( (string) $request->get_param( 'dateTo' ) );
 			$search    = sanitize_text_field( (string) $request->get_param( 'search' ) );
+			$sections  = $this->permitted_report_sections( $request );
+
+			if ( empty( $sections ) ) {
+				return new \WP_Error(
+					'nexulesuite_report_forbidden',
+					__( 'This link cannot export those sections.', 'nexus-lead-suite' ),
+					array( 'status' => 403 )
+				);
+			}
 
 			if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date_from ) ) {
 				$date_from = '';
@@ -4039,8 +6728,16 @@ final class Rest_Api {
 				$date_to = '';
 			}
 
-			$date_line  = wp_date( 'M j, Y', current_time( 'timestamp' ) );
-			$table_rows = $this->build_pdf_table_rows_from_filters( $tab, $date_from, $date_to, $search );
+			$report = \nexulesuite_\Core\Report_Source::fetch(
+				array(
+					'tab'      => $tab,
+					'from'     => $date_from,
+					'to'       => $date_to,
+					'search'   => $search,
+					'sections' => $sections,
+					'limit'    => 5000,
+				)
+			);
 
 			$logo = $this->get_report_logo_jpeg_data();
 			if ( null === $logo ) {
@@ -4050,18 +6747,7 @@ final class Rest_Api {
 				$logo['max_display'] = $this->get_report_logo_pdf_max_display();
 			}
 
-			$pdf_bytes = \nexulesuite_\Simple_Pdf::build_activities_report_pdf(
-				(string) get_bloginfo( 'name' ),
-				array(
-					'date_line' => $date_line,
-					'tab'       => $tab,
-					'dateFrom'  => $date_from,
-					'dateTo'    => $date_to,
-					'search'    => $search,
-				),
-				$table_rows,
-				is_array( $logo ) ? $logo : array()
-			);
+			$pdf_bytes = \nexulesuite_\Core\Report_Pdf::build( $report, is_array( $logo ) ? $logo : array() );
 
 			$uploads = wp_upload_dir();
 			if ( empty( $uploads['basedir'] ) || empty( $uploads['baseurl'] ) ) {

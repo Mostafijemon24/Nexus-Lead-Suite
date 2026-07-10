@@ -35,6 +35,7 @@ function nexulesuite_uninstall_option_keys(): array {
 		'nexulesuite_forms_builder_v0',
 		'nexulesuite_recaptcha_keys_v0',
 		'nexulesuite_turnstile_keys_v0',
+		'nexulesuite_client_links_v1',
 		'nexulesuite_menu_items_v1',
 		'nexulesuite_popups_v1',
 		'nexulesuite_email_templates_v1',
@@ -94,15 +95,33 @@ function nexulesuite_uninstall_delete_site_data(): void {
 
 	$interactions = $wpdb->prefix . 'nexulesuite_interactions';
 	$submissions  = $wpdb->prefix . 'nexulesuite_submissions';
+	$chat_logs    = $wpdb->prefix . 'nexulesuite_chat_logs';
+	$ai_vectors   = $wpdb->prefix . 'nexulesuite_ai_vectors';
 
 	// Table identifiers are built from $wpdb->prefix only.
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- intentional uninstall cleanup.
 	$wpdb->query( "DROP TABLE IF EXISTS `{$interactions}`" );
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- intentional uninstall cleanup.
 	$wpdb->query( "DROP TABLE IF EXISTS `{$submissions}`" );
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- intentional uninstall cleanup.
+	$wpdb->query( "DROP TABLE IF EXISTS `{$chat_logs}`" );
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- intentional uninstall cleanup.
+	$wpdb->query( "DROP TABLE IF EXISTS `{$ai_vectors}`" );
 
 	foreach ( nexulesuite_uninstall_option_keys() as $key ) {
 		delete_option( $key );
+	}
+
+	// Generated report PDFs live outside the database.
+	$nexulesuite_uploads = wp_upload_dir();
+	if ( ! empty( $nexulesuite_uploads['basedir'] ) ) {
+		$nexulesuite_report_dir = trailingslashit( (string) $nexulesuite_uploads['basedir'] ) . 'Nexus-Lead-Suite';
+		$nexulesuite_pdfs       = is_dir( $nexulesuite_report_dir ) ? glob( trailingslashit( $nexulesuite_report_dir ) . '*.pdf' ) : array();
+		if ( is_array( $nexulesuite_pdfs ) ) {
+			foreach ( $nexulesuite_pdfs as $nexulesuite_pdf ) {
+				wp_delete_file( $nexulesuite_pdf );
+			}
+		}
 	}
 
 	$like_transient        = $wpdb->esc_like( '_transient_nexulesuite_' ) . '%';

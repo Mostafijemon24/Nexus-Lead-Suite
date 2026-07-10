@@ -2,12 +2,27 @@
 	'use strict';
 
 	var btn = document.getElementById('nexulesuite_client-pdf');
+	var printBtn = document.getElementById('nexulesuite_client-print');
 	var msgEl = document.getElementById('nexulesuite_client-pdf-msg');
-	if (!btn || typeof nexulesuite_ClientPdfCfg !== 'object') {
+	if (typeof nexulesuite_ClientPdfCfg !== 'object') {
 		return;
 	}
 
 	var cfg = nexulesuite_ClientPdfCfg;
+
+	/* The print view renders the same report with a print stylesheet; the browser shapes
+	   scripts the embedded PDF font cannot, so this is the path for non-Latin text. */
+	if (printBtn) {
+		printBtn.addEventListener('click', function () {
+			var url = new URL(window.location.href);
+			url.searchParams.set('print', '1');
+			window.open(url.toString(), '_blank', 'noopener,noreferrer');
+		});
+	}
+
+	if (!btn) {
+		return;
+	}
 
 	btn.addEventListener('click', function () {
 		if (msgEl) {
@@ -24,7 +39,8 @@
 				tab: cfg.tab,
 				dateFrom: cfg.dateFrom,
 				dateTo: cfg.dateTo,
-				search: cfg.search
+				search: cfg.search,
+				sections: cfg.sections || []
 			})
 		})
 			.then(function (res) {
