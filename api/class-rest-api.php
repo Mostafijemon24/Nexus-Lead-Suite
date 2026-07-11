@@ -2025,25 +2025,27 @@ final class Rest_Api {
 
 		/* Provider (LLM) credentials — same masked/encrypted contract as the AI-server key. */
 		self::ai_load_llm_client();
-		$prev_llm_key  = isset( $prev['aiLlmApiKey'] ) ? (string) $prev['aiLlmApiKey'] : '';
-		$new_llm_key   = isset( $input['aiLlmApiKey'] ) ? trim( (string) $input['aiLlmApiKey'] ) : '';
-		$llm_key_store = ( '' === $new_llm_key ) ? $prev_llm_key : \nexulesuite_\Mailer::encrypt_secret( $new_llm_key );
-		$llm_provider  = strtolower( sanitize_text_field( (string) ( $input['aiLlmProvider'] ?? '' ) ) );
+		$prev_llm_provider = strtolower( trim( (string) ( $prev['aiLlmProvider'] ?? '' ) ) );
+		$llm_provider      = strtolower( sanitize_text_field( (string) ( $input['aiLlmProvider'] ?? '' ) ) );
 		if ( null === \nexulesuite_\AI\Llm_Client::provider( $llm_provider ) ) {
 			$llm_provider = '';
 		}
-		$llm_model = sanitize_text_field( (string) ( $input['aiLlmModel'] ?? '' ) );
-		$llm_model = mb_substr( trim( $llm_model ), 0, 128 );
+		$prev_llm_key  = isset( $prev['aiLlmApiKey'] ) ? (string) $prev['aiLlmApiKey'] : '';
+		$new_llm_key   = isset( $input['aiLlmApiKey'] ) ? trim( (string) $input['aiLlmApiKey'] ) : '';
+		$llm_key_store = self::carry_provider_key( $new_llm_key, $prev_llm_key, $llm_provider, $prev_llm_provider );
+		$llm_model     = sanitize_text_field( (string) ( $input['aiLlmModel'] ?? '' ) );
+		$llm_model     = mb_substr( trim( $llm_model ), 0, 128 );
 
 		/* Embedding provider — only vendors with a real embeddings endpoint are accepted. */
-		$prev_embed_key  = isset( $prev['aiEmbedApiKey'] ) ? (string) $prev['aiEmbedApiKey'] : '';
-		$new_embed_key   = isset( $input['aiEmbedApiKey'] ) ? trim( (string) $input['aiEmbedApiKey'] ) : '';
-		$embed_key_store = ( '' === $new_embed_key ) ? $prev_embed_key : \nexulesuite_\Mailer::encrypt_secret( $new_embed_key );
-		$embed_provider  = strtolower( sanitize_text_field( (string) ( $input['aiEmbedProvider'] ?? '' ) ) );
+		$prev_embed_provider = strtolower( trim( (string) ( $prev['aiEmbedProvider'] ?? '' ) ) );
+		$embed_provider      = strtolower( sanitize_text_field( (string) ( $input['aiEmbedProvider'] ?? '' ) ) );
 		if ( ! \nexulesuite_\AI\Llm_Client::supports_embeddings( $embed_provider ) ) {
 			$embed_provider = '';
 		}
-		$embed_model = mb_substr( trim( sanitize_text_field( (string) ( $input['aiEmbedModel'] ?? '' ) ) ), 0, 128 );
+		$prev_embed_key  = isset( $prev['aiEmbedApiKey'] ) ? (string) $prev['aiEmbedApiKey'] : '';
+		$new_embed_key   = isset( $input['aiEmbedApiKey'] ) ? trim( (string) $input['aiEmbedApiKey'] ) : '';
+		$embed_key_store = self::carry_provider_key( $new_embed_key, $prev_embed_key, $embed_provider, $prev_embed_provider );
+		$embed_model     = mb_substr( trim( sanitize_text_field( (string) ( $input['aiEmbedModel'] ?? '' ) ) ), 0, 128 );
 
 		// An older client that omits the field must not flip a working server install to direct.
 		$conn_mode = strtolower( sanitize_text_field( (string) ( $input['aiConnMode'] ?? '' ) ) );
@@ -2202,6 +2204,28 @@ final class Rest_Api {
 	 */
 	private static function ai_load_vector_store(): void {
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-vector-store.php';
+	}
+
+	/**
+	 * Decides what to store for a provider API key on save.
+	 *
+	 * A blank key field means "keep the saved one" — but only while the provider is
+	 * unchanged. Keys are vendor-scoped, so carrying one across a provider switch would
+	 * send, say, an OpenRouter key to `api.openai.com` and the admin would see the other
+	 * vendor rejecting it. A switch without a fresh key therefore clears the old one.
+	 *
+	 * @param string $new_key       Key typed in this request ('' when the field was left blank).
+	 * @param string $stored_key    Encrypted key currently on file.
+	 * @param string $provider      Provider being saved now.
+	 * @param string $prev_provider Provider the stored key was saved under.
+	 * @return string Encrypted key to store ('' clears it).
+	 */
+	private static function carry_provider_key( string $new_key, string $stored_key, string $provider, string $prev_provider ): string {
+		if ( '' !== $new_key ) {
+			return \nexulesuite_\Mailer::encrypt_secret( $new_key );
+		}
+
+		return $provider === $prev_provider ? $stored_key : '';
 	}
 
 	/**
@@ -2481,6 +2505,15 @@ final class Rest_Api {
 				'price'   => $price,
 				'onSale'  => (bool) $product->is_on_sale(),
 				'inStock' => (bool) $product->is_in_stock(),
+				// Woo-native add-to-cart, always an ABSOLUTE url (add_to_cart_url() is relative to the
+				// current request, which is the REST route here). Simple+buyable → `permalink?add-to-cart=id`;
+				// variable/grouped/out-of-stock → the product page ("Select options" / "Read more").
+				'addUrl'  => esc_url_raw(
+					( 'simple' === $product->get_type() && $product->is_purchasable() && $product->is_in_stock() )
+						? add_query_arg( 'add-to-cart', $product->get_id(), $product->get_permalink() )
+						: (string) $product->get_permalink()
+				),
+				'addText' => wp_strip_all_tags( (string) $product->add_to_cart_text() ),
 			);
 			if ( count( $cards ) >= $limit ) {
 				break;
@@ -2882,6 +2915,18 @@ final class Rest_Api {
 			return array(
 				'success' => false,
 				'message' => __( 'Choose an AI provider (e.g. OpenAI, Claude, Gemini) and click Save Configuration first.', 'nexus-lead-suite' ),
+			);
+		}
+
+		/* Without this the vendor answers with its own "bad key" text, which reads as a key problem rather than a missing one. */
+		if ( '' === trim( (string) $s['llm_key'] ) ) {
+			return array(
+				'success' => false,
+				'message' => sprintf(
+					/* translators: %s: provider label. */
+					__( 'No %s API key is saved. Paste the key for this provider, then click Save Configuration.', 'nexus-lead-suite' ),
+					\nexulesuite_\AI\Llm_Client::label( $provider )
+				),
 			);
 		}
 
@@ -3301,6 +3346,25 @@ final class Rest_Api {
 				return new \WP_Error( 'nexulesuite_ai_badimage', __( 'Unsupported image format.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
 			} elseif ( strlen( $image ) > self::AI_IMAGE_MAX_BASE64 ) {
 				return new \WP_Error( 'nexulesuite_ai_bigimage', __( 'Image is too large (max ~15 MB).', 'nexus-lead-suite' ), array( 'status' => 413 ) );
+			}
+		}
+
+		/*
+		 * Vision has no memory: the chat history carries text only, so a visitor who shares
+		 * an image and then asks a follow-up ("do you see it?", "what is this?") would get
+		 * "I can't see images" because that turn has no image. Keep the last image for the
+		 * session (short TTL) and re-attach it to a follow-up that clearly refers to a
+		 * picture, so the image stays in context across turns.
+		 */
+		if ( '' !== $session_id && ! empty( $s['allow_images'] ) ) {
+			$img_cache_key = 'nexulesuite_ai_img_' . md5( $session_id );
+			if ( '' !== $image ) {
+				set_transient( $img_cache_key, $image, 15 * MINUTE_IN_SECONDS );
+			} elseif ( preg_match( '/\b(images?|pictures?|pics?|photos?|screenshots?)\b|\b(?:do|can|could|did)\s+you\s+see\b|\bwhat\s+(?:is|are|do)\s+(?:this|that|these|those|you\s+see)\b/i', $message ) ) {
+				$stored = get_transient( $img_cache_key );
+				if ( is_string( $stored ) && '' !== $stored ) {
+					$image = $stored;
+				}
 			}
 		}
 
@@ -5653,6 +5717,51 @@ final class Rest_Api {
 				);
 			}
 
+			// Conditional confirmations (ordered list; the server picks the first match, else the default).
+			$confirmations_out = array();
+			$has_default       = false;
+			$confirmations_in  = isset( $form['confirmations'] ) && is_array( $form['confirmations'] ) ? $form['confirmations'] : array();
+			foreach ( $confirmations_in as $conf ) {
+				if ( ! is_array( $conf ) ) {
+					continue;
+				}
+				$is_default = ! empty( $conf['isDefault'] );
+				$has_default = $has_default || $is_default;
+				$confirmations_out[] = array(
+					'id'          => isset( $conf['id'] ) ? sanitize_text_field( (string) $conf['id'] ) : 'confirm-' . ( count( $confirmations_out ) + 1 ),
+					'name'        => isset( $conf['name'] ) ? sanitize_text_field( (string) $conf['name'] ) : 'Confirmation',
+					'isDefault'   => $is_default,
+					'type'        => ( isset( $conf['type'] ) && 'redirect' === $conf['type'] ) ? 'redirect' : 'message',
+					'message'     => isset( $conf['message'] ) ? wp_kses_post( (string) $conf['message'] ) : '',
+					'redirectUrl' => isset( $conf['redirectUrl'] ) ? esc_url_raw( trim( (string) $conf['redirectUrl'] ) ) : '',
+					'conditional' => $is_default ? array( 'enabled' => false, 'match' => 'all', 'rules' => array() ) : $this->sanitize_confirmation_conditional( $conf['conditional'] ?? array() ),
+				);
+			}
+			if ( ! $has_default ) {
+				array_unshift( $confirmations_out, array(
+					'id' => 'confirm-default', 'name' => 'Default confirmation', 'isDefault' => true, 'type' => 'message',
+					'message' => __( 'Thank you! Your submission has been received.', 'nexus-lead-suite' ), 'redirectUrl' => '',
+					'conditional' => array( 'enabled' => false, 'match' => 'all', 'rules' => array() ),
+				) );
+			}
+
+			// Conditional email routing (extra recipients when a rule set matches).
+			$email_routes_out = array();
+			$email_routes_in  = isset( $form['emailRoutes'] ) && is_array( $form['emailRoutes'] ) ? $form['emailRoutes'] : array();
+			foreach ( $email_routes_in as $route ) {
+				if ( ! is_array( $route ) ) {
+					continue;
+				}
+				$route_recipient = isset( $route['recipient'] ) ? sanitize_text_field( (string) $route['recipient'] ) : '';
+				if ( '' === trim( $route_recipient ) ) {
+					continue;
+				}
+				$email_routes_out[] = array(
+					'id'          => isset( $route['id'] ) ? sanitize_text_field( (string) $route['id'] ) : 'route-' . ( count( $email_routes_out ) + 1 ),
+					'recipient'   => $route_recipient,
+					'conditional' => $this->sanitize_confirmation_conditional( $route['conditional'] ?? array() ),
+				);
+			}
 			$out_forms[] = array(
 				'id'                => $id !== '' ? $id : 'form-' . ( count( $out_forms ) + 1 ),
 				'name'              => $name,
@@ -5665,12 +5774,52 @@ final class Rest_Api {
 				'customHTML'        => $custom_html_out,
 				'customCSS'         => $custom_css_out,
 				'termsConditionText'=> $terms_out,
+				'confirmations'     => $confirmations_out,
+				'emailRoutes'       => $email_routes_out,
 				'steps'             => $steps_out,
 			);
 		}
 
 		return array(
 			'forms' => $out_forms,
+		);
+	}
+
+	/**
+	 * Sanitizes a confirmation/route conditional block: { enabled, match:'all'|'any', rules:[{field,operator,value}] }.
+	 * Mirrors the per-field conditional shape but without the show/hide action.
+	 *
+	 * @param mixed $raw Raw conditional payload.
+	 * @return array<string,mixed>
+	 */
+	private function sanitize_confirmation_conditional( $raw ): array {
+		$in          = is_array( $raw ) ? $raw : array();
+		$match       = isset( $in['match'] ) && 'any' === $in['match'] ? 'any' : 'all';
+		$allowed_ops = array( 'is', 'is_not', 'contains', 'starts_with', 'ends_with', 'greater_than', 'less_than', 'is_empty', 'is_not_empty' );
+		$rules_in    = isset( $in['rules'] ) && is_array( $in['rules'] ) ? $in['rules'] : array();
+		$rules_out   = array();
+		foreach ( $rules_in as $rule ) {
+			if ( ! is_array( $rule ) ) {
+				continue;
+			}
+			$field = isset( $rule['field'] ) ? sanitize_text_field( (string) $rule['field'] ) : '';
+			if ( '' === $field ) {
+				continue;
+			}
+			$op = isset( $rule['operator'] ) ? sanitize_text_field( (string) $rule['operator'] ) : 'is';
+			if ( ! in_array( $op, $allowed_ops, true ) ) {
+				$op = 'is';
+			}
+			$rules_out[] = array(
+				'field'    => $field,
+				'operator' => $op,
+				'value'    => isset( $rule['value'] ) ? sanitize_text_field( (string) $rule['value'] ) : '',
+			);
+		}
+		return array(
+			'enabled' => ! empty( $in['enabled'] ) && ! empty( $rules_out ),
+			'match'   => $match,
+			'rules'   => $rules_out,
 		);
 	}
 

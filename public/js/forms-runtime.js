@@ -1369,7 +1369,12 @@
 
     const msgEl = document.createElement("p");
     msgEl.className = "nexulesuite_st-form-result-card__message";
-    msgEl.textContent = bodyText;
+    // Custom confirmation messages are sanitized server-side (wp_kses_post) and may carry basic HTML.
+    if (opts.html) {
+      msgEl.innerHTML = bodyText;
+    } else {
+      msgEl.textContent = bodyText;
+    }
 
     inner.appendChild(iconWrap);
     inner.appendChild(titleEl);
@@ -1495,13 +1500,26 @@
           return;
         }
         if (res && res.success) {
+          const redirectUrl =
+            res.data && res.data.redirect ? String(res.data.redirect) : "";
           setSubmitBtnSuccessTick(
             submitBtn instanceof HTMLButtonElement ? submitBtn : null,
             () => {
               showFormFeedback(root, res.data?.message || thankYou, "success", {
                 submitBtn,
                 prevText,
+                html: !!(res.data && res.data.html),
               });
+              // Conditional confirmation of type "redirect": send the visitor on after a beat.
+              if (redirectUrl) {
+                setTimeout(() => {
+                  try {
+                    window.location.assign(redirectUrl);
+                  } catch (e) {
+                    window.location.href = redirectUrl;
+                  }
+                }, 700);
+              }
             }
           );
         } else {

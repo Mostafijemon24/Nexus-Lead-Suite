@@ -6,7 +6,6 @@ import { MenuItemsPage } from './pages/MenuItemsPage.jsx';
 import { PopupsPage } from './pages/PopupsPage.jsx';
 import { EmailsPage } from './pages/EmailsPage.jsx';
 import { FormBuilderPage } from './pages/FormBuilderPage.jsx';
-import { ChatbotPage } from './pages/ChatbotPage.jsx';
 import { SettingsPage } from './pages/SettingsPage.jsx';
 
 const ROUTES = {
@@ -15,7 +14,6 @@ const ROUTES = {
 	popups: PopupsPage,
 	emails: EmailsPage,
 	'form-builder': FormBuilderPage,
-	chatbot: ChatbotPage,
 	settings: SettingsPage,
 };
 

@@ -15,6 +15,7 @@ import {
 	FileX, Paintbrush, Info, Type as FontIcon, Loader2, Plus, Trash2, Layers,
 	Send, Lock, Bot, RefreshCw,
 } from 'lucide-react';
+import { FaqTab, AutoSetupTab } from './ChatbotPage.jsx';
 
 /* ─────────────────────────────────────────────────────────────
    Google Fonts catalogue — loaded via Google CDN, zero files in plugin
@@ -109,6 +110,16 @@ const aiEmbedProviders = ( settings ) =>
 
 const aiProvider = ( settings, id ) => aiProviders( settings )[ id ] || null;
 const aiProviderLabel = ( settings, id ) => aiProvider( settings, id )?.label || id || '—';
+
+/* The AI connection fields as the server last saw them — Test and the stored keys are bound to these, not to what is on screen. */
+const aiSavedSnapshot = ( s ) => ( {
+	connMode: s.aiConnMode || 'direct',
+	serverUrl: s.aiServerUrl || '',
+	llmProvider: s.aiLlmProvider || '',
+	llmModel: s.aiLlmModel || '',
+	embedProvider: s.aiEmbedProvider || '',
+	embedModel: s.aiEmbedModel || '',
+} );
 
 const DEFAULT_SETTINGS = {
 	enableNavigation: false,
@@ -415,6 +426,7 @@ const InfoTip = ( { text, label = 'More information' } ) => (
 export function SettingsPage() {
 	const pluginVersion = window?.nexulesuite_Admin?.pluginVersion || '';
 	const [ activeTab, setActiveTab ] = useState( 'general' );
+	const [ aiSubTab, setAiSubTab ] = useState( 'setup' );
 	const [ generatedLink, setGeneratedLink ] = useState( '' );
 	const [ copySuccess, setCopySuccess ] = useState( false );
 	const [ clientLinks, setClientLinks ] = useState( [] );
@@ -450,6 +462,7 @@ export function SettingsPage() {
 	const [ redirectCopied, setRedirectCopied ] = useState( false );
 	const [ aiTesting, setAiTesting ] = useState( false );
 	const [ aiTestResult, setAiTestResult ] = useState( null );
+	const [ savedAi, setSavedAi ] = useState( () => aiSavedSnapshot( DEFAULT_SETTINGS ) );
 	const [ aiTraining, setAiTraining ] = useState( false );
 	const [ aiTrainResult, setAiTrainResult ] = useState( null );
 	const [ aiResetting, setAiResetting ] = useState( false );
@@ -487,6 +500,7 @@ export function SettingsPage() {
 				if ( gResult.status === 'fulfilled' && gResult.value.res.ok && gResult.value.json?.success ) {
 					const srvSettings = gResult.value.json?.data?.settings || {};
 					setSettings( ( prev ) => ( { ...prev, ...srvSettings } ) );
+					setSavedAi( aiSavedSnapshot( srvSettings ) );
 					setAutoPopupFormRows( rowsFromSavedAutoPopupSettings( srvSettings ) );
 				}
 				if ( tResult.status === 'fulfilled' && tResult.value.res.ok && tResult.value.json?.success ) {
@@ -668,6 +682,14 @@ export function SettingsPage() {
 	/* ── AI Chatbot: uses SAVED settings — remind the user to Save first. ── */
 	const handleAiTest = async () => {
 		if ( aiTesting ) return;
+		// Testing now would probe the previously saved provider and key, and the mismatch reads as a bad key.
+		if ( aiConnDirty ) {
+			setAiTestResult( {
+				ok: false,
+				text: 'Unsaved changes: Test uses your saved settings. Click Save Configuration first, then Test.',
+			} );
+			return;
+		}
 		setAiTesting( true );
 		setAiTestResult( null );
 		try {
@@ -776,10 +798,24 @@ export function SettingsPage() {
 	const aiEmbedId = settings.aiEmbedProvider || ( aiActiveProvider?.embed ? settings.aiLlmProvider : '' );
 	const aiEmbedDef = aiProvider( settings, aiEmbedId );
 	const aiEmbedSharesChatKey = !! aiEmbedId && aiEmbedId === settings.aiLlmProvider;
+	// A stored key belongs to the provider it was saved under; picking another vendor invalidates it.
+	const aiLlmKeySaved = !! settings.hasLlmKey && ( settings.aiLlmProvider || '' ) === savedAi.llmProvider;
+	const aiEmbedKeySaved = !! settings.hasEmbedKey && ( settings.aiEmbedProvider || '' ) === savedAi.embedProvider;
 	const aiEmbedHasKey = aiEmbedSharesChatKey
-		? ( settings.hasLlmKey || !! settings.aiLlmApiKey )
-		: ( settings.hasEmbedKey || !! settings.aiEmbedApiKey );
+		? ( aiLlmKeySaved || !! settings.aiLlmApiKey )
+		: ( aiEmbedKeySaved || !! settings.aiEmbedApiKey );
 	const aiEmbedReady = !! aiEmbedId && aiEmbedHasKey;
+	// Test and Train read the saved option, so anything unsaved here would be tested against the old provider/key.
+	const aiConnDirty =
+		aiMode !== savedAi.connMode ||
+		( settings.aiServerUrl || '' ) !== savedAi.serverUrl ||
+		( settings.aiLlmProvider || '' ) !== savedAi.llmProvider ||
+		( settings.aiLlmModel || '' ) !== savedAi.llmModel ||
+		( settings.aiEmbedProvider || '' ) !== savedAi.embedProvider ||
+		( settings.aiEmbedModel || '' ) !== savedAi.embedModel ||
+		!! settings.aiApiKey ||
+		!! settings.aiLlmApiKey ||
+		!! settings.aiEmbedApiKey;
 
 	// Report/PDF logo size: clamped value drives the slider + live preview; the raw
 	// field value is kept as-typed so the number input stays editable (normalized on blur).
@@ -807,6 +843,7 @@ export function SettingsPage() {
 			if ( saved && typeof saved === 'object' ) {
 				// `saved` omits the API keys (masked) and carries hasAiKey/hasLlmKey/hasEmbedKey — clear the inputs so the masked placeholders show.
 				setSettings( ( prev ) => ( { ...prev, ...saved, aiApiKey: '', aiLlmApiKey: '', aiEmbedApiKey: '' } ) );
+				setSavedAi( aiSavedSnapshot( saved ) );
 				setAutoPopupFormRows( rowsFromSavedAutoPopupSettings( saved ) );
 			}
 			setSuccessOpen( true );
@@ -1065,7 +1102,7 @@ export function SettingsPage() {
 			subtitle="Global configuration & automation logic"
 			icon={ <Settings size={ 18 } /> }
 			footer={
-				[ 'general', 'popup', 'chat', 'ai', 'backup', 'smtp' ].includes( activeTab ) ? (
+				( [ 'general', 'popup', 'chat', 'backup', 'smtp' ].includes( activeTab ) || ( activeTab === 'ai' && aiSubTab === 'setup' ) ) ? (
 					<AdminStickyFooter
 						actions={
 							activeTab === 'smtp' ? (
@@ -2029,6 +2066,14 @@ export function SettingsPage() {
 								    AI CHATBOT (RAG)
 								════════════════════════════════════════════ */}
 								{ activeTab === 'ai' && (
+									<>
+										<div className="mb-5 inline-flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1">
+											{ [ { id: 'setup', label: 'Model & Knowledge' }, { id: 'faq', label: 'FAQ & Buttons' }, { id: 'autosetup', label: 'Auto-Setup' } ].map( ( st ) => (
+												<button key={ st.id } type="button" onClick={ () => setAiSubTab( st.id ) } className={ `rounded-lg px-4 py-2 text-sm font-semibold transition ${ aiSubTab === st.id ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }` }>{ st.label }</button>
+											) ) }
+										</div>
+
+										{ aiSubTab === 'setup' && (
 									<div className="nexulesuite_settings-general-wrap">
 										<div className="nexulesuite_sg-card">
 
@@ -2114,10 +2159,15 @@ export function SettingsPage() {
 															value={ settings.aiLlmProvider }
 															onChange={ ( e ) => {
 																const id = e.target.value;
-																const def = aiProvider( settings, id )?.chatModel || '';
-																updateSetting( 'aiLlmProvider', id );
-																// Follow the provider's default model unless the admin typed their own.
-																if ( ! settings.aiLlmModel && def ) updateSetting( 'aiLlmModel', def );
+																setSettings( ( prev ) => ( {
+																	...prev,
+																	aiLlmProvider: id,
+																	// Model ids are vendor-scoped — OpenAI's `gpt-4o-mini` is `openai/gpt-4o-mini` on OpenRouter.
+																	aiLlmModel: aiProvider( prev, id )?.chatModel || '',
+																	// The saved key belongs to the vendor being left behind; the server clears it on save.
+																	aiLlmApiKey: '',
+																} ) );
+																setAiTestResult( null );
 															} }
 														>
 															<option value="">
@@ -2155,13 +2205,13 @@ export function SettingsPage() {
 															className="inp"
 															value={ settings.aiLlmApiKey }
 															onChange={ ( e ) => updateSetting( 'aiLlmApiKey', e.target.value ) }
-															placeholder={ settings.hasLlmKey ? '•••••••• saved — leave blank to keep' : ( aiProvider( settings, settings.aiLlmProvider )?.keyHint || 'Provider API key' ) }
+															placeholder={ aiLlmKeySaved ? '•••••••• saved — leave blank to keep' : ( aiProvider( settings, settings.aiLlmProvider )?.keyHint || 'Provider API key' ) }
 															autoComplete="new-password"
 														/>
 														<p className="hint">
-															{ settings.hasLlmKey
+															{ aiLlmKeySaved
 																? 'A key is saved (encrypted). Leave blank to keep it, or type a new one to replace.'
-																: 'Stored encrypted (AES-256-GCM), never sent to the browser.' }
+																: `Paste your ${ aiProviderLabel( settings, settings.aiLlmProvider ) } key — each provider needs its own. Stored encrypted (AES-256-GCM), never sent to the browser.` }
 															{ aiProvider( settings, settings.aiLlmProvider )?.keyUrl ? (
 																<> Get one at <a href={ aiProvider( settings, settings.aiLlmProvider ).keyUrl } target="_blank" rel="noreferrer">{ aiProvider( settings, settings.aiLlmProvider ).keyUrl.replace( /^https:\/\//, '' ) }</a>.</>
 															) : null }
@@ -2211,14 +2261,20 @@ export function SettingsPage() {
 													<>
 														<div className="nexulesuite_sg-grid-2" style={ { marginBottom: '18px' } }>
 															<div className="nexulesuite_sg-field">
-																<span className="lbl nexulesuite_lbl-tip">Embedding provider <InfoTip text={ 'Turns your content into vectors so the chatbot can find the right passage. Claude and Groq have no embeddings API — pair them with OpenAI, Gemini, Mistral or Voyage.' } /></span>
+																<span className="lbl nexulesuite_lbl-tip">Embedding provider <InfoTip text={ 'Turns your content into vectors so the chatbot can find the right passage. OpenRouter, OpenAI, Gemini, Mistral and Voyage can all do this — leave it on “Same as chat provider” to reuse your chat key, so one key powers both. Claude and Groq have no embeddings API, so pair those with one of the above.' } /></span>
 																<select
 																	className="inp"
 																	value={ settings.aiEmbedProvider }
 																	onChange={ ( e ) => {
 																		const id = e.target.value;
-																		updateSetting( 'aiEmbedProvider', id );
-																		updateSetting( 'aiEmbedModel', aiProvider( settings, id )?.embedModel || '' );
+																		setSettings( ( prev ) => ( {
+																			...prev,
+																			aiEmbedProvider: id,
+																			aiEmbedModel: aiProvider( prev, id )?.embedModel || '',
+																			// Same vendor-scoping as the chat key: a switch invalidates what is stored.
+																			aiEmbedApiKey: '',
+																		} ) );
+																		setAiTestResult( null );
 																	} }
 																>
 																	<option value="">
@@ -2258,11 +2314,11 @@ export function SettingsPage() {
 																	className="inp"
 																	value={ settings.aiEmbedApiKey }
 																	onChange={ ( e ) => updateSetting( 'aiEmbedApiKey', e.target.value ) }
-																	placeholder={ settings.hasEmbedKey ? '•••••••• saved — leave blank to keep' : ( aiEmbedDef?.keyHint || 'Embedding provider API key' ) }
+																	placeholder={ aiEmbedKeySaved ? '•••••••• saved — leave blank to keep' : ( aiEmbedDef?.keyHint || 'Embedding provider API key' ) }
 																	autoComplete="new-password"
 																/>
 																<p className="hint">
-																	{ settings.hasEmbedKey
+																	{ aiEmbedKeySaved
 																		? 'A key is saved (encrypted). Leave blank to keep it, or type a new one to replace.'
 																		: 'Stored encrypted (AES-256-GCM), never sent to the browser.' }
 																	{ aiEmbedDef?.keyUrl ? (
@@ -2272,13 +2328,22 @@ export function SettingsPage() {
 															</div>
 														) : null }
 
+														{ aiEmbedReady && aiEmbedSharesChatKey ? (
+															<div className="mb-[18px] flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[12px] font-semibold text-emerald-800">
+																<ShieldCheck size={ 16 } className="mt-0.5 shrink-0" />
+																<span>One key covers everything — your { aiActiveProvider?.label } chat key also powers embeddings, so there’s nothing to add here. Just Save, then Train.</span>
+															</div>
+														) : null }
+
 														{ ! aiEmbedReady ? (
 															<div className="mb-[18px] flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[12px] font-semibold text-amber-800">
 																<AlertTriangle size={ 16 } className="mt-0.5 shrink-0" />
 																<span>
-																	{ aiEmbedId
-																		? 'Add the embedding provider’s API key, then Save — until then the chatbot answers without knowing your site content.'
-																		: 'Pick an embedding provider, then Save. Without one the chatbot cannot search your pages and will answer from general knowledge only.' }
+																	{ ! aiEmbedId
+																		? 'Pick an embedding provider, then Save. Without one the chatbot cannot search your pages and will answer from general knowledge only.'
+																		: aiEmbedSharesChatKey
+																			? `Add your ${ aiActiveProvider?.label || 'chat provider' } key in the Model API section above, then Save — the same key powers training.`
+																			: 'Add the embedding provider’s API key, then Save — until then the chatbot answers without knowing your site content.' }
 																</span>
 															</div>
 														) : null }
@@ -2410,6 +2475,10 @@ export function SettingsPage() {
 
 										</div>
 									</div>
+										) }
+										{ aiSubTab === 'faq' && <FaqTab /> }
+										{ aiSubTab === 'autosetup' && <AutoSetupTab /> }
+									</>
 								) }
 
 								{ activeTab === 'smtp' && (

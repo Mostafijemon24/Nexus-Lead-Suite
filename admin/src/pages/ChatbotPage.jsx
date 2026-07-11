@@ -1,3 +1,5 @@
+/* Chatbot admin panels. No longer a standalone page — these three components are mounted
+   inside Settings → AI Chatbot (FaqTab, AutoSetupTab) and Activities (ReportsTab). */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	Bot,
@@ -14,7 +16,6 @@ import {
 	Sparkles,
 	X,
 } from 'lucide-react';
-import { PageShell } from '../components/PageShell.jsx';
 
 function getRest() {
 	const admin = window.nexulesuite_Admin || {};
@@ -114,7 +115,7 @@ function fmtDate( value ) {
 
 /* ── Reports dashboard ─────────────────────────────────────────────── */
 
-function ReportsTab() {
+export function ReportsTab() {
 	const { restUrl, nonce } = getRest();
 	const [ loading, setLoading ] = useState( true );
 	const [ stats, setStats ] = useState( null );
@@ -193,7 +194,7 @@ function ReportsTab() {
 		<div className="space-y-5">
 			{ ! loggingEnabled && (
 				<div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-					Transcript storage is <b>off</b>. Turn on <b>“Store chat transcripts”</b> in the FAQ &amp; Buttons tab to start
+					Transcript storage is <b>off</b>. Turn on <b>“Store chat transcripts”</b> in Settings → AI Chatbot → FAQ &amp; Buttons to start
 					collecting conversations here. Existing rows still display below.
 				</div>
 			) }
@@ -257,7 +258,7 @@ function ReportsTab() {
 					Search
 					<span className="relative">
 						<Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-						<input type="text" value={ search } onChange={ ( e ) => setSearch( e.target.value ) } onKeyDown={ ( e ) => e.key === 'Enter' && load() } placeholder="Message text…" className="w-full rounded-lg border border-slate-300 py-2 pl-8 pr-3 text-sm text-slate-800" />
+						<input type="text" value={ search } onChange={ ( e ) => setSearch( e.target.value ) } onKeyDown={ ( e ) => e.key === 'Enter' && load() } placeholder="Message text…" className="w-full rounded-lg border border-slate-300 py-2 pr-3 text-sm text-slate-800" style={ { paddingLeft: '2.25rem' } } />
 					</span>
 				</label>
 				<button type="button" onClick={ load } className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
@@ -465,7 +466,7 @@ function ActionRow( { value, index, onChange, onRemove } ) {
 	);
 }
 
-function FaqTab() {
+export function FaqTab() {
 	const { restUrl, nonce } = getRest();
 	const [ loading, setLoading ] = useState( true );
 	const [ saving, setSaving ] = useState( false );
@@ -683,13 +684,14 @@ function FaqTab() {
 					<div className="grid gap-4 sm:grid-cols-2">
 						<label className="flex flex-col gap-1.5">
 							<span className="text-sm font-semibold text-slate-800">Offer message</span>
+							<span className="text-xs text-slate-500">Shown when the bot offers to collect the visitor's contact details.</span>
 							<input
 								type="text"
 								value={ leadOffer }
 								onChange={ ( e ) => setLeadOffer( e.target.value ) }
 								maxLength={ 200 }
 								placeholder="Would you like our team to reach out to you?"
-								className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+								className="mt-auto w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
 							/>
 						</label>
 						<label className="flex flex-col gap-1.5">
@@ -700,7 +702,7 @@ function FaqTab() {
 								value={ leadRecipient }
 								onChange={ ( e ) => setLeadRecipient( e.target.value ) }
 								placeholder="you@example.com"
-								className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+								className="mt-auto w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
 							/>
 						</label>
 					</div>
@@ -752,7 +754,7 @@ function iconEmoji( key ) {
 	return found && found.key ? found.label.split( ' ' )[ 0 ] : '•';
 }
 
-function AutoSetupTab() {
+export function AutoSetupTab() {
 	const { restUrl, nonce } = getRest();
 	const [ analyzing, setAnalyzing ] = useState( false );
 	const [ applying, setApplying ] = useState( false );
@@ -925,40 +927,3 @@ function AutoSetupTab() {
 	);
 }
 
-/* ── Page ──────────────────────────────────────────────────────────── */
-
-export function ChatbotPage() {
-	const [ tab, setTab ] = useState( 'reports' );
-
-	const tabs = useMemo(
-		() => [
-			{ id: 'reports', label: 'Reports' },
-			{ id: 'autosetup', label: 'Auto-Setup' },
-			{ id: 'faq', label: 'FAQ & Buttons' },
-		],
-		[]
-	);
-
-	return (
-		<PageShell
-			title="Chatbot"
-			subtitle="Conversation reports and quick-reply buttons for the AI assistant"
-			icon={ <Bot className="h-5 w-5" /> }
-		>
-			<div className="mb-5 inline-flex rounded-xl bg-slate-100 p-1">
-				{ tabs.map( ( t ) => (
-					<button
-						key={ t.id }
-						type="button"
-						onClick={ () => setTab( t.id ) }
-						className={ `rounded-lg px-4 py-2 text-sm font-semibold transition ${ tab === t.id ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }` }
-					>
-						{ t.label }
-					</button>
-				) ) }
-			</div>
-
-			{ tab === 'reports' ? <ReportsTab /> : tab === 'autosetup' ? <AutoSetupTab /> : <FaqTab /> }
-		</PageShell>
-	);
-}
