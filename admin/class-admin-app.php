@@ -50,7 +50,6 @@ final class Admin_App {
 			self::MENU_SLUG . '-popups'       => 'popups',
 			self::MENU_SLUG . '-emails'       => 'emails',
 			self::MENU_SLUG . '-forms'        => 'form-builder',
-			self::MENU_SLUG . '-chatbot'      => 'chatbot',
 			self::MENU_SLUG . '-settings'     => 'settings',
 		);
 	}
@@ -77,7 +76,6 @@ final class Admin_App {
 			self::MENU_SLUG . '-popups'       => __( 'Popups', 'nexus-lead-suite' ),
 			self::MENU_SLUG . '-emails'       => __( 'Emails', 'nexus-lead-suite' ),
 			self::MENU_SLUG . '-forms'        => __( 'Forms', 'nexus-lead-suite' ),
-			self::MENU_SLUG . '-chatbot'      => __( 'Chatbot', 'nexus-lead-suite' ),
 			self::MENU_SLUG . '-settings'     => __( 'Settings', 'nexus-lead-suite' ),
 		);
 

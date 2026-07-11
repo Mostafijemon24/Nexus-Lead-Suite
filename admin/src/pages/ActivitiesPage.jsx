@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Activity, Search, Trash2, X } from 'lucide-react';
+import { Activity, Bot, ChevronDown, Search, Trash2, X } from 'lucide-react';
 import { PageShell } from '../components/PageShell.jsx';
 import { AdminStickyFooter } from '../components/AdminStickyFooter.jsx';
 import { ResultModal } from '../components/NexusModal.jsx';
+import { ReportsTab } from './ChatbotPage.jsx';
 
 const TABS = [
 	{ id: 'all', label: 'All' },
@@ -449,6 +450,8 @@ export function ActivitiesPage() {
 	const [ error, setError ] = useState( '' );
 	const [ clearing, setClearing ] = useState( false );
 	const [ pdfOpen, setPdfOpen ] = useState( false );
+	const [ reportsOpen, setReportsOpen ] = useState( false );
+	const [ logOpen, setLogOpen ] = useState( true );
 	const [ modal, setModal ] = useState( { open: false, variant: 'success', title: '', message: '' } );
 
 	useEffect( () => {
@@ -595,10 +598,29 @@ export function ActivitiesPage() {
 				} }
 			/>
 
+			{/* Chatbot Reports — collapsible; relocated from the standalone Chatbot page. */}
+			<div className="relative z-[1] mb-14 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+				<button type="button" onClick={ () => setReportsOpen( ( v ) => ! v ) } aria-expanded={ reportsOpen } className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition hover:bg-slate-50">
+					<span className="flex items-center gap-3">
+						<span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600"><Bot size={ 18 } /></span>
+						<span className="flex flex-col">
+							<span className="text-sm font-bold text-slate-800">Chatbot Reports</span>
+							<span className="text-xs text-slate-500">Conversations, messages, intents &amp; sentiment from the AI assistant</span>
+						</span>
+					</span>
+					<ChevronDown size={ 18 } className={ `shrink-0 text-slate-400 transition-transform ${ reportsOpen ? 'rotate-180' : '' }` } />
+				</button>
+				{ reportsOpen ? (
+					<div className="border-t border-slate-200 bg-slate-50/60 p-4 md:p-5">
+						<ReportsTab />
+					</div>
+				) : null }
+			</div>
+
 			<div className="nexulesuite_activities-wrap">
 				<div className="nexulesuite_act-card">
 					<section className="nexulesuite_act-section is-first">
-						<div className="nexulesuite_act-sec-head">
+						<div className="nexulesuite_act-sec-head" role="button" tabIndex={ 0 } style={ { cursor: 'pointer' } } onClick={ () => setLogOpen( ( v ) => ! v ) } onKeyDown={ ( e ) => { if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); setLogOpen( ( v ) => ! v ); } } }>
 							<span className="nexulesuite_act-sec-ico" aria-hidden="true">
 								<Activity size={ 16 } />
 							</span>
@@ -608,9 +630,11 @@ export function ActivitiesPage() {
 									Filter by type, date range, or keyword. Export a PDF report or share it by email.
 								</p>
 							</div>
+						<ChevronDown size={ 18 } className={ "ml-auto shrink-0 text-slate-400 transition-transform " + ( logOpen ? "rotate-180" : "" ) } style={ { marginTop: '2px' } } />
 						</div>
 
-						<div className="nexulesuite_act-toolbar">
+						{ logOpen && (
+<div className="nexulesuite_act-toolbar">
 							<div className="nexulesuite_act-tabs">
 								{ TABS.map( ( item ) => (
 									<TabButton
@@ -668,9 +692,11 @@ export function ActivitiesPage() {
 								</button>
 							</div>
 						</div>
+) }
 					</section>
 
-					<section className="nexulesuite_act-section">
+					{ logOpen && (
+<section className="nexulesuite_act-section">
 						<div className="nexulesuite_act-table-wrap">
 							<table className="nexulesuite_act-table">
 								<thead>
@@ -755,6 +781,7 @@ export function ActivitiesPage() {
 							</table>
 						</div>
 					</section>
+) }
 				</div>
 			</div>
 		</PageShell>

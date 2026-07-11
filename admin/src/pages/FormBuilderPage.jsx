@@ -18,6 +18,7 @@ import { SuccessModal, ErrorModal } from '../components/NexusModal.jsx';
 import { DynamicFieldsBuilder } from '../form-builder/DynamicFieldsBuilder.jsx';
 import { FieldSettingsInline } from '../form-builder/FieldSettingsInline.jsx';
 import { ConditionalLogicEditor } from '../form-builder/ConditionalLogic.jsx';
+import { ConfirmationsEditor } from '../form-builder/Confirmations.jsx';
 import { FormPreviewModal } from '../form-builder/FormPreviewModal.jsx';
 import {
 	FORM_TEMPLATES,
@@ -49,6 +50,8 @@ const INITIAL_FORM = {
 	customHTML: { ...DEFAULT_CUSTOM_HTML },
 	customCSS: '',
 	termsConditionText: '',
+	confirmations: [ defaultConfirmation() ],
+	emailRoutes: [],
 	steps: [
 		{
 			id: 'step-1',
@@ -58,6 +61,41 @@ const INITIAL_FORM = {
 		},
 	],
 };
+
+/** The always-present fallback confirmation (no conditions — shown when nothing else matches). */
+function defaultConfirmation() {
+	return {
+		id: 'confirm-default',
+		name: 'Default confirmation',
+		isDefault: true,
+		type: 'message',
+		message: 'Thank you! Your submission has been received.',
+		redirectUrl: '',
+		conditional: { enabled: false, match: 'all', rules: [] },
+	};
+}
+
+/** Guarantees a well-formed confirmations list with exactly one default fallback. */
+function normalizeConfirmations( list ) {
+	const arr = Array.isArray( list ) ? list.filter( Boolean ) : [];
+	const out = arr.map( ( c, i ) => ( {
+		id: c.id || `confirm-${ i }-${ Math.random().toString( 36 ).slice( 2, 7 ) }`,
+		name: c.name || 'Confirmation',
+		isDefault: !! c.isDefault,
+		type: c.type === 'redirect' ? 'redirect' : 'message',
+		message: typeof c.message === 'string' ? c.message : '',
+		redirectUrl: typeof c.redirectUrl === 'string' ? c.redirectUrl : '',
+		conditional: {
+			enabled: !! c.conditional?.enabled,
+			match: c.conditional?.match === 'any' ? 'any' : 'all',
+			rules: Array.isArray( c.conditional?.rules ) ? c.conditional.rules : [],
+		},
+	} ) );
+	if ( ! out.some( ( c ) => c.isDefault ) ) {
+		out.unshift( defaultConfirmation() );
+	}
+	return out;
+}
 
 function normalizeForm( form ) {
 	return {
@@ -75,6 +113,8 @@ function normalizeForm( form ) {
 			...DEFAULT_CUSTOM_HTML,
 			...( form?.customHTML || {} ),
 		},
+		confirmations: normalizeConfirmations( form?.confirmations ),
+		emailRoutes: Array.isArray( form?.emailRoutes ) ? form.emailRoutes : [],
 	};
 }
 
@@ -494,7 +534,7 @@ function FormItem( {
 							</div>
 
 							<div className="nexulesuite_fb-tabs" role="tablist">
-								{ [ 'fields', 'styling', 'advanced' ].map( ( tab ) => (
+								{ [ 'fields', 'styling', 'confirmations', 'advanced' ].map( ( tab ) => (
 									<button
 										key={ tab }
 										type="button"
@@ -548,6 +588,12 @@ function FormItem( {
 											onChange={ ( e ) => onUpdate( form.id, { submitBtnText: e.target.value } ) }
 										/>
 									</div>
+								</div>
+							) }
+
+							{ activeTab === 'confirmations' && (
+								<div className="nexulesuite_fb-tab-panel nexulesuite_fb-advanced">
+									<ConfirmationsEditor form={ form } onUpdate={ ( patch ) => onUpdate( form.id, patch ) } />
 								</div>
 							) }
 
@@ -813,7 +859,7 @@ function FormItem( {
 					</div>
 
 					<div className="flex border-b border-slate-200">
-						{ [ 'fields', 'styling', 'advanced' ].map( ( tab ) => (
+						{ [ 'fields', 'styling', 'confirmations', 'advanced' ].map( ( tab ) => (
 							<button
 								key={ tab }
 								type="button"
@@ -883,6 +929,12 @@ function FormItem( {
 									className="h-10 w-full max-w-xs rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2"
 								/>
 							</div>
+						</div>
+					) }
+
+					{ activeTab === 'confirmations' && (
+						<div className="nexulesuite_fb-tab-panel nexulesuite_fb-advanced">
+							<ConfirmationsEditor form={ form } onUpdate={ ( patch ) => onUpdate( form.id, patch ) } />
 						</div>
 					) }
 

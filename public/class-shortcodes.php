@@ -324,6 +324,8 @@ final class Shortcodes {
 		}
 
 		$display_rows = $this->collect_form_submission_display_rows( $form );
+		$field_values = $this->collect_form_values_by_field_id( $form );
+		$confirmation = $this->resolve_form_confirmation( $form, $field_values );
 		$lines        = array();
 		foreach ( $display_rows as $r ) {
 			$lines[] = $r['label'] . ': ' . $r['value'];
@@ -342,6 +344,17 @@ final class Shortcodes {
 		);
 
 		$recipients = $this->parse_notification_emails( isset( $form['notificationEmail'] ) ? (string) $form['notificationEmail'] : '' );
+		// Conditional email routing: fan out to extra recipients when a rule set matches.
+		foreach ( ( isset( $form['emailRoutes'] ) && is_array( $form['emailRoutes'] ) ? $form['emailRoutes'] : array() ) as $route ) {
+			if ( ! is_array( $route ) || ! $this->eval_conditional_set( isset( $route['conditional'] ) ? $route['conditional'] : array(), $field_values ) ) {
+				continue;
+			}
+			foreach ( $this->parse_notification_emails( isset( $route['recipient'] ) ? (string) $route['recipient'] : '' ) as $rc ) {
+				if ( ! in_array( $rc, $recipients, true ) ) {
+					$recipients[] = $rc;
+				}
+			}
+		}
 		if ( empty( $recipients ) ) {
 			$admin = (string) get_option( 'admin_email' );
 			if ( $admin && is_email( $admin ) ) {
@@ -444,11 +457,20 @@ final class Shortcodes {
 		}
 
 		if ( $sent ) {
-			wp_send_json_success(
-				array(
-					'message' => __( 'Thank you! Your message has been sent.', 'nexus-lead-suite' ),
-				)
-			);
+			$conf_type = isset( $confirmation['type'] ) ? (string) $confirmation['type'] : 'message';
+			$conf_url  = isset( $confirmation['redirectUrl'] ) ? esc_url_raw( (string) $confirmation['redirectUrl'] ) : '';
+			if ( 'redirect' === $conf_type && '' !== $conf_url ) {
+				wp_send_json_success( array(
+					'redirect' => $conf_url,
+					'message'  => __( 'Thank you! Redirecting…', 'nexus-lead-suite' ),
+				) );
+				return;
+			}
+			$conf_msg = isset( $confirmation['message'] ) ? trim( (string) $confirmation['message'] ) : '';
+			wp_send_json_success( array(
+				'message' => '' !== $conf_msg ? wp_kses_post( $conf_msg ) : __( 'Thank you! Your message has been sent.', 'nexus-lead-suite' ),
+				'html'    => '' !== $conf_msg,
+			) );
 			return;
 		}
 
@@ -457,6 +479,145 @@ final class Shortcodes {
 				'message' => __( 'Please set up your SMTP properly.', 'nexus-lead-suite' ),
 			)
 		);
+	}
+
+	/**
+	 * Builds a map of builder-field-id => submitted value (flattened + sanitized) for conditional rules.
+	 *
+	 * @param array<string,mixed> $form Form definition.
+	 * @return array<string,string>
+	 */
+	private function collect_form_values_by_field_id( array $form ): array {
+		$out   = array();
+		$steps = isset( $form['steps'] ) && is_array( $form['steps'] ) ? $form['steps'] : array();
+		foreach ( $steps as $step ) {
+			$blocks = ( is_array( $step ) && isset( $step['fields'] ) && is_array( $step['fields'] ) ) ? $step['fields'] : array();
+			$this->walk_blocks_for_field_values( $blocks, $out );
+		}
+		return $out;
+	}
+
+	/**
+	 * @param array<int,mixed>     $blocks Blocks.
+	 * @param array<string,string> $out    Output map (by reference).
+	 * @return void
+	 */
+	private function walk_blocks_for_field_values( array $blocks, array &$out ): void {
+		foreach ( $blocks as $block ) {
+			if ( ! is_array( $block ) ) {
+				continue;
+			}
+			if ( 'layout' === ( isset( $block['kind'] ) ? (string) $block['kind'] : '' ) ) {
+				$items = isset( $block['layout']['items'] ) && is_array( $block['layout']['items'] ) ? $block['layout']['items'] : array();
+				foreach ( $items as $col ) {
+					if ( is_array( $col ) ) {
+						$this->walk_blocks_for_field_values( $col, $out );
+					}
+				}
+				continue;
+			}
+			$fid = isset( $block['id'] ) ? (string) $block['id'] : '';
+			if ( '' === $fid ) {
+				continue;
+			}
+			$name = $this->compute_st_input_name( $block );
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- resolved inside the nonce-verified submit handler.
+			$raw  = isset( $_POST[ $name ] ) ? wp_unslash( $_POST[ $name ] ) : '';
+			if ( is_array( $raw ) ) {
+				$flat = array();
+				array_walk_recursive( $raw, static function ( $v ) use ( &$flat ): void { $flat[] = is_scalar( $v ) ? (string) $v : ''; } );
+				$val = implode( ' ', array_filter( array_map( 'trim', $flat ), 'strlen' ) );
+			} else {
+				$val = is_scalar( $raw ) ? (string) $raw : '';
+			}
+			$out[ $fid ] = sanitize_text_field( $val );
+		}
+	}
+
+	/**
+	 * Evaluates one conditional rule ({field,operator,value}) against the id=>value map.
+	 *
+	 * @param array<string,mixed>  $rule   Rule.
+	 * @param array<string,string> $values Field values.
+	 * @return bool
+	 */
+	private function eval_conditional_rule( array $rule, array $values ): bool {
+		$op     = isset( $rule['operator'] ) ? (string) $rule['operator'] : 'is';
+		$target = isset( $rule['value'] ) ? (string) $rule['value'] : '';
+		$fid    = isset( $rule['field'] ) ? (string) $rule['field'] : '';
+		$actual = isset( $values[ $fid ] ) ? (string) $values[ $fid ] : '';
+		$a = trim( function_exists( 'mb_strtolower' ) ? mb_strtolower( $actual ) : strtolower( $actual ) );
+		$t = trim( function_exists( 'mb_strtolower' ) ? mb_strtolower( $target ) : strtolower( $target ) );
+		switch ( $op ) {
+			case 'is':           return $a === $t;
+			case 'is_not':       return $a !== $t;
+			case 'contains':     return '' !== $t && false !== strpos( $a, $t );
+			case 'starts_with':  return '' !== $t && 0 === strpos( $a, $t );
+			case 'ends_with':    return '' !== $t && substr( $a, -strlen( $t ) ) === $t;
+			case 'greater_than': return is_numeric( $actual ) && is_numeric( $target ) && (float) $actual > (float) $target;
+			case 'less_than':    return is_numeric( $actual ) && is_numeric( $target ) && (float) $actual < (float) $target;
+			case 'is_empty':     return '' === trim( $actual );
+			case 'is_not_empty': return '' !== trim( $actual );
+		}
+		return false;
+	}
+
+	/**
+	 * True when a conditional set (enabled + rules + match all/any) is satisfied.
+	 *
+	 * @param mixed                $cond   Conditional block.
+	 * @param array<string,string> $values Field values.
+	 * @return bool
+	 */
+	private function eval_conditional_set( $cond, array $values ): bool {
+		if ( ! is_array( $cond ) || empty( $cond['enabled'] ) ) {
+			return false;
+		}
+		$rules = isset( $cond['rules'] ) && is_array( $cond['rules'] ) ? $cond['rules'] : array();
+		if ( empty( $rules ) ) {
+			return false;
+		}
+		$any = ( isset( $cond['match'] ) && 'any' === $cond['match'] );
+		foreach ( $rules as $rule ) {
+			if ( ! is_array( $rule ) ) {
+				continue;
+			}
+			$ok = $this->eval_conditional_rule( $rule, $values );
+			if ( $any && $ok ) {
+				return true;
+			}
+			if ( ! $any && ! $ok ) {
+				return false;
+			}
+		}
+		return ! $any;
+	}
+
+	/**
+	 * Picks the confirmation for a submission: the first matching conditional one, else the default.
+	 *
+	 * @param array<string,mixed>  $form   Form definition.
+	 * @param array<string,string> $values Field values.
+	 * @return array<string,mixed>
+	 */
+	private function resolve_form_confirmation( array $form, array $values ): array {
+		$confs   = isset( $form['confirmations'] ) && is_array( $form['confirmations'] ) ? $form['confirmations'] : array();
+		$default = null;
+		foreach ( $confs as $c ) {
+			if ( ! is_array( $c ) ) {
+				continue;
+			}
+			if ( ! empty( $c['isDefault'] ) ) {
+				if ( null === $default ) {
+					$default = $c;
+				}
+				continue;
+			}
+			if ( $this->eval_conditional_set( isset( $c['conditional'] ) ? $c['conditional'] : array(), $values ) ) {
+				return $c;
+			}
+		}
+		return is_array( $default ) ? $default : array( 'type' => 'message', 'message' => '' );
 	}
 
 	/**
@@ -4889,27 +5050,45 @@ final class Shortcodes {
 
 			/* WooCommerce product cards (horizontal carousel under the answer). */
 			function aiAddProducts(products){
+					try{ console.log('%c[Nexus Lead Suite] product carousel v5', 'color:#fff;background:#4f46e5;padding:2px 6px;border-radius:4px', (products&&products.length)||0, 'product(s)', products); }catch(e){}
 				if(!aiMessages || !products || !products.length) return;
 				var row = document.createElement('div');
 				row.className = 'nexulesuite_chat-ai-products';
+					row.style.cssText = 'align-self:stretch;display:flex;align-items:flex-start;min-height:270px;gap:10px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 16px;scrollbar-width:thin;';
 				products.forEach(function(p){
-					if(!p || !p.title) return;
-					var card = document.createElement('a');
-					card.className = 'nexulesuite_chat-ai-pcard';
-					card.href = p.url || '#'; card.target = '_blank'; card.rel = 'noopener nofollow';
-					if(p.image){
+						if(!p || !p.title) return;
+						var card = document.createElement('div');
+						card.className = 'nexulesuite_chat-ai-pcard';
+						/* Inline styles + explicit min-height so cards never collapse, even if theme/cache strips the widget CSS. */
+						card.style.cssText = 'flex:0 0 152px;width:152px;min-height:222px;display:flex;flex-direction:column;border:1px solid var(--nls-border,#e5e7eb);border-radius:14px;overflow:hidden;background:var(--nls-surface,#fff);box-shadow:0 1px 3px rgba(15,23,42,.08);';
+						var link = document.createElement('a');
+						link.href = p.url || '#'; link.target = '_blank'; link.rel = 'noopener nofollow';
+						link.style.cssText = 'display:flex;flex-direction:column;flex:1 1 auto;text-decoration:none;color:inherit;';
 						var im = document.createElement('span');
 						im.className = 'nexulesuite_chat-ai-pcard__img';
-						im.style.backgroundImage = 'url("' + String(p.image).replace(/["\\]/g,'') + '")';
-						if(p.onSale){ var b=document.createElement('span'); b.className='nexulesuite_chat-ai-pcard__sale'; b.textContent='Sale'; im.appendChild(b); }
-						card.appendChild(im);
-					}
-					var body = document.createElement('span'); body.className='nexulesuite_chat-ai-pcard__body';
-					var t = document.createElement('span'); t.className='nexulesuite_chat-ai-pcard__title'; t.textContent=p.title; body.appendChild(t);
-					if(p.price){ var pr=document.createElement('span'); pr.className='nexulesuite_chat-ai-pcard__price'; pr.textContent=p.price; body.appendChild(pr); }
-					card.appendChild(body);
-					row.appendChild(card);
-				});
+						im.style.cssText = 'position:relative;flex:0 0 118px;display:flex;align-items:center;justify-content:center;height:118px;min-height:118px;background:var(--nls-border-soft,#f1f5f9);overflow:hidden;';
+						if(p.image){
+							var pic = document.createElement('img');
+							pic.src = String(p.image); pic.alt = p.title; pic.loading = 'lazy';
+							pic.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+							pic.onerror = function(){ if(pic.parentNode){ pic.parentNode.removeChild(pic); } im.textContent = '🛍'; im.style.fontSize = '30px'; im.style.opacity = '.5'; };
+							im.appendChild(pic);
+						} else { im.textContent = '🛍'; im.style.fontSize = '30px'; im.style.opacity = '.5'; }
+						if(p.onSale){ var sb=document.createElement('span'); sb.textContent='Sale'; sb.style.cssText='position:absolute;top:6px;left:6px;background:#dc2626;color:#fff;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:6px;'; im.appendChild(sb); }
+						link.appendChild(im);
+						var body = document.createElement('span');
+						body.className = 'nexulesuite_chat-ai-pcard__body';
+						body.style.cssText = 'display:flex;flex-direction:column;gap:3px;padding:9px 10px 4px;flex:1 1 auto;';
+						var t = document.createElement('span'); t.textContent=p.title;
+						t.style.cssText = 'font-size:12.5px;font-weight:600;line-height:1.3;color:var(--nls-ink-2,#1e293b);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;';
+						body.appendChild(t);
+						if(p.price){ var pr=document.createElement('span'); pr.textContent=p.price; pr.style.cssText='font-size:12.5px;font-weight:700;color:var(--nls-primary,#4f46e5);margin-top:auto;padding-top:2px;'; body.appendChild(pr); }
+						link.appendChild(body);
+						card.appendChild(link);
+						/* Woo-native add-to-cart button (separate <a> — a card-wrapping <a> would nest anchors). */
+						if(p.addUrl){ var ac=document.createElement('a'); ac.href=p.addUrl; ac.target='_blank'; ac.rel='noopener nofollow'; ac.textContent=(p.addText||'Add to cart'); ac.style.cssText='margin:2px 10px 12px;display:block;text-align:center;text-decoration:none;background:var(--nls-primary,#4f46e5);color:#fff;font-size:11.5px;font-weight:700;padding:8px 6px;border-radius:9px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'; card.appendChild(ac); }
+						row.appendChild(card);
+					});
 				if(row.childNodes.length){ aiMessages.appendChild(row); aiScrollToEnd(); }
 			}
 

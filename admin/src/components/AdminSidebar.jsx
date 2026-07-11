@@ -1,7 +1,6 @@
 import React, { useId, useState } from 'react';
 import {
 	Activity,
-	Bot,
 	ChevronLeft,
 	FileText,
 	Layout,
@@ -15,7 +14,6 @@ const NAV_ITEMS = [
 	{ id: 'popups', label: 'Popups', icon: Layout },
 	{ id: 'emails', label: 'Emails', icon: Mail },
 	{ id: 'form-builder', label: 'Form Builder', icon: FileText },
-	{ id: 'chatbot', label: 'Chatbot', icon: Bot },
 	{ id: 'settings', label: 'Settings', icon: Settings },
 ];
 
