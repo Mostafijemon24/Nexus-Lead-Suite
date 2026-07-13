@@ -11,6 +11,7 @@ import {
 	Stethoscope,
 	CalendarPlus,
 	PhoneCall,
+	Palette,
 } from 'lucide-react';
 import { createDefaultFieldSettings } from './core.js';
 
@@ -222,6 +223,31 @@ export const FORM_TEMPLATES = [
 				options: opts( 'Phone', 'Email' ),
 			} ],
 			[ 'terms-conditions', { label: 'Consent', required: true, consent: { ...CONSULTATION_CONSENT } } ],
+		],
+	},
+	{
+		id: 'design-consultation',
+		name: 'Free Design Consultation',
+		tagline: 'Bilingual design lead capture with service selection',
+		accent: 'amber',
+		Icon: Palette,
+		stepTitle: 'Get Free Design Consultation',
+		stepSubtitle: 'Fill out the form and our design team will reach out to you.',
+		submitBtnText: 'Submit',
+		fields: [
+			[ 'name', { label: 'Name/Nombre', required: true, placeholder: 'Name/Nombre' } ],
+			[ 'email', { label: 'Email/Correo electrónico', required: true, placeholder: 'Email/Correo electrónico' } ],
+			[ 'phone', { label: 'Mobile/Móvil', required: true, placeholder: 'Mobile/Móvil' } ],
+			[ 'radio', {
+				label: 'Service Needed / Servicio Necesario',
+				required: true,
+				optionLayout: 'inline',
+				options: opts(
+					'Custom Logo/Logotipo personalizado',
+					'Graphic /gráfico',
+					'Logo & Website /Logotipo y Sitio Web'
+				),
+			} ],
 		],
 	},
 ];

@@ -3930,7 +3930,8 @@ final class Shortcodes {
 		}
 
 		/* ── AI quick-action buttons (Book / Call / Directions, reference-style) ── */
-		$ai_actions = array();
+		$ai_actions      = array();
+		$ai_action_forms = array(); // idx => rendered shortcode HTML, opened inline in the chat on click.
 		if ( $ai_enabled && ! empty( $opt['aiActions'] ) && is_array( $opt['aiActions'] ) ) {
 			foreach ( $opt['aiActions'] as $act ) {
 				if ( ! is_array( $act ) ) {
@@ -3944,10 +3945,27 @@ final class Shortcodes {
 				if ( ! isset( $ai_icon_svgs[ $act_icon ] ) ) {
 					$act_icon = '';
 				}
+				$act_url_raw = trim( (string) ( $act['url'] ?? '' ) );
+				/*
+				 * A form shortcode pasted directly into the link field (e.g. [nexulesuite_form id="5"])
+				 * → render it once and open it inline inside the chat, instead of treating it as a link.
+				 */
+				if ( preg_match( '/^\[[a-z][a-z0-9_\-]*(\s[^\]]*)?\]$/is', $act_url_raw ) ) {
+					$rendered = do_shortcode( $act_url_raw );
+					if ( '' !== trim( (string) $rendered ) ) {
+						$idx                     = count( $ai_action_forms );
+						$ai_action_forms[ $idx ] = $rendered;
+						$act_url                 = '#form-inline-' . $idx;
+					} else {
+						$act_url = ''; // shortcode produced nothing (form missing / plugin inactive) → no target.
+					}
+				} else {
+					$act_url = $this->sanitize_livechat_button_href( $act_url_raw );
+				}
 				$ai_actions[] = array(
 					'label' => $act_label,
 					'icon'  => $act_icon,
-					'url'   => $this->sanitize_livechat_button_href( (string) ( $act['url'] ?? '' ) ),
+					'url'   => $act_url,
 				);
 			}
 		}
@@ -4561,6 +4579,18 @@ final class Shortcodes {
 							</div>
 						<?php endif; ?>
 
+						<?php /* Quick-action buttons whose link is a form shortcode: rendered once here, moved into the chat by aiShowInlineActionForm(). */ ?>
+						<?php foreach ( $ai_action_forms as $af_idx => $af_html ) : ?>
+							<?php if ( '' !== trim( (string) $af_html ) ) : ?>
+								<div id="nexulesuite_chat-ai-actionform-<?php echo (int) $af_idx; ?>" class="nexulesuite_chat-ai-actionform-src" style="display:none;">
+									<?php
+									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_shortcode() output; shortcode callbacks escape their own markup.
+									echo $af_html;
+									?>
+								</div>
+							<?php endif; ?>
+						<?php endforeach; ?>
+
 						<form class="nexulesuite_chat-ai-form" id="nexulesuite_chat-ai-form">
 
 							<?php if ( $ai_allow_images ) : ?>
@@ -4897,11 +4927,25 @@ final class Shortcodes {
 				aiMessages.appendChild(card);
 				aiScrollToEnd();
 			}
+			function aiShowInlineActionForm(idx){
+				var src = document.getElementById('nexulesuite_chat-ai-actionform-' + idx);
+				if(!src || !src.innerHTML.trim()){ aiShowContactForm(); return; } /* nothing rendered → fall back */
+				var embedId = 'nexulesuite_chat-ai-actionembed-' + idx;
+				if(document.getElementById(embedId)){ aiScrollToEnd(); return; } /* already shown */
+				var card = document.createElement('div');
+				card.className = 'nexulesuite_chat-ai-leadcard nexulesuite_chat-ai-embedform';
+				card.id = embedId;
+				while(src.firstChild){ card.appendChild(src.firstChild); } /* move nodes → preserves the form's own JS bindings */
+				aiMessages.appendChild(card);
+				aiScrollToEnd();
+			}
 			function aiRunAction(act){
 				var url = (act && act.url) ? String(act.url) : '';
 				if(!url) return;
 				if(url === '#lead' || url === '#contact'){ aiShowLeadForm(); return; }
 				if(url === '#form' || url === '#contact-form' || url === '#contactform'){ aiShowContactForm(); return; }
+				var mInline = url.match(/^#form-inline-(\d+)$/);
+				if(mInline){ aiShowInlineActionForm(mInline[1]); return; }
 				if(url.charAt(0) === '#' || url.indexOf('form') === 0){ if(typeof showFormView === 'function'){ showFormView(); } return; }
 				if(/^tel:|^mailto:|^sms:/i.test(url)){ window.location.href = url; return; }
 				window.open(url, '_blank', 'noopener');

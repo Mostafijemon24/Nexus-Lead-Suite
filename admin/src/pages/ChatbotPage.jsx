@@ -456,7 +456,7 @@ function ActionRow( { value, index, onChange, onRemove } ) {
 				type="text"
 				value={ value.url }
 				onChange={ ( e ) => update( { url: e.target.value } ) }
-				placeholder="Link (tel:713…, https://…, or #form)"
+				placeholder={ 'Link (tel:713…, https://…, #form, or paste a form shortcode like [nexulesuite_form id="5"])' }
 				className="min-w-[11rem] flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
 			/>
 			<button type="button" onClick={ onRemove } className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-500">
@@ -597,7 +597,8 @@ export function FaqTab() {
 					<h3 className="text-sm font-bold text-slate-800">Quick-action buttons</h3>
 					<p className="mt-0.5 text-xs text-slate-500">
 						Shown under the suggestions (like “Book a visit / Call / Directions”). The first button is highlighted.
-						Link can be <span className="font-mono">tel:713…</span>, <span className="font-mono">https://…</span>. Links: <span className="font-mono">#lead</span> (built-in contact form), <span className="font-mono">#form</span> (your shortcode below), or <span className="font-mono">tel:</span> / <span className="font-mono">mailto:</span> / <span className="font-mono">https://</span>.
+						Link can be <span className="font-mono">tel:713…</span>, <span className="font-mono">https://…</span>. Links: <span className="font-mono">#lead</span> (built-in contact form), <span className="font-mono">#form</span> (the single shortcode below), or <span className="font-mono">tel:</span> / <span className="font-mono">mailto:</span> / <span className="font-mono">https://</span>.
+						To open a specific form inside the chat, paste its shortcode straight into the link box — e.g. <span className="font-mono">[nexulesuite_form id=&quot;5&quot;]</span>. Each button can open a different form this way.
 					</p>
 				</div>
 				<div className="space-y-2">

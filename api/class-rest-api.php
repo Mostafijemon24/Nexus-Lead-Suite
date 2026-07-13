@@ -2579,7 +2579,7 @@ final class Rest_Api {
 			$out[] = array(
 				'label' => mb_substr( $label, 0, 60 ),
 				'icon'  => $icon,
-				'url'   => esc_url_raw( trim( (string) ( $act['url'] ?? '' ) ), array( 'http', 'https', 'tel', 'mailto', 'sms' ) ),
+				'url'   => $this->sanitize_ai_action_url( (string) ( $act['url'] ?? '' ) ),
 			);
 			if ( count( $out ) >= 5 ) {
 				break;
@@ -2587,6 +2587,42 @@ final class Rest_Api {
 		}
 
 		return $out;
+	}
+
+	/**
+	 * Sanitizes a single quick-action button target.
+	 *
+	 * Accepts three shapes:
+	 *   - A form shortcode pasted directly, e.g. `[nexulesuite_form id="5"]` — kept verbatim so the
+	 *     widget can render it inline in the chat. `esc_url_raw()` would otherwise strip the brackets
+	 *     and quotes and turn it into a broken link.
+	 *   - Built-in inline tokens (`#lead`, `#form`, …) — leading-`#` fragments survive esc_url_raw.
+	 *   - Ordinary links (tel:/mailto:/sms:/http(s):).
+	 *
+	 * @param string $raw Raw URL / shortcode from the editor.
+	 * @return string Sanitized target.
+	 */
+	private function sanitize_ai_action_url( string $raw ): string {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			return '';
+		}
+		if ( $this->is_form_shortcode( $raw ) ) {
+			return mb_substr( $raw, 0, 500 );
+		}
+		return esc_url_raw( $raw, array( 'http', 'https', 'tel', 'mailto', 'sms' ) );
+	}
+
+	/**
+	 * Whether a string is a single form/embed shortcode (e.g. `[nexulesuite_form id="5"]`,
+	 * `[contact-form-7 id="12"]`). Used to route pasted shortcodes to inline rendering rather
+	 * than URL sanitization.
+	 *
+	 * @param string $raw Raw value.
+	 * @return bool
+	 */
+	private function is_form_shortcode( string $raw ): bool {
+		return (bool) preg_match( '/^\[[a-z][a-z0-9_\-]*(\s[^\]]*)?\]$/is', trim( $raw ) );
 	}
 
 	/**
@@ -6947,17 +6983,36 @@ final class Rest_Api {
 	}
 
 	/**
-	 * Gets Site Logo as JPEG bytes for PDF embedding (converts if needed).
+	 * Gets the site's logo as JPEG bytes for PDF embedding, resolved dynamically.
+	 *
+	 * Falls back through the images a site is most likely to have set, so the report
+	 * header shows the current site's branding without any manual upload:
+	 * Customizer logo (custom_logo) → Site Icon / favicon (site_icon).
 	 *
 	 * @return array<string,mixed>|null
 	 */
 	private function get_site_logo_jpeg_data() {
-		$logo_id = (int) get_theme_mod( 'custom_logo' );
-		if ( $logo_id <= 0 ) {
+		$logo = $this->attachment_jpeg_data( (int) get_theme_mod( 'custom_logo' ), 'site-logo' );
+		if ( null !== $logo ) {
+			return $logo;
+		}
+
+		return $this->attachment_jpeg_data( (int) get_option( 'site_icon' ), 'site-icon' );
+	}
+
+	/**
+	 * Reads a media attachment and returns it as JPEG bytes (converting when needed).
+	 *
+	 * @param int    $attachment_id Media attachment ID.
+	 * @param string $slug          Slug used for the temp JPEG filename.
+	 * @return array<string,mixed>|null jpeg_bytes/w/h, or null when unavailable.
+	 */
+	private function attachment_jpeg_data( int $attachment_id, string $slug ) {
+		if ( $attachment_id <= 0 ) {
 			return null;
 		}
 
-		$path = get_attached_file( $logo_id );
+		$path = get_attached_file( $attachment_id );
 		if ( ! $path || ! file_exists( $path ) ) {
 			return null;
 		}
@@ -6995,7 +7050,7 @@ final class Rest_Api {
 			return null;
 		}
 
-		$tmp = trailingslashit( $uploads['path'] ) . 'nexulesuite_site-logo-' . wp_generate_password( 6, false, false ) . '.jpg';
+		$tmp = trailingslashit( $uploads['path'] ) . 'nexulesuite_' . $slug . '-' . wp_generate_password( 6, false, false ) . '.jpg';
 		$saved = $editor->save( $tmp, 'image/jpeg' );
 		if ( is_wp_error( $saved ) || empty( $saved['path'] ) ) {
 			return null;
