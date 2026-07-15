@@ -1,3 +1,6 @@
+/* Nexus Hub console typefaces (Sora / Inter / JetBrains Mono) are injected
+   non-blockingly from src/main.jsx — a CSS @import here would render-block
+   the whole admin page whenever fonts.googleapis.com is slow or unreachable. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -580,38 +583,38 @@
 	}
 }
 
-/* Popups page — matches popup-styling-matched.html + popup-editor-full.html */
+/* Popups page — Nexus Hub console tokens, "pop" module accent (violet). */
 .nexulesuite_popups-editor-wrap,
 .nexulesuite_popup-sections-wrap {
-	--nexulesuite_pop-ink: #0f172a;
-	--nexulesuite_pop-ink-2: #334155;
-	--nexulesuite_pop-muted: #64748b;
-	--nexulesuite_pop-faint: #94a3b8;
-	--nexulesuite_pop-line: #e6e8ee;
-	--nexulesuite_pop-line-soft: #eef0f5;
+	--nexulesuite_pop-ink: #101322;
+	--nexulesuite_pop-ink-2: #3b4258;
+	--nexulesuite_pop-muted: #6b7390;
+	--nexulesuite_pop-faint: #9aa1bc;
+	--nexulesuite_pop-line: #e7eaf3;
+	--nexulesuite_pop-line-soft: #eef1f8;
 	--nexulesuite_pop-paper: #fff;
-	--nexulesuite_pop-canvas: #f4f5f8;
-	--nexulesuite_pop-primary: #4f46e5;
-	--nexulesuite_pop-primary-d: #4338ca;
-	--nexulesuite_pop-primary-soft: #eef2ff;
-	--nexulesuite_pop-primary-ring: rgba(79, 70, 229, 0.18);
+	--nexulesuite_pop-canvas: #f3f5fa;
+	--nexulesuite_pop-primary: #8b5cf6;
+	--nexulesuite_pop-primary-d: #7c3aed;
+	--nexulesuite_pop-primary-soft: #f1ebfe;
+	--nexulesuite_pop-primary-ring: rgba(139, 92, 246, 0.18);
 	--nexulesuite_pop-success: #10b981;
-	--nexulesuite_pop-danger: #ef4444;
-	--nexulesuite_pop-danger-soft: #fef2f2;
-	--nexulesuite_pop-pink: #db2777;
-	--nexulesuite_pop-pink-soft: #fdf2f8;
-	--nexulesuite_pop-track: #e4e6ee;
-	--nexulesuite_pop-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.12);
-	--nexulesuite_pop-r-sm: 10px;
-	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+	--nexulesuite_pop-danger: #f43f5e;
+	--nexulesuite_pop-danger-soft: #feebee;
+	--nexulesuite_pop-pink: #f43f5e;
+	--nexulesuite_pop-pink-soft: #feebee;
+	--nexulesuite_pop-track: #e7eaf3;
+	--nexulesuite_pop-shadow: 0 1px 2px rgba(16, 19, 34, 0.05), 0 10px 30px -14px rgba(16, 19, 34, 0.14);
+	--nexulesuite_pop-r-sm: 11px;
+	font-family: "Inter", system-ui, sans-serif;
 	color: var(--nexulesuite_pop-ink);
-	line-height: 1.45;
+	line-height: 1.55;
 }
 
 .nexulesuite_popups-editor-wrap .nexulesuite_pop-card {
 	background: var(--nexulesuite_pop-paper);
 	border: 1px solid var(--nexulesuite_pop-line);
-	border-radius: 18px;
+	border-radius: 16px;
 	box-shadow: var(--nexulesuite_pop-shadow);
 	padding: 28px 30px;
 }
@@ -959,7 +962,7 @@
 	border-radius: 50%;
 	background: #fff;
 	border: 2px solid var(--nexulesuite_pop-primary);
-	box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
+	box-shadow: 0 2px 6px rgba(139, 92, 246, 0.35);
 	cursor: pointer;
 	transition: transform 0.12s, box-shadow 0.12s;
 }
@@ -970,7 +973,7 @@
 
 .nexulesuite_popups-editor-wrap .slide-field input[type="range"]:active::-webkit-slider-thumb {
 	transform: scale(1.18);
-	box-shadow: 0 2px 10px rgba(79, 70, 229, 0.5), 0 0 0 5px var(--nexulesuite_pop-primary-ring);
+	box-shadow: 0 2px 10px rgba(139, 92, 246, 0.5), 0 0 0 5px var(--nexulesuite_pop-primary-ring);
 }
 
 .nexulesuite_popups-editor-wrap .slide-field input[type="range"]::-moz-range-thumb {
@@ -979,7 +982,7 @@
 	border-radius: 50%;
 	background: #fff;
 	border: 2px solid var(--nexulesuite_pop-primary);
-	box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
+	box-shadow: 0 2px 6px rgba(139, 92, 246, 0.35);
 	cursor: pointer;
 }
 
@@ -1098,8 +1101,10 @@
 }
 
 .nexulesuite_pop-sec-title {
+	font-family: "Sora", "Inter", sans-serif;
 	font-size: 15px;
 	font-weight: 700;
+	letter-spacing: -0.01em;
 }
 
 .nexulesuite_pop-sec-pill {
@@ -3907,29 +3912,29 @@
 	}
 }
 
-/* Settings — Auto PopUp Logic: Exclusion Rules only */
+/* Settings — Auto PopUp Logic: Exclusion Rules (Nexus Hub console tokens, pop accent). */
 .nexulesuite_settings-autopopup-exclusion-wrap {
-	--nexulesuite_sap-excl-ink: #0f172a;
-	--nexulesuite_sap-excl-muted: #64748b;
-	--nexulesuite_sap-excl-faint: #94a3b8;
-	--nexulesuite_sap-excl-line: #e6e8ee;
+	--nexulesuite_sap-excl-ink: #101322;
+	--nexulesuite_sap-excl-muted: #6b7390;
+	--nexulesuite_sap-excl-faint: #9aa1bc;
+	--nexulesuite_sap-excl-line: #e7eaf3;
 	--nexulesuite_sap-excl-paper: #fff;
-	--nexulesuite_sap-excl-primary: #4f46e5;
-	--nexulesuite_sap-excl-primary-ring: rgba(79, 70, 229, 0.18);
-	--nexulesuite_sap-excl-danger-soft: #fef2f2;
-	--nexulesuite_sap-excl-danger: #dc2626;
-	--nexulesuite_sap-excl-danger-border: #fecaca;
-	--nexulesuite_sap-excl-info-soft: #eff6ff;
-	--nexulesuite_sap-excl-info: #2563eb;
-	--nexulesuite_sap-excl-info-border: #bfdbfe;
-	--nexulesuite_sap-excl-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.12);
-	--nexulesuite_sap-excl-r-sm: 10px;
+	--nexulesuite_sap-excl-primary: #8b5cf6;
+	--nexulesuite_sap-excl-primary-ring: rgba(139, 92, 246, 0.18);
+	--nexulesuite_sap-excl-danger-soft: #feebee;
+	--nexulesuite_sap-excl-danger: #f43f5e;
+	--nexulesuite_sap-excl-danger-border: #fbd0da;
+	--nexulesuite_sap-excl-info-soft: #f1ebfe;
+	--nexulesuite_sap-excl-info: #8b5cf6;
+	--nexulesuite_sap-excl-info-border: #e2d6fc;
+	--nexulesuite_sap-excl-shadow: 0 1px 2px rgba(16, 19, 34, 0.05), 0 10px 30px -14px rgba(16, 19, 34, 0.14);
+	--nexulesuite_sap-excl-r-sm: 11px;
 
 	flex: 1;
 	min-width: 0;
-	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+	font-family: "Inter", system-ui, sans-serif;
 	color: var(--nexulesuite_sap-excl-ink);
-	line-height: 1.45;
+	line-height: 1.55;
 }
 
 .nexulesuite_settings-autopopup-exclusion-wrap .nexulesuite_sap-excl-card {
@@ -3940,7 +3945,7 @@
 	max-width: none;
 	background: var(--nexulesuite_sap-excl-paper);
 	border: 1px solid var(--nexulesuite_sap-excl-line);
-	border-radius: 18px;
+	border-radius: 16px;
 	box-shadow: var(--nexulesuite_sap-excl-shadow);
 	padding: 28px 30px;
 }
@@ -3972,8 +3977,10 @@
 
 .nexulesuite_settings-autopopup-exclusion-wrap .nexulesuite_sap-excl-sec-title {
 	display: block;
+	font-family: "Sora", "Inter", sans-serif;
 	font-size: 15px;
 	font-weight: 700;
+	letter-spacing: -0.01em;
 	color: var(--nexulesuite_sap-excl-ink);
 }
 

@@ -57,6 +57,26 @@ final class Shortcodes {
 	private static $did_render = false;
 
 	/**
+	 * Query flag that serves the chat as a standalone framed document.
+	 */
+	private const CHAT_EMBED_QUERY_VAR = 'nexulesuite_chat_embed';
+
+	/**
+	 * Set by `[nexulesuite_chat]` when an inline chat is on the page, so the floating
+	 * wp_footer widget stands down and the visitor does not get two chats at once.
+	 *
+	 * @var bool
+	 */
+	private static $suppress_floating_livechat = false;
+
+	/**
+	 * Whether an inline `[nexulesuite_chat]` already rendered on this request.
+	 *
+	 * @var bool
+	 */
+	private static $inline_chat_rendered = false;
+
+	/**
 	 * Forminator UI design keys queued for asset loading (per HTTP request).
 	 *
 	 * @var array<int, string>
@@ -93,6 +113,8 @@ final class Shortcodes {
 	public function register_hooks(): void {
 		// Register shortcodes immediately (safe to call at any point after plugins_loaded).
 		$this->register_shortcodes();
+		// Serves the standalone chat document that `[nexulesuite_chat]` frames. Before the theme takes over.
+		add_action( 'template_redirect', array( $this, 'maybe_serve_chat_embed' ), 5 );
 		add_action( 'wp', array( $this, 'scan_singular_for_form_shortcode' ), 4 );
 		add_action( 'wp', array( $this, 'pre_check_popup_shortcodes' ), 1 );
 		/*
@@ -1739,6 +1761,7 @@ final class Shortcodes {
 	 */
 	public function register_shortcodes(): void {
 		add_shortcode( 'nexulesuite_form', array( $this, 'render_form_shortcode' ) );
+		add_shortcode( 'nexulesuite_chat', array( $this, 'render_chat_shortcode' ) );
 	}
 
 	/**
@@ -1917,7 +1940,7 @@ final class Shortcodes {
 		.nexulesuite_popup-overlay.nexulesuite_popup--open{display:flex;}
 		.nexulesuite_popup{position:relative;width:100%;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.28);animation:nexulesuite_pop-in .22s ease;box-sizing:border-box;}
 		@keyframes nexulesuite_pop-in{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-		.nexulesuite_popup__close{position:absolute;top:10px;right:10px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;line-height:1;z-index:2;border-radius:50%;transition:opacity .2s,transform .25s cubic-bezier(.34,1.56,.64,1);}
+		.nexulesuite_popup__close{position:absolute;top:10px;right:10px;display:flex;align-items:center;justify-content:center;border:none!important;cursor:pointer;line-height:1;z-index:2;border-radius:50%!important;padding:0!important;margin:0!important;box-sizing:border-box!important;min-width:0!important;min-height:0!important;aspect-ratio:1/1;flex:0 0 auto;box-shadow:none!important;transition:opacity .2s,transform .25s cubic-bezier(.34,1.56,.64,1);}
 		.nexulesuite_popup__close:hover{opacity:.9;transform:rotate(90deg) scale(1.1);}
 		.nexulesuite_popup__close:active{transform:rotate(90deg) scale(0.95);}
 		.nexulesuite_popup__header{word-break:break-word;box-sizing:border-box;}
@@ -3843,14 +3866,48 @@ final class Shortcodes {
 
 	/**
 	 * Renders the floating livechat widget in wp_footer.
-	 * Reads general settings to build the widget; outputs scoped CSS + HTML + JS inline.
 	 *
 	 * @return void
 	 */
 	public function render_livechat_widget(): void {
+		// An inline [nexulesuite_chat] on this page already provides the chat; two would collide on element ids.
+		if ( self::$suppress_floating_livechat ) {
+			return;
+		}
+
+		$parts = $this->build_livechat_parts( 'floating' );
+		if ( null === $parts ) {
+			return;
+		}
+
+		$this->enqueue_footer_inline_style( 'nexulesuite_livechat-widget', $parts['css'] );
+		$this->enqueue_footer_inline_script( 'nexulesuite_livechat-widget', $parts['js'] );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- build_livechat_parts() escapes every interpolated value at output.
+		echo $parts['html'];
+	}
+
+	/**
+	 * Builds the livechat widget's scoped CSS, HTML and JS.
+	 *
+	 * Every presentation runs through here so they cannot drift apart:
+	 *   'floating' — the wp_footer bubble that expands into a panel.
+	 *   'inline'   — the same panel dropped straight into the page DOM by `[nexulesuite_chat]`,
+	 *                sitting in the flow like any other section.
+	 *   'embed'    — the same panel as a standalone document, for the iframe HTML embed code.
+	 *
+	 * @param string $mode 'floating', 'inline' or 'embed'.
+	 * @return array{css:string,html:string,js:string}|null Null when livechat is disabled in settings.
+	 */
+	private function build_livechat_parts( string $mode = 'floating' ): ?array {
+		$is_embed  = ( 'embed' === $mode );
+		$is_inline = ( 'inline' === $mode );
+		// Both render the panel open and chrome-less; only their container differs.
+		$is_panel  = ( $is_embed || $is_inline );
+
 		$opt = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
 		if ( ! is_array( $opt ) || empty( $opt['enableLivechat'] ?? false ) ) {
-			return;
+			return null;
 		}
 
 		/* ── Read settings with safe defaults ── */
@@ -3886,6 +3943,10 @@ final class Shortcodes {
 		/* ── AI chat mode: only usable when enabled AND a server URL is set ── */
 		$ai_enabled       = ! empty( $opt['aiEnabled'] ) && '' !== trim( (string) ( $opt['aiServerUrl'] ?? '' ) );
 		$ai_welcome       = sanitize_text_field( (string) ( $opt['aiWelcomeMessage'] ?? '' ) );
+		$ai_placeholder   = sanitize_text_field( (string) ( $opt['aiInputPlaceholder'] ?? '' ) );
+		if ( '' === trim( $ai_placeholder ) ) {
+			$ai_placeholder = __( 'Write a message…', 'nexus-lead-suite' );
+		}
 		$ai_launch_label  = $btn1_label; // reuse the primary "Start Conversation" label.
 		$ai_allow_images  = $ai_enabled && ! empty( $opt['aiAllowImages'] );
 
@@ -4007,11 +4068,24 @@ final class Shortcodes {
 		[ $btn2_type, $btn2_val ] = $parse_link( $btn2_raw );
 		[ $btn3_type, $btn3_val ] = $parse_link( $btn3_raw );
 
+		$btn1_raw_trim    = trim( $btn1_raw );
+		$btn1_is_lead_entry = in_array(
+			$btn1_raw_trim,
+			array( '#lead', '#form', '#contact-form', '#contactform' ),
+			true
+		);
+
 		$btn1_has_action = ( 'popup' === $btn1_type ) ? ( '' !== $btn1_val ) : ( '' !== $btn1_val );
 		$btn2_has_action = ( 'popup' === $btn2_type ) ? ( '' !== $btn2_val ) : ( '' !== $btn2_val );
 		$btn3_has_action = ( 'popup' === $btn3_type ) ? ( '' !== $btn3_val ) : ( '' !== $btn3_val );
 		$has_any_action_btn = $btn1_has_action || $btn2_has_action || $btn3_has_action;
 		$has_inline_popup_btn = ( 'popup' === $btn1_type && '' !== $btn1_val );
+
+		/*
+		 * Lead gate: collect contact details before the AI chat opens.
+		 * Active when button 1 has no link/popup, or when button 1 is explicitly #lead / #form.
+		 */
+		$ai_lead_gate = $ai_enabled && ( ! $btn1_has_action || $btn1_is_lead_entry );
 
 		/* ── Inline popup clone (button 1 + Popup): body only — header uses livechat avatar + title (no popup name/sub-heading). ── */
 		$inline_popup_html = '';
@@ -4080,8 +4154,18 @@ final class Shortcodes {
 			--nls-primary-tint:color-mix(in srgb, var(--nls-primary), #fff 90%);
 			--nls-primary-ring:rgba(37,99,235,.18);
 			--nls-primary-ring:color-mix(in srgb, var(--nls-primary), transparent 82%);
+			/* Header chrome: deep navy derived from the brand colour (reference: Curative GI header). */
+			--nls-head-bg:#16213c;
+			--nls-head-bg:color-mix(in srgb, var(--nls-primary), #0b1220 80%);
+			--nls-head-soft:rgba(255,255,255,.09);
+			--nls-head-line:rgba(255,255,255,.16);
+			/* Bot bubble: faint brand-tinted panel instead of a shadowed white card. */
+			--nls-bot-bubble:#eef3fb;
+			--nls-bot-bubble:color-mix(in srgb, var(--nls-primary), #f8fafc 94%);
+			--nls-bot-border:#e2eaf7;
+			--nls-bot-border:color-mix(in srgb, var(--nls-primary), #fff 87%);
 			--nls-surface:#ffffff;
-			--nls-canvas:#f6f7fb;
+			--nls-canvas:#f6f8fc;
 			--nls-border:#e2e8f0;
 			--nls-border-soft:#f1f5f9;
 			--nls-field-border:#cbd5e1;
@@ -4111,6 +4195,14 @@ final class Shortcodes {
 		 * form embedded in the chat (its own stylesheet) untouched.
 		 */
 		.nexulesuite_chat-widget :where([class*="nexulesuite_chat-"]){box-sizing:border-box;}
+
+		/* Invisible scrollbars: the transcript and inline views scroll, but draw no scrollbar track. */
+		.nexulesuite_chat-ai-messages,
+		.nexulesuite_chat-panel__body,
+		.nexulesuite_chat-inline-popup-body{scrollbar-width:none;-ms-overflow-style:none;}
+		.nexulesuite_chat-ai-messages::-webkit-scrollbar,
+		.nexulesuite_chat-panel__body::-webkit-scrollbar,
+		.nexulesuite_chat-inline-popup-body::-webkit-scrollbar{display:none;width:0;height:0;}
 		.nexulesuite_chat-widget :where(
 			button[class*="nexulesuite_chat-"],
 			input[class*="nexulesuite_chat-"],
@@ -4119,25 +4211,25 @@ final class Shortcodes {
 		){margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:inherit;font-family:inherit;font-size:inherit;font-weight:inherit;line-height:1.45;letter-spacing:normal;text-transform:none;text-align:inherit;text-decoration:none;min-width:0;min-height:0;width:auto;height:auto;-webkit-appearance:none;appearance:none;}
 
 		/* Panel — taller default home view; compact height when inline form is open (no dead space below short forms). */
-		.nexulesuite_chat-panel{display:none;width:420px;min-height:560px;max-height:min(640px,calc(100vh - 130px));background:<?php echo esc_attr( $chat_bubble_bg ); ?>;border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.2);overflow:hidden;flex-direction:column;}
+		.nexulesuite_chat-panel{display:none;width:320px;min-height:510px;max-height:min(510px,calc(100vh - 130px));background:<?php echo esc_attr( $chat_bubble_bg ); ?>;border-radius:16px;box-shadow:0 16px 48px rgba(15,23,42,.18);overflow:hidden;flex-direction:column;}
 		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form{min-height:0;}
 		.nexulesuite_chat-panel.nexulesuite_chat--open{display:flex;animation:nexulesuite_chat-pop-in .22s ease;}
 		@keyframes nexulesuite_chat-pop-in{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 
-		/* Header — extra vertical padding reads as taller chrome */
-		.nexulesuite_chat-panel__head{display:flex;align-items:center;gap:14px;padding:26px 22px 22px;background:<?php echo esc_attr( $btn_bg ); ?>;flex-shrink:0;}
-		.nexulesuite_chat-panel__avatar{width:54px;height:54px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(255,255,255,.35);}
-		.nexulesuite_chat-panel__avatar img{width:54px;height:54px;border-radius:50%;object-fit:cover;display:block;}
-		.nexulesuite_chat-panel__avatar svg{width:26px;height:26px;fill:none;stroke:<?php echo esc_attr( $btn_text_col ); ?>;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+		/* Header — deep navy bar with a squared avatar tile (reference: Curative GI header) */
+		.nexulesuite_chat-panel__head{display:flex;align-items:center;gap:13px;padding:18px 18px 16px;background:var(--nls-head-bg);flex-shrink:0;}
+		.nexulesuite_chat-panel__avatar{width:44px;height:44px;border-radius:12px;flex-shrink:0;background:var(--nls-head-soft);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--nls-head-line);}
+		.nexulesuite_chat-panel__avatar img{width:44px;height:44px;border-radius:12px;object-fit:cover;}
+		.nexulesuite_chat-panel__avatar svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 		.nexulesuite_chat-panel__info{flex:1;min-width:0;}
-		.nexulesuite_chat-panel__title{font-size:15px;font-weight:700;color:<?php echo esc_attr( $btn_text_col ); ?>;margin:0;padding:0;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-		.nexulesuite_chat-panel__badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:<?php echo esc_attr( $btn_text_col ); ?>;opacity:.85;margin:0;margin-top:5px;line-height:1.2;display:flex;align-items:center;gap:6px;}
+		.nexulesuite_chat-panel__title{font-size:14.5px;font-weight:600;color:#fff;margin:0;padding:0;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+		.nexulesuite_chat-panel__badge{font-size:11px;font-weight:400;text-transform:none;letter-spacing:0;color:#fff;opacity:.8;margin:0;margin-top:5px;line-height:1.2;display:flex;align-items:center;gap:6px;}
 		/* Online indicator dot (badge + trigger) */
 		.nexulesuite_chat-online-dot{width:9px;height:9px;border-radius:999px;flex:0 0 auto;display:inline-block;background:<?php echo esc_attr( $chat_online_dot ); ?>;box-shadow:0 0 0 2px rgba(255,255,255,.22),0 0 16px color-mix(in srgb, <?php echo esc_attr( $chat_online_dot ); ?>, transparent 15%),0 0 36px color-mix(in srgb, <?php echo esc_attr( $chat_online_dot ); ?>, transparent 45%);animation:nexulesuite_chat-online-blink 1.05s ease-in-out infinite;position:relative;z-index:2;}
 		@keyframes nexulesuite_chat-online-blink{0%,100%{transform:scale(.92);opacity:.75;filter:saturate(1.2) brightness(1.05)}50%{transform:scale(1.12);opacity:1;filter:saturate(1.55) brightness(1.25);box-shadow:0 0 0 2px rgba(255,255,255,.35),0 0 18px rgba(0,255,106,.95),0 0 44px rgba(0,255,106,.75)}}
 		@media (prefers-reduced-motion: reduce){.nexulesuite_chat-online-dot{animation:none}}
-		.nexulesuite_chat-panel__close{background:rgba(0,0,0,.15);border:none;color:<?php echo esc_attr( $btn_text_col ); ?>;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;flex-shrink:0;transition:background .2s,transform .25s cubic-bezier(.34,1.56,.64,1);}
-		.nexulesuite_chat-panel__close:hover{background:rgba(0,0,0,.28);transform:rotate(90deg) scale(1.1);}
+		.nexulesuite_chat-panel__close{background:var(--nls-head-soft);border:1px solid var(--nls-head-line);color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1;flex-shrink:0;transition:background .2s,transform .25s cubic-bezier(.34,1.56,.64,1);}
+		.nexulesuite_chat-panel__close:hover{background:rgba(255,255,255,.22);transform:rotate(90deg) scale(1.05);}
 
 		/* Body — expanded content zone */
 		.nexulesuite_chat-panel__body{flex:1 1 auto;padding:26px 24px;background:#f8fafc;font-size:14px;color:#475569;line-height:1.65;border-bottom:1px solid #f1f5f9;min-height:96px;}
@@ -4145,7 +4237,7 @@ final class Shortcodes {
 		/* Buttons area */
 		.nexulesuite_chat-panel__btns{padding:18px 22px 22px;display:flex;flex-direction:column;gap:10px;background:<?php echo esc_attr( $chat_bubble_bg ); ?>;flex-shrink:0;}
 		.nexulesuite_chat-panel__btns a,
-		.nexulesuite_chat-panel__btns button{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none !important;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border:none;line-height:1.3;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
+		.nexulesuite_chat-panel__btns button{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none !important;font-weight:500;font-size:13.5px;text-transform:none;letter-spacing:0;cursor:pointer;border:none;line-height:1.3;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
 		.nexulesuite_chat-panel__btns-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 		.nexulesuite_chat-panel__btns-row a,
 		.nexulesuite_chat-panel__btns-row button{display:flex;align-items:center;justify-content:center;}
@@ -4154,14 +4246,14 @@ final class Shortcodes {
 		.nexulesuite_chat-form-view{display:none;flex-direction:column;background:<?php echo esc_attr( $chat_bubble_bg ); ?>;flex:1 1 auto;min-height:0;}
 		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form .nexulesuite_chat-form-view{flex:0 1 auto;}
 		.nexulesuite_chat-form-view.nexulesuite_chat-form--active{display:flex;animation:nexulesuite_chat-pop-in .2s ease;}
-		.nexulesuite_chat-form-view__head{display:flex;align-items:center;gap:14px;padding:22px 20px;background:<?php echo esc_attr( $btn_bg ); ?>;border-bottom:1px solid rgba(255,255,255,.15);flex-shrink:0;}
-		.nexulesuite_chat-form-view__back{background:rgba(0,0,0,.15);border:none;color:<?php echo esc_attr( $btn_text_col ); ?>;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;flex-shrink:0;transition:background .2s;}
-		.nexulesuite_chat-form-view__back:hover{background:rgba(0,0,0,.28);}
-		.nexulesuite_chat-form-view__avatar{width:48px;height:48px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(255,255,255,.35);}
-		.nexulesuite_chat-form-view__avatar img{width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;}
-		.nexulesuite_chat-form-view__avatar svg{width:24px;height:24px;fill:none;stroke:<?php echo esc_attr( $btn_text_col ); ?>;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-form-view__head{display:flex;align-items:center;gap:13px;padding:16px 18px;background:var(--nls-head-bg);border-bottom:1px solid var(--nls-head-line);flex-shrink:0;}
+		.nexulesuite_chat-form-view__back{background:var(--nls-head-soft);border:1px solid var(--nls-head-line);color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;flex-shrink:0;transition:background .2s;}
+		.nexulesuite_chat-form-view__back:hover{background:rgba(255,255,255,.22);}
+		.nexulesuite_chat-form-view__avatar{width:40px;height:40px;border-radius:10px;flex-shrink:0;background:var(--nls-head-soft);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--nls-head-line);}
+		.nexulesuite_chat-form-view__avatar img{width:40px;height:40px;border-radius:10px;object-fit:cover;}
+		.nexulesuite_chat-form-view__avatar svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 		.nexulesuite_chat-form-view__info{flex:1;min-width:0;}
-		.nexulesuite_chat-form-view__heading{font-size:15px;font-weight:700;color:<?php echo esc_attr( $btn_text_col ); ?>;margin:0;padding:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+		.nexulesuite_chat-form-view__heading{font-size:14.5px;font-weight:600;color:#fff;margin:0;padding:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 		.nexulesuite_chat-inline-popup-body{flex:1 1 auto;max-height:min(72vh,560px);overflow-y:auto;padding:18px 20px 22px;background:#fff;}
 		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form .nexulesuite_chat-inline-popup-body{flex:0 1 auto;}
 		.nexulesuite_chat-inline-popup-body .nexulesuite_st-form{margin:0;border:none!important;box-shadow:none!important;background:transparent!important;}
@@ -4172,13 +4264,44 @@ final class Shortcodes {
 		}
 		.nexulesuite_chat-inline-popup-missing{font-size:12px;color:#b45309;margin:0;line-height:1.5;}
 
+		/* Lead gate — contact form shown before the AI chat when button 1 has no link/popup. */
+		.nexulesuite_chat-leadgate-view{display:none;flex-direction:column;flex:1 1 auto;min-height:0;background:var(--nls-canvas);}
+		.nexulesuite_chat-panel.nexulesuite_chat-panel--lead-gate .nexulesuite_chat-leadgate-view{display:flex;}
+		.nexulesuite_chat-panel.nexulesuite_chat-panel--lead-gate .nexulesuite_chat-panel__body,
+		.nexulesuite_chat-panel.nexulesuite_chat-panel--lead-gate .nexulesuite_chat-panel__btns{display:none!important;}
+		.nexulesuite_chat-leadgate-body{flex:1 1 auto;display:flex;flex-direction:column;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px 16px;scrollbar-width:none;-ms-overflow-style:none;}
+		.nexulesuite_chat-leadgate-body::-webkit-scrollbar{display:none;width:0;height:0;}
+		.nexulesuite_chat-leadgate-foot{margin:0;padding:10px 4px 2px;font-size:11px;line-height:1.45;color:var(--nls-muted);text-align:center;flex:0 0 auto;}
+		/* Card stretches to fill the panel so the body does not look hollow below the fields. */
+		.nexulesuite_chat-leadgate-body .nexulesuite_chat-ai-leadcard{align-self:stretch;flex:0 1 auto;width:100%;max-width:100%;margin:0;box-sizing:border-box;padding:20px 18px 18px;border-radius:var(--nls-radius-lg);gap:0;background:var(--nls-surface);border:1px solid var(--nls-border);box-shadow:var(--nls-shadow-sm);display:flex;flex-direction:column;min-height:auto;overflow:visible;}
+		.nexulesuite_chat-leadgate-card__head{flex:0 0 auto;margin:0 0 16px;padding-bottom:14px;border-bottom:1px solid var(--nls-border-soft);text-align:center;}
+		.nexulesuite_chat-leadgate-card__title{margin:0;font-size:15px;font-weight:600;line-height:1.25;color:var(--nls-ink);text-align:center;}
+		.nexulesuite_chat-leadgate-card__sub{margin:6px 0 0;font-size:13px;font-weight:400;line-height:1.5;color:var(--nls-ink-3);text-align:center;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+		.nexulesuite_chat-leadgate-card__fields{flex:0 0 auto;display:flex;flex-direction:column;gap:12px;min-height:auto;overflow:visible;}
+		.nexulesuite_chat-leadgate-card__foot{flex:0 0 auto;margin-top:0;padding-top:14px;display:flex;flex-direction:column;gap:10px;}
+		.nexulesuite_chat-leadgate-body input#nexulesuite_chat-leadgate-phone{display:block!important;visibility:visible!important;opacity:1!important;flex:0 0 auto!important;min-height:46px!important;}
+		.nexulesuite_chat-leadgate-hint{margin:0;font-size:11.5px;line-height:1.45;color:var(--nls-muted);text-align:center;}
+		.nexulesuite_chat-leadgate-body input.nexulesuite_chat-ai-leadinput{display:block;width:100%!important;box-sizing:border-box!important;background:var(--nls-canvas)!important;border:1px solid var(--nls-field-border)!important;border-radius:10px!important;padding:12px 14px!important;margin:0!important;min-height:46px!important;height:auto!important;font-size:14px!important;line-height:1.45!important;font-family:inherit!important;color:var(--nls-ink-2)!important;box-shadow:none!important;-webkit-appearance:none;appearance:none;}
+		.nexulesuite_chat-leadgate-body input.nexulesuite_chat-ai-leadinput::placeholder{color:var(--nls-muted)!important;opacity:1;}
+		.nexulesuite_chat-leadgate-body input.nexulesuite_chat-ai-leadinput:focus{outline:none!important;border-color:var(--nls-primary)!important;box-shadow:0 0 0 3px var(--nls-primary-ring)!important;background:var(--nls-surface)!important;}
+		.nexulesuite_chat-leadgate-body .nexulesuite_chat-ai-leaderr{margin:0;}
+		.nexulesuite_chat-leadgate-body button.nexulesuite_chat-ai-leadsend{display:flex!important;align-items:center!important;justify-content:center!important;align-self:stretch;width:100%;margin:0;padding:13px 20px!important;border:none!important;border-radius:10px!important;background:var(--nls-primary)!important;color:var(--nls-on-primary)!important;font-family:inherit!important;font-size:14px!important;font-weight:600!important;line-height:1.2!important;text-align:center!important;cursor:pointer!important;box-shadow:var(--nls-shadow-sm)!important;text-transform:none!important;letter-spacing:normal!important;}
+		.nexulesuite_chat-leadgate-body button.nexulesuite_chat-ai-leadsend:hover{filter:brightness(.94);color:var(--nls-on-primary)!important;}
+		.nexulesuite_chat-leadgate-body button.nexulesuite_chat-ai-leadsend:disabled{opacity:.6;cursor:default!important;}
+		.nexulesuite_chat-leadgate-body .nexulesuite_st-form{flex:1 1 auto;display:flex;flex-direction:column;min-height:0;margin:0;border:none!important;box-shadow:none!important;background:var(--nls-surface)!important;border:1px solid var(--nls-border)!important;border-radius:var(--nls-radius-lg)!important;padding:18px!important;box-sizing:border-box!important;}
+		.nexulesuite_chat-leadgate-body .nexulesuite_st-form>form.nexulesuite_st-form__body,
+		.nexulesuite_chat-leadgate-body form.nexulesuite_st-form__body{
+			border:none!important;box-shadow:none!important;outline:none!important;background:transparent!important;
+			padding:0!important;margin:0!important;border-radius:0!important;
+		}
+
 		/* Floating trigger bubble — matches larger panel presence */
 		.nexulesuite_chat-trigger{width:66px;height:66px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(0,0,0,.2);background:<?php echo esc_attr( $btn_bg ); ?>;overflow:hidden;position:relative;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
 		.nexulesuite_chat-trigger svg{width:26px;height:26px;fill:none;stroke:<?php echo esc_attr( $btn_text_col ); ?>;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1;}
 		.nexulesuite_chat-trigger .nexulesuite_chat-online-dot{position:absolute;right:10px;top:10px;z-index:3;}
 		button.nexulesuite_chat-trigger--labeled{width:auto;height:auto;min-height:58px;border-radius:32px;padding:0 22px 0 20px;gap:11px;overflow:visible;}
 		button.nexulesuite_chat-trigger--labeled .nexulesuite_chat-online-dot{right:16px;top:12px;}
-		.nexulesuite_chat-trigger__label{color:<?php echo esc_attr( $btn_text_col ); ?>;font-family:inherit;font-weight:700;font-size:15.5px;line-height:1;white-space:nowrap;position:relative;z-index:1;}
+		.nexulesuite_chat-trigger__label{color:<?php echo esc_attr( $btn_text_col ); ?>;font-family:inherit;font-weight:600;font-size:15px;line-height:1;white-space:nowrap;position:relative;z-index:1;}
 
 		/* Hover effects */
 		.nexulesuite_chat-btn--lift:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.22);}
@@ -4207,10 +4330,10 @@ final class Shortcodes {
 		.nexulesuite_chat-trigger .nexulesuite_chat-online-dot{right:8px;top:8px;width:8px;height:8px;}
 		/* Panel fits narrow screens (320px+); max height clears trigger + sticky nav + safe areas */
 		.nexulesuite_chat-panel{
-			box-sizing:border-box;width:min(420px,calc(100vw - 24px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));min-width:0;
+			box-sizing:border-box;width:min(320px,calc(100vw - 24px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));min-width:0;
 			min-height:0;
-			max-height:min(640px,calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 164px));
-			max-height:min(640px,calc(100svh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 164px));
+			max-height:min(510px,calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 164px));
+			max-height:min(510px,calc(100svh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 164px));
 			overflow:hidden;
 		}
 		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form .nexulesuite_chat-form-view.nexulesuite_chat-form--active{flex:1 1 auto;min-height:0;overflow:hidden;}
@@ -4231,7 +4354,7 @@ final class Shortcodes {
 		}
 		/* Very small phones: tighter chrome, keep ≥~296px content width at 320 CSS px viewport */
 		@media (max-width: 360px){
-		.nexulesuite_chat-panel{width:min(420px,calc(100vw - 16px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));}
+		.nexulesuite_chat-panel{width:min(320px,calc(100vw - 16px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));}
 		.nexulesuite_chat-panel__head{padding:16px 12px 14px;}
 		.nexulesuite_chat-panel__body,.nexulesuite_chat-panel__btns{padding-left:12px;padding-right:12px;}
 		.nexulesuite_chat-inline-popup-body{padding-left:12px;padding-right:12px;}
@@ -4240,21 +4363,22 @@ final class Shortcodes {
 		/* ── AI chat view ── */
 		.nexulesuite_chat-ai-view{display:none;flex-direction:column;flex:1 1 auto;min-height:0;}
 		.nexulesuite_chat-panel--ai-active .nexulesuite_chat-ai-view{display:flex;}
-		.nexulesuite_chat-ai-view__head{display:flex;align-items:center;gap:12px;padding:16px 18px;background:var(--nls-primary);color:var(--nls-on-primary);flex:0 0 auto;}
-		/* Back and reset are both 34px icon buttons, so the header reads as one row of controls. */
-		.nexulesuite_chat-ai-view__back{flex:0 0 auto;width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.14);color:inherit;font-size:17px;line-height:1;border-radius:var(--nls-radius-sm);cursor:pointer;transition:background .15s;}
-		.nexulesuite_chat-ai-view__back:hover{background:rgba(255,255,255,.28);}
-		.nexulesuite_chat-ai-view__avatar{width:36px;height:36px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+		/* Header — deep navy bar, squared avatar tile, quiet outlined tool buttons (reference style). */
+		.nexulesuite_chat-ai-view__head{display:flex;align-items:center;gap:10px;padding:13px 14px;background:var(--nls-head-bg);color:#fff;flex:0 0 auto;}
+		/* Back and reset are matching icon buttons, so the header reads as one row of controls. */
+		.nexulesuite_chat-ai-view__back{flex:0 0 auto;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:var(--nls-head-soft);color:inherit;font-size:16px;line-height:1;border-radius:var(--nls-radius-sm);cursor:pointer;transition:background .15s;}
+		.nexulesuite_chat-ai-view__back:hover{background:rgba(255,255,255,.22);}
+		.nexulesuite_chat-ai-view__avatar{width:34px;height:34px;border-radius:9px;overflow:hidden;background:var(--nls-head-soft);border:1px solid var(--nls-head-line);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
 		.nexulesuite_chat-ai-view__avatar img{width:100%;height:100%;object-fit:cover;}
-		.nexulesuite_chat-ai-view__avatar svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-ai-view__avatar svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 		.nexulesuite_chat-ai-view__info{min-width:0;}
-		.nexulesuite_chat-ai-view__heading{margin:0;font-weight:700;font-size:15px;line-height:1.2;}
-		.nexulesuite_chat-ai-view__badge{margin:3px 0 0;font-size:10.5px;font-weight:700;opacity:.85;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.05em;}
+		.nexulesuite_chat-ai-view__heading{margin:0;font-weight:600;font-size:14px;line-height:1.2;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+		.nexulesuite_chat-ai-view__badge{margin:3px 0 0;font-size:11px;font-weight:400;opacity:.8;display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;}
 		.nexulesuite_chat-ai-view__tools{margin-left:auto;flex:0 0 auto;display:flex;align-items:center;gap:6px;}
 		.nexulesuite_chat-ai-view__tts,
-		.nexulesuite_chat-ai-view__reset{flex:0 0 auto;background:rgba(255,255,255,.14);color:inherit;width:34px;height:34px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;}
+		.nexulesuite_chat-ai-view__reset{flex:0 0 auto;background:var(--nls-head-soft);border:1px solid var(--nls-head-line);color:inherit;width:30px;height:30px;padding:0;border-radius:var(--nls-radius-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;}
 		.nexulesuite_chat-ai-view__tts:hover,
-		.nexulesuite_chat-ai-view__reset:hover{background:rgba(255,255,255,.28);}
+		.nexulesuite_chat-ai-view__reset:hover{background:rgba(255,255,255,.22);}
 		/* Higher specificity than the display:flex above, so JS can keep the button hidden where the browser has no speech synthesis. */
 		.nexulesuite_chat-ai-view__tts[hidden]{display:none;}
 		.nexulesuite_chat-ai-view__tts.is-on{background:rgba(255,255,255,.34);}
@@ -4266,12 +4390,13 @@ final class Shortcodes {
 		.nexulesuite_chat-ai-view__tts .nexulesuite_chat-ai-tts__on{display:none;}
 		.nexulesuite_chat-ai-view__tts.is-on .nexulesuite_chat-ai-tts__on{display:block;}
 		.nexulesuite_chat-ai-view__tts.is-on .nexulesuite_chat-ai-tts__off{display:none;}
-		.nexulesuite_chat-ai-messages{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:18px 16px;display:flex;flex-direction:column;gap:12px;background:var(--nls-canvas);}
+		.nexulesuite_chat-ai-messages{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:20px 16px;display:flex;flex-direction:column;gap:12px;background:var(--nls-canvas);}
 		/* Centred, not bottom-aligned: otherwise the bot avatar lines up with the timestamp, not the bubble. */
 		.nexulesuite_chat-ai-row{display:flex;gap:8px;max-width:100%;align-items:center;}
 		.nexulesuite_chat-ai-row--user{justify-content:flex-end;}
 		.nexulesuite_chat-ai-row--bot{justify-content:flex-start;}
-		.nexulesuite_chat-ai-bubavatar{width:28px;height:28px;border-radius:50%;flex:0 0 auto;background:var(--nls-primary);color:var(--nls-on-primary);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:var(--nls-shadow-sm);}
+		/* Small squared navy tile, matching the header avatar (reference style). */
+		.nexulesuite_chat-ai-bubavatar{width:28px;height:28px;border-radius:8px;flex:0 0 auto;background:var(--nls-head-bg);color:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 		/* The timestamp sits below the bubble in the same column; offsetting the avatar by its
 		   full height makes the centred avatar line up with the bubble, not the column. */
 		.nexulesuite_chat-ai-row--bot .nexulesuite_chat-ai-bubavatar{margin-bottom:calc(var(--nls-time-size) + var(--nls-bubble-gap));}
@@ -4281,44 +4406,59 @@ final class Shortcodes {
 		.nexulesuite_chat-ai-row--bot .nexulesuite_chat-ai-col{align-items:flex-start;}
 		.nexulesuite_chat-ai-row--user .nexulesuite_chat-ai-col{align-items:flex-end;}
 		.nexulesuite_chat-ai-time{font-size:var(--nls-time-size);color:var(--nls-muted);padding:0 6px;line-height:1;}
-		/* rounded-2xl with a 6px tail — the same bubble shape the admin transcript uses. */
-		.nexulesuite_chat-ai-msg{max-width:100%;padding:10px 14px;border-radius:var(--nls-radius-lg);font-size:14px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;box-shadow:var(--nls-shadow-sm);}
-		.nexulesuite_chat-ai-msg--bot{background:var(--nls-surface);color:var(--nls-ink-2);border:1px solid var(--nls-border);border-bottom-left-radius:6px;}
-		.nexulesuite_chat-ai-msg--bot strong{font-weight:700;color:var(--nls-ink);}
+		/* Soft flat bubbles — faint brand tint, no drop shadow (reference style). */
+		.nexulesuite_chat-ai-msg{max-width:100%;padding:11px 15px;border-radius:var(--nls-radius);font-size:14px;line-height:1.6;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;box-shadow:none;}
+		.nexulesuite_chat-ai-msg--bot{background:var(--nls-bot-bubble);color:var(--nls-ink-2);border:1px solid var(--nls-bot-border);border-bottom-left-radius:4px;}
+		.nexulesuite_chat-ai-msg--bot strong{font-weight:600;color:var(--nls-ink);}
 		.nexulesuite_chat-ai-msg--bot em{font-style:italic;}
 		.nexulesuite_chat-ai-msg--bot code{background:var(--nls-border-soft);color:var(--nls-ink);padding:1px 5px;border-radius:var(--nls-radius-xs);font-size:.9em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
 		.nexulesuite_chat-ai-msg--bot a{color:var(--nls-primary);text-decoration:underline;word-break:break-word;}
 		.nexulesuite_chat-ai-msg--bot ul,.nexulesuite_chat-ai-msg--bot ol{margin:6px 0;padding-left:20px;}
 		.nexulesuite_chat-ai-msg--bot li{margin:3px 0;}
 		.nexulesuite_chat-ai-msg--bot p{margin:6px 0;}
-		.nexulesuite_chat-ai-msg--user{background:var(--nls-primary);color:var(--nls-on-primary);border-bottom-right-radius:6px;}
-		.nexulesuite_chat-ai-msg--error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;border-bottom-left-radius:6px;}
+		.nexulesuite_chat-ai-msg--user{background:var(--nls-head-bg);color:#fff;border-bottom-right-radius:4px;}
+		.nexulesuite_chat-ai-msg--error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;border-bottom-left-radius:4px;}
 		.nexulesuite_chat-ai-sources{align-self:flex-start;display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 0 36px;}
 		.nexulesuite_chat-ai-sources a{font-size:11px;font-weight:500;color:var(--nls-primary);text-decoration:none;border:1px solid var(--nls-border);border-radius:var(--nls-radius-xs);padding:3px 8px;background:var(--nls-surface);transition:border-color .15s;}
 		.nexulesuite_chat-ai-sources a:hover{border-color:var(--nls-primary);}
 		.nexulesuite_chat-ai-suggest{align-self:stretch;margin:2px 0 2px 6px;}
 		.nexulesuite_chat-ai-suggest--followup{margin-top:0;}
 		/* Section label: the admin's `text-xs font-bold uppercase tracking-wide text-slate-400`. */
-		.nexulesuite_chat-ai-suggest__label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--nls-muted);margin:0 0 8px 2px;}
-		.nexulesuite_chat-ai-chips{display:flex;flex-wrap:wrap;gap:8px;}
-		.nexulesuite_chat-ai-chip{display:inline-flex;align-items:center;gap:8px;text-align:left;max-width:100%;font-size:13px;font-weight:600;line-height:1.3;color:var(--nls-ink-2);background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:var(--nls-radius);padding:8px 12px;cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .05s;font-family:inherit;box-shadow:var(--nls-shadow-sm);}
-		.nexulesuite_chat-ai-chip:hover{border-color:var(--nls-primary);box-shadow:var(--nls-shadow-md);}
+		.nexulesuite_chat-ai-suggest__label{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--nls-muted);margin:0 0 8px 2px;}
+		/* Full-width white rows with a hairline border, stacked one per line (reference style). */
+		.nexulesuite_chat-ai-chips{display:flex;flex-direction:column;gap:8px;}
+		.nexulesuite_chat-ai-chip{display:flex;width:100%;align-items:center;gap:10px;text-align:left;max-width:100%;font-size:13.5px;font-weight:400;line-height:1.35;color:var(--nls-ink-2);background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:10px;padding:11px 14px;cursor:pointer;transition:border-color .15s,background .15s,transform .05s;font-family:inherit;box-shadow:none;}
+		/* Re-assert text colour on hover: theme `button:hover{color:#fff}` outranks the base rule otherwise. */
+		.nexulesuite_chat-ai-chip:hover{border-color:var(--nls-primary);background:var(--nls-primary-tint);color:var(--nls-ink-2);}
+		.nexulesuite_chat-ai-chip:hover .nexulesuite_chat-ai-chip__ic{color:var(--nls-primary);}
 		.nexulesuite_chat-ai-chip:active{transform:translateY(1px);}
 		.nexulesuite_chat-ai-chip:focus-visible{outline:none;border-color:var(--nls-primary);box-shadow:0 0 0 3px var(--nls-primary-ring);}
-		/* Tinted icon square — the admin's `bg-blue-50 text-blue-600` icon chip, keyed off the brand colour. */
-		.nexulesuite_chat-ai-chip__ic{flex:0 0 auto;width:24px;height:24px;border-radius:var(--nls-radius-sm);display:flex;align-items:center;justify-content:center;background:var(--nls-primary-tint);color:var(--nls-primary);}
-		.nexulesuite_chat-ai-chip__ic svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+		/* Bare line icon, no tinted square behind it (reference style). */
+		.nexulesuite_chat-ai-chip__ic{flex:0 0 auto;width:18px;height:18px;border-radius:0;display:flex;align-items:center;justify-content:center;background:transparent;color:var(--nls-primary);}
+		.nexulesuite_chat-ai-chip__ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 		.nexulesuite_chat-ai-chip__tx{flex:0 1 auto;min-width:0;}
-		.nexulesuite_chat-ai-actions{align-self:stretch;display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px 6px;}
-		.nexulesuite_chat-ai-action{flex:1 1 auto;min-width:132px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;font-size:13.5px;font-weight:600;line-height:1.2;color:var(--nls-primary);background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:var(--nls-radius);padding:11px 16px;cursor:pointer;box-shadow:var(--nls-shadow-sm);transition:border-color .15s,box-shadow .15s,transform .12s,background .15s;}
-		.nexulesuite_chat-ai-action:hover{border-color:var(--nls-primary);box-shadow:var(--nls-shadow-md);transform:translateY(-1px);}
+		/*
+		 * Quick actions (Book / Call / Directions): pinned bar floating above the composer.
+		 * Anchored to the form (position:relative) with bottom:100%, so it stays put while the
+		 * transcript scrolls underneath — the reference's fixed + z-index behaviour. Rendered
+		 * only when actions are configured; hidden by default.
+		 */
+		.nexulesuite_chat-ai-actionbar{position:absolute;left:0;right:0;bottom:100%;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;background:var(--nls-canvas);}
+		.nexulesuite_chat-ai-actionbar[hidden]{display:none;}
+		/* Keep the last message readable: reserve room at the foot of the transcript for the bar. */
+		.nexulesuite_chat-ai-view--has-actions .nexulesuite_chat-ai-messages{padding-bottom:66px;}
+		/* Theme button margins would stagger the pills up and down inside the bar — pin them flat. */
+		.nexulesuite_chat-ai-actionbar .nexulesuite_chat-ai-action{margin:0!important;box-shadow:0 2px 8px rgba(15,23,42,.08);}
+		.nexulesuite_chat-ai-action{flex:0 0 auto;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-family:inherit;font-size:13px;font-weight:500;line-height:1.2;color:var(--nls-ink-2);background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:999px;padding:9px 16px;cursor:pointer;box-shadow:none;transition:border-color .15s,background .15s,transform .12s;}
+		.nexulesuite_chat-ai-action:hover{border-color:var(--nls-primary);background:var(--nls-primary-tint);transform:translateY(-1px);color:var(--nls-ink-2);}
+		.nexulesuite_chat-ai-action:hover .nexulesuite_chat-ai-action__ic{color:var(--nls-ink-3);}
 		.nexulesuite_chat-ai-action:active{transform:translateY(0);}
 		.nexulesuite_chat-ai-action:focus-visible{outline:none;border-color:var(--nls-primary);box-shadow:0 0 0 3px var(--nls-primary-ring);}
-		.nexulesuite_chat-ai-action--primary{background:var(--nls-primary);color:var(--nls-on-primary);border-color:var(--nls-primary);box-shadow:var(--nls-shadow-md);}
-		.nexulesuite_chat-ai-action--primary:hover{filter:brightness(.94);box-shadow:var(--nls-shadow-lg);border-color:var(--nls-primary);}
-		.nexulesuite_chat-ai-action__ic{display:flex;flex:0 0 auto;}
-		.nexulesuite_chat-ai-action__ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-		.nexulesuite_chat-ai-typing{align-self:flex-start;display:inline-flex;gap:4px;padding:12px 14px;background:var(--nls-border-soft);border:1px solid var(--nls-border);border-radius:var(--nls-radius-lg);border-bottom-left-radius:6px;}
+		.nexulesuite_chat-ai-action--primary{background:var(--nls-primary-tint);color:var(--nls-ink-2);border-color:var(--nls-bot-border);box-shadow:none;}
+		.nexulesuite_chat-ai-action--primary:hover{border-color:var(--nls-primary);background:var(--nls-primary-tint);color:var(--nls-ink-2);}
+		.nexulesuite_chat-ai-action__ic{display:flex;flex:0 0 auto;color:var(--nls-ink-3);}
+		.nexulesuite_chat-ai-action__ic svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+		.nexulesuite_chat-ai-typing{align-self:flex-start;display:inline-flex;gap:4px;padding:12px 14px;background:var(--nls-bot-bubble);border:1px solid var(--nls-bot-border);border-radius:var(--nls-radius);border-bottom-left-radius:4px;}
 		.nexulesuite_chat-ai-typing span{width:7px;height:7px;border-radius:50%;background:var(--nls-muted);animation:nexulesuite_ai-bounce 1.2s infinite ease-in-out;}
 		.nexulesuite_chat-ai-typing span:nth-child(2){animation-delay:.15s;}
 		.nexulesuite_chat-ai-typing span:nth-child(3){animation-delay:.3s;}
@@ -4341,18 +4481,29 @@ final class Shortcodes {
 		.nexulesuite_chat-ai-pcard__body{display:flex;flex-direction:column;gap:3px;padding:10px;}
 		.nexulesuite_chat-ai-pcard__title{font-size:12.5px;font-weight:600;line-height:1.3;color:var(--nls-ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 		.nexulesuite_chat-ai-pcard__price{font-size:12.5px;font-weight:700;color:var(--nls-primary);}
-		.nexulesuite_chat-ai-inputbar{display:flex;align-items:center;gap:4px;background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:var(--nls-radius-lg);padding:4px 6px;box-shadow:var(--nls-shadow-sm);transition:border-color .15s,box-shadow .15s;}
+		/* Pill composer with the send key inside its right edge (reference style). */
+		.nexulesuite_chat-ai-inputbar{display:flex;align-items:center;gap:4px;background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:999px;padding:5px 6px 5px 12px;box-shadow:none;transition:border-color .15s,box-shadow .15s;}
 		.nexulesuite_chat-ai-inputbar:focus-within{border-color:var(--nls-primary);box-shadow:0 0 0 3px var(--nls-primary-ring);}
-		.nexulesuite_chat-ai-input{flex:1 1 auto;min-width:0;background:transparent;padding:8px 4px;font-size:14px;line-height:1.45;font-family:inherit;color:var(--nls-ink-2);}
-		.nexulesuite_chat-ai-input:focus{outline:none;}
+		/*
+		 * The pill is the only visible chrome; the input inside must be invisible. Themes style
+		 * `input[type="text"]` (border, white background, inner shadow, min-height) at higher
+		 * specificity than one class, so every box property is pinned with !important here —
+		 * otherwise the field draws its own rectangle inside the pill.
+		 */
+		input.nexulesuite_chat-ai-input{flex:1 1 auto;min-width:0;width:auto!important;background:transparent!important;border:none!important;border-radius:0!important;box-shadow:none!important;outline:none!important;margin:0!important;padding:8px 4px!important;min-height:0!important;height:auto!important;font-size:14px!important;line-height:1.45!important;font-family:inherit!important;color:var(--nls-ink-2)!important;}
+		input.nexulesuite_chat-ai-input::placeholder{color:var(--nls-muted)!important;opacity:1;}
+		input.nexulesuite_chat-ai-input:focus{outline:none!important;border:none!important;box-shadow:none!important;background:transparent!important;}
 		.nexulesuite_chat-ai-clip,.nexulesuite_chat-ai-emoji{flex:0 0 auto;cursor:pointer;width:34px;height:34px;border-radius:var(--nls-radius-sm);display:flex;align-items:center;justify-content:center;color:var(--nls-ink-3);padding:0;transition:background .15s,color .15s;}
 		.nexulesuite_chat-ai-clip:hover,.nexulesuite_chat-ai-emoji:hover{background:var(--nls-border-soft);color:var(--nls-ink);}
 		.nexulesuite_chat-ai-clip.is-armed{background:var(--nls-primary-tint);color:var(--nls-primary);}
 		.nexulesuite_chat-ai-clip svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 		.nexulesuite_chat-ai-emoji svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-		.nexulesuite_chat-ai-send{flex:0 0 auto;cursor:pointer;background:var(--nls-border);color:var(--nls-muted);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;padding:0;transition:background .15s,color .15s;}
-		.nexulesuite_chat-ai-send.is-active{background:var(--nls-primary);color:var(--nls-on-primary);}
-		.nexulesuite_chat-ai-send svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+		/* Rounded-square send key, grey until there is text, navy when armed (reference style). */
+		.nexulesuite_chat-ai-send{flex:0 0 auto;cursor:pointer;background:var(--nls-border);color:var(--nls-ink-3);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;padding:0;transition:background .15s,color .15s;}
+		.nexulesuite_chat-ai-send:hover{background:var(--nls-border);color:var(--nls-ink-3);}
+		.nexulesuite_chat-ai-send.is-active,
+		.nexulesuite_chat-ai-send.is-active:hover{background:var(--nls-head-bg);color:#fff;}
+		.nexulesuite_chat-ai-send svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 		.nexulesuite_chat-ai-send:disabled{cursor:default;opacity:.7;}
 		/* Emoji popover */
 		.nexulesuite_chat-ai-emoji-wrap{position:relative;flex:0 0 auto;display:flex;}
@@ -4384,7 +4535,69 @@ final class Shortcodes {
 		.nexulesuite_chat-ai-msg .nexulesuite_chat-ai-doc__size{color:inherit;opacity:.75;}
 		<?php
 		$chat_css = (string) ob_get_clean();
-		$this->enqueue_footer_inline_style( 'nexulesuite_livechat-widget', $chat_css );
+
+		/*
+		 * Embed mode: the panel *is* the document. Drop the floating chrome (fixed position,
+		 * bubble, close button) and let the panel fill the frame. Appended last so it wins over
+		 * the base rules and the mobile media queries above.
+		 */
+		if ( $is_panel ) {
+			/*
+			 * Shared by both panel modes: strip the floating chrome (fixed position, bubble, close,
+			 * back) and let the panel fill whatever box it is given.
+			 */
+			$chat_css .= '
+			.nexulesuite_chat-widget{position:static!important;inset:auto!important;height:100%;width:100%;gap:0;align-items:stretch!important;z-index:auto;}
+			.nexulesuite_chat-panel{display:flex!important;width:100%!important;max-width:none!important;height:100%;min-height:0;max-height:none;animation:none;}
+			.nexulesuite_chat-trigger{display:none!important;}
+			.nexulesuite_chat-panel__close{display:none!important;}
+			.nexulesuite_chat-ai-view__back{display:none!important;}
+			/*
+			 * The base layout is tuned for a 420px panel, where chips and actions each take a row on
+			 * their own. Given real width they would otherwise pack several across. The query measures
+			 * the chat box, so a narrow one still gets the floating-panel proportions.
+			 */
+			@media (min-width:560px){
+				.nexulesuite_chat-ai-chips{flex-direction:column;}
+				.nexulesuite_chat-ai-chip{width:100%;justify-content:flex-start;}
+				.nexulesuite_chat-ai-action{flex:0 0 auto;min-width:0;}
+				.nexulesuite_chat-ai-msg{max-width:760px;}
+			}
+			';
+		}
+
+		if ( $is_embed ) {
+			// The panel is the whole document: it owns the viewport edge to edge.
+			$chat_css .= '
+			html,body{margin:0;padding:0;height:100%;background:transparent;}
+			body{overflow:hidden;}
+			.nexulesuite_chat-panel{border-radius:0;box-shadow:none;}
+			';
+		}
+
+		if ( $is_inline ) {
+			/*
+			 * Inline mode sits in the page flow as a normal block, so it must read as part of the
+			 * page — not as a card that floated in. No drop shadow, no popped-out corners.
+			 *
+			 * `is-bleed` escapes a narrow host container — a page builder often drops the shortcode
+			 * into a column far narrower than the page, and CSS cannot widen an ancestor. The usual
+			 * `margin-left:calc(50% - 50vw)` trick is no good here: its 50% resolves against the
+			 * column, so it only lands correctly when that column is itself centred on the page. An
+			 * off-centre column sends the chat off the side of the screen instead. The widths are
+			 * therefore measured and applied in JS (see the bleed routine below), and the inner box
+			 * re-centres at max_width so it settles at content width rather than edge to edge.
+			 */
+			$chat_css .= '
+			.nexulesuite_chat-inline{display:block;width:100%;}
+			.nexulesuite_chat-inline.is-bleed{max-width:none;}
+			.nexulesuite_chat-inline__box{width:100%;margin-left:auto;margin-right:auto;}
+			.nexulesuite_chat-inline .nexulesuite_chat-panel{border-radius:var(--nls-radius,12px);box-shadow:none;border:1px solid var(--nls-border,#e2e8f0);overflow:hidden;}
+			.nexulesuite_chat-inline .nexulesuite_chat-widget{font-family:inherit;}
+			';
+		}
+
+		ob_start();
 		?>
 
 		<div class="nexulesuite_chat-widget<?php echo esc_attr( $align_cls ); ?>" id="nexulesuite_chat-widget" aria-live="polite">
@@ -4416,11 +4629,11 @@ final class Shortcodes {
 				<?php endif; ?>
 
 				<?php /* ─ Action Buttons ─ */ ?>
-				<?php if ( $has_any_action_btn || $ai_enabled ) : ?>
+				<?php if ( $has_any_action_btn || ( $ai_enabled && ! $ai_lead_gate ) ) : ?>
 					<div class="nexulesuite_chat-panel__btns">
 
-						<?php /* AI launcher — opens the conversational AI chat view */ ?>
-						<?php if ( $ai_enabled ) : ?>
+						<?php /* AI launcher — hidden when lead gate is active (no link/popup on button 1). */ ?>
+						<?php if ( $ai_enabled && ! $ai_lead_gate ) : ?>
 							<button type="button"
 								class="<?php echo esc_attr( $hover_cls ); ?>"
 								style="<?php echo esc_attr( $btn_style ); ?>"
@@ -4437,8 +4650,8 @@ final class Shortcodes {
 						 */
 						?>
 
-						<?php /* Button 1 — full width (only when action exists) */ ?>
-						<?php if ( $btn1_has_action ) : ?>
+						<?php /* Button 1 — full width (skip when lead gate handles entry via #lead / #form or empty link) */ ?>
+						<?php if ( $btn1_has_action && ! $ai_lead_gate ) : ?>
 							<?php if ( $has_inline_popup_btn ) : ?>
 								<button type="button"
 									class="<?php echo esc_attr( $hover_cls ); ?>"
@@ -4506,6 +4719,37 @@ final class Shortcodes {
 							</div>
 						<?php endif; ?>
 
+					</div>
+				<?php endif; ?>
+
+				<?php /* ── Lead gate: contact form before AI chat (button 1 has no link/popup) ── */ ?>
+				<?php if ( $ai_lead_gate ) : ?>
+					<div class="nexulesuite_chat-leadgate-view" id="nexulesuite_chat-leadgate-view" aria-label="<?php echo esc_attr( $chat_title ); ?>">
+						<div class="nexulesuite_chat-leadgate-body" id="nexulesuite_chat-leadgate-body">
+							<div class="nexulesuite_chat-ai-leadcard" id="nexulesuite_chat-leadgate-builtin">
+								<div class="nexulesuite_chat-leadgate-card__head">
+									<p class="nexulesuite_chat-leadgate-card__title"><?php echo esc_html( $btn1_label ); ?></p>
+									<?php if ( '' !== $chat_content ) : ?>
+										<p class="nexulesuite_chat-leadgate-card__sub"><?php echo esc_html( $chat_content ); ?></p>
+									<?php else : ?>
+										<p class="nexulesuite_chat-leadgate-card__sub"><?php esc_html_e( 'Share your details below and we will connect you with our team right away.', 'nexus-lead-suite' ); ?></p>
+									<?php endif; ?>
+								</div>
+								<div class="nexulesuite_chat-leadgate-card__fields">
+									<input type="text" id="nexulesuite_chat-leadgate-name" class="nexulesuite_chat-ai-leadinput" placeholder="<?php esc_attr_e( 'Your name', 'nexus-lead-suite' ); ?>" autocomplete="name" />
+									<input type="tel" id="nexulesuite_chat-leadgate-phone" class="nexulesuite_chat-ai-leadinput" placeholder="<?php esc_attr_e( 'Phone', 'nexus-lead-suite' ); ?>" autocomplete="tel" inputmode="tel" />
+									<input type="email" id="nexulesuite_chat-leadgate-email" class="nexulesuite_chat-ai-leadinput" placeholder="<?php esc_attr_e( 'Email', 'nexus-lead-suite' ); ?>" autocomplete="email" />
+								</div>
+								<div class="nexulesuite_chat-leadgate-card__foot">
+									<div class="nexulesuite_chat-ai-leaderr" id="nexulesuite_chat-leadgate-err"></div>
+									<button type="button" class="nexulesuite_chat-ai-leadsend" id="nexulesuite_chat-leadgate-send"><?php esc_html_e( 'Send', 'nexus-lead-suite' ); ?></button>
+									<p class="nexulesuite_chat-leadgate-hint"><?php esc_html_e( 'We typically reply within a few minutes during business hours.', 'nexus-lead-suite' ); ?></p>
+								</div>
+							</div>
+							<?php if ( '' !== trim( (string) $ai_disclaimer ) ) : ?>
+								<p class="nexulesuite_chat-leadgate-foot"><?php echo esc_html( $ai_disclaimer ); ?></p>
+							<?php endif; ?>
+						</div>
 					</div>
 				<?php endif; ?>
 
@@ -4593,6 +4837,11 @@ final class Shortcodes {
 
 						<form class="nexulesuite_chat-ai-form" id="nexulesuite_chat-ai-form">
 
+							<?php if ( ! empty( $ai_actions ) ) : ?>
+								<?php /* Quick actions pinned above the composer; populated and unhidden by aiAddActions(). */ ?>
+								<div class="nexulesuite_chat-ai-actionbar" id="nexulesuite_chat-ai-actionbar" hidden></div>
+							<?php endif; ?>
+
 							<?php if ( $ai_allow_images ) : ?>
 								<input type="file" id="nexulesuite_chat-ai-file" accept="image/png,image/jpeg,image/gif,image/webp,application/pdf,text/plain,text/markdown,.md,text/csv,text/html,application/json" hidden />
 								<div class="nexulesuite_chat-ai-attach" id="nexulesuite_chat-ai-attach" hidden>
@@ -4620,7 +4869,7 @@ final class Shortcodes {
 								<?php endif; ?>
 
 								<input type="text" class="nexulesuite_chat-ai-input" id="nexulesuite_chat-ai-input" autocomplete="off"
-									placeholder="<?php esc_attr_e( 'Write a message…', 'nexus-lead-suite' ); ?>"
+									placeholder="<?php echo esc_attr( $ai_placeholder ); ?>"
 									aria-label="<?php esc_attr_e( 'Message', 'nexus-lead-suite' ); ?>" maxlength="2000" />
 
 								<span class="nexulesuite_chat-ai-emoji-wrap">
@@ -4630,9 +4879,9 @@ final class Shortcodes {
 									<span class="nexulesuite_chat-ai-emoji-pop" id="nexulesuite_chat-ai-emoji-pop" role="menu"></span>
 								</span>
 
-								<button type="submit" class="nexulesuite_chat-ai-send" id="nexulesuite_chat-ai-send" aria-label="<?php esc_attr_e( 'Send', 'nexus-lead-suite' ); ?>">
-									<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-								</button>
+							<button type="submit" class="nexulesuite_chat-ai-send" id="nexulesuite_chat-ai-send" aria-label="<?php esc_attr_e( 'Send', 'nexus-lead-suite' ); ?>">
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+							</button>
 
 							</div>
 							<?php if ( '' !== $ai_disclaimer ) : ?>
@@ -4661,6 +4910,8 @@ final class Shortcodes {
 
 		</div>
 		<?php
+		$chat_html = (string) ob_get_clean();
+
 		ob_start();
 		?>
 		(function(){
@@ -4671,6 +4922,7 @@ final class Shortcodes {
 			var closeBtn   = document.getElementById('nexulesuite_chat-close');
 			var formView   = document.getElementById('nexulesuite_chat-form-view');
 			var formBack   = document.getElementById('nexulesuite_chat-form-back');
+			var leadGateView = document.getElementById('nexulesuite_chat-leadgate-view');
 
 			var aiView     = document.getElementById('nexulesuite_chat-ai-view');
 			var aiBack     = document.getElementById('nexulesuite_chat-ai-back');
@@ -4690,6 +4942,7 @@ final class Shortcodes {
 				suggestLabel: '<?php echo esc_js( __( 'Try asking', 'nexus-lead-suite' ) ); ?>',
 				leadEndpoint: '<?php echo esc_url_raw( rest_url( 'nexulesuite_/v1/ai/lead' ) ); ?>',
 				lead:      { enabled: <?php echo $ai_lead_enabled ? 'true' : 'false'; ?>, offer: '<?php echo esc_js( $ai_lead_offer ); ?>' },
+				leadGate:  <?php echo $ai_lead_gate ? 'true' : 'false'; ?>,
 				i18n:      {
 					lead_cta:  '<?php echo esc_js( __( 'Leave your contact', 'nexus-lead-suite' ) ); ?>',
 					lead_name: '<?php echo esc_js( __( 'Your name', 'nexus-lead-suite' ) ); ?>',
@@ -4716,6 +4969,8 @@ final class Shortcodes {
 			var aiHistory  = [];
 			var aiBusy     = false;
 			var aiLeadDone = false;
+			var aiLeadGatePassed = false;
+			try { sessionStorage.removeItem('nexulesuite_lead_gate_ok'); } catch(e){}
 			var aiLastQuestion = '';
 			var aiLastBotText  = '';
 
@@ -4775,14 +5030,39 @@ final class Shortcodes {
 			if(!trigger||!panel) return;
 
 			/* ── Open / close chat panel ── */
+			function markLeadGatePassed(){
+				aiLeadGatePassed = true;
+			}
+			function showLeadGateView(){
+				if(!leadGateView || aiLeadGatePassed) return;
+				panel.classList.remove('nexulesuite_chat-panel--inline-form');
+				panel.classList.remove('nexulesuite_chat-panel--ai-active');
+				panel.classList.add('nexulesuite_chat-panel--lead-gate');
+				if(formView){ formView.classList.remove('nexulesuite_chat-form--active'); }
+				['.nexulesuite_chat-panel__body','.nexulesuite_chat-panel__btns'].forEach(function(sel){
+					var el = panel.querySelector(sel);
+					if(el) el.style.display='none';
+				});
+				var head = panel.querySelector('.nexulesuite_chat-panel__head');
+				if(head) head.style.display='';
+			}
+			function onLeadGatePassed(){
+				if(aiLeadGatePassed) return;
+				markLeadGatePassed();
+				openAiView();
+			}
 			function openChat(){
 				panel.classList.add('nexulesuite_chat--open');
 				trigger.setAttribute('aria-expanded','true');
+				if(aiCfg.leadGate && !aiLeadGatePassed){
+					showLeadGateView();
+				} else if(aiCfg.leadGate && aiLeadGatePassed && aiView){
+					openAiView();
+				}
 			}
 			function closeChat(){
 				panel.classList.remove('nexulesuite_chat--open');
 				trigger.setAttribute('aria-expanded','false');
-				/* also reset to main view when closing */
 				showMainView();
 			}
 			trigger.addEventListener('click', function(){
@@ -4807,7 +5087,16 @@ final class Shortcodes {
 				aiStopSpeech();
 				panel.classList.remove('nexulesuite_chat-panel--inline-form');
 				panel.classList.remove('nexulesuite_chat-panel--ai-active');
+				panel.classList.remove('nexulesuite_chat-panel--lead-gate');
 				if(formView){ formView.classList.remove('nexulesuite_chat-form--active'); }
+				if(aiCfg.leadGate && !aiLeadGatePassed){
+					showLeadGateView();
+					return;
+				}
+				if(aiCfg.leadGate && aiLeadGatePassed && aiView){
+					openAiView();
+					return;
+				}
 				['.nexulesuite_chat-panel__head','.nexulesuite_chat-panel__body','.nexulesuite_chat-panel__btns'].forEach(function(sel){
 					var el = panel.querySelector(sel);
 					if(el) el.style.display='';
@@ -4896,10 +5185,11 @@ final class Shortcodes {
 				});
 				return b;
 			}
+			/* Quick actions live in a bar pinned above the composer (hidden until populated), not in the transcript. */
 			function aiAddActions(){
-				if(!aiMessages || !aiCfg.actions || !aiCfg.actions.length) return;
-				var row = document.createElement('div');
-				row.className = 'nexulesuite_chat-ai-actions';
+				var bar = document.getElementById('nexulesuite_chat-ai-actionbar');
+				if(!bar || !aiCfg.actions || !aiCfg.actions.length) return;
+				if(bar.childNodes.length){ bar.hidden = false; return; } /* already built (e.g. after a chat reset) */
 				aiCfg.actions.forEach(function(act, i){
 					if(!act || !act.label) return;
 					var b = document.createElement('button');
@@ -4912,9 +5202,14 @@ final class Shortcodes {
 					tx.textContent = act.label;
 					b.appendChild(ic); b.appendChild(tx);
 					b.addEventListener('click', function(){ aiRunAction(act); });
-					row.appendChild(b);
+					bar.appendChild(b);
 				});
-				if(row.childNodes.length){ aiMessages.appendChild(row); aiScrollToEnd(); }
+				if(bar.childNodes.length){
+					bar.hidden = false;
+					if(aiView){ aiView.classList.add('nexulesuite_chat-ai-view--has-actions'); }
+					/* The bar may wrap to several rows at narrow widths; reserve its real height in the transcript. */
+					if(aiMessages && bar.offsetHeight){ aiMessages.style.paddingBottom = (bar.offsetHeight + 10) + 'px'; }
+				}
 			}
 			function aiShowContactForm(){
 				var src = document.getElementById('nexulesuite_chat-ai-contactsrc');
@@ -5013,11 +5308,11 @@ final class Shortcodes {
 					err.style.display='none'; btn.disabled=true; btn.textContent='…';
 					aiSubmitLead({ name:(n.value||'').trim(), email:email, phone:phone }, card, btn);
 				});
-				card.appendChild(n); card.appendChild(e); card.appendChild(p); card.appendChild(err); card.appendChild(btn);
+				card.appendChild(n); card.appendChild(p); card.appendChild(e); card.appendChild(err); card.appendChild(btn);
 				aiMessages.appendChild(card); aiScrollToEnd();
 				setTimeout(function(){ try{ n.focus(); }catch(x){} }, 60);
 			}
-			function aiSubmitLead(data, card, btn){
+			function aiSubmitLead(data, card, btn, onSuccess){
 				fetch(aiCfg.leadEndpoint, {
 					method: 'POST',
 					headers: { 'Content-Type':'application/json', 'X-WP-Nonce': aiCfg.restNonce },
@@ -5030,15 +5325,35 @@ final class Shortcodes {
 					if(res.ok && j.success){
 						if(card && card.parentNode){ card.parentNode.removeChild(card); }
 						aiLeadDone = true;
+						if(typeof onSuccess === 'function'){
+							onSuccess(j.message || 'Thanks! Our team will reach out to you shortly.');
+							return;
+						}
 						var thanks = j.message || 'Thanks! Our team will reach out to you shortly.';
 						aiAddBubble('bot', thanks);
 						aiBotSaid(thanks);
 					} else {
 						if(btn){ btn.disabled=false; btn.textContent=aiCfg.i18n.lead_send; }
+						if(typeof onSuccess === 'function'){
+							var errEl = document.getElementById('nexulesuite_chat-leadgate-err');
+							if(errEl){
+								errEl.textContent = (j && j.message) ? j.message : 'Something went wrong. Please try again.';
+								errEl.style.display = 'block';
+							}
+							return;
+						}
 						aiAddBubble('error', (j && j.message) ? j.message : 'Something went wrong. Please try again.');
 					}
 				}).catch(function(){
 					if(btn){ btn.disabled=false; btn.textContent=aiCfg.i18n.lead_send; }
+					if(typeof onSuccess === 'function'){
+						var errEl2 = document.getElementById('nexulesuite_chat-leadgate-err');
+						if(errEl2){
+							errEl2.textContent = 'Network error. Please try again.';
+							errEl2.style.display = 'block';
+						}
+						return;
+					}
 					aiAddBubble('error', 'Network error. Please try again.');
 				});
 			}
@@ -5207,6 +5522,7 @@ final class Shortcodes {
 			}
 			function openAiView(){
 				if(!aiView) return;
+				panel.classList.remove('nexulesuite_chat-panel--lead-gate');
 				['.nexulesuite_chat-panel__head','.nexulesuite_chat-panel__body','.nexulesuite_chat-panel__btns'].forEach(function(sel){
 					var el = panel.querySelector(sel);
 					if(el) el.style.display='none';
@@ -5214,8 +5530,11 @@ final class Shortcodes {
 				if(formView){ formView.classList.remove('nexulesuite_chat-form--active'); }
 				panel.classList.remove('nexulesuite_chat-panel--inline-form');
 				panel.classList.add('nexulesuite_chat-panel--ai-active');
-				if(aiMessages && !aiMessages.childNodes.length){ aiRenderHome(); }
-				if(aiInput){ setTimeout(function(){ aiInput.focus(); }, 60); }
+				/* Each add* helper scrolls to the end, so a long home screen would open scrolled past
+				   the greeting. Replies should still land at the bottom — only the home screen starts at the top. */
+				if(aiMessages && !aiMessages.childNodes.length){ aiRenderHome(); aiMessages.scrollTop = 0; }
+				/* preventScroll: inside an embed iframe a plain focus() yanks the host page down to it. */
+				if(aiInput){ setTimeout(function(){ try{ aiInput.focus({preventScroll:true}); }catch(e){ aiInput.focus(); } }, 60); }
 			}
 			/* Mirrors the composer's file card inside the sent bubble. */
 			function aiDocChip(file){
@@ -5304,6 +5623,63 @@ final class Shortcodes {
 			openAiBtns.forEach(function(btn){ btn.addEventListener('click', openAiView); });
 			if(aiBack){ aiBack.addEventListener('click', showMainView); }
 			if(aiResetBtn){ aiResetBtn.addEventListener('click', aiResetChat); }
+
+			/* Lead gate: built-in name/email/phone form (when no contact shortcode is set). */
+			(function wireLeadGateBuiltin(){
+				if(!aiCfg.leadGate) return;
+				var card = document.getElementById('nexulesuite_chat-leadgate-builtin');
+				if(!card) return;
+				var n = document.getElementById('nexulesuite_chat-leadgate-name');
+				var e = document.getElementById('nexulesuite_chat-leadgate-email');
+				var p = document.getElementById('nexulesuite_chat-leadgate-phone');
+				var err = document.getElementById('nexulesuite_chat-leadgate-err');
+				var btn = document.getElementById('nexulesuite_chat-leadgate-send');
+				if(!btn) return;
+				btn.addEventListener('click', function(){
+					var email = (e && e.value || '').trim();
+					var phone = (p && p.value || '').trim();
+					if(!email && !phone){
+						if(err){ err.textContent = aiCfg.i18n.lead_need; err.style.display = 'block'; }
+						return;
+					}
+					if(err) err.style.display = 'none';
+					btn.disabled = true;
+					btn.textContent = '…';
+					aiSubmitLead({ name:(n && n.value || '').trim(), email:email, phone:phone }, card, btn, function(){
+						onLeadGatePassed();
+					});
+				});
+			})();
+
+			/* Lead gate: Form Builder shortcode — open AI chat after a successful submit. */
+			(function wireLeadGateForm(){
+				if(!aiCfg.leadGate || !leadGateView) return;
+				var stForm = leadGateView.querySelector('.nexulesuite_st-form');
+				if(!stForm) return;
+				var done = false;
+				var obs = new MutationObserver(function(){
+					if(done) return;
+					if(stForm.classList.contains('nexulesuite_st-form--sent')){
+						done = true;
+						obs.disconnect();
+						setTimeout(onLeadGatePassed, 500);
+					}
+				});
+				obs.observe(stForm, { attributes:true, attributeFilter:['class'], subtree:true });
+			})();
+
+			<?php if ( $is_panel ) : ?>
+			/*
+			 * Panel modes: the chat is the box, not a bubble that opens one. There is nothing to
+			 * click and no main view worth landing on, so open it and go straight into the
+			 * conversation — or the lead gate when button 1 has no link/popup configured.
+			 */
+			panel.classList.add('nexulesuite_chat--open');
+			trigger.setAttribute('aria-expanded','true');
+			if(aiCfg.leadGate && !aiLeadGatePassed){ showLeadGateView(); }
+			else if(aiCfg.leadGate && aiLeadGatePassed && aiView){ openAiView(); }
+			else if(!aiCfg.leadGate && aiView){ openAiView(); }
+			<?php endif; ?>
 			if(aiForm){
 				aiForm.addEventListener('submit', function(ev){
 					ev.preventDefault();
@@ -5532,7 +5908,228 @@ final class Shortcodes {
 		})();
 		<?php
 		$chat_js = (string) ob_get_clean();
-		$this->enqueue_footer_inline_script( 'nexulesuite_livechat-widget', $chat_js );
+
+		if ( $is_inline ) {
+			/*
+			 * full_width="yes": widen the wrapper to the viewport from wherever the page builder put
+			 * it. CSS cannot express this (see the is-bleed note above), so measure it: the wrapper's
+			 * own left edge gives the pull-back, and the negative right margin keeps its layout
+			 * footprint equal to the parent's width, so nothing gains a horizontal scrollbar.
+			 */
+			$chat_js .= "\n" . <<<'BLEED_JS'
+(function(){
+	var el = document.querySelector('.nexulesuite_chat-inline.is-bleed');
+	if(!el || !el.parentElement) return;
+	function fit(){
+		el.style.width = 'auto';
+		el.style.marginLeft = '0px';
+		el.style.marginRight = '0px';
+		var vw     = document.documentElement.clientWidth;
+		var left   = el.getBoundingClientRect().left;
+		var parent = el.parentElement.clientWidth;
+		el.style.width       = vw + 'px';
+		el.style.marginLeft  = (-left) + 'px';
+		el.style.marginRight = (parent + left - vw) + 'px';
+	}
+	fit();
+	window.addEventListener('resize', fit);
+	if(window.ResizeObserver){ new ResizeObserver(fit).observe(document.documentElement); }
+})();
+BLEED_JS;
+			$chat_js .= "\n";
+		}
+
+		return array(
+			'css'  => $chat_css,
+			'html' => $chat_html,
+			'js'   => $chat_js,
+		);
+	}
+
+	/**
+	 * URL of the standalone chat document that `[nexulesuite_chat]` frames.
+	 *
+	 * Uses a query arg rather than a rewrite rule so it works on plain permalinks and needs no flush.
+	 *
+	 * @return string
+	 */
+	private function chat_embed_url(): string {
+		return add_query_arg( self::CHAT_EMBED_QUERY_VAR, '1', home_url( '/' ) );
+	}
+
+	/**
+	 * Serves the chat as a bare, framable document (the iframe target of `[nexulesuite_chat]`).
+	 *
+	 * Runs the same builder as the floating widget, so the embedded chat is the same chat:
+	 * same settings, same AI/FAQ/lead flows, same REST calls, same inline forms.
+	 *
+	 * @return void
+	 */
+	public function maybe_serve_chat_embed(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public, read-only route; no state is changed.
+		if ( empty( $_GET[ self::CHAT_EMBED_QUERY_VAR ] ) ) {
+			return;
+		}
+
+		nocache_headers();
+
+		/*
+		 * Built before the partial fires wp_enqueue_scripts, so that any form the chat renders via
+		 * do_shortcode() has already flipped $did_render — otherwise enqueue_assets() would skip the
+		 * forms runtime and inline forms would be inert inside the frame.
+		 */
+		$parts = $this->build_livechat_parts( 'embed' );
+
+		if ( null === $parts ) {
+			status_header( 404 );
+			wp_die(
+				esc_html__( 'Live chat is turned off. Enable it under Nexus → Settings → Livechat & Styling.', 'nexus-lead-suite' ),
+				esc_html__( 'Chat unavailable', 'nexus-lead-suite' ),
+				array( 'response' => 404 )
+			);
+		}
+
+		add_action(
+			'wp_enqueue_scripts',
+			function () use ( $parts ): void {
+				$this->enqueue_footer_inline_style( 'nexulesuite_livechat-widget', $parts['css'] );
+				$this->enqueue_footer_inline_script( 'nexulesuite_livechat-widget', $parts['js'] );
+			},
+			20
+		);
+
+		$nexulesuite_chat_embed_html = $parts['html'];
+
+		$partial = nexulesuite_PLUGIN_DIR . 'public/partials/chat-embed.php';
+		if ( file_exists( $partial ) ) {
+			require $partial;
+		}
+
+		exit;
+	}
+
+	/**
+	 * `[nexulesuite_chat]` — drops the chat into any page, post, widget area or page builder.
+	 *
+	 * Renders straight into the page DOM by default, so the chat sits in the flow as an ordinary
+	 * block that fills its container (Elementor column, block, template part) and inherits the
+	 * page's width — not a floating bubble and not a popped-out card.
+	 *
+	 * mode="iframe" renders it in an iframe instead, which walls it off from the theme's CSS at
+	 * the cost of a fixed box. That is the transport the copy-paste HTML embed code uses.
+	 *
+	 * Attributes:
+	 *   height        Chat height in px (default 680).
+	 *   max_width     CSS max-width of the chat (default none — fills the space it is given).
+	 *   full_width    "yes" breaks out of a narrow host column and spans the page; combine with
+	 *                 max_width to land at content width. "no" (default) simply fills the container.
+	 *   mode          "inline" (default) or "iframe".
+	 *   hide_floating "yes" (default) hides the floating bubble on this page, "no" keeps both.
+	 *
+	 * @param array<string,mixed>|string $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function render_chat_shortcode( $atts ): string {
+		$a = shortcode_atts(
+			array(
+				'height'        => 680,
+				'width'         => '100%',
+				'max_width'     => 'none',
+				'full_width'    => 'no',
+				'mode'          => 'inline',
+				'hide_floating' => 'yes',
+			),
+			is_array( $atts ) ? $atts : array(),
+			'nexulesuite_chat'
+		);
+
+		$opt = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
+		if ( ! is_array( $opt ) || empty( $opt['enableLivechat'] ?? false ) ) {
+			// Never dump an admin notice on a visitor-facing page.
+			return current_user_can( 'manage_options' )
+				? '<p class="nexulesuite_chat-embed-notice">' . esc_html__( 'Nexus Lead Suite: live chat is turned off. Enable it under Nexus → Settings → Livechat & Styling.', 'nexus-lead-suite' ) . '</p>'
+				: '';
+		}
+
+		if ( 'no' !== strtolower( trim( (string) $a['hide_floating'] ) ) ) {
+			// wp_footer runs after the content, so the floating widget still sees this.
+			self::$suppress_floating_livechat = true;
+		}
+
+		$height    = max( 320, min( 1200, (int) $a['height'] ) );
+		$width     = $this->sanitize_css_length( (string) $a['width'], '100%' );
+		$max_width = $this->sanitize_css_length( (string) $a['max_width'], 'none' );
+		$is_bleed  = ( 'no' !== strtolower( trim( (string) $a['full_width'] ) ) );
+		$box_style = sprintf( 'width:%s;max-width:%s;height:%dpx;', $width, $max_width, $height );
+
+		if ( 'iframe' === strtolower( trim( (string) $a['mode'] ) ) ) {
+			$title = sanitize_text_field( (string) ( $opt['chatTitle'] ?? __( 'Chat', 'nexus-lead-suite' ) ) );
+
+			return sprintf(
+				'<div class="nexulesuite_chat-embed" style="%1$s">'
+					. '<iframe src="%2$s" title="%3$s" loading="lazy" style="width:100%%;height:100%%;border:0;display:block;" allow="microphone; clipboard-write"></iframe>'
+				. '</div>',
+				esc_attr( $box_style ),
+				esc_url( $this->chat_embed_url() ),
+				esc_attr( $title )
+			);
+		}
+
+		/*
+		 * The widget's markup is keyed by element id (#nexulesuite_chat-panel and friends) and its
+		 * JS binds to those ids, so a second inline chat on the same page would silently drive the
+		 * first one. Render one, and tell the admin why the rest are missing.
+		 */
+		if ( self::$inline_chat_rendered ) {
+			return current_user_can( 'manage_options' )
+				? '<p class="nexulesuite_chat-embed-notice">' . esc_html__( 'Nexus Lead Suite: only one inline chat can run per page.', 'nexus-lead-suite' ) . '</p>'
+				: '';
+		}
+
+		$parts = $this->build_livechat_parts( 'inline' );
+		if ( null === $parts ) {
+			return '';
+		}
+
+		self::$inline_chat_rendered = true;
+
+		/*
+		 * The CSS ships with the markup rather than through wp_add_inline_style(): a shortcode runs
+		 * long after wp_head() has printed, so a late-enqueued stylesheet lands in the footer and the
+		 * chat flashes unstyled first. Page builders (Elementor stores content in post meta, not
+		 * post_content) also defeat the usual "scan the content and enqueue early" trick.
+		 * The JS has no such problem — the footer is exactly where it belongs.
+		 */
+		$this->enqueue_footer_inline_script( 'nexulesuite_livechat-widget', $parts['js'] );
+
+		return sprintf(
+			'<div class="nexulesuite_chat-inline%1$s">'
+				. '<style>%2$s</style>'
+				. '<div class="nexulesuite_chat-inline__box" style="%3$s">%4$s</div>'
+			. '</div>',
+			$is_bleed ? ' is-bleed' : '',
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- generated stylesheet; values are escaped where interpolated.
+			$parts['css'],
+			esc_attr( $box_style ),
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- build_livechat_parts() escapes at output.
+			$parts['html']
+		);
+	}
+
+	/**
+	 * Allows only simple CSS lengths (px/%/rem/em/vw/vh, `auto`, `none`) from shortcode attributes.
+	 *
+	 * @param string $raw      Raw attribute value.
+	 * @param string $fallback Value to use when $raw is not a plain length.
+	 * @return string
+	 */
+	private function sanitize_css_length( string $raw, string $fallback ): string {
+		$raw = trim( $raw );
+		if ( preg_match( '/^(auto|none|\d+(\.\d+)?(px|%|rem|em|vw|vh)?)$/i', $raw ) ) {
+			return $raw;
+		}
+
+		return $fallback;
 	}
 
 	/**

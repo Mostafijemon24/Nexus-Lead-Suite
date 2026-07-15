@@ -165,6 +165,11 @@ final class Admin_App {
 		$this->enqueue_admin_global_font();
 		$this->maybe_enqueue_popup_simulator_form_styles( $page );
 
+		// Google Fonts <link>s (ours and other plugins', e.g. Elementor) are render-blocking:
+		// if fonts.googleapis.com stalls, the whole admin page stays white until the request
+		// times out. On our SPA pages, swap them to non-blocking (print → all on load).
+		add_filter( 'style_loader_tag', array( $this, 'make_google_fonts_non_blocking' ), 10, 4 );
+
 		// Popups Main Heading Editor uses TinyMCE; stray #mce-modal-blocker overlays are
 		// neutralized in wp-admin-chrome.css and purged from assets/admin/js/main.js.
 		wp_enqueue_script( 'wp-tinymce' );
@@ -296,6 +301,77 @@ final class Admin_App {
 	private function enqueue_admin_global_font(): void {
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-global-font.php';
 		\nexulesuite_\Core\Global_Font::enqueue( 'nexulesuite_global-font' );
+	}
+
+	/**
+	 * Rewrites Google Fonts stylesheet tags to load without blocking rendering.
+	 *
+	 * Loads with media="print" (non-blocking) and swaps to the real media once the
+	 * stylesheet arrives, so a slow/unreachable fonts CDN can never white-screen
+	 * the admin SPA. System font fallbacks apply until then.
+	 *
+	 * @param string $tag    Link tag HTML.
+	 * @param string $handle Style handle.
+	 * @param string $href   Stylesheet URL.
+	 * @param string $media  Media attribute value.
+	 * @return string
+	 */
+	public function make_google_fonts_non_blocking( string $tag, string $handle, string $href, string $media ): string {
+		if ( ! $this->style_render_blocks_on_google_fonts( $href ) ) {
+			return $tag;
+		}
+		if ( false !== strpos( $tag, 'onload=' ) ) {
+			return $tag;
+		}
+
+		$media  = '' !== $media ? $media : 'all';
+		$search = "media='" . $media . "'";
+		if ( false === strpos( $tag, $search ) ) {
+			return $tag;
+		}
+
+		return str_replace(
+			$search,
+			"media='print' onload=\"this.onload=null;this.media='" . esc_attr( $media ) . "'\"",
+			$tag
+		);
+	}
+
+	/**
+	 * Whether a stylesheet URL render-blocks on fonts.googleapis.com.
+	 *
+	 * Direct Google Fonts URLs qualify, and so do local stylesheets that start
+	 * with an `@import url(https://fonts.googleapis.com/...)` (e.g. astra-sites'
+	 * zip-ai sidebar CSS) — a <link> only counts as loaded once its imports
+	 * resolve, so those block rendering just the same.
+	 *
+	 * @param string $href Stylesheet URL.
+	 * @return bool
+	 */
+	private function style_render_blocks_on_google_fonts( string $href ): bool {
+		if ( false !== strpos( $href, 'fonts.googleapis.com' ) ) {
+			return true;
+		}
+
+		// Map local wp-content URLs to file paths; skip anything else.
+		$content_url = content_url();
+		if ( 0 !== strpos( $href, $content_url ) ) {
+			return false;
+		}
+
+		$rel  = wp_parse_url( substr( $href, strlen( $content_url ) ), PHP_URL_PATH );
+		$path = WP_CONTENT_DIR . $rel;
+		if ( ! is_string( $rel ) || '' === $rel || ! file_exists( $path ) ) {
+			return false;
+		}
+
+		static $cache = array();
+		if ( ! array_key_exists( $path, $cache ) ) {
+			$head           = (string) file_get_contents( $path, false, null, 0, 512 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local file head read.
+			$cache[ $path ] = false !== strpos( $head, '@import' ) && false !== strpos( $head, 'fonts.googleapis.com' );
+		}
+
+		return $cache[ $path ];
 	}
 
 	/**

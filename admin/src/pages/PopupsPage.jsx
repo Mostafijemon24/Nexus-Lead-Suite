@@ -358,23 +358,39 @@ export function PopupsPage() {
 				message="Your settings have been successfully updated. All changes are now live."
 				onDismiss={ () => setSuccessOpen( false ) }
 			/>
-		<div className="min-h-screen bg-slate-100 px-4 py-4 md:px-8 md:py-8 font-medium text-slate-900 leading-relaxed">
-			<div className="w-full bg-white rounded-[2.5rem] shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[92vh]">
+		<div
+			className="min-h-screen bg-page px-4 py-4 md:px-8 md:py-8 font-sans font-medium text-ink leading-relaxed"
+			style={ {
+				backgroundImage:
+					'radial-gradient(900px 420px at 12% -8%, rgba(139, 92, 246, 0.10), transparent 60%), radial-gradient(800px 380px at 92% -6%, rgba(99, 102, 241, 0.09), transparent 55%), radial-gradient(700px 420px at 55% 115%, rgba(6, 182, 212, 0.07), transparent 55%)',
+			} }
+		>
+			<div className="w-full bg-white rounded-card shadow-card border border-line overflow-hidden flex flex-col h-[92vh]">
 				{/* Header */}
-				<header className="px-6 py-6 border-b border-slate-100 bg-white flex justify-between items-center shrink-0">
+				<header className="px-6 py-6 border-b border-line-soft bg-white flex justify-between items-center shrink-0">
 					<div className="flex items-center gap-4">
-						<div className="bg-blue-600 p-3 rounded-2xl text-white shadow-xl">
+						<div
+							className="p-3 rounded-tile text-white"
+							style={ {
+								background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+								boxShadow: '0 8px 18px -8px #8b5cf6',
+							} }
+						>
 							<Sparkles size={ 24 } />
 						</div>
 						<div>
-							<h1 className="text-xl font-bold tracking-tight">Popups</h1>
-							<p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Advanced Automation Logic</p>
+							<h1 className="font-display text-xl font-bold tracking-tight">Popups</h1>
+							<p className="text-[10px] font-bold text-faint uppercase tracking-widest">Advanced Automation Logic</p>
 						</div>
 					</div>
 					<button
 						type="button"
 						onClick={ addPopup }
-						className="flex items-center gap-2 bg-slate-900 hover:bg-black text-white px-6 py-3 rounded-2xl transition-all text-sm font-semibold shadow-xl active:scale-95"
+						className="flex items-center gap-2 text-white px-6 py-3 rounded-tile transition-all text-sm font-bold hover:brightness-110 active:scale-95"
+						style={ {
+							background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+							boxShadow: '0 8px 18px -8px #8b5cf6',
+						} }
 					>
 						<Plus size={ 18 } /> Add New PopUp
 					</button>
@@ -382,13 +398,13 @@ export function PopupsPage() {
 
 				<div className="flex flex-1 overflow-hidden">
 					{/* Sidebar */}
-					<aside className="w-72 border-r border-slate-100 bg-slate-50 flex flex-col shrink-0">
-						<div className="p-4 border-b border-slate-100 flex items-center justify-between">
-							<h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">PopUp Layers</h2>
-							<Layers size={ 14 } className="text-slate-300" />
+					<aside className="w-72 border-r border-line-soft bg-[#fbfcfe] flex flex-col shrink-0">
+						<div className="p-4 border-b border-line-soft flex items-center justify-between">
+							<h2 className="text-[10px] font-bold text-faint uppercase tracking-widest">PopUp Layers</h2>
+							<Layers size={ 14 } className="text-faint" />
 						</div>
 						<div className="flex-1 overflow-y-auto p-3 space-y-2">
-							{ status.loading ? <div className="px-2 py-3 text-sm text-slate-500">Loading…</div> : null }
+							{ status.loading ? <div className="px-2 py-3 text-sm text-muted">Loading…</div> : null }
 							{ popups.map( ( pop ) => {
 								const isActive = pop.id === activeId;
 								return (
@@ -396,22 +412,22 @@ export function PopupsPage() {
 										key={ pop.id }
 										onClick={ () => setActiveId( pop.id ) }
 										className={ [
-											'group relative px-4 py-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between',
-											isActive ? 'bg-white border-blue-500 shadow-lg ring-2 ring-blue-500/5' : 'bg-transparent border-transparent hover:bg-slate-200/50',
+											'group relative px-4 py-4 rounded-tile border transition-all cursor-pointer flex items-center justify-between',
+											isActive ? 'bg-white border-pop shadow-card ring-2 ring-pop/5' : 'bg-transparent border-transparent hover:bg-line-soft',
 										].join( ' ' ) }
 									>
 										<div className="flex items-center gap-3 truncate">
-											<Target size={ 16 } className={ isActive ? 'text-blue-600' : 'text-slate-400' } />
+											<Target size={ 16 } className={ isActive ? 'text-pop' : 'text-faint' } />
 											<span className="text-sm font-semibold truncate">{ pop.name || 'Popup' }</span>
 										</div>
 										<div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={ ( e ) => e.stopPropagation() }>
-											<button type="button" onClick={ () => setPreviewPopup( pop ) } className="p-1 text-slate-400 hover:text-blue-600" aria-label="Preview">
+											<button type="button" onClick={ () => setPreviewPopup( pop ) } className="p-1 text-faint hover:text-pop" aria-label="Preview">
 												<Eye size={ 14 } />
 											</button>
 											<button
 												type="button"
 												onClick={ () => deletePopup( pop.id ) }
-												className="p-1 text-slate-400 hover:text-red-500"
+												className="p-1 text-faint hover:text-mail"
 												aria-label="Delete"
 											>
 												<Trash2 size={ 14 } />
@@ -424,12 +440,38 @@ export function PopupsPage() {
 					</aside>
 
 					{/* Settings Canvas */}
-					<main className="flex-1 overflow-y-auto p-8" style={ { background: '#f4f5f8' } }>
+					<main className="flex-1 overflow-y-auto p-8" style={ { background: '#f3f5fa' } }>
 						<div className="nexulesuite_popups-editor-wrap max-w-[1080px] mx-auto pb-20">
 							{ status.error ? (
-								<div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{ status.error }</div>
+								<div className="mb-6 rounded-card border border-[#fbd0da] bg-mail-soft px-4 py-3 text-sm text-[#e11d48]">{ status.error }</div>
 							) : null }
 
+							{ ! status.loading && ! activePopup ? (
+								<div className="nexulesuite_pop-card flex flex-col items-center justify-center gap-4 py-20 text-center">
+									<span className="flex h-14 w-14 items-center justify-center rounded-tile bg-pop-soft text-pop">
+										<Sparkles size={ 26 } />
+									</span>
+									<div>
+										<h3 className="font-display text-base font-bold text-ink">No popups yet</h3>
+										<p className="mt-1 max-w-sm text-sm text-muted">
+											Create your first popup, then wire its triggers in Advanced Automation Logic below.
+										</p>
+									</div>
+									<button
+										type="button"
+										onClick={ addPopup }
+										className="mt-2 flex items-center gap-2 rounded-tile px-6 py-3 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95"
+										style={ {
+											background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+											boxShadow: '0 8px 18px -8px #8b5cf6',
+										} }
+									>
+										<Plus size={ 16 } /> Create first popup
+									</button>
+								</div>
+							) : null }
+
+							{ activePopup ? (
 							<div className="nexulesuite_pop-card">
 								<section className="nexulesuite_pop-section is-first">
 									<div className="nexulesuite_pop-sec-head">
@@ -661,6 +703,16 @@ export function PopupsPage() {
 															onChange={ ( e ) => updateRule( rule.id, { scrollPercentage: e.target.value } ) }
 														/>
 													</div>
+
+													<div className="nexulesuite_pop-field" style={ { display: rule.trigger === 'click' ? '' : 'none' } }>
+														<label>Fires on event name</label>
+														<input
+															type="text"
+															readOnly
+															value={ activePopup?.eventName || '' }
+															title="Link a Menu Item button to this event name to open the popup on click."
+														/>
+													</div>
 												</div>
 											</div>
 										) ) }
@@ -691,14 +743,15 @@ export function PopupsPage() {
 									/>
 								</section>
 							</div>
+							) : null }
 						</div>
 					</main>
 				</div>
 
 				{/* Footer */}
-				<footer className="px-12 py-6 border-t border-slate-100 bg-white flex justify-between items-center shrink-0">
-					<div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
-						<span className="inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+				<footer className="px-12 py-6 border-t border-line-soft bg-white flex justify-between items-center shrink-0">
+					<div className="flex items-center gap-2 text-faint text-[10px] font-bold uppercase tracking-widest">
+						<span className="inline-flex h-2 w-2 rounded-full bg-form" />
 						System Ready & Synchronized
 					</div>
 					<div className="flex gap-4">
@@ -706,7 +759,7 @@ export function PopupsPage() {
 							type="button"
 							onClick={ discard }
 							disabled={ ! isDirty || status.saving }
-							className="px-6 py-2.5 text-slate-400 hover:text-slate-600 font-bold text-sm disabled:opacity-50"
+							className="px-6 py-2.5 text-muted hover:text-ink-2 font-bold text-sm disabled:opacity-50"
 						>
 							Discard
 						</button>
@@ -714,7 +767,11 @@ export function PopupsPage() {
 							type="button"
 							onClick={ saveAll }
 							disabled={ status.saving || ! isDirty }
-							className="flex items-center gap-3 px-12 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl text-sm shadow-xl transition-all active:scale-95 disabled:opacity-60"
+							className="flex items-center gap-3 px-12 py-3 text-white font-bold rounded-tile text-sm transition-all hover:brightness-110 active:scale-95 disabled:opacity-60"
+							style={ {
+								background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+								boxShadow: '0 8px 18px -8px #8b5cf6',
+							} }
 						>
 							<Save size={ 18 } /> { status.saving ? 'Saving…' : 'Save Popup Configuration' }
 						</button>
@@ -724,14 +781,14 @@ export function PopupsPage() {
 
 			{/* Simulator Modal */}
 			{ previewPopup && (
-				<div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 md:p-12 animate-in fade-in duration-300 backdrop-blur-md bg-slate-900/60">
-					<div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-[1200px] h-full flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-white/20">
-						<div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+				<div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 md:p-12 animate-in fade-in duration-300 backdrop-blur-md bg-navy/60">
+					<div className="bg-white rounded-card shadow-lift w-full max-w-[1200px] h-full flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-white/20">
+						<div className="p-6 border-b border-line-soft flex justify-between items-center bg-[#fbfcfe]">
 							<div className="flex items-center gap-3">
-								<Eye className="text-blue-600" size={ 20 } />
-								<h4 className="font-bold text-slate-800 text-lg">Pop-Up Simulator</h4>
+								<Eye className="text-pop" size={ 20 } />
+								<h4 className="font-display font-bold text-ink text-lg">Pop-Up Simulator</h4>
 							</div>
-							<div className="flex bg-slate-200/50 p-1 rounded-xl">
+							<div className="flex bg-line-soft p-1 rounded-tile">
 								{ [
 									{ id: 'desktop', Icon: Laptop },
 									{ id: 'tablet', Icon: Tablet },
@@ -743,7 +800,7 @@ export function PopupsPage() {
 											key={ d.id }
 											type="button"
 											onClick={ () => setPreviewDevice( d.id ) }
-											className={ [ 'p-2 rounded-lg transition-all', selected ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400 hover:text-slate-600' ].join( ' ' ) }
+											className={ [ 'p-2 rounded-lg transition-all', selected ? 'bg-white shadow-sm text-pop' : 'text-faint hover:text-ink-2' ].join( ' ' ) }
 											aria-label={ d.id }
 										>
 											<d.Icon size={ 16 } />
@@ -754,7 +811,7 @@ export function PopupsPage() {
 							<button
 								type="button"
 								onClick={ () => setPreviewPopup( null ) }
-								className="p-3 bg-white border border-slate-200 hover:bg-rose-50 text-slate-500 rounded-full transition-all"
+								className="p-3 bg-white border border-line hover:bg-mail-soft text-muted rounded-full transition-all"
 								aria-label="Close"
 							>
 								<X size={ 20 } />
