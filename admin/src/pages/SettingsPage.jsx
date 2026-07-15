@@ -13,7 +13,7 @@ import {
 	Image as ImageIcon, MessageCircle, Clock, X,
 	Mail, Link as LinkIcon, ShieldCheck, Wand2, Copy, Check, AlertTriangle,
 	FileX, Paintbrush, Info, Type as FontIcon, Loader2, Plus, Trash2, Layers,
-	Send, Lock, Bot, RefreshCw,
+	Send, Lock, Bot, RefreshCw, Code2,
 } from 'lucide-react';
 import { FaqTab, AutoSetupTab } from './ChatbotPage.jsx';
 
@@ -176,6 +176,7 @@ const DEFAULT_SETTINGS = {
 	aiIndex: { chunks: 0, documents: 0, dims: 0 },
 	aiSystemPrompt: '',
 	aiWelcomeMessage: "Hi! Ask me anything about our site and I'll help right away.",
+	aiInputPlaceholder: '',
 	aiChatModel: '',
 	aiVisionModel: 'llava',
 	aiAllowImages: false,
@@ -241,6 +242,30 @@ function newAutoPopupFormRow() {
 			? window.crypto.randomUUID()
 			: `apf-${ Date.now() }-${ Math.floor( Math.random() * 1e6 ) }`;
 	return { rowKey: rk, formId: '' };
+}
+
+/* Exclusion lists must be arrays of { id, title }. Legacy saves, imports, and PHP
+   associative arrays (serialized as JSON objects) otherwise crash the popup tab
+   with "excludePosts.some is not a function". */
+function normalizeExclusionList( value ) {
+	const list = Array.isArray( value )
+		? value
+		: value && typeof value === 'object'
+			? Object.values( value )
+			: [];
+	return list
+		.filter( ( item ) => item && typeof item === 'object' && item.id != null && ! Number.isNaN( Number( item.id ) ) )
+		.map( ( item ) => ( { id: Number( item.id ), title: String( item.title ?? '' ) } ) );
+}
+
+function normalizeExclusionFields( s ) {
+	if ( ! s || typeof s !== 'object' ) {
+		return {};
+	}
+	const out = {};
+	if ( 'excludePosts' in s ) out.excludePosts = normalizeExclusionList( s.excludePosts );
+	if ( 'excludePages' in s ) out.excludePages = normalizeExclusionList( s.excludePages );
+	return out;
 }
 
 function rowsFromSavedAutoPopupSettings( s ) {
@@ -390,22 +415,22 @@ const ColorField = ( { label, value, onChange, hint } ) => (
 );
 
 const InlineToggle = ( { enabled, onClick, label, desc, icon: Icon } ) => (
-	<div className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl shadow-sm transition-all h-[90px]">
+	<div className="flex items-center justify-between p-4 bg-white border border-line rounded-card shadow-card transition-all h-[90px]">
 		<div className="flex items-center gap-3">
 			{ Icon && (
-				<div className={ `p-2 rounded-lg ${ enabled ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-400' }` }>
+				<div className={ `p-2 rounded-tile ${ enabled ? 'bg-pop-soft text-pop' : 'bg-line-soft text-faint' }` }>
 					<Icon size={ 18 } />
 				</div>
 			) }
 			<div className="flex flex-col">
-				<h5 className="text-sm font-bold text-slate-800 capitalize leading-none">{ label }</h5>
-				{ desc && <p className="text-[10px] text-slate-400 font-medium capitalize mt-1">{ desc }</p> }
+				<h5 className="font-display text-sm font-bold text-ink capitalize leading-none">{ label }</h5>
+				{ desc && <p className="text-[10px] text-faint font-medium capitalize mt-1">{ desc }</p> }
 			</div>
 		</div>
 		<button
 			type="button"
 			onClick={ onClick }
-			className={ `w-12 h-6 rounded-full transition-colors duration-300 relative shrink-0 focus:outline-none ${ enabled ? 'bg-blue-600' : 'bg-slate-300' }` }
+			className={ `w-12 h-6 rounded-full transition-colors duration-300 relative shrink-0 focus:outline-none ${ enabled ? 'bg-pop' : 'bg-line' }` }
 		>
 			<div className={ `absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-sm ${ enabled ? 'translate-x-7' : 'translate-x-1' }` }></div>
 		</button>
@@ -460,6 +485,7 @@ export function SettingsPage() {
 	const [ smtpTestHtml, setSmtpTestHtml ] = useState( true );
 	const [ smtpMeta, setSmtpMeta ] = useState( DEFAULT_SMTP_META );
 	const [ redirectCopied, setRedirectCopied ] = useState( false );
+	const [ embedCopied, setEmbedCopied ] = useState( '' );
 	const [ aiTesting, setAiTesting ] = useState( false );
 	const [ aiTestResult, setAiTestResult ] = useState( null );
 	const [ savedAi, setSavedAi ] = useState( () => aiSavedSnapshot( DEFAULT_SETTINGS ) );
@@ -499,7 +525,7 @@ export function SettingsPage() {
 
 				if ( gResult.status === 'fulfilled' && gResult.value.res.ok && gResult.value.json?.success ) {
 					const srvSettings = gResult.value.json?.data?.settings || {};
-					setSettings( ( prev ) => ( { ...prev, ...srvSettings } ) );
+					setSettings( ( prev ) => ( { ...prev, ...srvSettings, ...normalizeExclusionFields( srvSettings ) } ) );
 					setSavedAi( aiSavedSnapshot( srvSettings ) );
 					setAutoPopupFormRows( rowsFromSavedAutoPopupSettings( srvSettings ) );
 				}
@@ -588,6 +614,21 @@ export function SettingsPage() {
 		navigator.clipboard.writeText( text ).then( () => {
 			setRedirectCopied( true );
 			window.setTimeout( () => setRedirectCopied( false ), 2000 );
+		} ).catch( () => {} );
+	};
+
+	/* ── Livechat embed snippets ── */
+	const chatShortcode = '[nexulesuite_chat]';
+	const chatEmbedUrl = `${ ( window?.nexulesuite_Admin?.siteUrl || '/' ).replace( /\/?$/, '/' ) }?nexulesuite_chat_embed=1`;
+	const chatIframeCode = `<iframe src="${ chatEmbedUrl }" title="${ settings.chatTitle || 'Chat' }" width="100%" height="620" style="border:0;border-radius:22px;" loading="lazy"></iframe>`;
+
+	const copyEmbed = ( kind, text ) => {
+		if ( ! text || ! navigator?.clipboard?.writeText ) {
+			return;
+		}
+		navigator.clipboard.writeText( text ).then( () => {
+			setEmbedCopied( kind );
+			window.setTimeout( () => setEmbedCopied( '' ), 2000 );
 		} ).catch( () => {} );
 	};
 
@@ -842,7 +883,7 @@ export function SettingsPage() {
 			const saved = json?.data?.settings;
 			if ( saved && typeof saved === 'object' ) {
 				// `saved` omits the API keys (masked) and carries hasAiKey/hasLlmKey/hasEmbedKey — clear the inputs so the masked placeholders show.
-				setSettings( ( prev ) => ( { ...prev, ...saved, aiApiKey: '', aiLlmApiKey: '', aiEmbedApiKey: '' } ) );
+				setSettings( ( prev ) => ( { ...prev, ...saved, ...normalizeExclusionFields( saved ), aiApiKey: '', aiLlmApiKey: '', aiEmbedApiKey: '' } ) );
 				setSavedAi( aiSavedSnapshot( saved ) );
 				setAutoPopupFormRows( rowsFromSavedAutoPopupSettings( saved ) );
 			}
@@ -1087,6 +1128,16 @@ export function SettingsPage() {
 
 	const selectedFontObj = GOOGLE_FONTS.find( ( f ) => f.family === settings.globalFont );
 
+	/* Module accents mirror the Nexus Hub console palette (set/pop/menu/bot/mail/form). */
+	const TAB_ACCENTS = {
+		general: '#64748b',
+		popup: '#8b5cf6',
+		chat: '#06b6d4',
+		ai: '#6366f1',
+		smtp: '#f43f5e',
+		backup: '#10b981',
+	};
+
 	const TABS = [
 		{ id: 'general', label: 'General & Navigation', icon: Layout },
 		{ id: 'popup', label: 'Auto PopUp Logic', icon: Zap },
@@ -1110,7 +1161,11 @@ export function SettingsPage() {
 									type="button"
 									disabled={ smtpSaving }
 									onClick={ handleSaveSmtp }
-									className="flex items-center gap-3 rounded-xl bg-[#2563EB] px-10 py-3 text-xs font-black text-white shadow-xl transition-all duration-200 hover:bg-blue-600 active:scale-95 disabled:opacity-60"
+									className="flex items-center gap-3 rounded-tile px-10 py-3 text-xs font-black text-white transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-60"
+									style={ {
+										background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+										boxShadow: '0 8px 18px -8px #6366f1',
+									} }
 								>
 									<Save size={ 16 } />{ smtpSaving ? 'Saving...' : 'Save SMTP Settings' }
 								</button>
@@ -1127,7 +1182,11 @@ export function SettingsPage() {
 										type="button"
 										disabled={ saving }
 										onClick={ handleSave }
-										className="flex items-center gap-3 rounded-xl bg-[#2563EB] px-10 py-3 text-xs font-black text-white shadow-xl transition-all duration-200 hover:bg-blue-600 active:scale-95 disabled:opacity-60"
+										className="flex items-center gap-3 rounded-tile px-10 py-3 text-xs font-black text-white transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-60"
+										style={ {
+											background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+											boxShadow: '0 8px 18px -8px #6366f1',
+										} }
 									>
 										<Save size={ 16 } />{ saving ? 'Saving...' : 'Save Configuration' }
 									</button>
@@ -1172,16 +1231,21 @@ export function SettingsPage() {
 				<div className="bg-white rounded-[2rem] md:rounded-[1rem] border border-slate-200 shadow-sm flex flex-col overflow-hidden">
 
 					{/* ── Tabs ── */}
-					<div className="flex flex-wrap border-b border-slate-100 p-2 bg-slate-50/50 gap-1 md:gap-2">
-						{ TABS.map( ( tab ) => (
-							<button
-								key={ tab.id }
-								onClick={ () => setActiveTab( tab.id ) }
-								className={ `flex items-center gap-2 px-4 md:px-6 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all duration-200 ${ activeTab === tab.id ? 'bg-white shadow-md text-blue-600' : 'text-slate-400 hover:text-slate-600' }` }
-							>
-								<tab.icon size={ 14 } />{ tab.label }
-							</button>
-						) ) }
+					<div className="flex flex-wrap border-b border-line-soft p-2 bg-[#fbfcfe] gap-1 md:gap-2">
+						{ TABS.map( ( tab ) => {
+							const isActive = activeTab === tab.id;
+							const accent = TAB_ACCENTS[ tab.id ] || '#6366f1';
+							return (
+								<button
+									key={ tab.id }
+									onClick={ () => setActiveTab( tab.id ) }
+									className={ `flex items-center gap-2 px-4 md:px-6 py-3 rounded-tile text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all duration-200 ${ isActive ? 'text-white' : 'text-faint hover:text-ink-2' }` }
+									style={ isActive ? { background: accent, boxShadow: `0 5px 12px -5px ${ accent }` } : undefined }
+								>
+									<tab.icon size={ 14 } />{ tab.label }
+								</button>
+							);
+						} ) }
 					</div>
 
 					{/* ── Content ── */}
@@ -1534,7 +1598,7 @@ export function SettingsPage() {
 								════════════════════════════════════════════ */}
 								{ activeTab === 'popup' && (
 									<div className="space-y-8 flex flex-col">
-										<div className="p-8 bg-white border border-slate-200 rounded-[2.5rem] space-y-6">
+										<div className="p-8 bg-white border border-line rounded-card shadow-card space-y-6">
 											<InlineToggle
 												enabled={ settings.enableAutoPopup }
 												onClick={ () => updateSetting( 'enableAutoPopup', ! settings.enableAutoPopup ) }
@@ -1543,16 +1607,16 @@ export function SettingsPage() {
 											/>
 
 											<div className="space-y-3">
-												<label className="text-[11px] font-bold text-slate-600 capitalize tracking-widest ml-1">Button Classes</label>
+												<label className="text-[11px] font-bold text-muted uppercase tracking-widest ml-1">Button Classes</label>
 												<textarea
 													value={ settings.activityButtonClasses }
 													onChange={ ( e ) => updateSetting( 'activityButtonClasses', e.target.value ) }
-													className="w-full h-24 p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-mono focus:ring-2 focus:ring-blue-500 outline-none resize-none transition-all"
+													className="w-full h-24 p-4 bg-[#fbfcfe] border border-line rounded-tile text-xs font-mono focus:ring-2 focus:ring-pop/30 focus:border-pop outline-none resize-none transition-all"
 													placeholder="nexas | xyz-pop, xyz-alert"
 												/>
-												<div className="text-[10px] text-slate-400 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100 font-medium">
-													Each class should be separated by a comma. Use a pipe (<span className="text-blue-600 font-bold">|</span>) before class for popups.
-													<br /><span className="font-bold">Example:</span> <code className="bg-white border px-1 rounded text-blue-600 font-bold">popupId | className</code>
+												<div className="text-[10px] text-muted leading-relaxed bg-[#fbfcfe] p-4 rounded-tile border border-line-soft font-medium">
+													Each class should be separated by a comma. Use a pipe (<span className="text-pop font-bold">|</span>) before class for popups.
+													<br /><span className="font-bold">Example:</span> <code className="bg-white border border-line px-1 rounded text-pop font-bold">popupId | className</code>
 												</div>
 											</div>
 										</div>
@@ -1644,15 +1708,15 @@ export function SettingsPage() {
 
 											<div
 												className={ [
-													'p-8 bg-slate-900 text-white rounded-[2.5rem] shadow-xl flex flex-col gap-6 border border-white/5 min-h-[320px]',
+													'p-8 bg-navy text-white rounded-card shadow-lift flex flex-col gap-6 border border-white/5 min-h-[320px]',
 													settings.enableAutoPopup ? '' : 'opacity-55 pointer-events-none',
 												].join( ' ' ) }
 											>
 												<div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 													<div className="flex items-start gap-3 min-w-0">
-														<Layers size={ 22 } className="shrink-0 text-blue-400 mt-0.5" aria-hidden />
+														<Layers size={ 22 } className="shrink-0 text-[#a78bfa] mt-0.5" aria-hidden />
 														<div className="min-w-0">
-															<h5 className="text-sm font-bold uppercase tracking-tight text-white leading-snug">
+															<h5 className="font-display text-sm font-bold uppercase tracking-tight text-white leading-snug">
 																Default Nexus forms (timer / scroll / exit)
 															</h5>
 															<p className="mt-2 text-[10px] text-slate-400 leading-relaxed">
@@ -1663,7 +1727,11 @@ export function SettingsPage() {
 													<button
 														type="button"
 														onClick={ () => setAutoPopupFormRows( ( prev ) => [ ...prev, newAutoPopupFormRow() ] ) }
-														className="inline-flex items-center justify-center gap-2 shrink-0 rounded-xl bg-blue-600 px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-lg shadow-blue-900/40 transition-all hover:bg-blue-500 active:scale-[0.98] sm:self-start"
+														className="inline-flex items-center justify-center gap-2 shrink-0 rounded-tile px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider text-white transition-all hover:brightness-110 active:scale-[0.98] sm:self-start"
+														style={ {
+															background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+															boxShadow: '0 8px 18px -8px #8b5cf6',
+														} }
 													>
 														<Plus size={ 14 } /> Add form slot
 													</button>
@@ -1700,7 +1768,7 @@ export function SettingsPage() {
 																				prev.map( ( r ) => ( r.rowKey === row.rowKey ? { ...r, formId: val } : r ) )
 																			);
 																		} }
-																		className="min-w-0 flex-1 p-2.5 bg-white/10 border border-white/20 rounded-lg text-xs font-medium text-white outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+																		className="min-w-0 flex-1 p-2.5 bg-white/10 border border-white/20 rounded-lg text-xs font-medium text-white outline-none focus:ring-2 focus:ring-pop focus:border-transparent"
 																		aria-label={ `Default Nexus form slot ${ idx + 1 }` }
 																	>
 																		<option value="">— Skip this slot —</option>
@@ -1820,6 +1888,50 @@ export function SettingsPage() {
 																		placeholder="Livechat Content"
 																	/>
 																</div>
+															</div>
+														</div>
+													</section>
+
+													<section className="nexulesuite_lc-section">
+														<div className="nexulesuite_lc-sec-head">
+															<span className="nexulesuite_lc-sec-ico" aria-hidden="true">
+																<Code2 size={ 16 } />
+															</span>
+															<div>
+																<span className="nexulesuite_lc-sec-title nexulesuite_sg-title-tip">Embed Code <InfoTip text={ 'The floating widget already shows site-wide. Use these to put the same chat inside a specific page — it runs the identical chat, so AI replies, FAQ buttons and inline forms all behave the same.' } /></span>
+															</div>
+														</div>
+														<div className="nexulesuite_lc-stack">
+															{ ! settings.enableLivechat && (
+																<p className="hint">Turn on <strong>Enable Livechat Widget</strong> above — the embed stays blank while livechat is off.</p>
+															) }
+
+															<div className="nexulesuite_sg-field">
+																<span className="lbl nexulesuite_lbl-tip">Shortcode <InfoTip text={ 'Paste into any page, post, widget area or page builder. Optional attributes: height, max_width, full_width, hide_floating, mode.' } /></span>
+																<div className="nexulesuite_sg-link-box">
+																	<span className="nexulesuite_sg-link-ico" aria-hidden="true"><Code2 size={ 16 } /></span>
+																	<div className="nexulesuite_sg-link-inner">
+																		<input readOnly value={ chatShortcode } className="nexulesuite_sg-link-inp" onFocus={ ( e ) => e.target.select() } />
+																		<button type="button" onClick={ () => copyEmbed( 'shortcode', chatShortcode ) } className="nexulesuite_sg-link-copy" aria-label="Copy shortcode">
+																			{ embedCopied === 'shortcode' ? <Check size={ 16 } className="is-copied" /> : <Copy size={ 16 } /> }
+																		</button>
+																	</div>
+																</div>
+																<p className="hint">Renders straight into the page and fills its container, so it reads as part of the design rather than a floating bubble. If your builder drops it into a narrow column, the chat can only be as wide as that column &mdash; use <code>[nexulesuite_chat full_width=&quot;yes&quot; max_width=&quot;1200px&quot;]</code> to span the page anyway. The floating bubble stands down on that page so visitors get one chat, not two; add <code>hide_floating=&quot;no&quot;</code> to keep both.</p>
+															</div>
+
+															<div className="nexulesuite_sg-field">
+																<span className="lbl nexulesuite_lbl-tip">HTML embed <InfoTip text={ 'Only for places that cannot run a shortcode at all. Loads the chat in an iframe, which is a fixed box rather than part of the page flow.' } /></span>
+																<div className="nexulesuite_sg-link-box">
+																	<span className="nexulesuite_sg-link-ico" aria-hidden="true"><LinkIcon size={ 16 } /></span>
+																	<div className="nexulesuite_sg-link-inner">
+																		<input readOnly value={ chatIframeCode } className="nexulesuite_sg-link-inp" onFocus={ ( e ) => e.target.select() } />
+																		<button type="button" onClick={ () => copyEmbed( 'iframe', chatIframeCode ) } className="nexulesuite_sg-link-copy" aria-label="Copy HTML embed code">
+																			{ embedCopied === 'iframe' ? <Check size={ 16 } className="is-copied" /> : <Copy size={ 16 } /> }
+																		</button>
+																	</div>
+																</div>
+																<p className="hint">Prefer the shortcode. Use this only where a shortcode cannot run &mdash; it is an iframe, so it stays a fixed box and cannot grow with the page.</p>
 															</div>
 														</div>
 													</section>
@@ -2399,6 +2511,11 @@ export function SettingsPage() {
 												</div>
 
 												<div className="nexulesuite_sg-field" style={ { marginTop: '18px' } }>
+													<span className="lbl nexulesuite_lbl-tip">Input placeholder <InfoTip text={ 'The hint text shown inside the chat message box. Leave blank for the default "Write a message…".' } /></span>
+													<input type="text" className="inp" maxLength={ 120 } value={ settings.aiInputPlaceholder || '' } onChange={ ( e ) => updateSetting( 'aiInputPlaceholder', e.target.value ) } placeholder="Write a message…" />
+												</div>
+
+												<div className="nexulesuite_sg-field" style={ { marginTop: '18px' } }>
 													<span className="lbl nexulesuite_lbl-tip">System prompt <InfoTip text={ 'The instruction the model follows. Keep the "answer only from context" rule to reduce made-up answers.' } /></span>
 													<textarea className="inp" rows={ 4 } value={ settings.aiSystemPrompt } onChange={ ( e ) => updateSetting( 'aiSystemPrompt', e.target.value ) } placeholder={ 'You are the support assistant for our website. Answer ONLY from the provided context; if unknown, say so and offer a human.' } />
 												</div>
@@ -2773,7 +2890,7 @@ export function SettingsPage() {
 															reader.onload = ( ev ) => {
 																try {
 																	const data = JSON.parse( ev.target.result );
-																	if ( data.settings ) setSettings( ( prev ) => ( { ...prev, ...data.settings } ) );
+																	if ( data.settings ) setSettings( ( prev ) => ( { ...prev, ...data.settings, ...normalizeExclusionFields( data.settings ) } ) );
 																	showNotice( 'success', 'Settings imported. Click "Save Configuration" to apply.' );
 																} catch ( _err ) {
 																	showNotice( 'error', 'Invalid JSON file.' );
