@@ -4022,6 +4022,18 @@ final class Shortcodes {
 			return;
 		}
 
+		/*
+		 * Site-wide floating FAB is retired. Chat only appears in the Acc & Lang dock,
+		 * and must honor that button's display conditions. If chat is not allowed on
+		 * this page, skip the whole widget (no legacy corner bubble).
+		 */
+		if ( class_exists( '\\nexulesuite_\\Public\\Accessibility_Language' ) ) {
+			$a11y_vis = \nexulesuite_\Public\Accessibility_Language::dock_button_visibility();
+			if ( empty( $a11y_vis['chat'] ) ) {
+				return;
+			}
+		}
+
 		$parts = $this->build_livechat_parts( 'floating' );
 		if ( null === $parts ) {
 			return;
@@ -4300,6 +4312,8 @@ final class Shortcodes {
 		/* ── Widget dock: left or right edge of the viewport ── */
 		$float_css = ( 'left' === $chat_side ) ? 'left:20px;right:auto;' : 'right:20px;left:auto;';
 		$align_cls = ( 'left' === $chat_side ) ? ' nexulesuite_chat--left' : '';
+		/* Floating site bubble always lives in Acc & Lang dock — never a second corner FAB. */
+		$dock_cls  = $is_panel ? '' : ' nexulesuite_chat-widget--dock';
 
 		/* ── Hover CSS class ── */
 		$allowed_hover = array( 'lift', 'scale', 'glow', 'shake', 'rotate', 'darken' );
@@ -4478,7 +4492,10 @@ final class Shortcodes {
 			padding:0!important;margin:0!important;border-radius:0!important;
 		}
 
-		/* Floating trigger bubble — matches larger panel presence */
+		/* Floating trigger: dock-only — never show the legacy corner bubble outside Acc & Lang. */
+		.nexulesuite_chat-widget--dock > .nexulesuite_chat-trigger{display:none!important;}
+		.nexulesuite_a11y-dock .nexulesuite_chat-trigger,
+		.nexulesuite_a11y-chat-slot .nexulesuite_chat-trigger{display:flex!important;}
 		.nexulesuite_chat-trigger{--nls-online-dot:9px;width:66px;height:66px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(0,0,0,.2);background:<?php echo esc_attr( $btn_bg ); ?>;overflow:visible;position:relative;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
 		.nexulesuite_chat-trigger svg{width:26px;height:26px;fill:none;stroke:<?php echo esc_attr( $btn_text_col ); ?>;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1;}
 		.nexulesuite_chat-trigger img.nexulesuite_chat-trigger__img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;position:relative;z-index:1;}
@@ -4909,7 +4926,7 @@ final class Shortcodes {
 		ob_start();
 		?>
 
-		<div class="nexulesuite_chat-widget<?php echo esc_attr( $align_cls ); ?>" id="nexulesuite_chat-widget" aria-live="polite">
+		<div class="nexulesuite_chat-widget<?php echo esc_attr( $dock_cls . $align_cls ); ?>" id="nexulesuite_chat-widget" aria-live="polite">
 
 			<?php /* ── Chat panel (hidden until bubble clicked) ── */ ?>
 			<div class="nexulesuite_chat-panel" id="nexulesuite_chat-panel" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr( $chat_title ); ?>">
@@ -5453,7 +5470,12 @@ final class Shortcodes {
 				col.className = 'nexulesuite_chat-ai-col';
 				var div = document.createElement('div');
 				div.className = 'nexulesuite_chat-ai-msg nexulesuite_chat-ai-msg--' + role;
-				div.textContent = text;
+				/* Bot/FAQ answers may include URLs — render as clickable links (escaped + linkified). */
+				if(!isUser && role !== 'error' && text){
+					try { div.innerHTML = aiRenderMarkdown(text); } catch(e){ div.textContent = text; }
+				} else {
+					div.textContent = text;
+				}
 				col.appendChild(div);
 				var time = document.createElement('span');
 				time.className = 'nexulesuite_chat-ai-time';
@@ -5763,11 +5785,20 @@ final class Shortcodes {
 			}
 
 			/* Safe markdown → HTML (escape first, then a small whitelist): bold, italic,
-			   inline code, links, and bullet/numbered lists. */
+			   inline code, markdown links, bare URLs, and bullet/numbered lists. */
 			function aiEscHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 			function aiRenderMarkdown(text){
 				var esc = aiEscHtml(text);
+				/* Markdown links first: [label](https://…) */
 				esc = esc.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener nofollow">$1</a>');
+				/* Bare http(s) URLs — skip ones already used as href="…" from the step above. */
+				esc = esc.replace(/https?:\/\/[^\s<&]+/g, function(url, offset, full){
+					if(offset >= 6 && full.slice(offset - 6, offset) === 'href="'){ return url; }
+					var trail = '';
+					var clean = url.replace(/([.,;:!?)\]}]+)$/, function(t){ trail = t; return ''; });
+					if(!/^https?:\/\//i.test(clean)){ return url; }
+					return '<a href="' + clean + '" target="_blank" rel="noopener nofollow">' + clean + '</a>' + trail;
+				});
 				esc = esc.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
 				esc = esc.replace(/`([^`\n]+)`/g, '<code>$1</code>');
 				esc = esc.replace(/(^|[\s(])\*([^*\s][^*\n]*?)\*(?=[\s.,!?)]|$)/g, '$1<em>$2</em>');
