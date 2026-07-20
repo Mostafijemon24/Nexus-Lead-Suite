@@ -2260,25 +2260,45 @@ final class Rest_Api {
 			'activityButtonClasses' => sanitize_textarea_field( (string) ( $input['activityButtonClasses'] ?? '' ) ),
 			'excludePosts'          => $exclude_posts,
 			'excludePages'          => $exclude_pages,
-			'enableLivechat'        => ! empty( $input['enableLivechat'] ),
-			'chatButtonImage'       => $this->sanitize_chat_button_image( (string) ( $input['chatButtonImage'] ?? '' ) ),
-			'chatTitle'             => sanitize_text_field( (string) ( $input['chatTitle'] ?? 'Customer Support' ) ),
-			'chatBadge'             => sanitize_text_field( (string) ( $input['chatBadge'] ?? 'Online' ) ),
-			'chatContent'           => sanitize_textarea_field( (string) ( $input['chatContent'] ?? '' ) ),
-			'chatFormButton'        => sanitize_text_field( (string) ( $input['chatFormButton'] ?? '' ) ),
-			'chatFormButtonLink'    => sanitize_text_field( (string) ( $input['chatFormButtonLink'] ?? '' ) ),
-			'chatButtonTwo'         => sanitize_text_field( (string) ( $input['chatButtonTwo'] ?? '' ) ),
-			'chatButtonTwoLink'     => esc_url_raw( (string) ( $input['chatButtonTwoLink'] ?? '' ) ),
-			'chatButtonThird'       => sanitize_text_field( (string) ( $input['chatButtonThird'] ?? '' ) ),
-			'chatButtonThirdLink'   => sanitize_text_field( (string) ( $input['chatButtonThirdLink'] ?? '' ) ),
-			'chatAlign'             => $chat_align,
-			'chatPadding'           => (string) $chat_padding,
-			'chatBorderRadius'      => (string) $chat_radius,
-			'primaryBtnBg'          => $primary_bg,
-			'primaryBtnText'        => $primary_text,
-			'chatBubbleBg'          => $chat_bubble_bg,
-			'chatOnlineDotColor'    => $chat_online_dot,
-			'chatHoverEffect'       => $chat_hover,
+			'enableLivechat'        => array_key_exists( 'enableLivechat', $input ) ? ! empty( $input['enableLivechat'] ) : ! empty( $prev['enableLivechat'] ),
+			'chatButtonImage'       => array_key_exists( 'chatButtonImage', $input )
+				? $this->sanitize_chat_button_image( (string) $input['chatButtonImage'] )
+				: $this->sanitize_chat_button_image( (string) ( $prev['chatButtonImage'] ?? '' ) ),
+			'chatTitle'             => array_key_exists( 'chatTitle', $input )
+				? sanitize_text_field( (string) $input['chatTitle'] )
+				: sanitize_text_field( (string) ( $prev['chatTitle'] ?? 'Customer Support' ) ),
+			'chatBadge'             => array_key_exists( 'chatBadge', $input )
+				? sanitize_text_field( (string) $input['chatBadge'] )
+				: sanitize_text_field( (string) ( $prev['chatBadge'] ?? 'Online' ) ),
+			'chatContent'           => array_key_exists( 'chatContent', $input )
+				? sanitize_textarea_field( (string) $input['chatContent'] )
+				: sanitize_textarea_field( (string) ( $prev['chatContent'] ?? '' ) ),
+			'chatFormButton'        => array_key_exists( 'chatFormButton', $input )
+				? sanitize_text_field( (string) $input['chatFormButton'] )
+				: sanitize_text_field( (string) ( $prev['chatFormButton'] ?? '' ) ),
+			'chatFormButtonLink'    => array_key_exists( 'chatFormButtonLink', $input )
+				? sanitize_text_field( (string) $input['chatFormButtonLink'] )
+				: sanitize_text_field( (string) ( $prev['chatFormButtonLink'] ?? '' ) ),
+			'chatButtonTwo'         => array_key_exists( 'chatButtonTwo', $input )
+				? sanitize_text_field( (string) $input['chatButtonTwo'] )
+				: sanitize_text_field( (string) ( $prev['chatButtonTwo'] ?? '' ) ),
+			'chatButtonTwoLink'     => array_key_exists( 'chatButtonTwoLink', $input )
+				? esc_url_raw( (string) $input['chatButtonTwoLink'] )
+				: esc_url_raw( (string) ( $prev['chatButtonTwoLink'] ?? '' ) ),
+			'chatButtonThird'       => array_key_exists( 'chatButtonThird', $input )
+				? sanitize_text_field( (string) $input['chatButtonThird'] )
+				: sanitize_text_field( (string) ( $prev['chatButtonThird'] ?? '' ) ),
+			'chatButtonThirdLink'   => array_key_exists( 'chatButtonThirdLink', $input )
+				? sanitize_text_field( (string) $input['chatButtonThirdLink'] )
+				: sanitize_text_field( (string) ( $prev['chatButtonThirdLink'] ?? '' ) ),
+			'chatAlign'             => array_key_exists( 'chatAlign', $input ) ? $chat_align : $this->normalize_livechat_widget_side( (string) ( $prev['chatAlign'] ?? 'right' ) ),
+			'chatPadding'           => (string) ( array_key_exists( 'chatPadding', $input ) ? $chat_padding : max( 4, min( 40, (int) ( $prev['chatPadding'] ?? 12 ) ) ) ),
+			'chatBorderRadius'      => (string) ( array_key_exists( 'chatBorderRadius', $input ) ? $chat_radius : max( 0, min( 50, (int) ( $prev['chatBorderRadius'] ?? 12 ) ) ) ),
+			'primaryBtnBg'          => array_key_exists( 'primaryBtnBg', $input ) ? $primary_bg : ( sanitize_hex_color( (string) ( $prev['primaryBtnBg'] ?? '#2563eb' ) ) ?: '#2563eb' ),
+			'primaryBtnText'        => array_key_exists( 'primaryBtnText', $input ) ? $primary_text : ( sanitize_hex_color( (string) ( $prev['primaryBtnText'] ?? '#ffffff' ) ) ?: '#ffffff' ),
+			'chatBubbleBg'          => array_key_exists( 'chatBubbleBg', $input ) ? $chat_bubble_bg : ( sanitize_hex_color( (string) ( $prev['chatBubbleBg'] ?? '#ffffff' ) ) ?: '#ffffff' ),
+			'chatOnlineDotColor'    => array_key_exists( 'chatOnlineDotColor', $input ) ? $chat_online_dot : ( sanitize_hex_color( (string) ( $prev['chatOnlineDotColor'] ?? '#00ff6a' ) ) ?: '#00ff6a' ),
+			'chatHoverEffect'       => array_key_exists( 'chatHoverEffect', $input ) ? $chat_hover : ( in_array( (string) ( $prev['chatHoverEffect'] ?? 'lift' ), $allowed_hover, true ) ? (string) $prev['chatHoverEffect'] : 'lift' ),
 			'reportLogo'            => esc_url_raw( (string) ( $input['reportLogo'] ?? '' ) ),
 			'reportLogoPdfMax'      => max( 100, min( 1000, (int) ( $input['reportLogoPdfMax'] ?? 400 ) ) ),
 			'clientAccessSlug'      => $slug_raw,

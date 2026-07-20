@@ -594,20 +594,37 @@ const nlsDockCustomIconList=[{k:"link",l:"Link",I:wi},{k:"call",l:"Call",I:ld},{
 
 
 function nlsAiLiveChatPage(){
-const[a,o]=b.useState({enableLivechat:!1,liveChatInDock:!0,liveChatButtonImage:"",liveChatButtonBg:"#2563eb",liveChatButtonText:"#ffffff",liveChatButtonIconSize:22,accessibilityEnabled:!1}),[u,p]=b.useState({loading:!0,saving:!1,error:""}),[h,x]=b.useState(!1),[nlsChatImgUploading,nlsSetChatImgUploading]=b.useState(!1),[nlsEmbedCopied,nlsSetEmbedCopied]=b.useState("");
+const[a,o]=b.useState({enableLivechat:!1,liveChatInDock:!0,liveChatButtonImage:"",liveChatButtonBg:"#2563eb",liveChatButtonText:"#ffffff",liveChatButtonIconSize:22,accessibilityEnabled:!1,chatTitle:"Customer Support",chatBadge:"Online",chatContent:""}),[u,p]=b.useState({loading:!0,saving:!1,error:""}),[h,x]=b.useState(!1),[nlsChatImgUploading,nlsSetChatImgUploading]=b.useState(!1),[nlsEmbedCopied,nlsSetEmbedCopied]=b.useState("");
 const nlsChatImgRef=b.useRef(null);
 const nlsChatShortcode="[nexulesuite_chat]";
 const nlsChatIframe=(()=>{var nlsSite=(((window.nexulesuite_Admin||{}).siteUrl)||"/").replace(/\/?$/,"/");return`<div class="nexulesuite_chat-embed" style="width:100%;max-width:100%;--nls-chat-h:620px;container-type:inline-size;border-radius:22px;overflow:hidden;margin-bottom:36px;"><div style="width:100%;height:clamp(380px,145cqw,var(--nls-chat-h));"><iframe src="${nlsSite}?nexulesuite_chat_embed=1" title="Chat" style="width:100%;height:100%;border:0;display:block;" loading="lazy"></iframe></div></div>`})();
 const nlsCopyEmbed=(nlsKey,nlsText)=>{if(!nlsText)return;const nlsDone=()=>{nlsSetEmbedCopied(nlsKey);window.setTimeout(()=>nlsSetEmbedCopied(""),2e3)};const nlsFallback=()=>{let h=null;try{h=document.createElement("textarea"),h.value=nlsText,h.setAttribute("readonly",""),h.style.cssText="position:fixed;left:-9999px;top:0;opacity:0",document.body.appendChild(h),h.focus(),h.select();const ok=document.execCommand("copy");return ok?(nlsDone(),!0):!1}catch{return!1}finally{h!=null&&h.parentNode&&h.parentNode.removeChild(h)}};var nlsClip=navigator==null?void 0:navigator.clipboard;nlsClip&&typeof nlsClip.writeText=="function"?nlsClip.writeText(nlsText).then(nlsDone).catch(()=>{nlsFallback()}):nlsFallback()};
 const nlsUploadDockChatImg=async M=>{var ue,pe,he;const y=(ue=M.target)==null?void 0:ue.files,P=y&&y[0];if(!P)return;if(!P.type.startsWith("image/")){alert("Please choose an image file.");M.target.value="";return}if(P.size>3*1024*1024){alert("Image must be 3MB or smaller.");M.target.value="";return}nlsSetChatImgUploading(!0);try{const ft=(((pe=window==null?void 0:window.nexulesuite_Admin)==null?void 0:pe.restUrl)||"").replace(/\/?$/,""),mt=new FormData;mt.append("file",P);const ot=await fetch(`${ft}/nexulesuite_/v1/settings/upload-chat-image`,{method:"POST",credentials:"same-origin",headers:{"X-WP-Nonce":((he=window==null?void 0:window.nexulesuite_Admin)==null?void 0:he.nonce)||""},body:mt}),Ie=await ot.json().catch(()=>null);if(!ot.ok)throw new Error((Ie==null?void 0:Ie.message)||`Upload failed (${ot.status})`);var __d=(Ie==null?void 0:Ie.data),Yt=(__d==null?void 0:__d.url)||(Ie==null?void 0:Ie.url);if(!Yt)throw new Error("No image URL returned.");o(P=>({...P,liveChatButtonImage:Yt}))}catch(Se){alert((Se&&Se.message)||"Upload failed")}finally{nlsSetChatImgUploading(!1);M.target.value=""}};
-b.useEffect(()=>{(async()=>{p(f=>({...f,loading:!0,error:""}));try{const{res:f,json:S}=await Ft("/settings/accessibility-language",{method:"GET"});if(!f.ok)throw new Error((S&&S.message)||"Failed to load");o(S.settings||a)}catch(f){p(S=>({...S,error:f.message||"Failed to load"}))}finally{p(f=>({...f,loading:!1}))}})()},[]);
+b.useEffect(()=>{(async()=>{p(f=>({...f,loading:!0,error:""}));try{const[{res:f,json:S},{res:nlsGenRes,json:nlsGenJson}]=await Promise.all([Ft("/settings/accessibility-language",{method:"GET"}),Ft("/settings/general",{method:"GET"})]);if(!f.ok)throw new Error((S&&S.message)||"Failed to load");const nlsDock=S.settings||{};const nlsGen=(nlsGenRes&&nlsGenRes.ok&&nlsGenJson&&nlsGenJson.success&&nlsGenJson.data&&nlsGenJson.data.settings)?nlsGenJson.data.settings:{};o({...a,...nlsDock,chatTitle:nlsGen.chatTitle!=null?nlsGen.chatTitle:"Customer Support",chatBadge:nlsGen.chatBadge!=null?nlsGen.chatBadge:"Online",chatContent:nlsGen.chatContent!=null?nlsGen.chatContent:""})}catch(f){p(S=>({...S,error:f.message||"Failed to load"}))}finally{p(f=>({...f,loading:!1}))}})()},[]);
 const f=(S,y)=>o(P=>({...P,[S]:y}));
-const nlsSaveLiveChat=async()=>{p(P=>({...P,saving:!0,error:""}));try{const{res:P,json:M}=await Ft("/settings/accessibility-language",{method:"POST",body:JSON.stringify({settings:a})});if(!P.ok)throw new Error((M&&M.message)||"Save failed");o(M.settings||a);x(!0);window.setTimeout(()=>x(!1),2e3)}catch(P){p(M=>({...M,error:P.message||"Save failed"}))}finally{p(M=>({...M,saving:!1}))}};
+const nlsSaveLiveChat=async()=>{p(P=>({...P,saving:!0,error:""}));try{const{chatTitle:nlsT,chatBadge:nlsB,chatContent:nlsC,...nlsDock}=a;const[{res:P,json:M},{res:nlsGenRes,json:nlsGenJson}]=await Promise.all([Ft("/settings/accessibility-language",{method:"POST",body:JSON.stringify({settings:nlsDock})}),Ft("/settings/general",{method:"POST",body:JSON.stringify({settings:{chatTitle:nlsT,chatBadge:nlsB,chatContent:nlsC}})})]);if(!P.ok)throw new Error((M&&M.message)||"Save failed");if(!nlsGenRes.ok||!(nlsGenJson&&nlsGenJson.success))throw new Error((nlsGenJson&&nlsGenJson.message)||"Could not save chat header text");const nlsSavedGen=(nlsGenJson.data&&nlsGenJson.data.settings)||{};o({...(M.settings||nlsDock),chatTitle:nlsSavedGen.chatTitle!=null?nlsSavedGen.chatTitle:nlsT,chatBadge:nlsSavedGen.chatBadge!=null?nlsSavedGen.chatBadge:nlsB,chatContent:nlsSavedGen.chatContent!=null?nlsSavedGen.chatContent:nlsC});x(!0);window.setTimeout(()=>x(!1),2e3)}catch(P){p(M=>({...M,error:P.message||"Save failed"}))}finally{p(M=>({...M,saving:!1}))}};
 if(u.loading)return e.jsx("div",{className:"nexulesuite_settings-general-wrap nexulesuite_ai-livechat",children:e.jsx("div",{className:"nexulesuite_sg-card",children:e.jsx("p",{className:"hint",children:"Loading live chat settings…"})})});
 return e.jsx("div",{className:"nexulesuite_settings-general-wrap nexulesuite_ai-livechat",children:e.jsx("div",{className:"nexulesuite_sg-card",children:e.jsxs("div",{className:"nexulesuite_sg-stack",children:[
 u.error?e.jsxs("div",{className:"mt-0 flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-[12px] font-semibold text-rose-700",children:[e.jsx("span",{children:u.error})]}):null,
 h?e.jsxs("div",{className:"mt-0 flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[12px] font-semibold text-emerald-700",children:[e.jsx("span",{children:"Saved."})]}):null,
 e.jsxs("section",{className:"nexulesuite_sg-section is-first",children:[
+e.jsxs("div",{className:"nexulesuite_sg-sec-head",children:[e.jsx("span",{className:"nexulesuite_sg-sec-ico",children:e.jsx(Fa,{size:16})}),e.jsx("div",{children:e.jsxs("span",{className:"nexulesuite_sg-sec-title nexulesuite_sg-title-tip",children:["Chat header ",e.jsx(Fe,{text:"Title and status shown at the top of the chat panel (e.g. Customer Support / Online)."})]})})]}),
+e.jsxs("div",{className:"grid gap-4 sm:grid-cols-2",children:[
+e.jsxs("div",{className:"nexulesuite_sg-field",children:[
+e.jsxs("span",{className:"lbl nexulesuite_lbl-tip",children:["Chat title ",e.jsx(Fe,{text:"The heading next to the avatar in the chat header."})]}),
+e.jsx("input",{type:"text",className:"inp",maxLength:80,value:a.chatTitle||"",onChange:M=>f("chatTitle",M.target.value),placeholder:"Customer Support"})
+]}),
+e.jsxs("div",{className:"nexulesuite_sg-field",children:[
+e.jsxs("span",{className:"lbl nexulesuite_lbl-tip",children:["Status badge ",e.jsx(Fe,{text:"Small label under the title, usually with the green online dot."})]}),
+e.jsx("input",{type:"text",className:"inp",maxLength:40,value:a.chatBadge||"",onChange:M=>f("chatBadge",M.target.value),placeholder:"Online"})
+]})
+]}),
+e.jsxs("div",{className:"nexulesuite_sg-field",style:{marginTop:"18px"},children:[
+e.jsxs("span",{className:"lbl nexulesuite_lbl-tip",children:["Greeting text ",e.jsx(Fe,{text:"Shown on the home screen before the visitor starts a conversation."})]}),
+e.jsx("textarea",{className:"inp",rows:3,maxLength:500,value:a.chatContent||"",onChange:M=>f("chatContent",M.target.value),placeholder:"Hello! How can we help you today?"})
+]})
+]}),
+e.jsxs("section",{className:"nexulesuite_sg-section",children:[
 e.jsxs("div",{className:"nexulesuite_sg-sec-head",children:[e.jsx("span",{className:"nexulesuite_sg-sec-ico",children:e.jsx(sd,{size:16})}),e.jsx("div",{children:e.jsxs("span",{className:"nexulesuite_sg-sec-title nexulesuite_sg-title-tip",children:["Button style ",e.jsx(Fe,{text:"Image, colors and icon size for the chat button inside the accessibility dock."})]})})]}),
 e.jsxs("div",{className:"nls-ai-livechat-toolbar",children:[
 e.jsxs("div",{className:"nls-ai-livechat-toolbar__image",children:[
@@ -655,7 +672,7 @@ e.jsx("p",{className:"hint",children:"Prefer the shortcode for liquid layout. Th
 ]}),
 e.jsxs("div",{className:"flex flex-wrap items-center gap-3",style:{marginTop:"8px",paddingTop:"8px"},children:[
 e.jsxs("button",{type:"button",disabled:u.saving,onClick:nlsSaveLiveChat,className:"nexulesuite_sg-btn nexulesuite_sg-btn-primary",children:[u.saving?"Saving…":"Save Live Chat Settings"]}),
-e.jsx("p",{className:"hint",style:{margin:0},children:"Saves button style and keeps embed codes ready to copy."})
+e.jsx("p",{className:"hint",style:{margin:0},children:"Saves chat header text, button style, and keeps embed codes ready to copy."})
 ]})
 ]})})})};
 
