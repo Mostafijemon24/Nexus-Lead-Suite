@@ -106,19 +106,19 @@ final class Chat_Store {
 
 		$table = self::table();
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$total_messages      = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
-		$total_conversations = (int) $wpdb->get_var( "SELECT COUNT(DISTINCT session_id) FROM {$table}" );
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$total_messages      = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table ) );
+		$total_conversations = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(DISTINCT session_id) FROM %i', $table ) );
 		$today               = (int) $wpdb->get_var(
-			$wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE created_at >= %s", gmdate( 'Y-m-d 00:00:00', (int) current_time( 'timestamp' ) ) )
+			$wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE created_at >= %s', $table, gmdate( 'Y-m-d 00:00:00', (int) current_time( 'timestamp' ) ) )
 		);
 		$last7               = (int) $wpdb->get_var(
-			$wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE created_at >= %s", gmdate( 'Y-m-d 00:00:00', (int) current_time( 'timestamp' ) - 6 * DAY_IN_SECONDS ) )
+			$wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE created_at >= %s', $table, gmdate( 'Y-m-d 00:00:00', (int) current_time( 'timestamp' ) - 6 * DAY_IN_SECONDS ) )
 		);
-		$with_images         = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table} WHERE has_image = 1" );
+		$with_images         = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE has_image = 1', $table ) );
 
-		$intent_rows = $wpdb->get_results( "SELECT intent, COUNT(*) AS c FROM {$table} WHERE intent <> '' GROUP BY intent ORDER BY c DESC LIMIT 8", ARRAY_A );
-		$sent_rows   = $wpdb->get_results( "SELECT sentiment, COUNT(*) AS c FROM {$table} WHERE sentiment <> '' GROUP BY sentiment", ARRAY_A );
+		$intent_rows = $wpdb->get_results( $wpdb->prepare( "SELECT intent, COUNT(*) AS c FROM %i WHERE intent <> '' GROUP BY intent ORDER BY c DESC LIMIT 8", $table ), ARRAY_A );
+		$sent_rows   = $wpdb->get_results( $wpdb->prepare( "SELECT sentiment, COUNT(*) AS c FROM %i WHERE sentiment <> '' GROUP BY sentiment", $table ), ARRAY_A );
 		// phpcs:enable
 
 		$intents = array();
@@ -172,26 +172,32 @@ final class Chat_Store {
 			$params[] = $like;
 		}
 
-		$limit      = max( 1, min( 500, $limit ) );
-		$where_sql  = implode( ' AND ', $where );
+		$limit     = max( 1, min( 500, $limit ) );
+		$where_sql = implode( ' AND ', $where );
 
-		// Group by session for the list; pull first question + counts + timespan.
-		$sql = "SELECT session_id,
-				COUNT(*) AS message_count,
-				MIN(created_at) AS started_at,
-				MAX(created_at) AS last_at,
-				SUM(has_image) AS image_count,
-				SUBSTRING_INDEX(GROUP_CONCAT(question ORDER BY created_at ASC SEPARATOR '\\n'), '\\n', 1) AS first_question
-			FROM {$table}
-			WHERE {$where_sql}
-			GROUP BY session_id
-			ORDER BY last_at DESC
-			LIMIT %d";
-
+		// Placeholder order across the query: %i (FROM), then the WHERE values, then %d (LIMIT).
+		array_unshift( $params, $table );
 		$params[] = $limit;
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
-		$rows = $wpdb->get_results( $wpdb->prepare( $sql, $params ), ARRAY_A );
+		// Group by session for the list; pull first question + counts + timespan.
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $where_sql is assembled from literal fragments above; every value, and the table name, is bound through prepare(). The sniff cannot count args passed as one array, which prepare() supports.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT session_id,
+					COUNT(*) AS message_count,
+					MIN(created_at) AS started_at,
+					MAX(created_at) AS last_at,
+					SUM(has_image) AS image_count,
+					SUBSTRING_INDEX(GROUP_CONCAT(question ORDER BY created_at ASC SEPARATOR '\\n'), '\\n', 1) AS first_question
+				FROM %i
+				WHERE {$where_sql}
+				GROUP BY session_id
+				ORDER BY last_at DESC
+				LIMIT %d",
+				$params
+			),
+			ARRAY_A
+		);
 		// phpcs:enable
 
 		$out = array();
@@ -226,9 +232,9 @@ final class Chat_Store {
 
 		$table = self::table();
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rows = $wpdb->get_results(
-			$wpdb->prepare( "SELECT question, answer, sources, has_image, page_url, created_at FROM {$table} WHERE session_id = %s ORDER BY created_at ASC, id ASC", $session_id ),
+			$wpdb->prepare( 'SELECT question, answer, sources, has_image, page_url, created_at FROM %i WHERE session_id = %s ORDER BY created_at ASC, id ASC', $table, $session_id ),
 			ARRAY_A
 		);
 		// phpcs:enable

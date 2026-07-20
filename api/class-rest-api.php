@@ -28,6 +28,7 @@ final class Rest_Api {
 	 * Forms option key (base64 + rawurlencode JSON).
 	 */
 	private const FORMS_OPTION_KEY = 'nexulesuite_forms_builder_v0';
+	private const GLOBAL_APPEARANCE_OPTION_KEY = 'nexulesuite_global_appearance_v1';
 	private const RECAPTCHA_OPTION_KEY = 'nexulesuite_recaptcha_keys_v0';
 	private const TURNSTILE_OPTION_KEY = 'nexulesuite_turnstile_keys_v0';
 	private const MENU_ITEMS_OPTION_KEY = 'nexulesuite_menu_items_v1';
@@ -132,10 +133,46 @@ final class Rest_Api {
 
 		register_rest_route(
 			'nexulesuite_/v1',
+			'/settings/accessibility-language',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_accessibility_language_settings' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/settings/accessibility-language',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'save_accessibility_language_settings' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+				'args'                => array(
+					'settings' => array(
+						'type'     => 'object',
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
 			'/form-submissions',
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( $this, 'get_form_submissions' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/form-submissions/delete',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'delete_form_submissions' ),
 				'permission_callback' => array( $this, 'can_manage_settings' ),
 			)
 		);
@@ -345,6 +382,32 @@ final class Rest_Api {
 				'permission_callback' => array( $this, 'can_manage_settings' ),
 				'args'                => array(
 					'payload' => array(
+						'type'     => 'object',
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/forms/global-appearance',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_global_appearance' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/forms/global-appearance',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'save_global_appearance' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+				'args'                => array(
+					'styling' => array(
 						'type'     => 'object',
 						'required' => true,
 					),
@@ -1565,6 +1628,68 @@ final class Rest_Api {
 	}
 
 	/**
+	 * Returns Accessibility & Language settings.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function get_accessibility_language_settings(): \WP_REST_Response {
+		require_once nexulesuite_PLUGIN_DIR . 'public/class-accessibility-language.php';
+		$settings = \nexulesuite_\Public\Accessibility_Language::get_settings();
+		$catalog  = \nexulesuite_\Public\Accessibility_Language::language_catalog();
+		$langs    = array();
+		foreach ( $catalog as $code => $meta ) {
+			$langs[] = array(
+				'code'  => $code,
+				'label' => $meta['label'],
+				'flag'  => $meta['flag'],
+			);
+		}
+
+		return new \WP_REST_Response(
+			array(
+				'settings'  => $settings,
+				'catalog'   => $langs,
+			),
+			200
+		);
+	}
+
+	/**
+	 * Saves Accessibility & Language settings.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function save_accessibility_language_settings( \WP_REST_Request $request ) {
+		require_once nexulesuite_PLUGIN_DIR . 'public/class-accessibility-language.php';
+		$input = $request->get_param( 'settings' );
+		if ( ! is_array( $input ) ) {
+			return new \WP_Error( 'invalid_settings', __( 'Invalid settings payload.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
+		}
+
+		$clean = \nexulesuite_\Public\Accessibility_Language::sanitize( $input );
+		update_option( \nexulesuite_\Public\Accessibility_Language::OPTION_KEY, $clean, false );
+
+		/* Keep livechat panel/trigger avatar in sync with dock button image. */
+		if ( ! empty( $clean['liveChatButtonImage'] ) ) {
+			$general = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
+			if ( ! is_array( $general ) ) {
+				$general = array();
+			}
+			$general['chatButtonImage'] = (string) $clean['liveChatButtonImage'];
+			update_option( self::GENERAL_SETTINGS_OPTION_KEY, $general, false );
+		}
+
+		return new \WP_REST_Response(
+			array(
+				'success'  => true,
+				'settings' => $clean,
+			),
+			200
+		);
+	}
+
+	/**
 	 * Returns persisted general plugin settings.
 	 *
 	 * @return \WP_REST_Response
@@ -1613,8 +1738,12 @@ final class Rest_Api {
 			'formPlaceholderColor'  => '',
 			'formFieldBorderColor'  => '',
 			'formFieldBorderStyle'  => 'solid',
-			'formFieldBorderWidth'  => 2,
+			'formFieldBorderWidth'  => 1,
 			'formFieldBorderRadius' => 10,
+			'formFieldFontSize'     => 14,
+			'formLabelFontSize'     => 13,
+			'formPlaceholderFontSize' => 14,
+			'formFieldGap'          => 16,
 			'submissionWebhookUrl'  => '',
 			'aiEnabled'             => false,
 			'aiConnMode'            => 'direct',
@@ -1642,8 +1771,12 @@ final class Rest_Api {
 			$merged['autoPopupFormId'] = sanitize_text_field( (string) ( $merged['autoPopupFormId'] ?? '' ) );
 		}
 		$merged['chatAlign'] = $this->normalize_livechat_widget_side( (string) ( $merged['chatAlign'] ?? 'right' ) );
-		$merged['formFieldBorderWidth']  = max( 0, min( 10, (int) ( $merged['formFieldBorderWidth'] ?? 2 ) ) );
-		$merged['formFieldBorderRadius'] = max( 0, min( 30, (int) ( $merged['formFieldBorderRadius'] ?? 10 ) ) );
+		$merged['formFieldBorderWidth']  = max( 0, min( 100, (int) ( $merged['formFieldBorderWidth'] ?? 1 ) ) );
+		$merged['formFieldBorderRadius'] = max( 0, min( 100, (int) ( $merged['formFieldBorderRadius'] ?? 10 ) ) );
+		$merged['formFieldFontSize']       = max( 10, min( 24, (int) ( $merged['formFieldFontSize'] ?? 14 ) ) );
+		$merged['formLabelFontSize']       = max( 10, min( 22, (int) ( $merged['formLabelFontSize'] ?? 13 ) ) );
+		$merged['formPlaceholderFontSize'] = max( 10, min( 22, (int) ( $merged['formPlaceholderFontSize'] ?? 14 ) ) );
+		$merged['formFieldGap']            = max( 0, min( 100, (int) ( $merged['formFieldGap'] ?? 16 ) ) );
 		unset( $merged['chatHeaderTagline'], $merged['popupShowDuration'], $merged['popupDisappearTime'] );
 
 		/* AI: never expose a stored API key to the browser — return a boolean instead. */
@@ -1684,42 +1817,57 @@ final class Rest_Api {
 	}
 
 	/**
-	 * Recent stored form submissions (short retention table). For export / debugging.
+	 * Recent stored form submissions (short retention table) for the Submissions report UI.
 	 *
+	 * @param \WP_REST_Request $request Request (optional from/to/search/limit).
 	 * @return \WP_REST_Response
 	 */
-	public function get_form_submissions(): \WP_REST_Response {
-		global $wpdb;
+	public function get_form_submissions( \WP_REST_Request $request ): \WP_REST_Response {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-form-submissions-store.php';
 
-		$table = \nexulesuite_\Core\Form_Submissions_Store::table();
-
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name from trusted prefix; admin-only REST endpoint.
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT id, form_key, status, payload, created_at FROM {$table} ORDER BY id DESC LIMIT %d",
-				500
-			),
-			ARRAY_A
-		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
-
-		$out = array();
-		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
-			$decoded = json_decode( (string) ( $row['payload'] ?? '' ), true );
-			$out[]   = array(
-				'id'        => (int) ( $row['id'] ?? 0 ),
-				'formKey'   => (string) ( $row['form_key'] ?? '' ),
-				'status'    => (string) ( $row['status'] ?? '' ),
-				'createdAt' => (string) ( $row['created_at'] ?? '' ),
-				'payload'   => is_array( $decoded ) ? $decoded : array(),
-			);
+		$from   = sanitize_text_field( (string) $request->get_param( 'from' ) );
+		$to     = sanitize_text_field( (string) $request->get_param( 'to' ) );
+		$search = sanitize_text_field( (string) $request->get_param( 'search' ) );
+		$limit  = (int) $request->get_param( 'limit' );
+		if ( $limit <= 0 ) {
+			$limit = 500;
 		}
+
+		$items = \nexulesuite_\Core\Form_Submissions_Store::list_submissions( $from, $to, $search, $limit );
 
 		return rest_ensure_response(
 			array(
 				'success' => true,
 				'data'    => array(
-					'items' => $out,
+					'items' => $items,
+					'count' => count( $items ),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Deletes one or more stored form submissions.
+	 *
+	 * @param \WP_REST_Request $request Request with `ids` array.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function delete_form_submissions( \WP_REST_Request $request ) {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-form-submissions-store.php';
+
+		$ids = $request->get_param( 'ids' );
+		if ( ! is_array( $ids ) ) {
+			$one = (int) $request->get_param( 'id' );
+			$ids = $one > 0 ? array( $one ) : array();
+		}
+
+		$deleted = \nexulesuite_\Core\Form_Submissions_Store::delete_ids( $ids );
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'deleted' => $deleted,
 				),
 			)
 		);
@@ -1977,8 +2125,12 @@ final class Rest_Api {
 		if ( ! in_array( $form_border_style, $allowed_border_styles, true ) ) {
 			$form_border_style = 'solid';
 		}
-		$form_border_width  = max( 0, min( 10, (int) ( $input['formFieldBorderWidth'] ?? 2 ) ) );
-		$form_border_radius = max( 0, min( 30, (int) ( $input['formFieldBorderRadius'] ?? 10 ) ) );
+		$form_border_width  = max( 0, min( 100, (int) ( $input['formFieldBorderWidth'] ?? 1 ) ) );
+		$form_border_radius = max( 0, min( 100, (int) ( $input['formFieldBorderRadius'] ?? 10 ) ) );
+		$form_field_fs      = max( 10, min( 24, (int) ( $input['formFieldFontSize'] ?? 14 ) ) );
+		$form_label_fs      = max( 10, min( 22, (int) ( $input['formLabelFontSize'] ?? 13 ) ) );
+		$form_ph_fs         = max( 10, min( 22, (int) ( $input['formPlaceholderFontSize'] ?? 14 ) ) );
+		$form_field_gap     = max( 0, min( 100, (int) ( $input['formFieldGap'] ?? 16 ) ) );
 
 		$exclude_posts_raw = isset( $input['excludePosts'] ) && is_array( $input['excludePosts'] ) ? $input['excludePosts'] : array();
 		$exclude_posts = array();
@@ -2019,34 +2171,60 @@ final class Rest_Api {
 		/* AI API keys: blank incoming => keep the previously stored (encrypted) value; a new value is encrypted at rest. */
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-mailer.php';
 		$prev_ai_key = isset( $prev['aiApiKey'] ) ? (string) $prev['aiApiKey'] : '';
-		$new_ai_key  = isset( $input['aiApiKey'] ) ? trim( (string) $input['aiApiKey'] ) : '';
+		$new_ai_key  = array_key_exists( 'aiApiKey', $input ) ? trim( (string) $input['aiApiKey'] ) : '';
 		$ai_key_store = ( '' === $new_ai_key ) ? $prev_ai_key : \nexulesuite_\Mailer::encrypt_secret( $new_ai_key );
-		$ai_server_url = isset( $input['aiServerUrl'] ) ? esc_url_raw( trim( (string) $input['aiServerUrl'] ) ) : '';
-		$ai_max_chunks = max( 1, min( 10, (int) ( $input['aiMaxChunks'] ?? 4 ) ) );
+		$ai_server_url = array_key_exists( 'aiServerUrl', $input )
+			? esc_url_raw( trim( (string) $input['aiServerUrl'] ) )
+			: esc_url_raw( trim( (string) ( $prev['aiServerUrl'] ?? '' ) ) );
+		$ai_max_chunks = max(
+			1,
+			min(
+				10,
+				(int) ( array_key_exists( 'aiMaxChunks', $input ) ? ( $input['aiMaxChunks'] ?? 4 ) : ( $prev['aiMaxChunks'] ?? 4 ) )
+			)
+		);
 
 		/* Provider (LLM) credentials — same masked/encrypted contract as the AI-server key. */
 		self::ai_load_llm_client();
 		$prev_llm_provider = strtolower( trim( (string) ( $prev['aiLlmProvider'] ?? '' ) ) );
-		$llm_provider      = strtolower( sanitize_text_field( (string) ( $input['aiLlmProvider'] ?? '' ) ) );
-		if ( null === \nexulesuite_\AI\Llm_Client::provider( $llm_provider ) ) {
-			$llm_provider = '';
+		/* Sparse payloads (save before GET finishes) must not clear a saved provider. */
+		if ( array_key_exists( 'aiLlmProvider', $input ) ) {
+			$llm_provider = strtolower( sanitize_text_field( (string) ( $input['aiLlmProvider'] ?? '' ) ) );
+			if ( null === \nexulesuite_\AI\Llm_Client::provider( $llm_provider ) ) {
+				$llm_provider = '';
+			}
+		} else {
+			$llm_provider = $prev_llm_provider;
+			if ( null === \nexulesuite_\AI\Llm_Client::provider( $llm_provider ) ) {
+				$llm_provider = '';
+			}
 		}
 		$prev_llm_key  = isset( $prev['aiLlmApiKey'] ) ? (string) $prev['aiLlmApiKey'] : '';
-		$new_llm_key   = isset( $input['aiLlmApiKey'] ) ? trim( (string) $input['aiLlmApiKey'] ) : '';
+		$new_llm_key   = array_key_exists( 'aiLlmApiKey', $input ) ? trim( (string) $input['aiLlmApiKey'] ) : '';
 		$llm_key_store = self::carry_provider_key( $new_llm_key, $prev_llm_key, $llm_provider, $prev_llm_provider );
-		$llm_model     = sanitize_text_field( (string) ( $input['aiLlmModel'] ?? '' ) );
-		$llm_model     = mb_substr( trim( $llm_model ), 0, 128 );
+		$llm_model     = array_key_exists( 'aiLlmModel', $input )
+			? mb_substr( trim( sanitize_text_field( (string) $input['aiLlmModel'] ) ), 0, 128 )
+			: mb_substr( trim( (string) ( $prev['aiLlmModel'] ?? '' ) ), 0, 128 );
 
 		/* Embedding provider — only vendors with a real embeddings endpoint are accepted. */
 		$prev_embed_provider = strtolower( trim( (string) ( $prev['aiEmbedProvider'] ?? '' ) ) );
-		$embed_provider      = strtolower( sanitize_text_field( (string) ( $input['aiEmbedProvider'] ?? '' ) ) );
-		if ( ! \nexulesuite_\AI\Llm_Client::supports_embeddings( $embed_provider ) ) {
-			$embed_provider = '';
+		if ( array_key_exists( 'aiEmbedProvider', $input ) ) {
+			$embed_provider = strtolower( sanitize_text_field( (string) ( $input['aiEmbedProvider'] ?? '' ) ) );
+			if ( ! \nexulesuite_\AI\Llm_Client::supports_embeddings( $embed_provider ) ) {
+				$embed_provider = '';
+			}
+		} else {
+			$embed_provider = $prev_embed_provider;
+			if ( ! \nexulesuite_\AI\Llm_Client::supports_embeddings( $embed_provider ) ) {
+				$embed_provider = '';
+			}
 		}
 		$prev_embed_key  = isset( $prev['aiEmbedApiKey'] ) ? (string) $prev['aiEmbedApiKey'] : '';
-		$new_embed_key   = isset( $input['aiEmbedApiKey'] ) ? trim( (string) $input['aiEmbedApiKey'] ) : '';
+		$new_embed_key   = array_key_exists( 'aiEmbedApiKey', $input ) ? trim( (string) $input['aiEmbedApiKey'] ) : '';
 		$embed_key_store = self::carry_provider_key( $new_embed_key, $prev_embed_key, $embed_provider, $prev_embed_provider );
-		$embed_model     = mb_substr( trim( sanitize_text_field( (string) ( $input['aiEmbedModel'] ?? '' ) ) ), 0, 128 );
+		$embed_model     = array_key_exists( 'aiEmbedModel', $input )
+			? mb_substr( trim( sanitize_text_field( (string) $input['aiEmbedModel'] ) ), 0, 128 )
+			: mb_substr( trim( (string) ( $prev['aiEmbedModel'] ?? '' ) ), 0, 128 );
 
 		// An older client that omits the field must not flip a working server install to direct.
 		$conn_mode = strtolower( sanitize_text_field( (string) ( $input['aiConnMode'] ?? '' ) ) );
@@ -2088,14 +2266,18 @@ final class Rest_Api {
 			'reportLogo'            => esc_url_raw( (string) ( $input['reportLogo'] ?? '' ) ),
 			'reportLogoPdfMax'      => max( 100, min( 1000, (int) ( $input['reportLogoPdfMax'] ?? 400 ) ) ),
 			'clientAccessSlug'      => $slug_raw,
-			'formFieldTextColor'    => $form_field_text,
-			'formPlaceholderColor'  => $form_placeholder,
-			'formFieldBorderColor'  => $form_border_color,
-			'formFieldBorderStyle'  => $form_border_style,
-			'formFieldBorderWidth'  => (int) $form_border_width,
-			'formFieldBorderRadius' => (int) $form_border_radius,
+			'formFieldTextColor'       => $form_field_text,
+			'formPlaceholderColor'     => $form_placeholder,
+			'formFieldBorderColor'     => $form_border_color,
+			'formFieldBorderStyle'     => $form_border_style,
+			'formFieldBorderWidth'     => (int) $form_border_width,
+			'formFieldBorderRadius'    => (int) $form_border_radius,
+			'formFieldFontSize'        => (int) $form_field_fs,
+			'formLabelFontSize'        => (int) $form_label_fs,
+			'formPlaceholderFontSize'  => (int) $form_ph_fs,
+			'formFieldGap'             => (int) $form_field_gap,
 			'submissionWebhookUrl'  => $submission_webhook,
-			'aiEnabled'             => ! empty( $input['aiEnabled'] ),
+			'aiEnabled'             => array_key_exists( 'aiEnabled', $input ) ? ! empty( $input['aiEnabled'] ) : ! empty( $prev['aiEnabled'] ),
 			'aiConnMode'            => $conn_mode,
 			'aiServerUrl'           => $ai_server_url,
 			'aiApiKey'              => $ai_key_store,
@@ -2105,28 +2287,43 @@ final class Rest_Api {
 			'aiEmbedProvider'       => $embed_provider,
 			'aiEmbedModel'          => $embed_model,
 			'aiEmbedApiKey'         => $embed_key_store,
-			'aiSystemPrompt'        => sanitize_textarea_field( (string) ( $input['aiSystemPrompt'] ?? '' ) ),
-			'aiWelcomeMessage'      => sanitize_text_field( (string) ( $input['aiWelcomeMessage'] ?? '' ) ),
+			'aiSystemPrompt'        => array_key_exists( 'aiSystemPrompt', $input )
+				? sanitize_textarea_field( (string) $input['aiSystemPrompt'] )
+				: sanitize_textarea_field( (string) ( $prev['aiSystemPrompt'] ?? '' ) ),
+			'aiWelcomeMessage'      => array_key_exists( 'aiWelcomeMessage', $input )
+				? sanitize_text_field( (string) $input['aiWelcomeMessage'] )
+				: sanitize_text_field( (string) ( $prev['aiWelcomeMessage'] ?? '' ) ),
 			'aiInputPlaceholder'    => array_key_exists( 'aiInputPlaceholder', $input ) ? mb_substr( sanitize_text_field( (string) $input['aiInputPlaceholder'] ), 0, 120 ) : (string) ( $prev['aiInputPlaceholder'] ?? '' ),
-			'aiChatModel'           => sanitize_text_field( (string) ( $input['aiChatModel'] ?? '' ) ),
-			'aiVisionModel'         => sanitize_text_field( (string) ( $input['aiVisionModel'] ?? 'llava' ) ),
+			'aiChatModel'           => array_key_exists( 'aiChatModel', $input )
+				? sanitize_text_field( (string) $input['aiChatModel'] )
+				: sanitize_text_field( (string) ( $prev['aiChatModel'] ?? '' ) ),
+			'aiVisionModel'         => array_key_exists( 'aiVisionModel', $input )
+				? sanitize_text_field( (string) ( $input['aiVisionModel'] ?? 'llava' ) )
+				: sanitize_text_field( (string) ( $prev['aiVisionModel'] ?? 'llava' ) ),
 			'aiMaxChunks'           => $ai_max_chunks,
-			'aiManualQa'            => sanitize_textarea_field( (string) ( $input['aiManualQa'] ?? '' ) ),
-			'aiAllowImages'         => ! empty( $input['aiAllowImages'] ),
-			/* Chatbot report + FAQ config own their own editor (Chatbot tab); preserve across Settings saves. */
-			'aiLogChats'            => array_key_exists( 'aiLogChats', $input ) ? ! empty( $input['aiLogChats'] ) : ! empty( $prev['aiLogChats'] ),
-			'aiFaqEnabled'          => array_key_exists( 'aiFaqEnabled', $input ) ? ! empty( $input['aiFaqEnabled'] ) : ! empty( $prev['aiFaqEnabled'] ),
-			'aiFaqFlows'            => $this->sanitize_ai_faq_items( array_key_exists( 'aiFaqFlows', $input ) ? $input['aiFaqFlows'] : ( $prev['aiFaqFlows'] ?? array() ) ),
-			'aiActions'             => $this->sanitize_ai_actions( array_key_exists( 'aiActions', $input ) ? $input['aiActions'] : ( $prev['aiActions'] ?? array() ) ),
-			'aiDisclaimer'          => array_key_exists( 'aiDisclaimer', $input ) ? mb_substr( sanitize_textarea_field( (string) $input['aiDisclaimer'] ), 0, 300 ) : (string) ( $prev['aiDisclaimer'] ?? '' ),
-			'aiTriggerLabel'        => array_key_exists( 'aiTriggerLabel', $input ) ? mb_substr( sanitize_text_field( (string) $input['aiTriggerLabel'] ), 0, 40 ) : (string) ( $prev['aiTriggerLabel'] ?? '' ),
-			'aiLeadEnabled'         => array_key_exists( 'aiLeadEnabled', $input ) ? ! empty( $input['aiLeadEnabled'] ) : ! empty( $prev['aiLeadEnabled'] ),
-			'aiLeadOffer'           => array_key_exists( 'aiLeadOffer', $input ) ? mb_substr( sanitize_text_field( (string) $input['aiLeadOffer'] ), 0, 200 ) : (string) ( $prev['aiLeadOffer'] ?? '' ),
+			'aiManualQa'            => array_key_exists( 'aiManualQa', $input )
+				? sanitize_textarea_field( (string) $input['aiManualQa'] )
+				: sanitize_textarea_field( (string) ( $prev['aiManualQa'] ?? '' ) ),
+			'aiAllowImages'         => array_key_exists( 'aiAllowImages', $input ) ? ! empty( $input['aiAllowImages'] ) : ! empty( $prev['aiAllowImages'] ),
+			/*
+			 * FAQ & Buttons (+ Auto-Setup apply for questions/actions) own these keys via
+			 * /ai/faq and /ai/autogen/apply. The Settings SPA still echoes them in the
+			 * general-settings payload from a possibly stale in-memory snapshot, which used
+			 * to wipe FAQ/actions after a Model & Knowledge save. Always keep the DB copy.
+			 */
+			'aiLogChats'            => ! empty( $prev['aiLogChats'] ),
+			'aiFaqEnabled'          => ! empty( $prev['aiFaqEnabled'] ),
+			'aiFaqFlows'            => $this->sanitize_ai_faq_items( $prev['aiFaqFlows'] ?? array() ),
+			'aiActions'             => $this->sanitize_ai_actions( $prev['aiActions'] ?? array() ),
+			'aiDisclaimer'          => mb_substr( sanitize_textarea_field( (string) ( $prev['aiDisclaimer'] ?? '' ) ), 0, 300 ),
+			'aiTriggerLabel'        => mb_substr( sanitize_text_field( (string) ( $prev['aiTriggerLabel'] ?? '' ) ), 0, 40 ),
+			'aiLeadEnabled'         => ! empty( $prev['aiLeadEnabled'] ),
+			'aiLeadOffer'           => mb_substr( sanitize_text_field( (string) ( $prev['aiLeadOffer'] ?? '' ) ), 0, 200 ),
 			'aiLeadRecipient'       => (string) ( $prev['aiLeadRecipient'] ?? '' ),
-			'aiWooCards'            => array_key_exists( 'aiWooCards', $input ) ? ! empty( $input['aiWooCards'] ) : ( ! isset( $prev['aiWooCards'] ) || ! empty( $prev['aiWooCards'] ) ),
-			'aiExtraUrls'           => $this->sanitize_ai_urls( array_key_exists( 'aiExtraUrls', $input ) ? $input['aiExtraUrls'] : ( $prev['aiExtraUrls'] ?? array() ) ),
-			'aiContactShortcode'    => array_key_exists( 'aiContactShortcode', $input ) ? mb_substr( sanitize_text_field( (string) $input['aiContactShortcode'] ), 0, 500 ) : (string) ( $prev['aiContactShortcode'] ?? '' ),
-			'aiExamples'            => array_key_exists( 'aiExamples', $input ) ? mb_substr( sanitize_textarea_field( (string) $input['aiExamples'] ), 0, 20000 ) : (string) ( $prev['aiExamples'] ?? '' ),
+			'aiWooCards'            => ! isset( $prev['aiWooCards'] ) || ! empty( $prev['aiWooCards'] ),
+			'aiExtraUrls'           => $this->sanitize_ai_urls( $prev['aiExtraUrls'] ?? array() ),
+			'aiContactShortcode'    => mb_substr( sanitize_text_field( (string) ( $prev['aiContactShortcode'] ?? '' ) ), 0, 500 ),
+			'aiExamples'            => mb_substr( sanitize_textarea_field( (string) ( $prev['aiExamples'] ?? '' ) ), 0, 20000 ),
 		);
 
 		update_option( self::GENERAL_SETTINGS_OPTION_KEY, $clean, false );
@@ -3164,6 +3361,7 @@ final class Rest_Api {
 		$total = (int) $query->found_posts;
 		foreach ( $query->posts as $post ) {
 			// Products can trigger heavy Woo loops via the_content — use raw content for them.
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress core filter; applied deliberately so shortcodes/blocks render before indexing.
 			$content = ( 'product' === $post->post_type ) ? $post->post_content : apply_filters( 'the_content', $post->post_content );
 			$body    = trim( wp_strip_all_tags( (string) $content ) );
 			$extra   = $this->ai_product_extra_text( $post );
@@ -4055,15 +4253,21 @@ final class Rest_Api {
 			array(
 				'success' => true,
 				'data'    => array(
-					'enabled'       => (bool) $opt['aiFaqEnabled'],
-					'logChats'      => (bool) $opt['aiLogChats'],
-					'items'         => $opt['aiFaqFlows'],
-					'actions'       => $opt['aiActions'],
-					'disclaimer'    => (string) $opt['aiDisclaimer'],
-					'triggerLabel'  => (string) $opt['aiTriggerLabel'],
-					'leadEnabled'   => (bool) $opt['aiLeadEnabled'],
-					'leadOffer'     => (string) $opt['aiLeadOffer'],
-					'leadRecipient' => (string) $opt['aiLeadRecipient'],
+					'enabled'          => (bool) $opt['aiFaqEnabled'],
+					'logChats'         => (bool) $opt['aiLogChats'],
+					'items'            => $opt['aiFaqFlows'],
+					'actions'          => $opt['aiActions'],
+					'disclaimer'       => (string) $opt['aiDisclaimer'],
+					'triggerLabel'     => (string) $opt['aiTriggerLabel'],
+					'leadEnabled'      => (bool) $opt['aiLeadEnabled'],
+					'leadOffer'        => (string) $opt['aiLeadOffer'],
+					'leadRecipient'    => (string) $opt['aiLeadRecipient'],
+					'wooCards'         => ! isset( $opt['aiWooCards'] ) || ! empty( $opt['aiWooCards'] ),
+					'wooActive'        => function_exists( 'wc_get_product' ),
+					'extraUrls'        => implode( "\n", $this->sanitize_ai_urls( $opt['aiExtraUrls'] ?? array() ) ),
+					'contactShortcode' => (string) ( $opt['aiContactShortcode'] ?? '' ),
+					'examples'         => (string) ( $opt['aiExamples'] ?? '' ),
+					'iconKeys'         => $this->ai_allowed_icon_keys(),
 				),
 			)
 		);
@@ -5099,7 +5303,7 @@ final class Rest_Api {
 	 * @return array<int,array<string,mixed>>
 	 */
 	private function sanitize_menu_condition_rules( array $rules ): array {
-		$allowed_types = array( 'all', 'homepage', 'page', 'post', 'post_type', 'category', 'tag' );
+		$allowed_types = array( 'all', 'homepage', 'page', 'post', 'post_type', 'category', 'tag', 'custom_link' );
 		$out           = array();
 
 		foreach ( $rules as $rule ) {
@@ -5138,6 +5342,17 @@ final class Rest_Api {
 					}
 				}
 				$clean['slugs'] = array_values( array_unique( $clean_slugs ) );
+			}
+
+			if ( 'custom_link' === $type ) {
+				$url = isset( $rule['url'] ) ? trim( (string) $rule['url'] ) : '';
+				if ( '' === $url ) {
+					$clean['url'] = '';
+				} elseif ( preg_match( '#^https?://#i', $url ) ) {
+					$clean['url'] = esc_url_raw( $url );
+				} else {
+					$clean['url'] = sanitize_text_field( '/' . ltrim( $url, '/' ) );
+				}
 			}
 
 			$out[] = $clean;
@@ -5602,6 +5817,138 @@ final class Rest_Api {
 	}
 
 	/**
+	 * Returns the saved site-wide form appearance preset.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function get_global_appearance() {
+		$raw = get_option( self::GLOBAL_APPEARANCE_OPTION_KEY, array() );
+		$styling_in = is_array( $raw ) && isset( $raw['styling'] ) && is_array( $raw['styling'] ) ? $raw['styling'] : ( is_array( $raw ) ? $raw : array() );
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => array(
+					'styling'   => $this->sanitize_form_styling( $styling_in ),
+					'updatedAt' => isset( $raw['updatedAt'] ) ? sanitize_text_field( (string) $raw['updatedAt'] ) : '',
+				),
+			)
+		);
+	}
+
+	/**
+	 * Saves the site-wide form appearance preset (applied across forms/fields).
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function save_global_appearance( \WP_REST_Request $request ) {
+		$styling_in = $request->get_param( 'styling' );
+		if ( ! is_array( $styling_in ) ) {
+			return new \WP_Error( 'nexulesuite_invalid_appearance', 'Invalid appearance styling.' );
+		}
+
+		$styling = $this->sanitize_form_styling( $styling_in );
+		$payload = array(
+			'styling'   => $styling,
+			'updatedAt' => gmdate( 'c' ),
+		);
+		update_option( self::GLOBAL_APPEARANCE_OPTION_KEY, $payload, false );
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => $payload,
+			)
+		);
+	}
+
+	/**
+	 * Sanitizes form builder appearance/styling payload.
+	 *
+	 * @param array<string,mixed> $styling_in Raw styling.
+	 * @return array<string,mixed>
+	 */
+	private function sanitize_form_styling( array $styling_in ): array {
+		$fi_design = sanitize_text_field( (string) ( $styling_in['forminatorDesign'] ?? 'default' ) );
+		if ( ! in_array( $fi_design, array( 'default', 'flat', 'bold', 'material' ), true ) ) {
+			$fi_design = 'default';
+		}
+		$fi_theme = sanitize_text_field( (string) ( $styling_in['forminatorTheme'] ?? 'default' ) );
+		if ( ! in_array( $fi_theme, array( 'default', 'dark', 'light' ), true ) ) {
+			$fi_theme = 'default';
+		}
+
+		$row_gap   = max( 0, min( 100, (int) ( $styling_in['rowGap'] ?? $styling_in['fieldGap'] ?? 16 ) ) );
+		$col_gap   = max( 0, min( 100, (int) ( $styling_in['columnGap'] ?? 16 ) ) );
+		$field_pad = max( 0, min( 100, (int) ( $styling_in['fieldPadding'] ?? 12 ) ) );
+		$label_sp  = max( 0, min( 100, (int) ( $styling_in['labelSpacing'] ?? 6 ) ) );
+		$border_r  = max( 0, min( 100, (int) ( $styling_in['fieldBorderRadius'] ?? 6 ) ) );
+		$border_w  = max( 0, min( 100, (int) ( $styling_in['fieldBorderWidth'] ?? 1 ) ) );
+
+		$primary = sanitize_hex_color( (string) ( $styling_in['primaryColor'] ?? $styling_in['buttonColor'] ?? '#7c3aed' ) ) ?: '#7c3aed';
+		$button  = sanitize_hex_color( (string) ( $styling_in['buttonColor'] ?? $primary ) ) ?: $primary;
+		$input   = sanitize_hex_color( (string) ( $styling_in['inputColor'] ?? $styling_in['fieldTextColor'] ?? '#000000' ) ) ?: '#000000';
+
+		$border_style = sanitize_text_field( (string) ( $styling_in['fieldBorderStyle'] ?? 'solid' ) );
+		if ( ! in_array( $border_style, array( 'solid', 'dashed', 'dotted', 'none' ), true ) ) {
+			$border_style = 'solid';
+		}
+
+		$hex = static function ( $value, string $fallback ): string {
+			$clean = sanitize_hex_color( (string) $value );
+			return $clean ? $clean : $fallback;
+		};
+
+		$stack_bp = max( 320, min( 1200, (int) ( $styling_in['stackBreakpoint'] ?? 640 ) ) );
+
+		return array(
+			'backgroundColor'       => $hex( $styling_in['backgroundColor'] ?? '#ffffff', '#ffffff' ),
+			'textColor'             => $hex( $styling_in['textColor'] ?? '#1e293b', '#1e293b' ),
+			'buttonColor'           => $button,
+			'primaryColor'          => $primary,
+			'stepperColor'          => $hex( $styling_in['stepperColor'] ?? $primary, $primary ),
+			'fieldFontSize'         => max( 10, min( 24, (int) ( $styling_in['fieldFontSize'] ?? $styling_in['inputFontSize'] ?? 14 ) ) ),
+			'inputFontSize'         => max( 10, min( 24, (int) ( $styling_in['inputFontSize'] ?? $styling_in['fieldFontSize'] ?? 14 ) ) ),
+			'labelFontSize'         => max( 10, min( 22, (int) ( $styling_in['labelFontSize'] ?? 13 ) ) ),
+			'placeholderFontSize'   => max( 10, min( 22, (int) ( $styling_in['placeholderFontSize'] ?? 14 ) ) ),
+			'fieldGap'              => $row_gap,
+			'rowGap'                => $row_gap,
+			'columnGap'             => $col_gap,
+			'fieldPadding'          => $field_pad,
+			'labelSpacing'          => $label_sp,
+			'fieldBorderRadius'     => $border_r,
+			'fieldBorderWidth'      => $border_w,
+			'fieldBorderStyle'      => $border_style,
+			'fieldBackgroundColor'  => $hex( $styling_in['fieldBackgroundColor'] ?? '#ffffff', '#ffffff' ),
+			'fieldTextColor'        => $input,
+			'inputColor'            => $input,
+			'fieldBorderColor'      => $hex( $styling_in['fieldBorderColor'] ?? '#cbd5e1', '#cbd5e1' ),
+			'focusBorderColor'      => $hex( $styling_in['focusBorderColor'] ?? $primary, $primary ),
+			'errorBorderColor'      => $hex( $styling_in['errorBorderColor'] ?? '#dc2626', '#dc2626' ),
+			'errorColor'            => $hex( $styling_in['errorColor'] ?? '#dc2626', '#dc2626' ),
+			'successColor'          => $hex( $styling_in['successColor'] ?? '#16a34a', '#16a34a' ),
+			'labelColor'            => $hex( $styling_in['labelColor'] ?? '#334155', '#334155' ),
+			'placeholderColor'      => $hex( $styling_in['placeholderColor'] ?? '#94a3b8', '#94a3b8' ),
+			'fieldFontWeight'       => sanitize_text_field( (string) ( $styling_in['fieldFontWeight'] ?? $styling_in['inputFontWeight'] ?? '500' ) ),
+			'inputFontWeight'       => sanitize_text_field( (string) ( $styling_in['inputFontWeight'] ?? $styling_in['fieldFontWeight'] ?? '500' ) ),
+			'labelFontWeight'       => sanitize_text_field( (string) ( $styling_in['labelFontWeight'] ?? '600' ) ),
+			'placeholderFontWeight' => sanitize_text_field( (string) ( $styling_in['placeholderFontWeight'] ?? '400' ) ),
+			'labelFontFamily'       => sanitize_text_field( (string) ( $styling_in['labelFontFamily'] ?? 'inherit' ) ),
+			'placeholderFontFamily' => sanitize_text_field( (string) ( $styling_in['placeholderFontFamily'] ?? 'inherit' ) ),
+			'labelLineHeight'       => sanitize_text_field( (string) ( $styling_in['labelLineHeight'] ?? '1.4' ) ),
+			'placeholderLineHeight' => sanitize_text_field( (string) ( $styling_in['placeholderLineHeight'] ?? '1.4' ) ),
+			'fieldShadow'           => sanitize_text_field( (string) ( $styling_in['fieldShadow'] ?? 'none' ) ),
+			'formShadow'            => sanitize_text_field( (string) ( $styling_in['formShadow'] ?? '0 2px 8px rgba(15, 23, 42, 0.07)' ) ),
+			'focusShadow'           => sanitize_text_field( (string) ( $styling_in['focusShadow'] ?? '0 0 0 3px rgba(124, 58, 237, 0.25)' ) ),
+			'autoStack'             => ! empty( $styling_in['autoStack'] ),
+			'stackBreakpoint'       => $stack_bp,
+			'forminatorDesign'      => $fi_design,
+			'forminatorTheme'       => $fi_theme,
+		);
+	}
+
+	/**
 	 * Returns persisted forms payload.
 	 *
 	 * @return \WP_REST_Response
@@ -5685,6 +6032,10 @@ final class Rest_Api {
 			}
 
 			$submit_btn_text = isset( $form['submitBtnText'] ) ? sanitize_text_field( (string) $form['submitBtnText'] ) : 'Submit';
+			$submission_method = isset( $form['submissionMethod'] ) ? sanitize_text_field( (string) $form['submissionMethod'] ) : 'ajax';
+			if ( 'reload' !== $submission_method ) {
+				$submission_method = 'ajax';
+			}
 
 			$notification_email_raw = isset( $form['notificationEmail'] ) ? sanitize_text_field( (string) $form['notificationEmail'] ) : '';
 
@@ -5695,24 +6046,8 @@ final class Rest_Api {
 				$published = (bool) $form['published'];
 			}
 
-			$styling_in = isset( $form['styling'] ) && is_array( $form['styling'] ) ? $form['styling'] : array();
-			$fi_design = sanitize_text_field( (string) ( $styling_in['forminatorDesign'] ?? 'default' ) );
-			if ( ! in_array( $fi_design, array( 'default', 'flat', 'bold', 'material' ), true ) ) {
-				$fi_design = 'default';
-			}
-			$fi_theme = sanitize_text_field( (string) ( $styling_in['forminatorTheme'] ?? 'default' ) );
-			if ( ! in_array( $fi_theme, array( 'default', 'dark', 'light' ), true ) ) {
-				$fi_theme = 'default';
-			}
-
-			$styling_out = array(
-				'backgroundColor'    => sanitize_hex_color( (string) ( $styling_in['backgroundColor'] ?? '#ffffff' ) ) ?: '#ffffff',
-				'textColor'          => sanitize_hex_color( (string) ( $styling_in['textColor'] ?? '#1e293b' ) ) ?: '#1e293b',
-				'buttonColor'        => sanitize_hex_color( (string) ( $styling_in['buttonColor'] ?? '#7c3aed' ) ) ?: '#7c3aed',
-				'stepperColor'       => sanitize_hex_color( (string) ( $styling_in['stepperColor'] ?? '#7c3aed' ) ) ?: '#7c3aed',
-				'forminatorDesign'   => $fi_design,
-				'forminatorTheme'    => $fi_theme,
-			);
+			$styling_in  = isset( $form['styling'] ) && is_array( $form['styling'] ) ? $form['styling'] : array();
+			$styling_out = $this->sanitize_form_styling( $styling_in );
 
 			$custom_html_in = isset( $form['customHTML'] ) && is_array( $form['customHTML'] ) ? $form['customHTML'] : array();
 			$custom_html_out = array(
@@ -5778,7 +6113,11 @@ final class Rest_Api {
 			if ( ! $has_default ) {
 				array_unshift( $confirmations_out, array(
 					'id' => 'confirm-default', 'name' => 'Default confirmation', 'isDefault' => true, 'type' => 'message',
-					'message' => __( 'Thank you! Your submission has been received.', 'nexus-lead-suite' ), 'redirectUrl' => '',
+					'message' => __(
+						"Thanks for reaching out! We've received your request and are reviewing your details. We will follow up soon to confirm your insurance and finalize your appointment.\n\nNeed help right away? Please call us during our office hours. For all medical emergencies, please call 911 immediately.",
+						'nexus-lead-suite'
+					),
+					'redirectUrl' => '',
 					'conditional' => array( 'enabled' => false, 'match' => 'all', 'rules' => array() ),
 				) );
 			}
@@ -5806,6 +6145,7 @@ final class Rest_Api {
 				'formType'          => $form_type,
 				'published'         => $published,
 				'submitBtnText'     => $submit_btn_text,
+				'submissionMethod'  => $submission_method,
 				'notificationEmail' => $notification_email_raw,
 				'crmWebhookUrl'     => $crm_webhook,
 				'styling'           => $styling_out,
@@ -6100,10 +6440,10 @@ final class Rest_Api {
 			),
 			'backgroundColor' => sanitize_hex_color( (string) ( $settings['backgroundColor'] ?? '#ffffff' ) ) ?: '#ffffff',
 			'textColor'       => sanitize_hex_color( (string) ( $settings['textColor'] ?? '#000000' ) ) ?: '#000000',
-			'borderColor'     => sanitize_hex_color( (string) ( $settings['borderColor'] ?? '#d1d5db' ) ) ?: '#d1d5db',
-			'borderRadius'    => max( 0, (int) ( $settings['borderRadius'] ?? 6 ) ),
-			'borderWidth'     => max( 0, (int) ( $settings['borderWidth'] ?? 1 ) ),
-			'padding'         => max( 0, (int) ( $settings['padding'] ?? 12 ) ),
+			'borderColor'     => sanitize_hex_color( (string) ( $settings['borderColor'] ?? '#cbd5e1' ) ) ?: '#cbd5e1',
+			'borderRadius'    => max( 0, min( 100, (int) ( $settings['borderRadius'] ?? 6 ) ) ),
+			'borderWidth'     => max( 0, min( 100, (int) ( $settings['borderWidth'] ?? 1 ) ) ),
+			'padding'         => max( 0, min( 100, (int) ( $settings['padding'] ?? 12 ) ) ),
 			'fontSize'        => max( 10, (int) ( $settings['fontSize'] ?? 14 ) ),
 			'fontWeight'      => sanitize_text_field( (string) ( $settings['fontWeight'] ?? '500' ) ),
 			'options'         => $options_out,

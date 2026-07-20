@@ -220,10 +220,11 @@ final class Vector_Store {
 
 		$scores = array();
 		for ( $offset = 0; $offset < self::SCAN_MAX_ROWS; $offset += self::SCAN_BATCH ) {
-			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$rows = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT id, embedding FROM {$table} WHERE dims = %d ORDER BY id ASC LIMIT %d OFFSET %d",
+					'SELECT id, embedding FROM %i WHERE dims = %d ORDER BY id ASC LIMIT %d OFFSET %d',
+					$table,
 					$dims,
 					self::SCAN_BATCH,
 					$offset
@@ -264,11 +265,12 @@ final class Vector_Store {
 		$top_ids = array_slice( array_keys( $scores ), 0, $k, true );
 
 		$placeholders = implode( ',', array_fill( 0, count( $top_ids ), '%d' ) );
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$hits = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, title, url, content, source_type FROM {$table} WHERE id IN ({$placeholders})",
-				$top_ids
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is a generated run of '%d' only; table and ids are bound below.
+				"SELECT id, title, url, content, source_type FROM %i WHERE id IN ({$placeholders})",
+				array_merge( array( $table ), $top_ids )
 			),
 			ARRAY_A
 		);
@@ -306,8 +308,8 @@ final class Vector_Store {
 
 		$table = self::table();
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table ) );
 	}
 
 	/**
@@ -320,8 +322,8 @@ final class Vector_Store {
 
 		$table = self::table();
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		return (int) $wpdb->get_var( "SELECT COUNT(DISTINCT doc_id) FROM {$table}" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(DISTINCT doc_id) FROM %i', $table ) );
 	}
 
 	/**
@@ -335,8 +337,8 @@ final class Vector_Store {
 
 		$table = self::table();
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		return (int) $wpdb->get_var( "SELECT dims FROM {$table} ORDER BY id DESC LIMIT 1" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT dims FROM %i ORDER BY id DESC LIMIT 1', $table ) );
 	}
 
 	/**
@@ -349,11 +351,11 @@ final class Vector_Store {
 
 		$table = self::table();
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name from trusted prefix; admin-only purge.
-		$deleted = $wpdb->query( "TRUNCATE TABLE {$table}" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- admin-only purge.
+		$deleted = $wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $table ) );
 		if ( false === $deleted ) {
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name from trusted prefix; admin-only purge.
-			$deleted = $wpdb->query( "DELETE FROM {$table}" );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- admin-only purge.
+			$deleted = $wpdb->query( $wpdb->prepare( 'DELETE FROM %i', $table ) );
 		}
 
 		return is_int( $deleted ) ? $deleted : 0;

@@ -43,6 +43,13 @@ final class Smtp_OAuth {
 	public function register_hooks(): void {
 		add_action( 'admin_post_' . self::START_ACTION, array( $this, 'handle_start' ) );
 		add_action( 'admin_post_' . self::CB_ACTION, array( $this, 'handle_callback' ) );
+		/*
+		 * Google/Microsoft redirect back as a cross-site top-level GET. Some browsers
+		 * (or Local SSL setups) omit the WP auth cookie on that hop, so admin_post_
+		 * never runs and the user lands on wp-login with the OAuth code stripped.
+		 * The nopriv handler still validates the one-time state transient + capability.
+		 */
+		add_action( 'admin_post_nopriv_' . self::CB_ACTION, array( $this, 'handle_callback' ) );
 		add_action( 'admin_post_' . self::DISCONNECT_ACTION, array( $this, 'handle_disconnect' ) );
 	}
 
@@ -189,6 +196,7 @@ final class Smtp_OAuth {
 			$providers[ $provider ]['auth_extra']
 		);
 
+		// phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- deliberate off-site hop to a hardcoded provider endpoint from self::providers(); wp_safe_redirect() would strip it and break the OAuth handshake.
 		wp_redirect( $providers[ $provider ]['auth_url'] . '?' . http_build_query( $args ) );
 		exit;
 	}
@@ -199,6 +207,10 @@ final class Smtp_OAuth {
 	 * @return void
 	 */
 	public function handle_callback(): void {
+		// The provider issues this request, so no nonce can ride along. CSRF is bound instead by the
+		// single-use `state` transient minted in connect() and consumed below, which is the OAuth 2.0
+		// mechanism for exactly this (RFC 6749 §10.12); the capability check follows it.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- see above; `state` transient is the CSRF token.
 		$state = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
 		$data  = '' !== $state ? get_transient( self::STATE_PREFIX . $state ) : false;
 		if ( ! is_array( $data ) ) {
@@ -215,6 +227,7 @@ final class Smtp_OAuth {
 		$providers = self::providers();
 		$err       = isset( $_GET['error'] ) ? sanitize_text_field( wp_unslash( $_GET['error'] ) ) : '';
 		$code      = isset( $_GET['code'] ) ? sanitize_text_field( wp_unslash( $_GET['code'] ) ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		if ( '' !== $err ) {
 			$this->redirect_back( 'error', sprintf( /* translators: %s: provider error code */ __( 'Authorization was declined (%s).', 'nexus-lead-suite' ), $err ) );
 		}
@@ -434,8 +447,9 @@ final class Smtp_OAuth {
 			'page'     => self::SETTINGS_SLUG,
 			'nls_smtp' => $status,
 		);
+		// add_query_arg() already encodes values — do not rawurlencode() here.
 		if ( '' !== $message ) {
-			$args['nls_smtp_msg'] = rawurlencode( $message );
+			$args['nls_smtp_msg'] = $message;
 		}
 		wp_safe_redirect( add_query_arg( $args, admin_url( 'admin.php' ) ) );
 		exit;

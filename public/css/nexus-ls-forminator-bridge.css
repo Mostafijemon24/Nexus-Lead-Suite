@@ -20,6 +20,20 @@
 
 .nexulesuite_st-form.forminator-ui .forminator-field {
   position: relative;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Defeat Forminator “bold” 3px control borders — Nexus owns field chrome. */
+.nexulesuite_st-form.forminator-ui .forminator-input,
+.nexulesuite_st-form.forminator-ui .forminator-textarea,
+.nexulesuite_st-form.forminator-ui .forminator-select {
+  border-width: var(--nexulesuite_st-form-field-border-width, 1px) !important;
+  border-style: var(--nexulesuite_st-form-field-border-style, solid) !important;
+  border-color: var(--nexulesuite_st-form-field-border-color, #cbd5e1) !important;
 }
 
 .nexulesuite_st-form.forminator-ui .nexulesuite_st-field__label.forminator-label {

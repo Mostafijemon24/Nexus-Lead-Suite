@@ -26,6 +26,7 @@ if ( ! isset( $nexulesuite_chat_embed_html ) ) {
 }
 
 // Lets plugins and the theme register + enqueue as usual; wp_head() would normally fire this.
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress core action, fired deliberately in place of wp_head() (see file docblock).
 do_action( 'wp_enqueue_scripts' );
 
 ?>

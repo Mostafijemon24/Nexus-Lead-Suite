@@ -150,9 +150,98 @@ final class Menu_Group_Resolver {
 			case 'tag':
 				return $this->matches_taxonomy( 'post_tag', $rule );
 
+			case 'custom_link':
+				return $this->matches_custom_link( $rule );
+
 			default:
 				return false;
 		}
+	}
+
+	/**
+	 * Exact page URL / path match for custom_link rules.
+	 *
+	 * @param array<string,mixed> $rule Rule with url string.
+	 */
+	private function matches_custom_link( array $rule ): bool {
+		$target = isset( $rule['url'] ) ? trim( (string) $rule['url'] ) : '';
+		if ( '' === $target ) {
+			return false;
+		}
+
+		$target_norm = $this->normalize_request_url( $target );
+		if ( '' === $target_norm['path'] ) {
+			return false;
+		}
+
+		$current_uri = isset( $_SERVER['REQUEST_URI'] )
+			? sanitize_text_field( wp_unslash( (string) $_SERVER['REQUEST_URI'] ) )
+			: '/';
+		$current     = $this->normalize_request_url( $current_uri );
+
+		if ( '' !== $target_norm['host'] ) {
+			$current_host = isset( $_SERVER['HTTP_HOST'] )
+				? strtolower( sanitize_text_field( wp_unslash( (string) $_SERVER['HTTP_HOST'] ) ) )
+				: '';
+			if ( $current_host !== $target_norm['host'] ) {
+				return false;
+			}
+		}
+
+		return $current['path'] === $target_norm['path'];
+	}
+
+	/**
+	 * @param string $raw Full URL or path.
+	 * @return array{host:string,path:string}
+	 */
+	private function normalize_request_url( string $raw ): array {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			return array(
+				'host' => '',
+				'path' => '',
+			);
+		}
+
+		$host = '';
+		$path = $raw;
+
+		if ( preg_match( '#^https?://#i', $raw ) ) {
+			$parts = wp_parse_url( $raw );
+			$host  = isset( $parts['host'] ) ? strtolower( (string) $parts['host'] ) : '';
+			$path  = isset( $parts['path'] ) ? (string) $parts['path'] : '/';
+		} else {
+			$qpos = strpos( $path, '?' );
+			if ( false !== $qpos ) {
+				$path = substr( $path, 0, $qpos );
+			}
+			$hash = strpos( $path, '#' );
+			if ( false !== $hash ) {
+				$path = substr( $path, 0, $hash );
+			}
+		}
+
+		$path = '/' . ltrim( $path, '/' );
+		if ( '/' !== $path ) {
+			$path = untrailingslashit( $path );
+		}
+
+		// Strip site subdirectory if WP is installed in a subfolder.
+		$home_path = wp_parse_url( home_url( '/' ), PHP_URL_PATH );
+		if ( is_string( $home_path ) && '/' !== $home_path && '' !== $home_path ) {
+			$home_path = untrailingslashit( $home_path );
+			if ( 0 === strpos( $path, $home_path . '/' ) ) {
+				$path = substr( $path, strlen( $home_path ) ) ?: '/';
+			} elseif ( $path === $home_path ) {
+				$path = '/';
+			}
+		}
+
+		return array(
+			'host' => $host,
+			'path' => $path ? $path : '/',
+		);
 	}
 
 	/**
