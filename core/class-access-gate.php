@@ -272,8 +272,17 @@ final class Access_Gate {
 	 * @return bool
 	 */
 	public static function is_nexulesuite_admin_page_slug( string $page ): bool {
-		$slugs = array(
-			'nexus-lead-suite',
+		if ( '' === $page ) {
+			return false;
+		}
+
+		// Current admin menu: parent `nexus-lead-suite` + `nexus-lead-suite-*` submenus.
+		if ( 'nexus-lead-suite' === $page || 0 === strpos( $page, 'nexus-lead-suite-' ) ) {
+			return true;
+		}
+
+		// Legacy slugs from earlier builds (bookmarks / old installs).
+		$legacy = array(
 			'nexulesuite_-menus',
 			'nexulesuite_-popups',
 			'nexulesuite_-emails',
@@ -281,7 +290,7 @@ final class Access_Gate {
 			'nexulesuite_-settings',
 		);
 
-		return in_array( $page, $slugs, true );
+		return in_array( $page, $legacy, true );
 	}
 
 	/**

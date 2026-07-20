@@ -402,6 +402,10 @@ final class Plugin {
 		$client_access = new \nexulesuite_\Public\Client_Access();
 		$client_access->register_hooks();
 
+		require_once nexulesuite_PLUGIN_DIR . 'public/class-accessibility-language.php';
+		$a11y_lang = new \nexulesuite_\Public\Accessibility_Language();
+		$a11y_lang->register_hooks();
+
 		if ( $this->should_load_shortcodes_module() ) {
 			require_once nexulesuite_PLUGIN_DIR . 'public/class-forminator-ui-bridge.php';
 			require_once nexulesuite_PLUGIN_DIR . 'public/class-shortcodes.php';

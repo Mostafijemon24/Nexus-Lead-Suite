@@ -546,6 +546,47 @@
     form.addEventListener("change", scheduleSave, true);
   }
 
+  /**
+   * Keep float labels in sync when :placeholder-shown / :has() are unreliable
+   * (autofill, some mobile browsers). Toggles .nexulesuite_st-float-wrap--filled.
+   *
+   * @param {Element} root
+   */
+  function initFloatingLabels(root) {
+    const wraps = qsa(root, ".nexulesuite_st-float-wrap");
+    if (!wraps.length) return;
+
+    const syncWrap = (wrap) => {
+      const field = qs(wrap, ".nexulesuite_st-input, .nexulesuite_st-textarea");
+      if (!(field instanceof HTMLInputElement) && !(field instanceof HTMLTextAreaElement)) {
+        return;
+      }
+      const filled = String(field.value || "").trim().length > 0;
+      wrap.classList.toggle("nexulesuite_st-float-wrap--filled", filled);
+    };
+
+    wraps.forEach((wrap) => {
+      const field = qs(wrap, ".nexulesuite_st-input, .nexulesuite_st-textarea");
+      if (!(field instanceof HTMLInputElement) && !(field instanceof HTMLTextAreaElement)) {
+        return;
+      }
+      syncWrap(wrap);
+      field.addEventListener("input", () => syncWrap(wrap));
+      field.addEventListener("change", () => syncWrap(wrap));
+      field.addEventListener("blur", () => syncWrap(wrap));
+      // Autofill often paints without a normal input event.
+      field.addEventListener("animationstart", (ev) => {
+        if (ev.animationName && String(ev.animationName).includes("onAutoFill")) {
+          syncWrap(wrap);
+        }
+      });
+    });
+
+    // Chrome autofill settles asynchronously.
+    window.setTimeout(() => wraps.forEach(syncWrap), 100);
+    window.setTimeout(() => wraps.forEach(syncWrap), 600);
+  }
+
   /** @param {Element} root */
   function initFormDraftForRoot(root) {
     const draft = readFormDraft(root);
@@ -564,6 +605,7 @@
     }
     // After any draft values are restored so the first pass sees real values.
     initConditionalLogic(root);
+    initFloatingLabels(root);
     bindFormDraftAutosave(root);
     flushFormDraftNow(root);
   }
@@ -1332,15 +1374,12 @@
   function showFormFeedback(root, message, variant, opts = {}) {
     const cfg = window.nexulesuite_Forms || {};
     const thankYou =
-      cfg.thankYouMessage || "Thank you! Your message has been sent.";
+      cfg.thankYouMessage ||
+      "Thanks for reaching out! We've received your request and are reviewing your details. We will follow up soon to confirm your insurance and finalize your appointment.\n\nNeed help right away? Please call us during our office hours. For all medical emergencies, please call 911 immediately.";
     const smtpHint = cfg.smtpSetupMessage || "Please set up your SMTP properly.";
     const msg = (message && String(message).trim()) || "";
     const bodyText =
       msg || (variant === "success" ? thankYou : smtpHint);
-    const titleText =
-      variant === "success"
-        ? cfg.resultSuccessTitle || "Success!"
-        : cfg.resultErrorTitle || "Error!";
     const dismissLabel = cfg.dismissLabel || "Dismiss";
 
     removeFormFeedback(root);
@@ -1363,10 +1402,6 @@
     iconWrap.innerHTML =
       variant === "success" ? SVG_RESULT_SUCCESS : SVG_RESULT_ERROR;
 
-    const titleEl = document.createElement("h3");
-    titleEl.className = "nexulesuite_st-form-result-card__title";
-    titleEl.textContent = titleText;
-
     const msgEl = document.createElement("p");
     msgEl.className = "nexulesuite_st-form-result-card__message";
     // Custom confirmation messages are sanitized server-side (wp_kses_post) and may carry basic HTML.
@@ -1377,7 +1412,13 @@
     }
 
     inner.appendChild(iconWrap);
-    inner.appendChild(titleEl);
+    /* Success card: show confirmation message only — no "Success" title. */
+    if (variant !== "success") {
+      const titleEl = document.createElement("h3");
+      titleEl.className = "nexulesuite_st-form-result-card__title";
+      titleEl.textContent = cfg.resultErrorTitle || "Error!";
+      inner.appendChild(titleEl);
+    }
     inner.appendChild(msgEl);
 
     const btn = document.createElement("button");
@@ -1430,6 +1471,44 @@
     const cfg = window.nexulesuite_Forms || {};
     if (!cfg.ajaxUrl || !cfg.action) return;
 
+    const method = (root.getAttribute("data-submission-method") || "ajax").toLowerCase();
+    if (method === "reload") {
+      // Traditional post: validate client-side, then let the browser submit to admin-ajax and redirect back.
+      if (!validateAllSteps(root)) {
+        ev.preventDefault();
+        return;
+      }
+      // Convert to admin-ajax POST with redirect flag for a full page round-trip feel.
+      ev.preventDefault();
+      const fd = new FormData(form);
+      fd.append("action", cfg.action);
+      fd.append("_nexulesuite_page_url", window.location.href);
+      fd.append("_nexulesuite_reload", "1");
+      const submitBtn = form.querySelector('[type="submit"]');
+      setSubmitBtnLoading(submitBtn instanceof HTMLButtonElement ? submitBtn : null);
+      fetch(cfg.ajaxUrl, { method: "POST", body: fd, credentials: "same-origin" })
+        .then((r) => r.json())
+        .then((j) => {
+          if (j && j.success) {
+            const url = new URL(window.location.href);
+            url.searchParams.set("nexulesuite_submitted", "1");
+            window.location.href = url.toString();
+            return;
+          }
+          const msg =
+            (j && j.data && j.data.message) ||
+            (window.nexulesuite_Forms && window.nexulesuite_Forms.smtpSetupMessage) ||
+            "Please set up your SMTP properly.";
+          resetSubmitBtnAfterError(submitBtn instanceof HTMLButtonElement ? submitBtn : null, "");
+          showFormFeedback(root, msg, "error", { submitBtn });
+        })
+        .catch(() => {
+          resetSubmitBtnAfterError(submitBtn instanceof HTMLButtonElement ? submitBtn : null, "");
+          showFormFeedback(root, "Something went wrong. Please try again.", "error", { submitBtn });
+        });
+      return;
+    }
+
     ev.preventDefault();
 
     if (!validateAllSteps(root)) return;
@@ -1440,7 +1519,7 @@
 
     const thankYou =
       (window.nexulesuite_Forms && window.nexulesuite_Forms.thankYouMessage) ||
-      "Thank you! Your message has been sent.";
+      "Thanks for reaching out! We've received your request and are reviewing your details. We will follow up soon to confirm your insurance and finalize your appointment.\n\nNeed help right away? Please call us during our office hours. For all medical emergencies, please call 911 immediately.";
     const smtpHint =
       (window.nexulesuite_Forms && window.nexulesuite_Forms.smtpSetupMessage) ||
       "Please set up your SMTP properly.";
@@ -1577,6 +1656,23 @@
       // Force dropdowns to open downward via custom UI.
       qsa(root, "select.nexulesuite_st-select").forEach((sel) => enhanceNativeSelect(sel));
     });
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("nexulesuite_submitted") === "1") {
+        const root = document.querySelector(".nexulesuite_st-form");
+        if (root) {
+          const msg =
+            (window.nexulesuite_Forms && window.nexulesuite_Forms.thankYouMessage) ||
+            "Thanks for reaching out! We've received your request and are reviewing your details. We will follow up soon to confirm your insurance and finalize your appointment.\n\nNeed help right away? Please call us during our office hours. For all medical emergencies, please call 911 immediately.";
+          showFormFeedback(root, msg, "success", {});
+          params.delete("nexulesuite_submitted");
+          const next = params.toString();
+          const clean =
+            window.location.pathname + (next ? "?" + next : "") + window.location.hash;
+          window.history.replaceState({}, "", clean);
+        }
+      }
+    } catch (e) {}
     requestAnimationFrame(() => {
       requestAnimationFrame(tryAutofocusFirstField);
     });

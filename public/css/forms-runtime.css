@@ -10,7 +10,9 @@
   display: none !important;
 }
 .nexulesuite_st-form {
-  /* Usable from ~150px wide containers; scales on large / ultra-wide viewports */
+  /* Liquid: scales with container width; usable from ~150px up. */
+  container-type: inline-size;
+  container-name: nexulesuite-form;
   width: 100% !important;
   min-width: 150px !important;
   max-width: 100% !important;
@@ -18,7 +20,23 @@
   padding: 0 !important;
   box-sizing: border-box !important;
   font-family: var(--nexulesuite_font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif) !important;
-  font-size: clamp(14px, 0.28vw + 13.2px, 17px) !important;
+  /* Base fluid size derived from Settings → field font size. */
+  --nexulesuite_st-fs-field: var(--nexulesuite_st-field-font-size, var(--nexulesuite_st-form-field-font-size, 14px));
+  --nexulesuite_st-fs-label: var(--nexulesuite_st-form-label-font-size, 13px);
+  --nexulesuite_st-fs-ph: var(--nexulesuite_st-form-placeholder-font-size, 14px);
+  --nexulesuite_st-gap: var(--nexulesuite_st-form-field-gap, 16px);
+  --nexulesuite_st-col-gap: var(--nexulesuite_st-form-column-gap, var(--nexulesuite_st-gap));
+  --nexulesuite_st-field-pad: var(--nexulesuite_st-form-field-padding, 12px);
+  --nexulesuite_st-label-sp: var(--nexulesuite_st-form-label-spacing, 6px);
+  /* Clean default: subtle input border only (never on field wrappers). */
+  --nexulesuite_st-form-field-border-color: #cbd5e1;
+  --nexulesuite_st-form-field-border-style: solid;
+  --nexulesuite_st-form-field-border-width: 1px;
+  font-size: clamp(
+    max(11px, calc(var(--nexulesuite_st-fs-field) * 0.9)),
+    calc(var(--nexulesuite_st-fs-field) * 0.82 + 0.35cqi),
+    calc(var(--nexulesuite_st-fs-field) * 1.12)
+  ) !important;
   color: var(--nexulesuite_st-form-text, #1e293b) !important;
   line-height: 1.5 !important;
   overflow-wrap: anywhere !important;
@@ -66,11 +84,12 @@
 .nexulesuite_st-form .nexulesuite_st-form__body {
   background: var(--nexulesuite_st-form-bg, #ffffff) !important;
   border: 1px solid #e2e8f0 !important;
-  border-radius: clamp(10px, 2.2vw, 18px) !important;
-  padding: clamp(10px, 3.5vw, 28px) !important;
+  border-radius: clamp(8px, 2.2cqi, 18px) !important;
+  padding: clamp(10px, 3.2cqi, 28px) !important;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.07) !important;
   width: 100% !important;
   min-width: 0 !important;
+  overflow: visible !important;
 }
 
 /* After submit: only the result card (matches admin FeedbackModal layout). */
@@ -243,25 +262,42 @@
 .nexulesuite_st-form .nexulesuite_st-grid {
   display: flex !important;
   flex-direction: column !important;
-  gap: 16px !important;
+  gap: var(--nexulesuite_st-gap) !important;
   width: 100% !important;
 }
 
 .nexulesuite_st-form .nexulesuite_st-layout {
   display: grid !important;
-  gap: 14px !important;
+  gap: var(--nexulesuite_st-col-gap) var(--nexulesuite_st-col-gap) !important;
+  row-gap: var(--nexulesuite_st-gap) !important;
+  column-gap: var(--nexulesuite_st-col-gap) !important;
   width: 100% !important;
 }
 .nexulesuite_st-form .nexulesuite_st-layout__col {
   display: flex !important;
   flex-direction: column !important;
-  gap: 14px !important;
+  gap: var(--nexulesuite_st-gap) !important;
   min-width: 0 !important;
 }
 .nexulesuite_st-form .nexulesuite_st-layout--cols-1 { grid-template-columns: 1fr !important; }
 .nexulesuite_st-form .nexulesuite_st-layout--cols-2 { grid-template-columns: 1fr 1fr !important; }
 .nexulesuite_st-form .nexulesuite_st-layout--cols-3 { grid-template-columns: 1fr 1fr 1fr !important; }
 .nexulesuite_st-form .nexulesuite_st-layout--cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr !important; }
+
+/* Fluid columns: collapse by container width, not only viewport. */
+@container nexulesuite-form (max-width: 520px) {
+  .nexulesuite_st-layout--cols-2,
+  .nexulesuite_st-layout--cols-3,
+  .nexulesuite_st-layout--cols-4 {
+    grid-template-columns: 1fr !important;
+  }
+}
+@container nexulesuite-form (min-width: 521px) and (max-width: 720px) {
+  .nexulesuite_st-layout--cols-3,
+  .nexulesuite_st-layout--cols-4 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
 
 @media (max-width: 600px) {
   .nexulesuite_st-form .nexulesuite_st-layout--cols-2,
@@ -280,13 +316,18 @@
 /* Compound (inline 2-col for name pairs etc.) */
 .nexulesuite_st-form .nexulesuite_st-compound {
   display: grid !important;
-  gap: 12px !important;
+  gap: clamp(8px, calc(var(--nexulesuite_st-gap) * 0.75), 14px) !important;
 }
 .nexulesuite_st-form .nexulesuite_st-compound--2 {
   grid-template-columns: 1fr 1fr !important;
 }
 .nexulesuite_st-form .nexulesuite_st-compound--1 {
   grid-template-columns: 1fr !important;
+}
+@container nexulesuite-form (max-width: 420px) {
+  .nexulesuite_st-compound--2 {
+    grid-template-columns: 1fr !important;
+  }
 }
 @media (max-width: 520px) {
   .nexulesuite_st-form .nexulesuite_st-compound--2 {
@@ -295,21 +336,45 @@
 }
 
 /* ── Field wrapper ───────────────────────────────────────── */
-.nexulesuite_st-form .nexulesuite_st-field {
+.nexulesuite_st-form .nexulesuite_st-field,
+.nexulesuite_st-form .nexulesuite_st-field.forminator-field,
+.nexulesuite_st-form .forminator-field {
   display: flex !important;
   flex-direction: column !important;
-  gap: 6px !important;
+  gap: var(--nexulesuite_st-label-sp) !important;
   width: 100% !important;
   min-width: 0 !important;
+  /* No outer “card” around fields — only controls carry a border. */
+  border: none !important;
+  border-width: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.nexulesuite_st-form .nexulesuite_st-compound,
+.nexulesuite_st-form .nexulesuite_st-options,
+.nexulesuite_st-form .nexulesuite_st-consent,
+.nexulesuite_st-form .nexulesuite_st-float-wrap {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
 }
 
 /* ── Label ───────────────────────────────────────────────── */
 .nexulesuite_st-form .nexulesuite_st-field__label {
   display: block !important;
-  font-size: 13px !important;
+  font-size: clamp(
+    max(10px, calc(var(--nexulesuite_st-fs-label) * 0.9)),
+    calc(var(--nexulesuite_st-fs-label) * 0.85 + 0.25cqi),
+    calc(var(--nexulesuite_st-fs-label) * 1.1)
+  ) !important;
   font-weight: 600 !important;
   color: color-mix(in srgb, var(--nexulesuite_st-form-text, #1e293b), #000 15%) !important;
-  margin: 0 0 4px 0 !important;
+  margin: 0 !important;
   padding: 0 !important;
   line-height: 1.4 !important;
 }
@@ -328,19 +393,15 @@
   font-weight: 700 !important;
 }
 
-/* ── Floating labels (focus / filled: hint moves to top) ─── */
-.nexulesuite_st-form .nexulesuite_st-field--floating:not(.nexulesuite_st-field--show-label) .nexulesuite_st-field__label {
+/* ── Floating labels (PrimeReact FloatLabel variant="on") ──
+   Resting: placeholder text centered in the field.
+   Focused/typing: label sits on the top border (border gap / “on” style). */
+.nexulesuite_st-form .nexulesuite_st-field--floating .nexulesuite_st-field__label {
   display: none !important;
 }
 
-/* If the builder requests "Show label", use the top label and disable inner floating label. */
-.nexulesuite_st-form .nexulesuite_st-field--show-label .nexulesuite_st-float-label {
-  display: none !important;
-}
-.nexulesuite_st-form .nexulesuite_st-field--show-label .nexulesuite_st-float-wrap .nexulesuite_st-input,
-.nexulesuite_st-form .nexulesuite_st-field--show-label .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
-  padding-top: 11px !important;
-  padding-bottom: 11px !important;
+.nexulesuite_st-form .nexulesuite_st-field--floating {
+  overflow: visible !important;
 }
 
 .nexulesuite_st-form .nexulesuite_st-float-wrap {
@@ -348,12 +409,14 @@
   display: block !important;
   width: 100% !important;
   min-width: 0 !important;
+  overflow: visible !important;
 }
 
+/* "on" variant: normal field padding — label leaves the field when floated. */
 .nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-input,
 .nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
-  padding-top: 1.35rem !important;
-  padding-bottom: 9px !important;
+  padding-top: 11px !important;
+  padding-bottom: 11px !important;
 }
 
 .nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
@@ -368,46 +431,71 @@
 
 .nexulesuite_st-form .nexulesuite_st-float-label {
   position: absolute !important;
-  left: 15px !important;
-  right: 2rem !important;
-  top: 21px !important;
+  left: 12px !important;
+  right: auto !important;
+  top: 50% !important;
+  max-width: calc(100% - 2.5rem) !important;
   display: block !important;
   margin: 0 !important;
-  padding: 0 !important;
-  font-size: 14px !important;
+  padding: 0 0.35rem !important;
+  font-size: clamp(
+    max(10px, calc(var(--nexulesuite_st-fs-ph) * 0.9)),
+    calc(var(--nexulesuite_st-fs-ph) * 0.85 + 0.25cqi),
+    calc(var(--nexulesuite_st-fs-ph) * 1.08)
+  ) !important;
   font-weight: 500 !important;
   line-height: 1.2 !important;
   color: var(--nexulesuite_st-form-placeholder, color-mix(in srgb, var(--nexulesuite_st-form-field-text, #0f172a), transparent 45%)) !important;
+  background: transparent !important;
   pointer-events: none !important;
   transform: translateY(-50%) !important;
   transform-origin: left center !important;
   transition:
-    top 0.22s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
-    font-size 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    top 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    font-size 0.2s cubic-bezier(0.4, 0, 0.2, 1),
     font-weight 0.18s ease,
-    color 0.18s ease !important;
+    color 0.18s ease,
+    background-color 0.18s ease,
+    padding 0.18s ease !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
-  z-index: 1 !important;
+  z-index: 2 !important;
 }
 
+/* Tall fields: keep the resting label near the first line, not vertically centered. */
 .nexulesuite_st-form .nexulesuite_st-float-wrap--textarea .nexulesuite_st-float-label {
-  top: 27px !important;
+  top: 1.35rem !important;
+}
+
+/* Floated state — sit on the top border (PrimeReact "on"). */
+.nexulesuite_st-form .nexulesuite_st-float-wrap:focus-within .nexulesuite_st-float-label,
+.nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-input:focus + .nexulesuite_st-float-label,
+.nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-textarea:focus + .nexulesuite_st-float-label,
+.nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-input:not(:placeholder-shown) + .nexulesuite_st-float-label,
+.nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-textarea:not(:placeholder-shown) + .nexulesuite_st-float-label,
+.nexulesuite_st-form .nexulesuite_st-float-wrap:has(.nexulesuite_st-input:not(:placeholder-shown)) .nexulesuite_st-float-label,
+.nexulesuite_st-form .nexulesuite_st-float-wrap:has(.nexulesuite_st-textarea:not(:placeholder-shown)) .nexulesuite_st-float-label,
+.nexulesuite_st-form .nexulesuite_st-float-wrap--filled .nexulesuite_st-float-label {
+  top: 0 !important;
+  font-size: clamp(
+    10px,
+    calc(var(--nexulesuite_st-fs-label) * 0.78 + 0.1cqi),
+    max(10px, calc(var(--nexulesuite_st-fs-label) * 0.9))
+  ) !important;
+  font-weight: 500 !important;
+  transform: translateY(-50%) !important;
+  color: color-mix(in srgb, var(--nexulesuite_st-form-text, #1e293b), transparent 25%) !important;
+  /* Match the surface behind the field so the border appears interrupted. */
+  background: var(--nexulesuite_popup-body-bg, var(--nexulesuite_st-form-bg, #ffffff)) !important;
+  padding: 0 0.35rem !important;
+  max-width: calc(100% - 1.5rem) !important;
 }
 
 .nexulesuite_st-form .nexulesuite_st-float-wrap:focus-within .nexulesuite_st-float-label,
-.nexulesuite_st-form .nexulesuite_st-float-wrap:has(.nexulesuite_st-input:not(:placeholder-shown)) .nexulesuite_st-float-label,
-.nexulesuite_st-form .nexulesuite_st-float-wrap:has(.nexulesuite_st-textarea:not(:placeholder-shown)) .nexulesuite_st-float-label {
-  top: 12px !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  transform: translateY(-50%) !important;
-  color: color-mix(in srgb, var(--nexulesuite_st-form-text, #1e293b), #000 10%) !important;
-}
-
-.nexulesuite_st-form .nexulesuite_st-float-wrap:focus-within .nexulesuite_st-float-label {
+.nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-input:focus + .nexulesuite_st-float-label,
+.nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-textarea:focus + .nexulesuite_st-float-label {
   color: var(--nexulesuite_st-btn, #7c3aed) !important;
 }
 
@@ -415,31 +503,57 @@
 .nexulesuite_st-form .nexulesuite_st-field--custom-appearance .nexulesuite_st-input:not([type="file"]),
 .nexulesuite_st-form .nexulesuite_st-field--custom-appearance .nexulesuite_st-textarea,
 .nexulesuite_st-form .nexulesuite_st-field--custom-appearance .nexulesuite_st-select {
-  font-size: var(--nexulesuite_st-field-font-size, 14px) !important;
+  font-size: clamp(
+    max(10px, calc(var(--nexulesuite_st-fs-field) * 0.9)),
+    calc(var(--nexulesuite_st-fs-field) * 0.85 + 0.3cqi),
+    calc(var(--nexulesuite_st-fs-field) * 1.1)
+  ) !important;
   font-weight: var(--nexulesuite_st-field-font-weight, inherit) !important;
-  padding: var(--nexulesuite_st-field-inner-pad, 11px) var(--nexulesuite_st-field-inner-pad-x, 14px) !important;
+  padding: var(--nexulesuite_st-field-inner-pad, var(--nexulesuite_st-field-pad, 12px))
+    var(--nexulesuite_st-field-inner-pad-x, calc(var(--nexulesuite_st-field-pad, 12px) + 2px)) !important;
+}
+
+/* Keep float-wrap inputs aligned with builder padding (do not crush "on" float with asymmetric padding). */
+.nexulesuite_st-form .nexulesuite_st-field--custom-appearance .nexulesuite_st-float-wrap .nexulesuite_st-input:not([type="file"]),
+.nexulesuite_st-form .nexulesuite_st-field--custom-appearance .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
+  padding-top: var(--nexulesuite_st-field-inner-pad, var(--nexulesuite_st-field-pad, 12px)) !important;
+  padding-bottom: var(--nexulesuite_st-field-inner-pad, var(--nexulesuite_st-field-pad, 12px)) !important;
+  padding-left: var(--nexulesuite_st-field-inner-pad-x, calc(var(--nexulesuite_st-field-pad, 12px) + 2px)) !important;
+  padding-right: var(--nexulesuite_st-field-inner-pad-x, calc(var(--nexulesuite_st-field-pad, 12px) + 2px)) !important;
 }
 
 .nexulesuite_st-form .nexulesuite_st-field--custom-appearance .nexulesuite_st-select-btn {
-  font-size: var(--nexulesuite_st-field-font-size, 14px) !important;
+  font-size: clamp(
+    max(10px, calc(var(--nexulesuite_st-fs-field) * 0.9)),
+    calc(var(--nexulesuite_st-fs-field) * 0.85 + 0.3cqi),
+    calc(var(--nexulesuite_st-fs-field) * 1.1)
+  ) !important;
   font-weight: var(--nexulesuite_st-field-font-weight, 500) !important;
-  padding: var(--nexulesuite_st-field-inner-pad, 11px) var(--nexulesuite_st-field-inner-pad-x, 14px) !important;
+  padding: var(--nexulesuite_st-field-inner-pad, var(--nexulesuite_st-field-pad, 12px))
+    var(--nexulesuite_st-field-inner-pad-x, calc(var(--nexulesuite_st-field-pad, 12px) + 2px)) !important;
 }
 
 .nexulesuite_st-form .nexulesuite_st-input,
 .nexulesuite_st-form .nexulesuite_st-textarea,
-.nexulesuite_st-form .nexulesuite_st-select {
+.nexulesuite_st-form .nexulesuite_st-select,
+.nexulesuite_st-form .forminator-input,
+.nexulesuite_st-form input.forminator-input,
+.nexulesuite_st-form textarea.forminator-textarea {
   display: block !important;
   width: 100% !important;
-  padding: 11px 14px !important;
-  font-size: 14px !important;
+  padding: var(--nexulesuite_st-field-pad) calc(var(--nexulesuite_st-field-pad) + 2px) !important;
+  font-size: clamp(
+    max(10px, calc(var(--nexulesuite_st-fs-field) * 0.9)),
+    calc(var(--nexulesuite_st-fs-field) * 0.85 + 0.3cqi),
+    calc(var(--nexulesuite_st-fs-field) * 1.1)
+  ) !important;
   font-family: inherit !important;
   /* Keep fields readable even when the form theme sets light text on a dark background. */
   color: var(--nexulesuite_st-form-field-text, #0f172a) !important;
-  background: var(--nexulesuite_st-form-field-bg, #f8fafc) !important;
-  border-color: var(--nexulesuite_st-form-field-border-color, #e2e8f0) !important;
-  border-style: var(--nexulesuite_st-form-field-border-style, solid) !important;
-  border-width: var(--nexulesuite_st-form-field-border-width, 2px) !important;
+  background: var(--nexulesuite_st-form-field-bg, #ffffff) !important;
+  border: var(--nexulesuite_st-form-field-border-width, 1px)
+    var(--nexulesuite_st-form-field-border-style, solid)
+    var(--nexulesuite_st-form-field-border-color, #cbd5e1) !important;
   border-radius: var(--nexulesuite_st-form-field-radius, 10px) !important;
   outline: none !important;
   box-shadow: none !important;
@@ -474,14 +588,18 @@
   justify-content: space-between !important;
   gap: 10px !important;
   width: 100% !important;
-  padding: 11px 14px !important;
-  font-size: 14px !important;
+  padding: clamp(9px, 1.8cqi + 6px, 14px) clamp(10px, 2cqi + 6px, 16px) !important;
+  font-size: clamp(
+    max(10px, calc(var(--nexulesuite_st-fs-field) * 0.9)),
+    calc(var(--nexulesuite_st-fs-field) * 0.85 + 0.3cqi),
+    calc(var(--nexulesuite_st-fs-field) * 1.1)
+  ) !important;
   font-family: inherit !important;
   color: var(--nexulesuite_st-form-field-text, #0f172a) !important;
-  background: var(--nexulesuite_st-form-field-bg, #f8fafc) !important;
-  border-color: var(--nexulesuite_st-form-field-border-color, #e2e8f0) !important;
-  border-style: var(--nexulesuite_st-form-field-border-style, solid) !important;
-  border-width: var(--nexulesuite_st-form-field-border-width, 2px) !important;
+  background: var(--nexulesuite_st-form-field-bg, #ffffff) !important;
+  border: var(--nexulesuite_st-form-field-border-width, 1px)
+    var(--nexulesuite_st-form-field-border-style, solid)
+    var(--nexulesuite_st-form-field-border-color, #cbd5e1) !important;
   border-radius: var(--nexulesuite_st-form-field-radius, 10px) !important;
   cursor: pointer !important;
   user-select: none !important;
@@ -609,7 +727,7 @@
 .nexulesuite_st-form .nexulesuite_st-select:hover:not(:disabled):not(:focus):not(.nexulesuite_st-input--invalid):not(.nexulesuite_st-input--inline-invalid) {
   border-color: color-mix(
     in srgb,
-    var(--nexulesuite_st-form-field-border-color, #e2e8f0),
+    var(--nexulesuite_st-form-field-border-color, #cbd5e1),
     var(--nexulesuite_st-btn, #7c3aed) 32%
   ) !important;
 }
@@ -634,6 +752,11 @@
 .nexulesuite_st-form .nexulesuite_st-input::placeholder,
 .nexulesuite_st-form .nexulesuite_st-textarea::placeholder {
   color: var(--nexulesuite_st-form-placeholder, color-mix(in srgb, var(--nexulesuite_st-form-field-text, #0f172a), transparent 45%)) !important;
+  font-size: clamp(
+    max(10px, calc(var(--nexulesuite_st-fs-ph) * 0.9)),
+    calc(var(--nexulesuite_st-fs-ph) * 0.85 + 0.25cqi),
+    calc(var(--nexulesuite_st-fs-ph) * 1.08)
+  ) !important;
   opacity: 1 !important;
 }
 
@@ -710,7 +833,7 @@
   align-items: center !important;
   gap: 0 !important;
   width: 100% !important;
-  border: 1.5px solid #e2e8f0 !important;
+  border: 1.5px solid var(--nexulesuite_st-form-field-border-color, #cbd5e1) !important;
   border-radius: 10px !important;
   overflow: hidden !important;
   background: #f8fafc !important;
@@ -734,7 +857,7 @@
   white-space: nowrap !important;
   cursor: pointer !important;
   border: none !important;
-  border-right: 1.5px solid #e2e8f0 !important;
+  border-right: 1.5px solid var(--nexulesuite_st-form-field-border-color, #cbd5e1) !important;
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
@@ -974,56 +1097,61 @@
 /* ── Responsive: touch-friendly fields (phones & small tablets) ─ */
 @media (max-width: 640px) {
   .nexulesuite_st-form .nexulesuite_st-field {
-    gap: 8px !important;
+    gap: clamp(4px, calc(var(--nexulesuite_st-gap) * 0.5), 8px) !important;
   }
 
   .nexulesuite_st-form .nexulesuite_st-field__label {
-    font-size: 14px !important;
+    font-size: max(12px, var(--nexulesuite_st-fs-label)) !important;
   }
 
   /* 16px+ prevents iOS Safari zoom-on-focus; extra padding ≈ 48pt+ tap height */
   .nexulesuite_st-form .nexulesuite_st-input:not([type="file"]),
   .nexulesuite_st-form .nexulesuite_st-select {
-    font-size: 16px !important;
+    font-size: max(16px, var(--nexulesuite_st-fs-field)) !important;
     line-height: 1.45 !important;
     padding: 15px 16px !important;
     min-height: 52px !important;
   }
 
   .nexulesuite_st-form .nexulesuite_st-textarea {
-    font-size: 16px !important;
+    font-size: max(16px, var(--nexulesuite_st-fs-field)) !important;
     line-height: 1.45 !important;
     padding: 14px 16px !important;
     min-height: 140px !important;
   }
 
   .nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-input:not([type="file"]) {
-    padding-top: 1.55rem !important;
-    padding-bottom: 14px !important;
-    min-height: 56px !important;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    min-height: 52px !important;
   }
 
   .nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
     min-height: 152px !important;
-    padding-top: 1.65rem !important;
+    padding-top: 14px !important;
     padding-bottom: 14px !important;
   }
 
   .nexulesuite_st-form .nexulesuite_st-float-label {
-    left: 16px !important;
-    top: 28px !important;
-    font-size: 15px !important;
+    left: 14px !important;
+    top: 50% !important;
+    font-size: max(14px, var(--nexulesuite_st-fs-ph)) !important;
   }
 
   .nexulesuite_st-form .nexulesuite_st-float-wrap--textarea .nexulesuite_st-float-label {
-    top: 32px !important;
+    top: 1.45rem !important;
   }
 
   .nexulesuite_st-form .nexulesuite_st-float-wrap:focus-within .nexulesuite_st-float-label,
+  .nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-input:focus + .nexulesuite_st-float-label,
+  .nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-textarea:focus + .nexulesuite_st-float-label,
+  .nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-input:not(:placeholder-shown) + .nexulesuite_st-float-label,
+  .nexulesuite_st-form .nexulesuite_st-float-wrap .nexulesuite_st-textarea:not(:placeholder-shown) + .nexulesuite_st-float-label,
   .nexulesuite_st-form .nexulesuite_st-float-wrap:has(.nexulesuite_st-input:not(:placeholder-shown)) .nexulesuite_st-float-label,
-  .nexulesuite_st-form .nexulesuite_st-float-wrap:has(.nexulesuite_st-textarea:not(:placeholder-shown)) .nexulesuite_st-float-label {
-    top: 13px !important;
-    font-size: 12px !important;
+  .nexulesuite_st-form .nexulesuite_st-float-wrap:has(.nexulesuite_st-textarea:not(:placeholder-shown)) .nexulesuite_st-float-label,
+  .nexulesuite_st-form .nexulesuite_st-float-wrap--filled .nexulesuite_st-float-label {
+    top: 0 !important;
+    font-size: max(11px, calc(var(--nexulesuite_st-fs-label) * 0.85)) !important;
   }
 
   .nexulesuite_st-form .nexulesuite_st-select {
@@ -1134,7 +1262,7 @@
   --nexulesuite_st-form-field-text: #111111 !important;
   --nexulesuite_st-form-field-bg: #ffffff !important;
   --nexulesuite_st-form-placeholder: #737373 !important;
-  --nexulesuite_st-form-field-border-color: #d4d4d4 !important;
+  --nexulesuite_st-form-field-border-color: #bdbdbd !important;
   --nexulesuite_st-form-field-border-style: solid !important;
   --nexulesuite_st-form-field-border-width: 1px !important;
   --nexulesuite_st-form-field-radius: 2px !important;
@@ -1177,23 +1305,24 @@
 }
 
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-grid {
-  gap: 13px !important;
+  gap: var(--nexulesuite_st-gap) !important;
 }
 
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-layout {
-  gap: 13px !important;
+  row-gap: var(--nexulesuite_st-gap) !important;
+  column-gap: var(--nexulesuite_st-col-gap) !important;
 }
 
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-layout__col {
-  gap: 13px !important;
+  gap: var(--nexulesuite_st-gap) !important;
 }
 
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-compound {
-  gap: 13px !important;
+  gap: var(--nexulesuite_st-col-gap) !important;
 }
 
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field {
-  gap: 4px !important;
+  gap: var(--nexulesuite_st-label-sp) !important;
 }
 
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-progress {
@@ -1201,7 +1330,11 @@
 }
 
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field__label {
-  font-size: 13px !important;
+  font-size: clamp(
+    max(10px, calc(var(--nexulesuite_st-fs-label) * 0.9)),
+    calc(var(--nexulesuite_st-fs-label) * 0.85 + 0.25cqi),
+    calc(var(--nexulesuite_st-fs-label) * 1.1)
+  ) !important;
   font-weight: 400 !important;
   color: #616161 !important;
   letter-spacing: 0.01em !important;
@@ -1225,17 +1358,25 @@
 }
 
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap:focus-within .nexulesuite_st-float-label,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap .nexulesuite_st-input:focus + .nexulesuite_st-float-label,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap .nexulesuite_st-textarea:focus + .nexulesuite_st-float-label,
 .nexulesuite_st-form.nexulesuite_st-form--minimal
   .nexulesuite_st-float-wrap:has(.nexulesuite_st-input:not(:placeholder-shown))
   .nexulesuite_st-float-label,
 .nexulesuite_st-form.nexulesuite_st-form--minimal
   .nexulesuite_st-float-wrap:has(.nexulesuite_st-textarea:not(:placeholder-shown))
-  .nexulesuite_st-float-label {
+  .nexulesuite_st-float-label,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap .nexulesuite_st-input:not(:placeholder-shown) + .nexulesuite_st-float-label,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap .nexulesuite_st-textarea:not(:placeholder-shown) + .nexulesuite_st-float-label,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap--filled .nexulesuite_st-float-label {
   color: #404040 !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
+  background: var(--nexulesuite_popup-body-bg, var(--nexulesuite_st-form-bg, #ffffff)) !important;
 }
 
-.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap:focus-within .nexulesuite_st-float-label {
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap:focus-within .nexulesuite_st-float-label,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap .nexulesuite_st-input:focus + .nexulesuite_st-float-label,
+.nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap .nexulesuite_st-textarea:focus + .nexulesuite_st-float-label {
   color: #262626 !important;
 }
 
@@ -1251,9 +1392,9 @@
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-input,
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-textarea,
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-select {
-  padding: 9px 10px !important;
-  border-width: 1px !important;
-  border-radius: 2px !important;
+  padding: var(--nexulesuite_st-field-pad) calc(var(--nexulesuite_st-field-pad) + 2px) !important;
+  border-width: var(--nexulesuite_st-form-field-border-width, 1px) !important;
+  border-radius: var(--nexulesuite_st-form-field-radius, 2px) !important;
   background: #ffffff !important;
   color: #111111 !important;
   box-shadow: none !important;
@@ -1262,8 +1403,8 @@
 
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap .nexulesuite_st-input,
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-float-wrap .nexulesuite_st-textarea {
-  padding-top: 11px !important;
-  padding-bottom: 11px !important;
+  padding-top: var(--nexulesuite_st-field-pad) !important;
+  padding-bottom: var(--nexulesuite_st-field-pad) !important;
 }
 
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-field--show-label .nexulesuite_st-float-wrap .nexulesuite_st-input,
@@ -1368,7 +1509,7 @@
 }
 
 .nexulesuite_st-form.nexulesuite_st-form--minimal .nexulesuite_st-file-wrap {
-  border: 1px solid #d4d4d4 !important;
+  border: 1px solid #bdbdbd !important;
   border-radius: 2px !important;
   background: #ffffff !important;
 }

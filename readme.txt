@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -101,6 +101,45 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 == Screenshots ==
 
 1. Dashboard (coming soon)
+
+= 1.2.2 =
+* Display conditions: Default tab applies the same rules to all four dock buttons at once.
+* Sanitize REQUEST_URI / HTTP_HOST in custom-link condition matching (Plugin Check).
+
+= 1.2.1 =
+* Accessibility dock: per-button display conditions (including custom link) and per-button Button offset.
+* Button offset Default tab applies the same X/Y to every dock button; individual tabs for one-off positions.
+* Dock size/icon/gap live preview (0–100); admin layout polish for offset and position controls.
+
+= 1.2.0 =
+* Accessibility dock: live chat + custom button in the same stack; custom icon picker; desktop hover labels.
+* Live chat dock image (round avatar on FAB + chat panel), working icon size control, online blink on rim.
+* Dock button order: move Accessibility / Language / Live chat / Custom up or down in admin.
+
+= 1.1.9 =
+* Forms: Templates & Submissions submenus; modern submissions report (filters menubar, CSV export, bulk delete).
+* Forms: export/import form configuration; dual success-message presets; success card without Success title.
+* Admin: sidebar reorder (Analytics, Chat & AI, Forms…); Acc & Lang label; nested Forms submenu styling.
+
+= 1.1.8 =
+* Chat AI composer: generous bottom padding so the pill input (including border) sits clearly inset above panel/host overflow:hidden + border-radius; stronger embed/inline host margin-bottom; embed iframe nudges parent host spacing when same-origin.
+
+= 1.1.7 =
+* Chat AI composer: pin action bar + form as flex siblings under a single scrolling messages region so overflow:hidden no longer clips the input (embed/inline/floating); strengthen iframe height chain.
+
+= 1.1.6 =
+* Chat AI composer: fix footer/input bar clipped by overflow:hidden — messages area scrolls; composer stays fully visible (embed, shortcode/inline, and floating).
+
+= 1.1.5 =
+* Chat HTML embed / shortcode: add 24px bottom spacing under the embed and inline panel hosts so content below has breathing room (floating bubble unchanged).
+
+= 1.1.4 =
+* Settings → AI Chatbot: Model & Knowledge, FAQ & Buttons, and Auto-Setup saves now persist correctly (FAQ/actions no longer wiped by a later Model save; sparse AI payloads keep prior keys).
+* Access gate: unlock works on all `nexus-lead-suite-*` admin pages (Settings, Chat & AI, etc.), not only the Dashboard.
+* Chat shortcode / inline embed: liquid container-responsive sizing and typography (`container-type` + `cqw` / `clamp()`), so the widget and text scale with the parent column.
+
+= 1.1.3 =
+* Chat shortcode / embed: liquid responsive foundation for inline chat panels.
 
 = 1.0.14 =
 * Form builder: remove individual options from select/radio fields in the visual editor.

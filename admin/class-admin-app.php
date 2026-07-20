@@ -34,6 +34,7 @@ final class Admin_App {
 	 */
 	public function register_hooks(): void {
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
+		add_action( 'admin_menu', array( $this, 'reorder_submenu' ), 999 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'wp_ajax_nexulesuite_popup_preview', array( $this, 'ajax_popup_preview' ) );
 	}
@@ -44,12 +45,17 @@ final class Admin_App {
 	 * @return array<string, string>
 	 */
 	private function get_submenu_routes(): array {
+		// Parent slug lands on Forms. Legacy sub-slugs keep their routes for bookmarks.
 		return array(
-			self::MENU_SLUG                   => 'activities',
-			self::MENU_SLUG . '-menus'        => 'menu-items',
-			self::MENU_SLUG . '-popups'       => 'popups',
-			self::MENU_SLUG . '-emails'       => 'emails',
+			self::MENU_SLUG                   => 'form-builder',
+			self::MENU_SLUG . '-analytics'    => 'activities',
 			self::MENU_SLUG . '-forms'        => 'form-builder',
+			self::MENU_SLUG . '-templates'    => 'form-templates',
+			self::MENU_SLUG . '-submissions'  => 'form-submissions',
+			self::MENU_SLUG . '-popups'       => 'popups',
+			self::MENU_SLUG . '-menus'        => 'menu-items',
+			self::MENU_SLUG . '-emails'       => 'emails',
+			self::MENU_SLUG . '-accessibility'=> 'accessibility',
 			self::MENU_SLUG . '-settings'     => 'settings',
 		);
 	}
@@ -71,12 +77,13 @@ final class Admin_App {
 		);
 
 		$subpages = array(
-			self::MENU_SLUG                   => __( 'Activities', 'nexus-lead-suite' ),
-			self::MENU_SLUG . '-menus'        => __( 'Menus', 'nexus-lead-suite' ),
-			self::MENU_SLUG . '-popups'       => __( 'Popups', 'nexus-lead-suite' ),
-			self::MENU_SLUG . '-emails'       => __( 'Emails', 'nexus-lead-suite' ),
-			self::MENU_SLUG . '-forms'        => __( 'Forms', 'nexus-lead-suite' ),
-			self::MENU_SLUG . '-settings'     => __( 'Settings', 'nexus-lead-suite' ),
+			self::MENU_SLUG . '-analytics'     => __( 'Analytics', 'nexus-lead-suite' ),
+			self::MENU_SLUG                    => __( 'Forms', 'nexus-lead-suite' ),
+			self::MENU_SLUG . '-popups'        => __( 'Popups', 'nexus-lead-suite' ),
+			self::MENU_SLUG . '-menus'         => __( 'Smart Buttons', 'nexus-lead-suite' ),
+			self::MENU_SLUG . '-emails'        => __( 'Email', 'nexus-lead-suite' ),
+			self::MENU_SLUG . '-accessibility' => __( 'Acc & Lang', 'nexus-lead-suite' ),
+			self::MENU_SLUG . '-settings'      => __( 'Settings', 'nexus-lead-suite' ),
 		);
 
 		foreach ( $subpages as $slug => $label ) {
@@ -89,6 +96,67 @@ final class Admin_App {
 				array( $this, 'render_app' )
 			);
 		}
+
+		/* Forms children live in the React sidebar only (not as WP top-level peers). */
+		$hidden_form_pages = array(
+			self::MENU_SLUG . '-forms'       => __( 'Forms', 'nexus-lead-suite' ),
+			self::MENU_SLUG . '-templates'   => __( 'Templates', 'nexus-lead-suite' ),
+			self::MENU_SLUG . '-submissions' => __( 'Submissions', 'nexus-lead-suite' ),
+		);
+		foreach ( $hidden_form_pages as $slug => $label ) {
+			add_submenu_page(
+				null,
+				$label . ' — ' . __( 'Nexus Lead Suite', 'nexus-lead-suite' ),
+				$label,
+				'manage_options',
+				$slug,
+				array( $this, 'render_app' )
+			);
+		}
+	}
+
+	/**
+	 * Forces WP admin submenu order (parent slug otherwise always stays first).
+	 *
+	 * @return void
+	 */
+	public function reorder_submenu(): void {
+		global $submenu;
+
+		if ( ! isset( $submenu[ self::MENU_SLUG ] ) || ! is_array( $submenu[ self::MENU_SLUG ] ) ) {
+			return;
+		}
+
+		$desired = array(
+			self::MENU_SLUG . '-analytics',
+			self::MENU_SLUG,
+			self::MENU_SLUG . '-popups',
+			self::MENU_SLUG . '-menus',
+			self::MENU_SLUG . '-emails',
+			self::MENU_SLUG . '-accessibility',
+			self::MENU_SLUG . '-settings',
+		);
+
+		$by_slug = array();
+		foreach ( $submenu[ self::MENU_SLUG ] as $item ) {
+			if ( ! is_array( $item ) || ! isset( $item[2] ) ) {
+				continue;
+			}
+			$by_slug[ (string) $item[2] ] = $item;
+		}
+
+		$ordered = array();
+		foreach ( $desired as $slug ) {
+			if ( isset( $by_slug[ $slug ] ) ) {
+				$ordered[] = $by_slug[ $slug ];
+				unset( $by_slug[ $slug ] );
+			}
+		}
+		foreach ( $by_slug as $item ) {
+			$ordered[] = $item;
+		}
+
+		$submenu[ self::MENU_SLUG ] = $ordered;
 	}
 
 	/**
@@ -174,6 +242,14 @@ final class Admin_App {
 		// neutralized in wp-admin-chrome.css and purged from assets/admin/js/main.js.
 		wp_enqueue_script( 'wp-tinymce' );
 
+		// Command Palette (Sprint 1): depend on core's `wp-commands` when it exists
+		// (WordPress 7.0+) so the SPA can register Nexus commands into the native
+		// Cmd/Ctrl+K palette. Added conditionally so older cores still load the app.
+		$admin_script_deps = array( 'wp-tinymce' );
+		if ( wp_script_is( 'wp-commands', 'registered' ) ) {
+			$admin_script_deps[] = 'wp-commands';
+		}
+
 		// Dev mode (optional): define('nexulesuite_VITE_DEV', true) in wp-config.php.
 		if ( defined( 'nexulesuite_VITE_DEV' ) && nexulesuite_VITE_DEV ) {
 			$this->enqueue_vite_dev();
@@ -194,10 +270,30 @@ final class Admin_App {
 				$fallback_css_ver
 			);
 
+			$fui_css_path = nexulesuite_PLUGIN_DIR . 'assets/admin/css/form-builder-fui.css';
+			if ( file_exists( $fui_css_path ) ) {
+				wp_enqueue_style(
+					'nexulesuite_admin-form-builder-fui',
+					esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/css/form-builder-fui.css' ),
+					array( 'nexulesuite_admin-fallback' ),
+					(string) filemtime( $fui_css_path )
+				);
+			}
+
+			$range_css_path = nexulesuite_PLUGIN_DIR . 'assets/admin/css/range-slider.css';
+			if ( file_exists( $range_css_path ) ) {
+				wp_enqueue_style(
+					'nexulesuite_admin-range-slider',
+					esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/css/range-slider.css' ),
+					array( 'nexulesuite_admin-fallback' ),
+					(string) filemtime( $range_css_path )
+				);
+			}
+
 			wp_enqueue_script(
 				'nexulesuite_admin-fallback',
 				esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/js/main.js' ),
-				array( 'wp-tinymce' ),
+				$admin_script_deps,
 				$fallback_js_ver,
 				true
 			);
@@ -239,6 +335,26 @@ final class Admin_App {
 			);
 		}
 
+		$fui_css_path = nexulesuite_PLUGIN_DIR . 'assets/admin/css/form-builder-fui.css';
+		if ( file_exists( $fui_css_path ) ) {
+			wp_enqueue_style(
+				'nexulesuite_admin-form-builder-fui',
+				esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/css/form-builder-fui.css' ),
+				array( 'nexulesuite_admin-0' ),
+				(string) filemtime( $fui_css_path )
+			);
+		}
+
+		$range_css_path = nexulesuite_PLUGIN_DIR . 'assets/admin/css/range-slider.css';
+		if ( file_exists( $range_css_path ) ) {
+			wp_enqueue_style(
+				'nexulesuite_admin-range-slider',
+				esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/css/range-slider.css' ),
+				array( 'nexulesuite_admin-0' ),
+				(string) filemtime( $range_css_path )
+			);
+		}
+
 		$js_rel  = ltrim( (string) $entry['file'], '/' );
 		$js_path = nexulesuite_PLUGIN_DIR . 'assets/admin/' . $js_rel;
 		$js_ver  = file_exists( $js_path ) ? (string) filemtime( $js_path ) : nexulesuite_VERSION;
@@ -246,7 +362,7 @@ final class Admin_App {
 		wp_enqueue_script(
 			'nexulesuite_admin',
 			esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/' . $js_rel ),
-			array( 'wp-tinymce' ),
+			$admin_script_deps,
 			$js_ver,
 			true
 		);
@@ -256,7 +372,7 @@ final class Admin_App {
 		// Resolve initial route from current page query param.
 		$submenu_routes = $this->get_submenu_routes();
 		$current_page   = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : self::MENU_SLUG; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$initial_route  = $submenu_routes[ $current_page ] ?? 'activities';
+		$initial_route  = $submenu_routes[ $current_page ] ?? 'form-builder';
 
 		// Build admin page URLs for React sidebar navigation.
 		$admin_pages = array();
@@ -399,12 +515,12 @@ final class Admin_App {
 	 * @param array<string,string> $admin_pages   Optional admin page URLs.
 	 * @return void
 	 */
-	private function localize_admin_script( string $handle, string $initial_route = 'activities', array $admin_pages = array() ): void {
+	private function localize_admin_script( string $handle, string $initial_route = 'form-builder', array $admin_pages = array() ): void {
 		if ( array() === $admin_pages ) {
 			$submenu_routes = $this->get_submenu_routes();
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$current_page  = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['page'] ) ) : self::MENU_SLUG;
-			$initial_route = $submenu_routes[ $current_page ] ?? 'activities';
+			$initial_route = $submenu_routes[ $current_page ] ?? 'form-builder';
 			foreach ( $submenu_routes as $slug => $route ) {
 				$admin_pages[ $route ] = esc_url_raw( admin_url( 'admin.php?page=' . $slug ) );
 			}
@@ -413,6 +529,15 @@ final class Admin_App {
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-global-font.php';
 		$global_font     = \nexulesuite_\Core\Global_Font::get_saved_font();
 		$global_weights  = \nexulesuite_\Core\Global_Font::get_weights_for_font( $global_font );
+		$global_appearance = get_option( 'nexulesuite_global_appearance_v1', array() );
+		$global_appearance_styling = array();
+		if ( is_array( $global_appearance ) ) {
+			if ( isset( $global_appearance['styling'] ) && is_array( $global_appearance['styling'] ) ) {
+				$global_appearance_styling = $global_appearance['styling'];
+			} elseif ( $global_appearance ) {
+				$global_appearance_styling = $global_appearance;
+			}
+		}
 
 		wp_localize_script(
 			$handle,
@@ -431,6 +556,10 @@ final class Admin_App {
 				'adminPages'        => $admin_pages,
 				'globalFont'        => $global_font,
 				'globalFontWeights' => $global_weights,
+				'globalAppearance'  => array(
+					'styling'   => $global_appearance_styling,
+					'updatedAt' => is_array( $global_appearance ) && isset( $global_appearance['updatedAt'] ) ? (string) $global_appearance['updatedAt'] : '',
+				),
 			)
 		);
 	}

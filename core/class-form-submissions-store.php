@@ -142,13 +142,21 @@ final class Form_Submissions_Store {
 			$params[] = $like;
 		}
 
-		$params[] = $limit;
-		$sql      = 'SELECT id, form_key, payload, created_at FROM ' . $table
-			. ' WHERE ' . implode( ' AND ', $where )
-			. ' ORDER BY created_at DESC, id DESC LIMIT %d';
+		$where_sql = implode( ' AND ', $where );
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- table from trusted prefix; values bound below.
-		$rows = $wpdb->get_results( $wpdb->prepare( $sql, $params ), ARRAY_A );
+		// Placeholder order across the query: %i (FROM), then the WHERE values, then %d (LIMIT).
+		array_unshift( $params, $table );
+		$params[] = $limit;
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $where_sql is assembled from literal fragments above; every value, and the table name, is bound through prepare(). The sniff cannot count args passed as one array, which prepare() supports.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT id, form_key, payload, created_at FROM %i WHERE {$where_sql} ORDER BY created_at DESC, id DESC LIMIT %d",
+				$params
+			),
+			ARRAY_A
+		);
+		// phpcs:enable
 		if ( ! is_array( $rows ) ) {
 			return array();
 		}
@@ -197,14 +205,16 @@ final class Form_Submissions_Store {
 			$params[] = $to;
 		}
 
-		$sql = 'SELECT COUNT(*) FROM ' . $table . ' WHERE ' . implode( ' AND ', $where );
-		if ( empty( $params ) ) {
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- no user input in this branch.
-			return (int) $wpdb->get_var( $sql );
-		}
+		$where_sql = implode( ' AND ', $where );
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- values bound below.
-		return (int) $wpdb->get_var( $wpdb->prepare( $sql, $params ) );
+		// %i binds the table name, so this goes through prepare() even when there are no date bounds.
+		array_unshift( $params, $table );
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where_sql is assembled from literal fragments above; every value, and the table name, is bound through prepare().
+		return (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE {$where_sql}", $params )
+		);
+		// phpcs:enable
 	}
 
 	/**
@@ -281,6 +291,43 @@ final class Form_Submissions_Store {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Deletes submissions by primary key.
+	 *
+	 * @param array<int,int|string> $ids Row ids.
+	 * @return int Rows deleted.
+	 */
+	public static function delete_ids( array $ids ): int {
+		global $wpdb;
+
+		$clean = array();
+		foreach ( $ids as $id ) {
+			$n = (int) $id;
+			if ( $n > 0 ) {
+				$clean[ $n ] = $n;
+			}
+		}
+		if ( array() === $clean ) {
+			return 0;
+		}
+
+		$table = self::table();
+		$ids   = array_values( $clean );
+		$in    = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$ok = $wpdb->query(
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $in is a generated run of '%d' only; table and ids are bound below.
+				"DELETE FROM %i WHERE id IN ({$in})",
+				array_merge( array( $table ), $ids )
+			)
+		);
+		// phpcs:enable
+
+		return is_int( $ok ) ? $ok : 0;
 	}
 
 	/**

@@ -281,7 +281,7 @@ final class Pdf_Font {
 	 */
 	private function table( string $tag ): int {
 		if ( ! isset( $this->tables[ $tag ] ) ) {
-			throw new \RuntimeException( 'font_table_missing_' . trim( $tag ) );
+			throw new \RuntimeException( 'font_table_missing_' . esc_html( trim( $tag ) ) );
 		}
 
 		return $this->tables[ $tag ][0];

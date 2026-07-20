@@ -489,8 +489,12 @@ final class Shortcodes {
 				return;
 			}
 			$conf_msg = isset( $confirmation['message'] ) ? trim( (string) $confirmation['message'] ) : '';
+			$default_success = __(
+				"Thanks for reaching out! We've received your request and are reviewing your details. We will follow up soon to confirm your insurance and finalize your appointment.\n\nNeed help right away? Please call us during our office hours. For all medical emergencies, please call 911 immediately.",
+				'nexus-lead-suite'
+			);
 			wp_send_json_success( array(
-				'message' => '' !== $conf_msg ? wp_kses_post( $conf_msg ) : __( 'Thank you! Your message has been sent.', 'nexus-lead-suite' ),
+				'message' => '' !== $conf_msg ? wp_kses_post( $conf_msg ) : $default_success,
 				'html'    => '' !== $conf_msg,
 			) );
 			return;
@@ -543,8 +547,9 @@ final class Shortcodes {
 				continue;
 			}
 			$name = $this->compute_st_input_name( $block );
+			// map_deep keeps checkbox groups as arrays (flattened just below) while sanitizing every leaf.
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- resolved inside the nonce-verified submit handler.
-			$raw  = isset( $_POST[ $name ] ) ? wp_unslash( $_POST[ $name ] ) : '';
+			$raw  = isset( $_POST[ $name ] ) ? map_deep( wp_unslash( $_POST[ $name ] ), 'sanitize_text_field' ) : '';
 			if ( is_array( $raw ) ) {
 				$flat = array();
 				array_walk_recursive( $raw, static function ( $v ) use ( &$flat ): void { $flat[] = is_scalar( $v ) ? (string) $v : ''; } );
@@ -1938,7 +1943,7 @@ final class Shortcodes {
 		.nexulesuite_popup-overlay,.nexulesuite_popup-overlay .nexulesuite_popup,.nexulesuite_popup-overlay .nexulesuite_popup *{font-family:' . $popup_font_stack . '!important;}
 		.nexulesuite_popup-overlay{display:none;position:fixed;inset:0;z-index:999999;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:16px;overflow-y:auto;box-sizing:border-box;}
 		.nexulesuite_popup-overlay.nexulesuite_popup--open{display:flex;}
-		.nexulesuite_popup{position:relative;width:100%;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.28);animation:nexulesuite_pop-in .22s ease;box-sizing:border-box;}
+		.nexulesuite_popup{position:relative;width:100%;overflow:visible;box-shadow:0 24px 80px rgba(0,0,0,.28);animation:nexulesuite_pop-in .22s ease;box-sizing:border-box;}
 		@keyframes nexulesuite_pop-in{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 		.nexulesuite_popup__close{position:absolute;top:10px;right:10px;display:flex;align-items:center;justify-content:center;border:none!important;cursor:pointer;line-height:1;z-index:2;border-radius:50%!important;padding:0!important;margin:0!important;box-sizing:border-box!important;min-width:0!important;min-height:0!important;aspect-ratio:1/1;flex:0 0 auto;box-shadow:none!important;transition:opacity .2s,transform .25s cubic-bezier(.34,1.56,.64,1);}
 		.nexulesuite_popup__close:hover{opacity:.9;transform:rotate(90deg) scale(1.1);}
@@ -2118,9 +2123,10 @@ final class Shortcodes {
 			/* Body */
 			/* Body: do not set text-align — it would inherit into embedded forms (labels/placeholders). */
 			printf(
-				'<div class="nexulesuite_popup__body" style="background:%s;padding:%dpx;">',
+				'<div class="nexulesuite_popup__body" style="background:%s;padding:%dpx;--nexulesuite_popup-body-bg:%s;">',
 				esc_attr( $body_bg ),
-				absint( $padding )
+				absint( $padding ),
+				esc_attr( $body_bg )
 			);
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_shortcode() output (see expand_popup_body_shortcodes()); shortcode callbacks (incl. third-party Forminator + captcha) escape their own markup. The popup body is sanitized on save via sanitize_popup_body_for_storage() (wp_kses_post + <script> strip).
 			echo $rendered_content;
@@ -2696,7 +2702,10 @@ final class Shortcodes {
 			array(
 				'ajaxUrl'             => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
 				'action'              => 'nexulesuite_submit_form',
-				'thankYouMessage'     => __( 'Thank you! Your message has been sent.', 'nexus-lead-suite' ),
+				'thankYouMessage'     => __(
+					"Thanks for reaching out! We've received your request and are reviewing your details. We will follow up soon to confirm your insurance and finalize your appointment.\n\nNeed help right away? Please call us during our office hours. For all medical emergencies, please call 911 immediately.",
+					'nexus-lead-suite'
+				),
 				'smtpSetupMessage'    => __( 'Please set up your SMTP properly.', 'nexus-lead-suite' ),
 				'resultSuccessTitle'  => __( 'Success!', 'nexus-lead-suite' ),
 				'resultErrorTitle'    => __( 'Error!', 'nexus-lead-suite' ),
@@ -3074,8 +3083,16 @@ final class Shortcodes {
 		if ( ! in_array( $border_st, $allowed_st, true ) ) {
 			$border_st = 'solid';
 		}
-		$border_w = max( 0, min( 10, (int) ( $general['formFieldBorderWidth'] ?? 2 ) ) );
-		$radius   = max( 0, min( 30, (int) ( $general['formFieldBorderRadius'] ?? 10 ) ) );
+		$border_w = max( 0, min( 100, (int) ( $styling['fieldBorderWidth'] ?? $general['formFieldBorderWidth'] ?? 1 ) ) );
+		$radius   = max( 0, min( 100, (int) ( $styling['fieldBorderRadius'] ?? $general['formFieldBorderRadius'] ?? 10 ) ) );
+		// Per-form Customization tab; fall back to legacy general settings, then defaults.
+		$field_fs = max( 10, min( 24, (int) ( $styling['fieldFontSize'] ?? $general['formFieldFontSize'] ?? 14 ) ) );
+		$label_fs = max( 10, min( 22, (int) ( $styling['labelFontSize'] ?? $general['formLabelFontSize'] ?? 13 ) ) );
+		$ph_fs    = max( 10, min( 22, (int) ( $styling['placeholderFontSize'] ?? $general['formPlaceholderFontSize'] ?? 14 ) ) );
+		$field_gap = max( 0, min( 100, (int) ( $styling['rowGap'] ?? $styling['fieldGap'] ?? $general['formFieldGap'] ?? 16 ) ) );
+		$field_pad = max( 0, min( 100, (int) ( $styling['fieldPadding'] ?? 12 ) ) );
+		$label_sp  = max( 0, min( 100, (int) ( $styling['labelSpacing'] ?? 6 ) ) );
+		$col_gap   = max( 0, min( 100, (int) ( $styling['columnGap'] ?? 16 ) ) );
 
 		/*
 		 * Button color: Form Builder value everywhere except inside popup body, where Popups → Appearance
@@ -3094,7 +3111,14 @@ final class Shortcodes {
 			. ( '' !== $border_col ? '--nexulesuite_st-form-field-border-color:' . $border_col . ';' : '' )
 			. '--nexulesuite_st-form-field-border-style:' . $border_st . ';'
 			. '--nexulesuite_st-form-field-border-width:' . $border_w . 'px;'
-			. '--nexulesuite_st-form-field-radius:' . $radius . 'px;';
+			. '--nexulesuite_st-form-field-radius:' . $radius . 'px;'
+			. '--nexulesuite_st-form-field-gap:' . $field_gap . 'px;'
+			. '--nexulesuite_st-form-column-gap:' . $col_gap . 'px;'
+			. '--nexulesuite_st-form-field-padding:' . $field_pad . 'px;'
+			. '--nexulesuite_st-form-label-spacing:' . $label_sp . 'px;'
+			. '--nexulesuite_st-form-label-font-size:' . $label_fs . 'px;'
+			. '--nexulesuite_st-form-placeholder-font-size:' . $ph_fs . 'px;'
+			. '--nexulesuite_st-form-field-font-size:' . $field_fs . 'px;';
 		$steps    = isset( $form['steps'] ) && is_array( $form['steps'] ) ? $form['steps'] : array();
 		if ( empty( $steps ) ) {
 			$steps = array(
@@ -3108,11 +3132,16 @@ final class Shortcodes {
 
 		$fui_root = Forminator_UI_Bridge::root_classes( $form );
 
+		$submit_method = isset( $form['submissionMethod'] ) ? sanitize_text_field( (string) $form['submissionMethod'] ) : 'ajax';
+		if ( 'reload' !== $submit_method ) {
+			$submit_method = 'ajax';
+		}
+
 		ob_start();
 		$step_count = count( $steps );
 		?>
-		<div class="nexulesuite_st-form nexulesuite_st-form--minimal <?php echo esc_attr( $fui_root ); ?>" style="<?php echo esc_attr( $form_vars ); ?>" data-form-id="<?php echo esc_attr( $form_id ); ?>" data-form-type="<?php echo esc_attr( $is_multi ? 'multi' : 'simple' ); ?>" data-submit-text="<?php echo esc_attr( (string) ( $form['submitBtnText'] ?? 'Submit' ) ); ?>">
-			<form class="nexulesuite_st-form__body forminator-custom-form" method="post" enctype="multipart/form-data">
+		<div class="nexulesuite_st-form nexulesuite_st-form--minimal <?php echo esc_attr( $fui_root ); ?>" style="<?php echo esc_attr( $form_vars ); ?>" data-form-id="<?php echo esc_attr( $form_id ); ?>" data-form-type="<?php echo esc_attr( $is_multi ? 'multi' : 'simple' ); ?>" data-submit-text="<?php echo esc_attr( (string) ( $form['submitBtnText'] ?? 'Submit' ) ); ?>" data-submission-method="<?php echo esc_attr( $submit_method ); ?>">
+			<form class="nexulesuite_st-form__body forminator-custom-form" method="post" enctype="multipart/form-data"<?php echo 'reload' === $submit_method ? '' : ' data-nexulesuite_ajax="1"'; ?>>
 				<?php wp_nonce_field( 'nexulesuite_form_submit', 'nexulesuite_form_nonce' ); ?>
 				<input type="hidden" name="nexulesuite_form_id" value="<?php echo esc_attr( $form_id ); ?>" />
 				<?php
@@ -3234,18 +3263,14 @@ final class Shortcodes {
 	 * @param bool   $show_label  Whether label is shown in settings.
 	 * @return string
 	 */
-	private function floating_caption( string $placeholder, string $label, bool $show_label ): string {
-		if ( $show_label ) {
-			$lb = trim( $label );
-			if ( '' !== $lb ) {
-				return $lb;
-			}
-		}
+	private function floating_caption( string $placeholder, string $label, bool $show_label = false ): string {
+		// Prefer placeholder as the float label (PrimeReact "on" — rests inside, floats on border when typing).
+		unset( $show_label );
 		$ph = trim( $placeholder );
 		if ( '' !== $ph ) {
 			return $ph;
 		}
-		return '';
+		return trim( $label );
 	}
 
 	/**
@@ -3358,13 +3383,15 @@ final class Shortcodes {
 		$defaults = array(
 			'backgroundColor' => '#ffffff',
 			'textColor'       => '#000000',
-			'borderColor'     => '#d1d5db',
+			'borderColor'     => '#cbd5e1',
 			'borderRadius'    => 6,
 			'borderWidth'     => 1,
 			'padding'         => 12,
 			'fontSize'        => 14,
 			'fontWeight'      => '500',
 		);
+		/* Legacy builder defaults — treat as untouched so wrappers stay borderless. */
+		$legacy_border_colors = array( '#cbd5e1', '#b0b8c4', '#d1d5db', '#e2e8f0', '#d4d4d4', '#bdbdbd' );
 
 		$bg = sanitize_hex_color( (string) ( $settings['backgroundColor'] ?? $defaults['backgroundColor'] ) );
 		if ( '' === $bg ) {
@@ -3379,18 +3406,21 @@ final class Shortcodes {
 			$bc = $defaults['borderColor'];
 		}
 
-		$radius = max( 0, (int) ( $settings['borderRadius'] ?? $defaults['borderRadius'] ) );
-		$bwidth = max( 0, (int) ( $settings['borderWidth'] ?? $defaults['borderWidth'] ) );
-		$pad    = max( 0, (int) ( $settings['padding'] ?? $defaults['padding'] ) );
+		$radius = max( 0, min( 100, (int) ( $settings['borderRadius'] ?? $defaults['borderRadius'] ) ) );
+		$bwidth = max( 0, min( 100, (int) ( $settings['borderWidth'] ?? $defaults['borderWidth'] ) ) );
+		$pad    = max( 0, min( 100, (int) ( $settings['padding'] ?? $defaults['padding'] ) ) );
 		$fsize  = max( 10, (int) ( $settings['fontSize'] ?? $defaults['fontSize'] ) );
 
 		$fweight_raw = sanitize_text_field( (string) ( $settings['fontWeight'] ?? $defaults['fontWeight'] ) );
 		$fweight     = preg_match( '/^[1-9]00$/', $fweight_raw ) ? $fweight_raw : ( is_numeric( $fweight_raw ) ? $fweight_raw : $defaults['fontWeight'] );
 
+		$bc_l        = strtolower( $bc );
+		$border_stock = in_array( $bc_l, $legacy_border_colors, true );
+
 		$touched =
 			strtolower( $bg ) !== strtolower( $defaults['backgroundColor'] )
 			|| strtolower( $tc ) !== strtolower( $defaults['textColor'] )
-			|| strtolower( $bc ) !== strtolower( $defaults['borderColor'] )
+			|| ! $border_stock
 			|| $radius !== (int) $defaults['borderRadius']
 			|| $bwidth !== (int) $defaults['borderWidth']
 			|| $pad !== (int) $defaults['padding']
@@ -3466,7 +3496,8 @@ final class Shortcodes {
 			|| ( ! in_array( $module_id, $modules_never_single_float, true ) && '' !== $float_caption );
 
 		$field_class = 'nexulesuite_st-field forminator-field' . ( $use_floating_layout ? ' nexulesuite_st-field--floating' : '' );
-		if ( $show_label ) {
+		/* show-label class is only for non-floating fields (float uses placeholder-as-label). */
+		if ( $show_label && ! $use_floating_layout ) {
 			$field_class .= ' nexulesuite_st-field--show-label';
 		}
 
@@ -3509,11 +3540,12 @@ final class Shortcodes {
 		}
 		echo '>';
 
-		if ( 'terms-conditions' !== $module_id && $show_label && '' !== $label ) {
+		/* Top static label only when not using float-from-placeholder layout. */
+		if ( 'terms-conditions' !== $module_id && $show_label && '' !== $label && ! $use_floating_layout ) {
 			echo '<label class="nexulesuite_st-field__label forminator-label">' . esc_html( $label ) . ( $required ? '<span class="nexulesuite_st-req">*</span>' : '' ) . '</label>';
 		}
 
-		if ( '' !== $field_help && 'terms-conditions' !== $module_id ) {
+		if ( '' !== $field_help && ! in_array( $module_id, array( 'terms-conditions', 'section', 'html', 'hidden', 'postdata', 'stripe', 'paypal', 'esignature', 'field-group' ), true ) ) {
 			echo '<p class="nexulesuite_st-field__help forminator-description">' . esc_html( $field_help ) . '</p>';
 		}
 
@@ -3674,6 +3706,54 @@ final class Shortcodes {
 				break;
 			case 'cloudflare':
 				echo '<div class="nexulesuite_st-captcha nexulesuite_st-captcha--turnstile" aria-label="Turnstile"></div>';
+				break;
+			case 'html':
+				$html_block = isset( $settings['html'] ) ? (string) $settings['html'] : ( isset( $settings['content'] ) ? (string) $settings['content'] : '' );
+				echo '<div class="nexulesuite_st-html">' . wp_kses_post( $html_block ) . '</div>';
+				break;
+			case 'hidden':
+			case 'postdata':
+				$hidden_val = isset( $settings['defaultValue'] ) ? sanitize_text_field( (string) $settings['defaultValue'] ) : '';
+				echo '<input type="hidden" class="nexulesuite_st-input" name="' . esc_attr( $name ) . '" value="' . esc_attr( $hidden_val ) . '" />';
+				break;
+			case 'section':
+				$sec_title = '' !== $label ? $label : __( 'Section', 'nexus-lead-suite' );
+				echo '<div class="nexulesuite_st-section"><h3 class="nexulesuite_st-section__title">' . esc_html( $sec_title ) . '</h3>';
+				if ( '' !== $field_help ) {
+					echo '<p class="nexulesuite_st-section__desc">' . esc_html( $field_help ) . '</p>';
+				}
+				echo '</div>';
+				break;
+			case 'currency':
+				$currency = isset( $settings['currency'] ) ? sanitize_text_field( (string) $settings['currency'] ) : '$';
+				echo '<div class="nexulesuite_st-currency">';
+				echo '<span class="nexulesuite_st-currency__sym" aria-hidden="true">' . esc_html( $currency ) . '</span>';
+				$this->render_float_text_input( $name, 'number', $placeholder, $label, $show_label, $required, 'inputmode="decimal" step="0.01"' );
+				echo '</div>';
+				break;
+			case 'slider':
+				$min = isset( $settings['min'] ) ? (float) $settings['min'] : 0;
+				$max = isset( $settings['max'] ) ? (float) $settings['max'] : 100;
+				$step = isset( $settings['step'] ) ? (float) $settings['step'] : 1;
+				$val = isset( $settings['defaultValue'] ) ? (float) $settings['defaultValue'] : $min;
+				echo '<input class="nexulesuite_st-input nexulesuite_st-slider" type="range" name="' . esc_attr( $name ) . '" min="' . esc_attr( (string) $min ) . '" max="' . esc_attr( (string) $max ) . '" step="' . esc_attr( (string) $step ) . '" value="' . esc_attr( (string) $val ) . '"' . ( $required ? ' required' : '' ) . ' />';
+				break;
+			case 'rating':
+				$max_stars = isset( $settings['max'] ) ? max( 1, min( 10, (int) $settings['max'] ) ) : 5;
+				echo '<div class="nexulesuite_st-rating" role="radiogroup">';
+				for ( $si = 1; $si <= $max_stars; $si++ ) {
+					echo '<label class="nexulesuite_st-rating__star"><input type="radio" name="' . esc_attr( $name ) . '" value="' . esc_attr( (string) $si ) . '"' . ( $required && 1 === $si ? ' required' : '' ) . ' /> ' . esc_html( (string) $si ) . '</label>';
+				}
+				echo '</div>';
+				break;
+			case 'calculations':
+				echo '<input class="nexulesuite_st-input forminator-input" type="text" name="' . esc_attr( $name ) . '" value="" readonly placeholder="' . esc_attr( $placeholder !== '' ? $placeholder : __( 'Calculated', 'nexus-lead-suite' ) ) . '" />';
+				break;
+			case 'stripe':
+			case 'paypal':
+			case 'esignature':
+			case 'field-group':
+				echo '<div class="nexulesuite_st-field-notice"><p>' . esc_html__( 'This field type requires additional setup and will be available in a future update.', 'nexus-lead-suite' ) . '</p></div>';
 				break;
 			default:
 				$this->render_float_text_input( $name, 'text', $placeholder, $label, $show_label, $required );
@@ -3916,6 +3996,22 @@ final class Shortcodes {
 		$chat_content = sanitize_textarea_field( (string) ( $opt['chatContent'] ?? '' ) );
 		/* Avatar / bubble image: attachment URL or legacy data URI (must match sanitizer on save). */
 		$btn_raw_img = trim( (string) ( $opt['chatButtonImage'] ?? '' ) );
+		// Prefer Acc & Lang dock image when set (same photo on FAB + chat panel).
+		if ( class_exists( '\\nexulesuite_\\Public\\Accessibility_Language' ) ) {
+			$a11y_set = \nexulesuite_\Public\Accessibility_Language::get_settings();
+			$a11y_img = trim( (string) ( $a11y_set['liveChatButtonImage'] ?? '' ) );
+			if ( '' !== $a11y_img ) {
+				$btn_raw_img = $a11y_img;
+			}
+		} else {
+			$a11y_opt = get_option( 'nexulesuite_a11y_lang_v1', array() );
+			if ( is_array( $a11y_opt ) ) {
+				$a11y_img = trim( (string) ( $a11y_opt['liveChatButtonImage'] ?? '' ) );
+				if ( '' !== $a11y_img ) {
+					$btn_raw_img = $a11y_img;
+				}
+			}
+		}
 		// Raw value; escaped at output (esc_attr for data: image URIs, esc_url for normal URLs).
 		$btn_image = $btn_raw_img;
 		$chat_side = ( 'left' === sanitize_text_field( (string) ( $opt['chatAlign'] ?? 'right' ) ) ) ? 'left' : 'right';
@@ -3940,8 +4036,21 @@ final class Shortcodes {
 		$btn3_label = sanitize_text_field( (string) ( $opt['chatButtonThird'] ?? '' ) ) ?: 'E-mail';
 		$btn3_raw   = (string) ( $opt['chatButtonThirdLink']                     ?? '' );
 
-		/* ── AI chat mode: only usable when enabled AND a server URL is set ── */
-		$ai_enabled       = ! empty( $opt['aiEnabled'] ) && '' !== trim( (string) ( $opt['aiServerUrl'] ?? '' ) );
+		/*
+		 * AI chat mode: match the REST backend (ai_resolve_mode / ai_settings).
+		 * Direct (Model API) needs no server URL — only server mode does.
+		 * The old gate required aiServerUrl for every install, so direct-mode
+		 * sites rendered header + greeting with no composer at all.
+		 */
+		$ai_server_url = trim( (string) ( $opt['aiServerUrl'] ?? '' ) );
+		$ai_conn_mode  = strtolower( trim( (string) ( $opt['aiConnMode'] ?? '' ) ) );
+		if ( ! in_array( $ai_conn_mode, array( 'direct', 'server' ), true ) ) {
+			$ai_conn_mode = ( '' !== $ai_server_url ) ? 'server' : 'direct';
+		}
+		$ai_enabled = ! empty( $opt['aiEnabled'] ) && (
+			( 'direct' === $ai_conn_mode ) ||
+			( 'server' === $ai_conn_mode && '' !== $ai_server_url )
+		);
 		$ai_welcome       = sanitize_text_field( (string) ( $opt['aiWelcomeMessage'] ?? '' ) );
 		$ai_placeholder   = sanitize_text_field( (string) ( $opt['aiInputPlaceholder'] ?? '' ) );
 		if ( '' === trim( $ai_placeholder ) ) {
@@ -4083,9 +4192,14 @@ final class Shortcodes {
 
 		/*
 		 * Lead gate: collect contact details before the AI chat opens.
-		 * Active when button 1 has no link/popup, or when button 1 is explicitly #lead / #form.
+		 * Only when button 1 is explicitly #lead / #form / #contact-form (admin docs).
+		 * An empty button-1 link used to force the gate and hide the composer; with
+		 * AI enabled that left visitors on a blank greeting panel.
 		 */
-		$ai_lead_gate = $ai_enabled && ( ! $btn1_has_action || $btn1_is_lead_entry );
+		$ai_lead_gate = $ai_enabled && $btn1_is_lead_entry;
+
+		/* Floating bubble: skip the empty home screen and open the composer when AI is the only path. */
+		$ai_open_on_launch = $ai_enabled && ! $ai_lead_gate && ! $btn1_has_action && ! $btn2_has_action && ! $btn3_has_action;
 
 		/* ── Inline popup clone (button 1 + Popup): body only — header uses livechat avatar + title (no popup name/sub-heading). ── */
 		$inline_popup_html = '';
@@ -4211,15 +4325,18 @@ final class Shortcodes {
 		){margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:inherit;font-family:inherit;font-size:inherit;font-weight:inherit;line-height:1.45;letter-spacing:normal;text-transform:none;text-align:inherit;text-decoration:none;min-width:0;min-height:0;width:auto;height:auto;-webkit-appearance:none;appearance:none;}
 
 		/* Panel — taller default home view; compact height when inline form is open (no dead space below short forms). */
-		.nexulesuite_chat-panel{display:none;width:320px;min-height:510px;max-height:min(510px,calc(100vh - 130px));background:<?php echo esc_attr( $chat_bubble_bg ); ?>;border-radius:16px;box-shadow:0 16px 48px rgba(15,23,42,.18);overflow:hidden;flex-direction:column;}
-		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form{min-height:0;}
+		/* Explicit height (not only max-height) so AI column flex can reserve space for the composer. */
+		.nexulesuite_chat-panel{display:none;width:320px;height:min(510px,calc(100vh - 130px));min-height:0;max-height:min(510px,calc(100vh - 130px));background:<?php echo esc_attr( $chat_bubble_bg ); ?>;border-radius:16px;box-shadow:0 16px 48px rgba(15,23,42,.18);overflow:hidden;flex-direction:column;box-sizing:border-box;}
+		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form{height:auto;min-height:0;max-height:min(510px,calc(100vh - 130px));}
 		.nexulesuite_chat-panel.nexulesuite_chat--open{display:flex;animation:nexulesuite_chat-pop-in .22s ease;}
+		/* When AI is open, the AI column is the only flex child that should grow. */
+		.nexulesuite_chat-panel.nexulesuite_chat-panel--ai-active{display:flex;flex-direction:column;min-height:0;overflow:hidden;}
 		@keyframes nexulesuite_chat-pop-in{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 
 		/* Header — deep navy bar with a squared avatar tile (reference: Curative GI header) */
 		.nexulesuite_chat-panel__head{display:flex;align-items:center;gap:13px;padding:18px 18px 16px;background:var(--nls-head-bg);flex-shrink:0;}
-		.nexulesuite_chat-panel__avatar{width:44px;height:44px;border-radius:12px;flex-shrink:0;background:var(--nls-head-soft);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--nls-head-line);}
-		.nexulesuite_chat-panel__avatar img{width:44px;height:44px;border-radius:12px;object-fit:cover;}
+		.nexulesuite_chat-panel__avatar{width:44px;height:44px;border-radius:50%;flex-shrink:0;background:var(--nls-head-soft);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--nls-head-line);}
+		.nexulesuite_chat-panel__avatar img{width:44px;height:44px;border-radius:50%;object-fit:cover;}
 		.nexulesuite_chat-panel__avatar svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 		.nexulesuite_chat-panel__info{flex:1;min-width:0;}
 		.nexulesuite_chat-panel__title{font-size:14.5px;font-weight:600;color:#fff;margin:0;padding:0;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -4249,8 +4366,8 @@ final class Shortcodes {
 		.nexulesuite_chat-form-view__head{display:flex;align-items:center;gap:13px;padding:16px 18px;background:var(--nls-head-bg);border-bottom:1px solid var(--nls-head-line);flex-shrink:0;}
 		.nexulesuite_chat-form-view__back{background:var(--nls-head-soft);border:1px solid var(--nls-head-line);color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;flex-shrink:0;transition:background .2s;}
 		.nexulesuite_chat-form-view__back:hover{background:rgba(255,255,255,.22);}
-		.nexulesuite_chat-form-view__avatar{width:40px;height:40px;border-radius:10px;flex-shrink:0;background:var(--nls-head-soft);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--nls-head-line);}
-		.nexulesuite_chat-form-view__avatar img{width:40px;height:40px;border-radius:10px;object-fit:cover;}
+		.nexulesuite_chat-form-view__avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;background:var(--nls-head-soft);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--nls-head-line);}
+		.nexulesuite_chat-form-view__avatar img{width:40px;height:40px;border-radius:50%;object-fit:cover;}
 		.nexulesuite_chat-form-view__avatar svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 		.nexulesuite_chat-form-view__info{flex:1;min-width:0;}
 		.nexulesuite_chat-form-view__heading{font-size:14.5px;font-weight:600;color:#fff;margin:0;padding:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -4296,11 +4413,17 @@ final class Shortcodes {
 		}
 
 		/* Floating trigger bubble — matches larger panel presence */
-		.nexulesuite_chat-trigger{width:66px;height:66px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(0,0,0,.2);background:<?php echo esc_attr( $btn_bg ); ?>;overflow:hidden;position:relative;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
+		.nexulesuite_chat-trigger{--nls-online-dot:9px;width:66px;height:66px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(0,0,0,.2);background:<?php echo esc_attr( $btn_bg ); ?>;overflow:visible;position:relative;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
 		.nexulesuite_chat-trigger svg{width:26px;height:26px;fill:none;stroke:<?php echo esc_attr( $btn_text_col ); ?>;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1;}
-		.nexulesuite_chat-trigger .nexulesuite_chat-online-dot{position:absolute;right:10px;top:10px;z-index:3;}
+		.nexulesuite_chat-trigger img.nexulesuite_chat-trigger__img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;position:relative;z-index:1;}
+		/*
+		 * Online blink on the circle rim (NE): center of the dot sits on the edge
+		 * so ~50% is outside the round — not at the square corner (that looks fully outside).
+		 * 14.645% ≈ (1 - cos(45°)) / 2 of the button.
+		 */
+		.nexulesuite_chat-trigger .nexulesuite_chat-online-dot{position:absolute;z-index:3;width:var(--nls-online-dot);height:var(--nls-online-dot);top:calc(14.645% - (var(--nls-online-dot) / 2));right:calc(14.645% - (var(--nls-online-dot) / 2));left:auto;bottom:auto;margin:0;}
 		button.nexulesuite_chat-trigger--labeled{width:auto;height:auto;min-height:58px;border-radius:32px;padding:0 22px 0 20px;gap:11px;overflow:visible;}
-		button.nexulesuite_chat-trigger--labeled .nexulesuite_chat-online-dot{right:16px;top:12px;}
+		button.nexulesuite_chat-trigger--labeled .nexulesuite_chat-online-dot{top:calc(14.645% - (var(--nls-online-dot) / 2));right:calc(14.645% - (var(--nls-online-dot) / 2));}
 		.nexulesuite_chat-trigger__label{color:<?php echo esc_attr( $btn_text_col ); ?>;font-family:inherit;font-weight:600;font-size:15px;line-height:1;white-space:nowrap;position:relative;z-index:1;}
 
 		/* Hover effects */
@@ -4325,16 +4448,23 @@ final class Shortcodes {
 		.nexulesuite_chat-widget{bottom:calc(100px + env(safe-area-inset-bottom,0px));z-index:999998;}
 		.nexulesuite_chat-widget:not(.nexulesuite_chat--left){right:max(14px,env(safe-area-inset-right,0px));left:auto;}
 		.nexulesuite_chat-widget.nexulesuite_chat--left{left:max(14px,env(safe-area-inset-left,0px));right:auto;}
-		.nexulesuite_chat-trigger{width:54px;height:54px;}
+		.nexulesuite_chat-trigger{--nls-online-dot:8px;width:54px;height:54px;}
 		.nexulesuite_chat-trigger svg{width:22px;height:22px;}
-		.nexulesuite_chat-trigger .nexulesuite_chat-online-dot{right:8px;top:8px;width:8px;height:8px;}
-		/* Panel fits narrow screens (320px+); max height clears trigger + sticky nav + safe areas */
+		.nexulesuite_chat-trigger .nexulesuite_chat-online-dot{top:calc(14.645% - (var(--nls-online-dot) / 2));right:calc(14.645% - (var(--nls-online-dot) / 2));}
+		/* Panel fits narrow screens (320px+); height clears trigger + sticky nav + safe areas */
 		.nexulesuite_chat-panel{
 			box-sizing:border-box;width:min(320px,calc(100vw - 24px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));min-width:0;
+			height:min(510px,calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 164px));
+			height:min(510px,calc(100svh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 164px));
 			min-height:0;
 			max-height:min(510px,calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 164px));
 			max-height:min(510px,calc(100svh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 164px));
 			overflow:hidden;
+		}
+		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form{
+			height:auto;
+			max-height:min(510px,calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 164px));
+			max-height:min(510px,calc(100svh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 164px));
 		}
 		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form .nexulesuite_chat-form-view.nexulesuite_chat-form--active{flex:1 1 auto;min-height:0;overflow:hidden;}
 		.nexulesuite_chat-panel.nexulesuite_chat-panel--inline-form .nexulesuite_chat-inline-popup-body{
@@ -4361,8 +4491,16 @@ final class Shortcodes {
 		}
 
 		/* ── AI chat view ── */
-		.nexulesuite_chat-ai-view{display:none;flex-direction:column;flex:1 1 auto;min-height:0;}
-		.nexulesuite_chat-panel--ai-active .nexulesuite_chat-ai-view{display:flex;}
+		/*
+		 * Strict column: ONE scroll region (messages + FAQ chips), then optional action bar,
+		 * then composer — all flex siblings. Composer is flex:0 0 auto so panel overflow:hidden
+		 * + border-radius never slice the input. flex-basis:0 on the scroll region is required
+		 * or a tall home transcript refuses to shrink and shoves the footer past the clip edge.
+		 * (1.1.6 kept the action bar position:absolute inside the form; that still let the
+		 * form’s box run past the panel foot when the host height was tight.)
+		 */
+		.nexulesuite_chat-ai-view{display:none;flex-direction:column;flex:1 1 0%;min-height:0;height:auto;max-height:100%;overflow:hidden;box-sizing:border-box;}
+		.nexulesuite_chat-panel--ai-active .nexulesuite_chat-ai-view{display:flex;flex:1 1 0%;min-height:0;height:100%;max-height:100%;}
 		/* Header — deep navy bar, squared avatar tile, quiet outlined tool buttons (reference style). */
 		.nexulesuite_chat-ai-view__head{display:flex;align-items:center;gap:10px;padding:13px 14px;background:var(--nls-head-bg);color:#fff;flex:0 0 auto;}
 		/* Back and reset are matching icon buttons, so the header reads as one row of controls. */
@@ -4390,13 +4528,13 @@ final class Shortcodes {
 		.nexulesuite_chat-ai-view__tts .nexulesuite_chat-ai-tts__on{display:none;}
 		.nexulesuite_chat-ai-view__tts.is-on .nexulesuite_chat-ai-tts__on{display:block;}
 		.nexulesuite_chat-ai-view__tts.is-on .nexulesuite_chat-ai-tts__off{display:none;}
-		.nexulesuite_chat-ai-messages{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:20px 16px;display:flex;flex-direction:column;gap:12px;background:var(--nls-canvas);}
+		.nexulesuite_chat-ai-messages{flex:1 1 0%;min-height:0;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:20px 16px;display:flex;flex-direction:column;gap:12px;background:var(--nls-canvas);box-sizing:border-box;}
 		/* Centred, not bottom-aligned: otherwise the bot avatar lines up with the timestamp, not the bubble. */
 		.nexulesuite_chat-ai-row{display:flex;gap:8px;max-width:100%;align-items:center;}
 		.nexulesuite_chat-ai-row--user{justify-content:flex-end;}
 		.nexulesuite_chat-ai-row--bot{justify-content:flex-start;}
 		/* Small squared navy tile, matching the header avatar (reference style). */
-		.nexulesuite_chat-ai-bubavatar{width:28px;height:28px;border-radius:8px;flex:0 0 auto;background:var(--nls-head-bg);color:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+		.nexulesuite_chat-ai-bubavatar{width:28px;height:28px;border-radius:50%;flex:0 0 auto;background:var(--nls-head-bg);color:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 		/* The timestamp sits below the bubble in the same column; offsetting the avatar by its
 		   full height makes the centred avatar line up with the bubble, not the column. */
 		.nexulesuite_chat-ai-row--bot .nexulesuite_chat-ai-bubavatar{margin-bottom:calc(var(--nls-time-size) + var(--nls-bubble-gap));}
@@ -4438,15 +4576,12 @@ final class Shortcodes {
 		.nexulesuite_chat-ai-chip__ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 		.nexulesuite_chat-ai-chip__tx{flex:0 1 auto;min-width:0;}
 		/*
-		 * Quick actions (Book / Call / Directions): pinned bar floating above the composer.
-		 * Anchored to the form (position:relative) with bottom:100%, so it stays put while the
-		 * transcript scrolls underneath — the reference's fixed + z-index behaviour. Rendered
-		 * only when actions are configured; hidden by default.
+		 * Quick actions (Book / Call / Directions): flex sibling between the scroll region and
+		 * the composer — never position:absolute inside the form (that stole layout height and
+		 * let overflow:hidden clip the input). Stays put while messages scroll above.
 		 */
-		.nexulesuite_chat-ai-actionbar{position:absolute;left:0;right:0;bottom:100%;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;background:var(--nls-canvas);}
-		.nexulesuite_chat-ai-actionbar[hidden]{display:none;}
-		/* Keep the last message readable: reserve room at the foot of the transcript for the bar. */
-		.nexulesuite_chat-ai-view--has-actions .nexulesuite_chat-ai-messages{padding-bottom:66px;}
+		.nexulesuite_chat-ai-actionbar{position:relative;z-index:2;flex:0 0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px 6px;background:var(--nls-canvas);box-sizing:border-box;}
+		.nexulesuite_chat-ai-actionbar[hidden]{display:none!important;}
 		/* Theme button margins would stagger the pills up and down inside the bar — pin them flat. */
 		.nexulesuite_chat-ai-actionbar .nexulesuite_chat-ai-action{margin:0!important;box-shadow:0 2px 8px rgba(15,23,42,.08);}
 		.nexulesuite_chat-ai-action{flex:0 0 auto;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-family:inherit;font-size:13px;font-weight:500;line-height:1.2;color:var(--nls-ink-2);background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:999px;padding:9px 16px;cursor:pointer;box-shadow:none;transition:border-color .15s,background .15s,transform .12s;}
@@ -4463,8 +4598,15 @@ final class Shortcodes {
 		.nexulesuite_chat-ai-typing span:nth-child(2){animation-delay:.15s;}
 		.nexulesuite_chat-ai-typing span:nth-child(3){animation-delay:.3s;}
 		@keyframes nexulesuite_ai-bounce{0%,60%,100%{transform:translateY(0);opacity:.5;}30%{transform:translateY(-5px);opacity:1;}}
-		.nexulesuite_chat-ai-form{position:relative;padding:12px;border-top:1px solid var(--nls-border);background:<?php echo esc_attr( $chat_bubble_bg ); ?>;flex:0 0 auto;}
-		.nexulesuite_chat-ai-disclaimer{margin:9px 6px 1px;font-size:11px;line-height:1.45;color:var(--nls-muted);text-align:center;}
+		/*
+		 * Composer: pinned foot of the AI column. Never shrinks.
+		 * Bottom padding must clear BOTH (a) panel overflow:hidden and (b) the embed host’s
+		 * border-radius (~22px) + overflow:hidden — 1.1.7’s ~18–22px sat ON the clip curve so
+		 * the pill’s bottom arc still looked shaved/flush against the footer. Use !important so
+		 * theme `form{padding:0}` rules cannot wipe the inset.
+		 */
+		.nexulesuite_chat-ai-form{position:relative;z-index:3;margin:0;padding:10px 12px max(32px,calc(20px + env(safe-area-inset-bottom,0px)))!important;border-top:1px solid var(--nls-border);background:<?php echo esc_attr( $chat_bubble_bg ); ?>;flex:0 0 auto;flex-shrink:0;box-sizing:border-box;width:100%;overflow:visible;}
+		.nexulesuite_chat-ai-disclaimer{margin:8px 6px 0;font-size:11px;line-height:1.45;color:var(--nls-muted);text-align:center;}
 		.nexulesuite_chat-ai-leadcard{align-self:stretch;margin:2px 0 2px 36px;display:flex;flex-direction:column;gap:10px;background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:var(--nls-radius-lg);padding:14px;box-shadow:var(--nls-shadow-sm);}
 		.nexulesuite_chat-ai-leadinput{width:100%;border:1px solid var(--nls-field-border);border-radius:var(--nls-radius-sm);padding:10px 12px;font-size:14px;font-family:inherit;color:var(--nls-ink-2);transition:border-color .15s,box-shadow .15s;}
 		.nexulesuite_chat-ai-leadinput:focus{outline:none;border-color:var(--nls-primary);box-shadow:0 0 0 3px var(--nls-primary-ring);}
@@ -4482,8 +4624,9 @@ final class Shortcodes {
 		.nexulesuite_chat-ai-pcard__title{font-size:12.5px;font-weight:600;line-height:1.3;color:var(--nls-ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 		.nexulesuite_chat-ai-pcard__price{font-size:12.5px;font-weight:700;color:var(--nls-primary);}
 		/* Pill composer with the send key inside its right edge (reference style). */
-		.nexulesuite_chat-ai-inputbar{display:flex;align-items:center;gap:4px;background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:999px;padding:5px 6px 5px 12px;box-shadow:none;transition:border-color .15s,box-shadow .15s;}
-		.nexulesuite_chat-ai-inputbar:focus-within{border-color:var(--nls-primary);box-shadow:0 0 0 3px var(--nls-primary-ring);}
+		.nexulesuite_chat-ai-inputbar{display:flex;align-items:center;gap:4px;background:var(--nls-surface);border:1px solid var(--nls-border);border-radius:999px;padding:5px 6px 5px 12px;box-shadow:none;transition:border-color .15s,box-shadow .15s;flex:0 0 auto;min-height:0;}
+		/* Inset ring so overflow:hidden on ancestors cannot clip an outer focus halo at the panel foot. */
+		.nexulesuite_chat-ai-inputbar:focus-within{border-color:var(--nls-primary);box-shadow:inset 0 0 0 2px var(--nls-primary-ring);}
 		/*
 		 * The pill is the only visible chrome; the input inside must be invisible. Themes style
 		 * `input[type="text"]` (border, white background, inner shadow, min-height) at higher
@@ -4545,33 +4688,124 @@ final class Shortcodes {
 			/*
 			 * Shared by both panel modes: strip the floating chrome (fixed position, bubble, close,
 			 * back) and let the panel fill whatever box it is given.
+			 *
+			 * Liquid type + chrome: container query units scale titles, messages, inputs and
+			 * controls with the chat box width (same pattern as the bottom nav). Floating mode
+			 * never enters this branch, so the bubble stays at its fixed design sizes.
 			 */
 			$chat_css .= '
-			.nexulesuite_chat-widget{position:static!important;inset:auto!important;height:100%;width:100%;gap:0;align-items:stretch!important;z-index:auto;}
-			.nexulesuite_chat-panel{display:flex!important;width:100%!important;max-width:none!important;height:100%;min-height:0;max-height:none;animation:none;}
+			.nexulesuite_chat-widget{
+				position:static!important;inset:auto!important;height:100%;max-height:100%;width:100%;min-width:0;min-height:0;gap:0;align-items:stretch!important;z-index:auto;
+				display:flex!important;flex-direction:column;box-sizing:border-box;
+				container-type:inline-size;container-name:nls-chat;
+			}
+			/*
+			 * Fluid tokens live on the panel (a descendant of the size container). cqw on the
+			 * container element itself would not resolve against its own width.
+			 */
+			.nexulesuite_chat-panel{
+				display:flex!important;width:100%!important;max-width:none!important;height:100%;min-height:0;max-height:100%;animation:none;flex:1 1 0%;overflow:hidden;box-sizing:border-box;
+				--nls-fs:clamp(12px,4.4cqw,16px);
+				--nls-fs-title:clamp(13px,4.55cqw,17px);
+				--nls-fs-sm:clamp(10px,3.4cqw,12.5px);
+				--nls-fs-xs:clamp(9.5px,3.2cqw,11.5px);
+				--nls-pad:clamp(10px,4.2cqw,22px);
+				--nls-pad-sm:clamp(8px,3.2cqw,16px);
+				--nls-gap:clamp(6px,2.2cqw,13px);
+				--nls-avatar:clamp(32px,11.5cqw,48px);
+				--nls-avatar-sm:clamp(28px,10cqw,40px);
+				--nls-ctrl:clamp(26px,8cqw,34px);
+				--nls-icon:clamp(14px,4.2cqw,20px);
+				--nls-time-size:var(--nls-fs-xs);
+			}
 			.nexulesuite_chat-trigger{display:none!important;}
 			.nexulesuite_chat-panel__close{display:none!important;}
 			.nexulesuite_chat-ai-view__back{display:none!important;}
+
+			/* Chrome + type scale with the container (cqw → .nexulesuite_chat-widget). */
+			.nexulesuite_chat-panel__head{padding:var(--nls-pad) var(--nls-pad) var(--nls-pad-sm);gap:var(--nls-gap);}
+			.nexulesuite_chat-panel__avatar,.nexulesuite_chat-panel__avatar img{width:var(--nls-avatar);height:var(--nls-avatar);border-radius:clamp(8px,2.5cqw,12px);}
+			.nexulesuite_chat-panel__avatar svg{width:var(--nls-icon);height:var(--nls-icon);}
+			.nexulesuite_chat-panel__title{font-size:var(--nls-fs-title);}
+			.nexulesuite_chat-panel__badge{font-size:var(--nls-fs-sm);margin-top:clamp(3px,.8cqw,6px);gap:clamp(4px,1.2cqw,6px);}
+			.nexulesuite_chat-online-dot{width:clamp(7px,2.2cqw,10px);height:clamp(7px,2.2cqw,10px);}
+			.nexulesuite_chat-panel__body{font-size:var(--nls-fs);padding:clamp(14px,5cqw,26px) var(--nls-pad);min-height:clamp(64px,18cqw,96px);}
+			.nexulesuite_chat-panel__btns{padding:var(--nls-pad-sm) var(--nls-pad) var(--nls-pad);gap:clamp(8px,2cqw,12px);}
+			.nexulesuite_chat-panel__btns a,
+			.nexulesuite_chat-panel__btns button{font-size:var(--nls-fs);}
+			.nexulesuite_chat-form-view__head{padding:var(--nls-pad-sm) var(--nls-pad);gap:var(--nls-gap);}
+			.nexulesuite_chat-form-view__back{width:var(--nls-ctrl);height:var(--nls-ctrl);font-size:var(--nls-fs-title);}
+			.nexulesuite_chat-form-view__avatar,.nexulesuite_chat-form-view__avatar img{width:var(--nls-avatar-sm);height:var(--nls-avatar-sm);}
+			.nexulesuite_chat-form-view__avatar svg{width:var(--nls-icon);height:var(--nls-icon);}
+			.nexulesuite_chat-form-view__heading{font-size:var(--nls-fs-title);}
+			.nexulesuite_chat-inline-popup-body{padding:var(--nls-pad);}
+			.nexulesuite_chat-inline-popup-missing{font-size:var(--nls-fs-sm);}
+			.nexulesuite_chat-leadgate-body{padding:var(--nls-pad-sm) var(--nls-pad);}
+			.nexulesuite_chat-leadgate-foot,.nexulesuite_chat-leadgate-hint,.nexulesuite_chat-ai-disclaimer{font-size:var(--nls-fs-xs);}
+			.nexulesuite_chat-leadgate-card__title{font-size:var(--nls-fs-title);}
+			.nexulesuite_chat-leadgate-card__sub{font-size:var(--nls-fs);}
+			.nexulesuite_chat-leadgate-body input.nexulesuite_chat-ai-leadinput{font-size:var(--nls-fs)!important;padding:clamp(10px,2.8cqw,14px) clamp(10px,3cqw,14px)!important;min-height:clamp(40px,11cqw,48px)!important;}
+			.nexulesuite_chat-leadgate-body button.nexulesuite_chat-ai-leadsend{font-size:var(--nls-fs)!important;padding:clamp(11px,3cqw,14px) clamp(14px,4cqw,20px)!important;}
+			.nexulesuite_chat-ai-view__head{padding:var(--nls-pad-sm) var(--nls-pad);gap:var(--nls-gap);}
+			.nexulesuite_chat-ai-view__avatar{width:var(--nls-avatar-sm);height:var(--nls-avatar-sm);}
+			.nexulesuite_chat-ai-view__avatar svg{width:var(--nls-icon);height:var(--nls-icon);}
+			.nexulesuite_chat-ai-view__heading{font-size:var(--nls-fs-title);}
+			.nexulesuite_chat-ai-view__badge{font-size:var(--nls-fs-sm);}
+			.nexulesuite_chat-ai-view__tts,
+			.nexulesuite_chat-ai-view__reset{width:var(--nls-ctrl);height:var(--nls-ctrl);}
+			.nexulesuite_chat-ai-view__tts svg,
+			.nexulesuite_chat-ai-view__reset svg{width:var(--nls-icon);height:var(--nls-icon);}
+			.nexulesuite_chat-ai-messages{padding:var(--nls-pad) var(--nls-pad-sm);gap:var(--nls-gap);}
+			.nexulesuite_chat-ai-bubavatar{width:clamp(22px,7cqw,30px);height:clamp(22px,7cqw,30px);}
+			.nexulesuite_chat-ai-msg{font-size:var(--nls-fs);padding:clamp(9px,2.8cqw,13px) clamp(11px,3.4cqw,16px);}
+			.nexulesuite_chat-ai-chip{font-size:var(--nls-fs);padding:clamp(9px,2.8cqw,12px) clamp(11px,3.2cqw,15px);gap:clamp(8px,2cqw,12px);}
+			.nexulesuite_chat-ai-chip__ic{width:clamp(15px,4.5cqw,20px);height:clamp(15px,4.5cqw,20px);}
+			.nexulesuite_chat-ai-chip__ic svg{width:clamp(13px,4cqw,17px);height:clamp(13px,4cqw,17px);}
+			.nexulesuite_chat-ai-suggest__label{font-size:var(--nls-fs-xs);}
+			.nexulesuite_chat-ai-sources a{font-size:var(--nls-fs-xs);}
+			.nexulesuite_chat-ai-action{font-size:var(--nls-fs-sm);padding:clamp(7px,2.2cqw,10px) clamp(12px,3.5cqw,18px);gap:clamp(5px,1.5cqw,8px);}
+			.nexulesuite_chat-ai-action__ic svg{width:clamp(13px,3.8cqw,16px);height:clamp(13px,3.8cqw,16px);}
 			/*
-			 * The base layout is tuned for a 420px panel, where chips and actions each take a row on
-			 * their own. Given real width they would otherwise pack several across. The query measures
-			 * the chat box, so a narrow one still gets the floating-panel proportions.
+			 * Host paste uses border-radius:22px + overflow:hidden. Padding must exceed that curve
+			 * so the pill (and its border) sits clearly inset — not flush/shaved at the foot.
 			 */
-			@media (min-width:560px){
+			.nexulesuite_chat-ai-form{padding:var(--nls-pad-sm)!important;padding-bottom:max(36px,calc(var(--nls-pad) + 16px),calc(24px + env(safe-area-inset-bottom,0px)))!important;}
+			.nexulesuite_chat-ai-leadinput{font-size:var(--nls-fs);padding:clamp(8px,2.5cqw,12px);}
+			.nexulesuite_chat-ai-leadsend{font-size:var(--nls-fs);padding:clamp(9px,2.6cqw,12px) clamp(14px,4cqw,22px);}
+			.nexulesuite_chat-ai-leaderr{font-size:var(--nls-fs-sm);}
+			input.nexulesuite_chat-ai-input{font-size:var(--nls-fs)!important;padding:clamp(6px,2cqw,10px) clamp(3px,1cqw,6px)!important;}
+			.nexulesuite_chat-ai-clip,.nexulesuite_chat-ai-emoji{width:var(--nls-ctrl);height:var(--nls-ctrl);}
+			.nexulesuite_chat-ai-send{width:clamp(30px,9cqw,38px);height:clamp(30px,9cqw,38px);border-radius:clamp(8px,2.4cqw,12px);}
+			.nexulesuite_chat-ai-send svg,.nexulesuite_chat-ai-clip svg{width:var(--nls-icon);height:var(--nls-icon);}
+			.nexulesuite_chat-ai-emoji svg{width:clamp(16px,4.8cqw,22px);height:clamp(16px,4.8cqw,22px);}
+			.nexulesuite_chat-ai-pcard{flex-basis:clamp(120px,38cqw,160px);width:clamp(120px,38cqw,160px);}
+			.nexulesuite_chat-ai-pcard__title,.nexulesuite_chat-ai-pcard__price{font-size:var(--nls-fs-sm);}
+			.nexulesuite_chat-ai-doc__name{font-size:var(--nls-fs-sm);}
+			.nexulesuite_chat-ai-doc__size{font-size:var(--nls-fs-xs);}
+			/*
+			 * Layout at wider containers: chips stay stacked (readable), messages can breathe.
+			 * Uses @container so a narrow column on a wide viewport still gets compact layout.
+			 */
+			@container nls-chat (min-width:560px){
 				.nexulesuite_chat-ai-chips{flex-direction:column;}
 				.nexulesuite_chat-ai-chip{width:100%;justify-content:flex-start;}
 				.nexulesuite_chat-ai-action{flex:0 0 auto;min-width:0;}
-				.nexulesuite_chat-ai-msg{max-width:760px;}
+				.nexulesuite_chat-ai-msg{max-width:min(760px,92%);}
 			}
 			';
 		}
 
 		if ( $is_embed ) {
-			// The panel is the whole document: it owns the viewport edge to edge.
+			// The panel is the whole document: it owns the frame edge to edge; type scales with frame width.
 			$chat_css .= '
-			html,body{margin:0;padding:0;height:100%;background:transparent;}
-			body{overflow:hidden;}
-			.nexulesuite_chat-panel{border-radius:0;box-shadow:none;}
+			html{height:100%;max-height:100%;margin:0;padding:0;overflow:hidden;box-sizing:border-box;}
+			html,body{margin:0;padding:0;height:100%;width:100%;max-height:100%;background:transparent;box-sizing:border-box;}
+			body.nexulesuite_chat-embed-doc{overflow:hidden;min-width:0;min-height:0;max-height:100%;display:flex;flex-direction:column;}
+			body.nexulesuite_chat-embed-doc>.nexulesuite_chat-widget{flex:1 1 0%;min-height:0;height:100%;max-height:100%;}
+			body.nexulesuite_chat-embed-doc .nexulesuite_chat-panel{flex:1 1 0%;min-height:0;height:100%;max-height:100%;border-radius:0;box-shadow:none;}
+			body.nexulesuite_chat-embed-doc .nexulesuite_chat-panel--ai-active .nexulesuite_chat-ai-view{flex:1 1 0%;min-height:0;height:100%;max-height:100%;}
+			/* Extra foot inset inside the iframe so host radius clipping cannot shave the pill. */
+			body.nexulesuite_chat-embed-doc .nexulesuite_chat-ai-form{padding-bottom:max(40px,calc(28px + env(safe-area-inset-bottom,0px)))!important;}
 			';
 		}
 
@@ -4579,6 +4813,10 @@ final class Shortcodes {
 			/*
 			 * Inline mode sits in the page flow as a normal block, so it must read as part of the
 			 * page — not as a card that floated in. No drop shadow, no popped-out corners.
+			 *
+			 * The outer wrapper is the size container: width follows the host row/column (100%),
+			 * and the inner box height is fluid via cqw (capped by --nls-chat-h from the shortcode).
+			 * Typography scales on .nexulesuite_chat-widget (see panel branch above).
 			 *
 			 * `is-bleed` escapes a narrow host container — a page builder often drops the shortcode
 			 * into a column far narrower than the page, and CSS cannot widen an ancestor. The usual
@@ -4589,11 +4827,16 @@ final class Shortcodes {
 			 * re-centres at max_width so it settles at content width rather than edge to edge.
 			 */
 			$chat_css .= '
-			.nexulesuite_chat-inline{display:block;width:100%;}
+			.nexulesuite_chat-inline{display:block;width:100%;max-width:100%;min-width:0;container-type:inline-size;container-name:nls-chat-host;margin-bottom:36px;}
 			.nexulesuite_chat-inline.is-bleed{max-width:none;}
-			.nexulesuite_chat-inline__box{width:100%;margin-left:auto;margin-right:auto;}
-			.nexulesuite_chat-inline .nexulesuite_chat-panel{border-radius:var(--nls-radius,12px);box-shadow:none;border:1px solid var(--nls-border,#e2e8f0);overflow:hidden;}
-			.nexulesuite_chat-inline .nexulesuite_chat-widget{font-family:inherit;}
+			.nexulesuite_chat-inline__box{
+				width:100%;max-width:100%;min-width:0;margin-left:auto;margin-right:auto;
+				height:clamp(380px,145cqw,var(--nls-chat-h,680px));
+				box-sizing:border-box;
+				display:flex;flex-direction:column;min-height:0;overflow:hidden;
+			}
+			.nexulesuite_chat-inline .nexulesuite_chat-widget{font-family:inherit;flex:1 1 0%;min-height:0;height:100%;max-height:100%;}
+			.nexulesuite_chat-inline .nexulesuite_chat-panel{border-radius:var(--nls-radius,12px);box-shadow:none;border:1px solid var(--nls-border,#e2e8f0);overflow:hidden;flex:1 1 0%;min-height:0;height:100%;max-height:100%;box-sizing:border-box;}
 			';
 		}
 
@@ -4813,6 +5056,11 @@ final class Shortcodes {
 
 						<div class="nexulesuite_chat-ai-messages" id="nexulesuite_chat-ai-messages" role="log" aria-live="polite"></div>
 
+						<?php if ( ! empty( $ai_actions ) ) : ?>
+							<?php /* Quick actions pinned between transcript and composer (flex sibling, not absolute). */ ?>
+							<div class="nexulesuite_chat-ai-actionbar" id="nexulesuite_chat-ai-actionbar" hidden></div>
+						<?php endif; ?>
+
 						<?php if ( '' !== trim( (string) $ai_contact_form_html ) ) : ?>
 							<?php /* Rendered once (so form scripts init); moved into the chat on demand by aiShowContactForm(). */ ?>
 							<div id="nexulesuite_chat-ai-contactsrc" style="display:none;">
@@ -4836,11 +5084,6 @@ final class Shortcodes {
 						<?php endforeach; ?>
 
 						<form class="nexulesuite_chat-ai-form" id="nexulesuite_chat-ai-form">
-
-							<?php if ( ! empty( $ai_actions ) ) : ?>
-								<?php /* Quick actions pinned above the composer; populated and unhidden by aiAddActions(). */ ?>
-								<div class="nexulesuite_chat-ai-actionbar" id="nexulesuite_chat-ai-actionbar" hidden></div>
-							<?php endif; ?>
 
 							<?php if ( $ai_allow_images ) : ?>
 								<input type="file" id="nexulesuite_chat-ai-file" accept="image/png,image/jpeg,image/gif,image/webp,application/pdf,text/plain,text/markdown,.md,text/csv,text/html,application/json" hidden />
@@ -4902,7 +5145,16 @@ final class Shortcodes {
 				aria-controls="nexulesuite_chat-panel"
 				aria-label="<?php esc_attr_e( 'Open chat', 'nexus-lead-suite' ); ?>">
 				<span class="nexulesuite_chat-online-dot" aria-hidden="true"></span>
-				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M21 16c0 1.1-.9 2-2 2H7l-4 4V6a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>
+				<?php if ( '' !== $btn_image ) : ?>
+					<img
+						class="nexulesuite_chat-trigger__img"
+						src="<?php echo preg_match( '#^data:image/(jpeg|jpg|png|gif|webp);base64,#i', $btn_image ) ? esc_attr( $btn_image ) : esc_url( $btn_image ); ?>"
+						alt=""
+						decoding="async"
+					/>
+				<?php else : ?>
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M21 16c0 1.1-.9 2-2 2H7l-4 4V6a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>
+				<?php endif; ?>
 				<?php if ( '' !== $ai_trigger_label ) : ?>
 					<span class="nexulesuite_chat-trigger__label"><?php echo esc_html( $ai_trigger_label ); ?></span>
 				<?php endif; ?>
@@ -4943,6 +5195,7 @@ final class Shortcodes {
 				leadEndpoint: '<?php echo esc_url_raw( rest_url( 'nexulesuite_/v1/ai/lead' ) ); ?>',
 				lead:      { enabled: <?php echo $ai_lead_enabled ? 'true' : 'false'; ?>, offer: '<?php echo esc_js( $ai_lead_offer ); ?>' },
 				leadGate:  <?php echo $ai_lead_gate ? 'true' : 'false'; ?>,
+				openOnLaunch: <?php echo ! empty( $ai_open_on_launch ) ? 'true' : 'false'; ?>,
 				i18n:      {
 					lead_cta:  '<?php echo esc_js( __( 'Leave your contact', 'nexus-lead-suite' ) ); ?>',
 					lead_name: '<?php echo esc_js( __( 'Your name', 'nexus-lead-suite' ) ); ?>',
@@ -5056,7 +5309,7 @@ final class Shortcodes {
 				trigger.setAttribute('aria-expanded','true');
 				if(aiCfg.leadGate && !aiLeadGatePassed){
 					showLeadGateView();
-				} else if(aiCfg.leadGate && aiLeadGatePassed && aiView){
+				} else if(aiView && (aiCfg.openOnLaunch || (aiCfg.leadGate && aiLeadGatePassed))){
 					openAiView();
 				}
 			}
@@ -5185,7 +5438,7 @@ final class Shortcodes {
 				});
 				return b;
 			}
-			/* Quick actions live in a bar pinned above the composer (hidden until populated), not in the transcript. */
+			/* Quick actions live in a flex bar between the transcript and the composer (not absolute). */
 			function aiAddActions(){
 				var bar = document.getElementById('nexulesuite_chat-ai-actionbar');
 				if(!bar || !aiCfg.actions || !aiCfg.actions.length) return;
@@ -5207,8 +5460,6 @@ final class Shortcodes {
 				if(bar.childNodes.length){
 					bar.hidden = false;
 					if(aiView){ aiView.classList.add('nexulesuite_chat-ai-view--has-actions'); }
-					/* The bar may wrap to several rows at narrow widths; reserve its real height in the transcript. */
-					if(aiMessages && bar.offsetHeight){ aiMessages.style.paddingBottom = (bar.offsetHeight + 10) + 'px'; }
 				}
 			}
 			function aiShowContactForm(){
@@ -5677,8 +5928,7 @@ final class Shortcodes {
 			panel.classList.add('nexulesuite_chat--open');
 			trigger.setAttribute('aria-expanded','true');
 			if(aiCfg.leadGate && !aiLeadGatePassed){ showLeadGateView(); }
-			else if(aiCfg.leadGate && aiLeadGatePassed && aiView){ openAiView(); }
-			else if(!aiCfg.leadGate && aiView){ openAiView(); }
+			else if(aiView){ openAiView(); }
 			<?php endif; ?>
 			if(aiForm){
 				aiForm.addEventListener('submit', function(ev){
@@ -5909,6 +6159,31 @@ final class Shortcodes {
 		<?php
 		$chat_js = (string) ob_get_clean();
 
+		if ( $is_embed ) {
+			/*
+			 * Pasted HTML hosts often omit/under-set margin-bottom, so the site footer sits flush
+			 * under the rounded frame. Same-origin iframe can nudge the parent host spacing.
+			 */
+			$chat_js .= "\n" . <<<'EMBED_HOST_JS'
+(function(){
+	try {
+		var frame = window.frameElement;
+		if (!frame) return;
+		var host = frame.closest ? frame.closest('.nexulesuite_chat-embed') : null;
+		if (!host && frame.parentElement) {
+			host = frame.parentElement.classList && frame.parentElement.classList.contains('nexulesuite_chat-embed')
+				? frame.parentElement
+				: frame.parentElement.parentElement;
+		}
+		if (!host) return;
+		var mb = parseFloat(window.getComputedStyle(host).marginBottom) || 0;
+		if (mb < 36) host.style.marginBottom = '36px';
+	} catch (e) {}
+})();
+EMBED_HOST_JS;
+			$chat_js .= "\n";
+		}
+
 		if ( $is_inline ) {
 			/*
 			 * full_width="yes": widen the wrapper to the viewport from wherever the page builder put
@@ -6019,7 +6294,8 @@ BLEED_JS;
 	 * the cost of a fixed box. That is the transport the copy-paste HTML embed code uses.
 	 *
 	 * Attributes:
-	 *   height        Chat height in px (default 680).
+	 *   height        Max chat height in px (default 680). Actual height is fluid with the
+	 *                 container width (clamp) and never exceeds this value.
 	 *   max_width     CSS max-width of the chat (default none — fills the space it is given).
 	 *   full_width    "yes" breaks out of a narrow host column and spans the page; combine with
 	 *                 max_width to land at content width. "no" (default) simply fills the container.
@@ -6060,14 +6336,35 @@ BLEED_JS;
 		$width     = $this->sanitize_css_length( (string) $a['width'], '100%' );
 		$max_width = $this->sanitize_css_length( (string) $a['max_width'], 'none' );
 		$is_bleed  = ( 'no' !== strtolower( trim( (string) $a['full_width'] ) ) );
-		$box_style = sprintf( 'width:%s;max-width:%s;height:%dpx;', $width, $max_width, $height );
+		/*
+		 * Width follows the host; height is liquid via cqw (see inline/embed CSS) and capped by
+		 * --nls-chat-h. A fixed height:Npx here would ignore the parent column as it shrinks.
+		 */
+		$box_style = sprintf(
+			'width:%s;max-width:%s;--nls-chat-h:%dpx;',
+			$width,
+			$max_width,
+			$height
+		);
 
 		if ( 'iframe' === strtolower( trim( (string) $a['mode'] ) ) ) {
 			$title = sanitize_text_field( (string) ( $opt['chatTitle'] ?? __( 'Chat', 'nexus-lead-suite' ) ) );
 
+			/*
+			 * Iframe host: same fluid box as the shortcode. Outer element is the size container;
+			 * the inner frame uses cqw for height (cqw cannot resolve on the container itself).
+			 * Inner document scales type with frame width; no postMessage height sync.
+			 */
 			return sprintf(
 				'<div class="nexulesuite_chat-embed" style="%1$s">'
-					. '<iframe src="%2$s" title="%3$s" loading="lazy" style="width:100%%;height:100%%;border:0;display:block;" allow="microphone; clipboard-write"></iframe>'
+					. '<style>'
+					. '.nexulesuite_chat-embed{display:block;width:100%%;max-width:100%%;min-width:0;container-type:inline-size;margin-bottom:36px;}'
+					. '.nexulesuite_chat-embed__frame{width:100%%;box-sizing:border-box;height:clamp(380px,145cqw,var(--nls-chat-h,680px));min-height:0;overflow:hidden;}'
+					. '.nexulesuite_chat-embed__frame iframe{width:100%%;height:100%%;border:0;display:block;vertical-align:top;}'
+					. '</style>'
+					. '<div class="nexulesuite_chat-embed__frame">'
+						. '<iframe src="%2$s" title="%3$s" loading="lazy" allow="microphone; clipboard-write"></iframe>'
+					. '</div>'
 				. '</div>',
 				esc_attr( $box_style ),
 				esc_url( $this->chat_embed_url() ),
