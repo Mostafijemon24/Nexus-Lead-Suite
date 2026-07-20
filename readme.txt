@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.2.7
+Stable tag: 1.2.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,9 +164,16 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 
 1. Dashboard (coming soon)
 
+= 1.2.8 =
+* Acc & Lang: dock layout controls (position, offset, size, icon size, gap, order, display conditions, live preview) stay available when Accessibility is off, for Live Chat / Language / Custom buttons.
+* Live Chat: removed the legacy corner floating bubble — chat FAB lives only in the Acc & Lang dock and respects Display conditions.
+* Live Chat: dock Icon size uses Acc & Lang `buttonIconSize` on the frontend (preview and site stay in sync).
+* AI chat: custom FAQ answers and bot replies turn bare http(s) URLs into clickable links.
+* AI → Live Chat: Chat header fields (title, status badge, greeting); Icon size removed from Button style (use Acc & Lang).
+
 = 1.2.7 =
-* AI → Live Chat: restored Chat header fields (title, status badge, greeting text) so you can edit “Customer Support” / “Online” without leaving the Live Chat tab.
-* General settings API: chat header / styling keys support partial updates so a Live Chat save cannot wipe unrelated settings.
+* AI → Live Chat: restored Chat header fields (title, status badge, greeting text).
+* General settings API: chat header / styling keys support partial updates.
 
 = 1.2.6 =
 * Acc & Lang: single “Enable Live Chat” toggle (default off); chat can show in the Acc & Lang dock without enabling Accessibility.

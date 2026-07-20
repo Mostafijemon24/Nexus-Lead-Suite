@@ -235,7 +235,7 @@ final class Accessibility_Language {
 		return array(
 			'accessibilityEnabled'    => ! empty( $input['accessibilityEnabled'] ),
 			'languageEnabled'         => ! empty( $input['languageEnabled'] ),
-			'liveChatInDock'          => ! isset( $input['liveChatInDock'] ) ? true : ! empty( $input['liveChatInDock'] ),
+			'liveChatInDock'          => true,
 			'liveChatButtonImage'     => $chat_img,
 			'liveChatButtonBg'        => $chat_bg ? $chat_bg : $defaults['liveChatButtonBg'],
 			'liveChatButtonText'      => $chat_tx ? $chat_tx : $defaults['liveChatButtonText'],
@@ -514,7 +514,8 @@ final class Accessibility_Language {
 			$general = array();
 		}
 		$livechat_on   = ! empty( $general['enableLivechat'] );
-		$livechat_dock = $livechat_on && ! empty( $settings['liveChatInDock'] );
+		/* Live chat FAB always lives in Acc & Lang dock (legacy corner bubble removed). */
+		$livechat_dock = $livechat_on;
 		if ( empty( $settings['accessibilityEnabled'] ) && empty( $settings['languageEnabled'] ) && ! $livechat_dock ) {
 			return;
 		}
@@ -567,7 +568,7 @@ final class Accessibility_Language {
 			array(
 				'accessibilityEnabled'    => (bool) $settings['accessibilityEnabled'],
 				'languageEnabled'         => (bool) $settings['languageEnabled'],
-				'liveChatInDock'          => (bool) $settings['liveChatInDock'],
+				'liveChatInDock'          => true,
 				'liveChatAvailable'       => $livechat_on,
 				'liveChatButtonImage'     => (string) $settings['liveChatButtonImage'],
 				'liveChatButtonBg'        => (string) $settings['liveChatButtonBg'],
@@ -662,7 +663,7 @@ final class Accessibility_Language {
 		if ( ! is_array( $general ) ) {
 			$general = array();
 		}
-		$livechat_dock = ! empty( $general['enableLivechat'] ) && ! empty( $settings['liveChatInDock'] );
+		$livechat_dock = ! empty( $general['enableLivechat'] );
 		if ( empty( $settings['accessibilityEnabled'] ) && empty( $settings['languageEnabled'] ) && ! $livechat_dock ) {
 			return;
 		}

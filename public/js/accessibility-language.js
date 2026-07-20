@@ -772,11 +772,21 @@
 		}
 	}
 
+	function resolveDockIconPx() {
+		/* Acc & Lang “Icon size” (buttonIconSize) drives every dock button, including chat —
+		   matching the admin live preview. liveChatButtonIconSize remains a legacy fallback. */
+		var iconPx = parseInt(cfg.buttonIconSize, 10);
+		if (isNaN(iconPx)) {
+			iconPx = Math.max(14, Math.min(40, parseInt(cfg.liveChatButtonIconSize, 10) || 22));
+		}
+		return Math.max(0, Math.min(100, iconPx));
+	}
+
 	function applyLiveChatDockStyle(trigger) {
 		if (!trigger || !dock) return;
 		var bg = cfg.liveChatButtonBg || '';
 		var fg = cfg.liveChatButtonText || '#ffffff';
-		var iconPx = Math.max(14, Math.min(40, parseInt(cfg.liveChatButtonIconSize, 10) || 22));
+		var iconPx = resolveDockIconPx();
 		var imgUrl = (cfg.liveChatButtonImage || '').trim();
 
 		if (!bg) {
@@ -861,7 +871,8 @@
 	}
 
 	function attachLiveChatToDock(host) {
-		if (!cfg.liveChatInDock || !cfg.liveChatAvailable) return;
+		/* Chat FAB only exists inside Acc & Lang dock — never as a second corner bubble. */
+		if (!cfg.liveChatAvailable) return;
 		var trigger = document.getElementById('nexulesuite_chat-trigger');
 		if (!trigger || !host) return;
 
@@ -882,9 +893,18 @@
 		document.documentElement.classList.add('nexulesuite_a11y-hosts-chat');
 	}
 
+	function hideOrphanLiveChatTrigger() {
+		var trigger = document.getElementById('nexulesuite_chat-trigger');
+		if (!trigger) return;
+		if (trigger.closest && trigger.closest('.nexulesuite_a11y-dock')) return;
+		trigger.style.display = 'none';
+		trigger.setAttribute('hidden', 'hidden');
+		trigger.setAttribute('aria-hidden', 'true');
+	}
+
 	function buildDockStack(fabNode) {
 		var wantsLang = !!(cfg.languageEnabled && (cfg.languages || []).length && dockButtonVisible('language'));
-		var wantsChat = !!(cfg.liveChatInDock && cfg.liveChatAvailable && dockButtonVisible('chat'));
+		var wantsChat = !!(cfg.liveChatAvailable && dockButtonVisible('chat'));
 		var wantsCustom = !!(cfg.customButtonEnabled && cfg.customButtonUrl && dockButtonVisible('custom'));
 		var wantsA11y = !!(fabNode && dockButtonVisible('accessibility'));
 		var order = dockButtonOrder();
@@ -997,7 +1017,7 @@
 	var dock;
 
 	function initA11y() {
-		var wantsChatDock = !!(cfg.liveChatInDock && cfg.liveChatAvailable);
+		var wantsChatDock = !!cfg.liveChatAvailable;
 		var wantsCustomDock = !!(cfg.customButtonEnabled && cfg.customButtonUrl);
 		if (!cfg.accessibilityEnabled && !wantsChatDock && !wantsCustomDock) return;
 
@@ -1046,6 +1066,7 @@
 
 		var stack = buildDockStack(fab);
 		if (!stack.childNodes.length) {
+			hideOrphanLiveChatTrigger();
 			return;
 		}
 		dock.appendChild(stack);
@@ -1062,15 +1083,20 @@
 		syncLangChips(currentLang());
 
 		/* Live chat may render after a11y boot — retry attach briefly. */
-		if (cfg.liveChatInDock && cfg.liveChatAvailable && dockButtonVisible('chat') && stack && !dock.querySelector('#nexulesuite_chat-trigger')) {
+		if (cfg.liveChatAvailable && dockButtonVisible('chat') && stack && !dock.querySelector('#nexulesuite_chat-trigger')) {
 			var tries = 0;
 			var timer = setInterval(function () {
 				tries += 1;
 				attachLiveChatToDock(stack);
 				if (dock.querySelector('#nexulesuite_chat-trigger') || tries > 40) {
 					clearInterval(timer);
+					if (!dock.querySelector('#nexulesuite_chat-trigger')) {
+						hideOrphanLiveChatTrigger();
+					}
 				}
 			}, 250);
+		} else if (!dockButtonVisible('chat')) {
+			hideOrphanLiveChatTrigger();
 		}
 
 		document.addEventListener('keydown', function (e) {
@@ -1096,7 +1122,7 @@
 		if (!dockButtonVisible('language')) return;
 		/* When accessibility or dock features are on, language sits in the shared dock — no separate bar. */
 		if (cfg.accessibilityEnabled) return;
-		if (cfg.liveChatInDock && cfg.liveChatAvailable) return;
+		if (cfg.liveChatAvailable) return;
 		if (cfg.customButtonEnabled && cfg.customButtonUrl) return;
 		var bar = buildLangSection(false);
 		if (bar && bar.setAttribute) bar.setAttribute('data-nls-dock-btn', 'language');
@@ -1145,10 +1171,7 @@
 		target.style.setProperty('--nls-custom-btn-text', customText);
 		target.style.setProperty('--nls-chat-btn-bg', cfg.liveChatButtonBg || '#2563eb');
 		target.style.setProperty('--nls-chat-btn-text', cfg.liveChatButtonText || '#ffffff');
-		target.style.setProperty(
-			'--nls-chat-btn-icon',
-			Math.max(14, Math.min(40, parseInt(cfg.liveChatButtonIconSize, 10) || 22)) + 'px'
-		);
+		target.style.setProperty('--nls-chat-btn-icon', resolveDockIconPx() + 'px');
 	}
 
 	function getButtonOffset(key) {

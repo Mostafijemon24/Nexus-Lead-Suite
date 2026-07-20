@@ -145,8 +145,8 @@ html.translated-rtl font {
 }
 
 .nexulesuite_a11y-fab svg {
-  width: 26px;
-  height: 26px;
+  width: var(--nls-a11y-icon-size);
+  height: var(--nls-a11y-icon-size);
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
