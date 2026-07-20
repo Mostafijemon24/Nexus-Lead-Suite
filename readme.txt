@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.2.6
+Stable tag: 1.2.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -163,6 +163,10 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 == Screenshots ==
 
 1. Dashboard (coming soon)
+
+= 1.2.7 =
+* AI → Live Chat: restored Chat header fields (title, status badge, greeting text) so you can edit “Customer Support” / “Online” without leaving the Live Chat tab.
+* General settings API: chat header / styling keys support partial updates so a Live Chat save cannot wipe unrelated settings.
 
 = 1.2.6 =
 * Acc & Lang: single “Enable Live Chat” toggle (default off); chat can show in the Acc & Lang dock without enabling Accessibility.
