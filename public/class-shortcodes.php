@@ -22,6 +22,74 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Shortcodes {
 
 	/**
+	 * Allow-list used to escape HTML produced by nested shortcodes (forms, captcha,
+	 * chat panels) at the point of output.
+	 *
+	 * Starts from wp_kses_allowed_html( 'post' ) and adds the form controls plus the
+	 * data-/aria- hooks the front-end scripts rely on. Script and style elements are
+	 * deliberately absent: assets are enqueued, never inlined through this path.
+	 *
+	 * @return array<string, array<string, bool>>
+	 */
+	public static function allowed_embed_html(): array {
+		static $allowed = null;
+		if ( null !== $allowed ) {
+			return $allowed;
+		}
+
+		$allowed = wp_kses_allowed_html( 'post' );
+
+		$common = array(
+			'id'       => true,
+			'class'    => true,
+			'style'    => true,
+			'title'    => true,
+			'role'     => true,
+			'hidden'   => true,
+			'tabindex' => true,
+			'data-*'   => true,
+			'aria-*'   => true,
+		);
+
+		$controls = array(
+			'form'     => array( 'action' => true, 'method' => true, 'enctype' => true, 'novalidate' => true, 'target' => true, 'name' => true, 'autocomplete' => true ),
+			'input'    => array( 'type' => true, 'name' => true, 'value' => true, 'placeholder' => true, 'checked' => true, 'disabled' => true, 'readonly' => true, 'required' => true, 'min' => true, 'max' => true, 'step' => true, 'pattern' => true, 'maxlength' => true, 'minlength' => true, 'accept' => true, 'multiple' => true, 'autocomplete' => true, 'size' => true ),
+			'textarea' => array( 'name' => true, 'rows' => true, 'cols' => true, 'placeholder' => true, 'disabled' => true, 'readonly' => true, 'required' => true, 'maxlength' => true, 'autocomplete' => true ),
+			'select'   => array( 'name' => true, 'multiple' => true, 'disabled' => true, 'required' => true, 'size' => true, 'autocomplete' => true ),
+			'option'   => array( 'value' => true, 'selected' => true, 'disabled' => true, 'label' => true ),
+			'optgroup' => array( 'label' => true, 'disabled' => true ),
+			'button'   => array( 'type' => true, 'name' => true, 'value' => true, 'disabled' => true ),
+			'label'    => array( 'for' => true ),
+			'fieldset' => array( 'disabled' => true, 'name' => true ),
+			'legend'   => array(),
+			'datalist' => array(),
+			'progress' => array( 'value' => true, 'max' => true ),
+			'template' => array(),
+			'noscript' => array(),
+			'svg'      => array( 'xmlns' => true, 'viewbox' => true, 'viewBox' => true, 'width' => true, 'height' => true, 'fill' => true, 'stroke' => true, 'stroke-width' => true, 'stroke-linecap' => true, 'stroke-linejoin' => true, 'focusable' => true ),
+			'g'        => array( 'fill' => true, 'stroke' => true, 'transform' => true ),
+			'path'     => array( 'd' => true, 'fill' => true, 'stroke' => true, 'stroke-width' => true, 'stroke-linecap' => true, 'stroke-linejoin' => true, 'fill-rule' => true, 'clip-rule' => true, 'opacity' => true ),
+			'circle'   => array( 'cx' => true, 'cy' => true, 'r' => true, 'fill' => true, 'stroke' => true, 'stroke-width' => true ),
+			'rect'     => array( 'x' => true, 'y' => true, 'width' => true, 'height' => true, 'rx' => true, 'ry' => true, 'fill' => true, 'stroke' => true ),
+			'line'     => array( 'x1' => true, 'y1' => true, 'x2' => true, 'y2' => true, 'stroke' => true, 'stroke-width' => true, 'stroke-linecap' => true ),
+			'polyline' => array( 'points' => true, 'fill' => true, 'stroke' => true, 'stroke-width' => true ),
+			'polygon'  => array( 'points' => true, 'fill' => true, 'stroke' => true ),
+			'iframe'   => array( 'src' => true, 'width' => true, 'height' => true, 'frameborder' => true, 'allow' => true, 'sandbox' => true, 'loading' => true, 'referrerpolicy' => true, 'name' => true, 'scrolling' => true, 'allowfullscreen' => true ),
+		);
+
+		foreach ( $controls as $tag => $attrs ) {
+			$allowed[ $tag ] = array_merge( isset( $allowed[ $tag ] ) ? $allowed[ $tag ] : array(), $attrs );
+		}
+
+		foreach ( array_keys( $allowed ) as $tag ) {
+			$allowed[ $tag ] = array_merge( $allowed[ $tag ], $common );
+		}
+
+		return $allowed;
+	}
+
+
+	/**
 	 * Forms option key.
 	 */
 	private const FORMS_OPTION_KEY = 'nexulesuite_forms_builder_v0';
@@ -2128,8 +2196,7 @@ final class Shortcodes {
 				absint( $padding ),
 				esc_attr( $body_bg )
 			);
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_shortcode() output (see expand_popup_body_shortcodes()); shortcode callbacks (incl. third-party Forminator + captcha) escape their own markup. The popup body is sanitized on save via sanitize_popup_body_for_storage() (wp_kses_post + <script> strip).
-			echo $rendered_content;
+			echo wp_kses( $rendered_content, self::allowed_embed_html() );
 			echo '</div>';
 
 			echo '</div>'; // .nexulesuite_popup
@@ -3963,8 +4030,7 @@ final class Shortcodes {
 		$this->enqueue_footer_inline_style( 'nexulesuite_livechat-widget', $parts['css'] );
 		$this->enqueue_footer_inline_script( 'nexulesuite_livechat-widget', $parts['js'] );
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- build_livechat_parts() escapes every interpolated value at output.
-		echo $parts['html'];
+		echo wp_kses( $parts['html'], self::allowed_embed_html() );
 	}
 
 	/**
@@ -5064,10 +5130,7 @@ final class Shortcodes {
 						<?php if ( '' !== trim( (string) $ai_contact_form_html ) ) : ?>
 							<?php /* Rendered once (so form scripts init); moved into the chat on demand by aiShowContactForm(). */ ?>
 							<div id="nexulesuite_chat-ai-contactsrc" style="display:none;">
-								<?php
-								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_shortcode() output; shortcode callbacks escape their own markup.
-								echo $ai_contact_form_html;
-								?>
+								<?php echo wp_kses( $ai_contact_form_html, self::allowed_embed_html() ); ?>
 							</div>
 						<?php endif; ?>
 
@@ -5075,10 +5138,7 @@ final class Shortcodes {
 						<?php foreach ( $ai_action_forms as $af_idx => $af_html ) : ?>
 							<?php if ( '' !== trim( (string) $af_html ) ) : ?>
 								<div id="nexulesuite_chat-ai-actionform-<?php echo (int) $af_idx; ?>" class="nexulesuite_chat-ai-actionform-src" style="display:none;">
-									<?php
-									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_shortcode() output; shortcode callbacks escape their own markup.
-									echo $af_html;
-									?>
+									<?php echo wp_kses( $af_html, self::allowed_embed_html() ); ?>
 								</div>
 							<?php endif; ?>
 						<?php endforeach; ?>
@@ -5184,7 +5244,7 @@ final class Shortcodes {
 			var aiInput    = document.getElementById('nexulesuite_chat-ai-input');
 			var aiSend     = document.getElementById('nexulesuite_chat-ai-send');
 			var aiCfg      = {
-				endpoint:  '<?php echo esc_url_raw( rest_url( 'nexulesuite_/v1/ai/chat' ) ); ?>',
+				endpoint:  <?php echo wp_json_encode( esc_url_raw( rest_url( 'nexulesuite_/v1/ai/chat' ) ) ); ?>,
 				nonce:     '<?php echo esc_js( wp_create_nonce( 'nexulesuite_ai' ) ); ?>',
 				restNonce: '<?php echo esc_js( wp_create_nonce( 'wp_rest' ) ); ?>',
 				welcome:   '<?php echo esc_js( $ai_welcome ); ?>',
@@ -5192,7 +5252,7 @@ final class Shortcodes {
 				actions:   <?php echo wp_json_encode( array_values( $ai_actions ) ); ?>,
 				icons:     <?php echo wp_json_encode( $ai_icon_svgs ); ?>,
 				suggestLabel: '<?php echo esc_js( __( 'Try asking', 'nexus-lead-suite' ) ); ?>',
-				leadEndpoint: '<?php echo esc_url_raw( rest_url( 'nexulesuite_/v1/ai/lead' ) ); ?>',
+				leadEndpoint: <?php echo wp_json_encode( esc_url_raw( rest_url( 'nexulesuite_/v1/ai/lead' ) ) ); ?>,
 				lead:      { enabled: <?php echo $ai_lead_enabled ? 'true' : 'false'; ?>, offer: '<?php echo esc_js( $ai_lead_offer ); ?>' },
 				leadGate:  <?php echo $ai_lead_gate ? 'true' : 'false'; ?>,
 				openOnLaunch: <?php echo ! empty( $ai_open_on_launch ) ? 'true' : 'false'; ?>,
@@ -6355,13 +6415,15 @@ BLEED_JS;
 			 * the inner frame uses cqw for height (cqw cannot resolve on the container itself).
 			 * Inner document scales type with frame width; no postMessage height sync.
 			 */
+			wp_enqueue_style(
+				'nexulesuite_chat-embed',
+				nexulesuite_PLUGIN_URL . 'public/css/chat-embed.css',
+				array(),
+				nexulesuite_VERSION
+			);
+
 			return sprintf(
 				'<div class="nexulesuite_chat-embed" style="%1$s">'
-					. '<style>'
-					. '.nexulesuite_chat-embed{display:block;width:100%%;max-width:100%%;min-width:0;container-type:inline-size;margin-bottom:36px;}'
-					. '.nexulesuite_chat-embed__frame{width:100%%;box-sizing:border-box;height:clamp(380px,145cqw,var(--nls-chat-h,680px));min-height:0;overflow:hidden;}'
-					. '.nexulesuite_chat-embed__frame iframe{width:100%%;height:100%%;border:0;display:block;vertical-align:top;}'
-					. '</style>'
 					. '<div class="nexulesuite_chat-embed__frame">'
 						. '<iframe src="%2$s" title="%3$s" loading="lazy" allow="microphone; clipboard-write"></iframe>'
 					. '</div>'
@@ -6398,18 +6460,15 @@ BLEED_JS;
 		 * The JS has no such problem — the footer is exactly where it belongs.
 		 */
 		$this->enqueue_footer_inline_script( 'nexulesuite_livechat-widget', $parts['js'] );
+		$this->enqueue_footer_inline_style( 'nexulesuite_livechat-widget', $parts['css'] );
 
 		return sprintf(
 			'<div class="nexulesuite_chat-inline%1$s">'
-				. '<style>%2$s</style>'
-				. '<div class="nexulesuite_chat-inline__box" style="%3$s">%4$s</div>'
+				. '<div class="nexulesuite_chat-inline__box" style="%2$s">%3$s</div>'
 			. '</div>',
 			$is_bleed ? ' is-bleed' : '',
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- generated stylesheet; values are escaped where interpolated.
-			$parts['css'],
 			esc_attr( $box_style ),
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- build_livechat_parts() escapes at output.
-			$parts['html']
+			wp_kses( $parts['html'], self::allowed_embed_html() )
 		);
 	}
 

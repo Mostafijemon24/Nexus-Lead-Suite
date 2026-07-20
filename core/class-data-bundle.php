@@ -1026,7 +1026,33 @@ final class Data_Bundle {
 			return new \WP_Error( 'nexulesuite_import_uploads_base', __( 'Uploads folder is unavailable for import.', 'nexus-lead-suite' ), array( 'status' => 500 ) );
 		}
 
-		$upload_root = wp_normalize_path( rtrim( $basedir_o, '/\\' ) );
+		// Restored media lives in a plugin-owned folder inside uploads, never loose in the
+		// uploads root and never inside the plugin directory (which is wiped on update).
+		$upload_root = wp_normalize_path( rtrim( $basedir_o, '/\\' ) . '/nexus-lead-suite' );
+		wp_mkdir_p( $upload_root );
+
+		global $wp_filesystem;
+		if ( ! function_exists( 'WP_Filesystem' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+
+		/*
+		 * Only the direct method can run unattended. On hosts that would prompt for
+		 * FTP/SSH credentials we stop with a clear message instead of hanging or
+		 * silently writing nothing.
+		 */
+		if ( 'direct' !== get_filesystem_method( array(), $upload_root, true ) ) {
+			return new \WP_Error(
+				'nexulesuite_import_fs_method',
+				__( 'This site does not allow direct file writes, so embedded media cannot be restored. Ask your host to enable direct filesystem access, or import a bundle without embedded media.', 'nexus-lead-suite' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		WP_Filesystem();
+		if ( ! $wp_filesystem ) {
+			return new \WP_Error( 'nexulesuite_import_fs', __( 'Filesystem is unavailable for import.', 'nexus-lead-suite' ), array( 'status' => 500 ) );
+		}
 
 		foreach ( $items as $idx => $item ) {
 			if ( ! is_array( $item ) ) {
@@ -1068,9 +1094,28 @@ final class Data_Bundle {
 				return new \WP_Error( 'nexulesuite_media_dest', __( 'Rejected media destination outside uploads.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
 			}
 
+			/*
+			 * Only file types WordPress itself would accept on upload may be written, so a
+			 * bundle can never drop a .php/.phtml/.htaccess or other executable file on the
+			 * site. wp_check_filetype() resolves the extension against get_allowed_mime_types().
+			 */
+			$type_check = wp_check_filetype( basename( $dest ) );
+			$ext_ok     = is_array( $type_check ) ? (string) ( $type_check['ext'] ?? '' ) : '';
+			if ( '' === $ext_ok || empty( $type_check['type'] ) ) {
+				return new \WP_Error(
+					'nexulesuite_media_filetype',
+					sprintf(
+						/* translators: %s: file name */
+						__( 'Skipped a file type this site does not allow uploads for: %s. Enable the type in WordPress (for example with an SVG plugin) and import again.', 'nexus-lead-suite' ),
+						basename( $dest )
+					),
+					array( 'status' => 400 )
+				);
+			}
+
 			wp_mkdir_p( $dir );
 
-			if ( file_put_contents( $dest, $bytes ) === false ) {
+			if ( ! $wp_filesystem->put_contents( $dest, $bytes, FS_CHMOD_FILE ) ) {
 				return new \WP_Error(
 					'nexulesuite_import_media_write',
 					sprintf(

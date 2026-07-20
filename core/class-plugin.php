@@ -25,12 +25,10 @@ final class Plugin {
 	 * @return void
 	 */
 	public function run(): void {
-		require_once nexulesuite_PLUGIN_DIR . 'core/class-access-gate.php';
 
 		add_filter( 'rest_json_encode_options', array( $this, 'rest_json_encode_options' ), 10, 2 );
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'plugins_loaded', array( $this, 'init_mailer' ) );
-		add_action( 'wp_logout', array( $this, 'clear_gate_on_logout' ) );
 		add_action( 'plugins_loaded', array( $this, 'migrate_legacy_step_option_keys_once' ), 25 );
 		add_action( 'plugins_loaded', array( $this, 'migrate_legacy_nav_client_toggle_defaults_once' ), 30 );
 		add_action( 'plugins_loaded', array( $this, 'migrate_enable_auto_popup_off_once' ), 35 );
@@ -45,10 +43,7 @@ final class Plugin {
 		add_action( 'init', array( $this, 'schedule_form_submissions_purge' ), 25 );
 		add_action( 'nexulesuite_purge_form_submissions', array( \nexulesuite_\Core\Form_Submissions_Store::class, 'purge_expired' ) );
 		add_action( 'nexulesuite_purge_report_pdfs', array( $this, 'purge_report_pdfs' ) );
-		// Priority -10: ahead of maybe_gate_admin_pages(), which exits on our locked pages.
 		add_action( 'admin_init', array( $this, 'maybe_upgrade_db' ), -10 );
-		add_action( 'admin_init', array( $this, 'maybe_gate_admin_pages' ), 0 );
-		add_action( 'admin_enqueue_scripts', array( \nexulesuite_\Core\Access_Gate::class, 'maybe_enqueue_admin_assets' ) );
 		add_action( 'init', array( $this, 'init_admin' ) );
 		add_action( 'init', array( $this, 'init_public' ) );
 	}
@@ -77,47 +72,7 @@ final class Plugin {
 		}
 	}
 
-	/**
-	 * Clears Nexus unlock cookie on WordPress user logout (next Nexus visit may prompt again).
-	 *
-	 * @return void
-	 */
-	public function clear_gate_on_logout(): void {
-		\nexulesuite_\Core\Access_Gate::clear_unlock_cookie();
-	}
 
-	/**
-	 * Shows the Nexus gate only when opening this plugin's wp-admin pages (matching `page=` slug).
-	 *
-	 * @return void
-	 */
-	public function maybe_gate_admin_pages(): void {
-		if ( ! is_admin() || wp_doing_ajax() ) {
-			return;
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['page'] ) ) : '';
-		if ( '' === $page || ! \nexulesuite_\Core\Access_Gate::is_nexulesuite_admin_page_slug( $page ) ) {
-			return;
-		}
-
-		if ( \nexulesuite_\Core\Access_Gate::maybe_handle_unlock_post() ) {
-			\nexulesuite_\Core\Access_Gate::redirect_after_unlock_if_posted();
-			return;
-		}
-
-		if ( ! \nexulesuite_\Core\Access_Gate::is_unlocked() ) {
-			\nexulesuite_\Core\Access_Gate::render_lock_screen_and_exit(
-				__( 'Nexus Lead Suite — Locked', 'nexus-lead-suite' ),
-				\nexulesuite_\Core\Access_Gate::unlock_post_error_message()
-			);
-		}
-	}
 
 	/**
 	 * Makes REST JSON responses encode reliably for this plugin (invalid UTF-8 in stored options).

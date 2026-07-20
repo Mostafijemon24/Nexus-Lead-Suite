@@ -169,13 +169,6 @@ final class Admin_App {
 			wp_die( esc_html__( 'You do not have permission to access this page.', 'nexus-lead-suite' ) );
 		}
 
-		if ( ! \nexulesuite_\Core\Access_Gate::is_unlocked() ) {
-			\nexulesuite_\Core\Access_Gate::render_lock_screen_and_exit(
-				__( 'Nexus Lead Suite — Locked', 'nexus-lead-suite' ),
-				\nexulesuite_\Core\Access_Gate::unlock_post_error_message()
-			);
-		}
-
 		// Note: WP admin's .wrap applies max-width constraints; our SPA needs full width.
 		echo '<div id="nexulesuite_admin-root"></div>';
 	}
@@ -186,11 +179,6 @@ final class Admin_App {
 	 * @return void
 	 */
 	public function ajax_popup_preview(): void {
-		if ( ! \nexulesuite_\Core\Access_Gate::is_unlocked() ) {
-			wp_send_json_error( array( 'message' => __( 'Plugin is locked.', 'nexus-lead-suite' ) ), 403 );
-			return;
-		}
-
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Forbidden.', 'nexus-lead-suite' ) ), 403 );
 			return;
@@ -201,7 +189,9 @@ final class Admin_App {
 			return;
 		}
 
-		$content = isset( $_POST['content'] ) ? wp_unslash( (string) $_POST['content'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above; raw HTML for shortcode preview.
+		// Nonce verified above. Sanitised with wp_kses_post(), which drops <script>,
+		// <style>, event handlers and any other unsafe markup before the preview is built.
+		$content = isset( $_POST['content'] ) ? wp_kses_post( wp_unslash( (string) $_POST['content'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified above.
 
 		$data = \nexulesuite_\build_popup_preview_payload( $content );
 
@@ -417,6 +407,13 @@ final class Admin_App {
 	private function enqueue_admin_global_font(): void {
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-global-font.php';
 		\nexulesuite_\Core\Global_Font::enqueue( 'nexulesuite_global-font' );
+
+		// Font picker previews each family in its own typeface, so the admin screens
+		// declare every bundled face. All files are served from this plugin folder.
+		wp_add_inline_style(
+			'nexulesuite_global-font',
+			\nexulesuite_\Core\Global_Font::get_all_font_faces_css()
+		);
 	}
 
 	/**

@@ -87,9 +87,6 @@ $nexulesuite_ca_meta    = is_array( $nexulesuite_ca_report['meta'] ?? null ) ? $
 	<meta name="robots" content="noindex,nofollow">
 	<title><?php echo esc_html( $nexulesuite_ca_site_title ); ?> — <?php esc_html_e( 'Report', 'nexus-lead-suite' ); ?></title>
 	<?php wp_head(); ?>
-	<?php if ( $nexulesuite_ca_print ) : ?>
-		<script>window.addEventListener('load', function () { window.print(); });</script>
-	<?php endif; ?>
 </head>
 <body class="nexulesuite_client-gateway<?php echo $nexulesuite_ca_print ? ' is-print' : ''; ?>">
 	<div class="wrap">

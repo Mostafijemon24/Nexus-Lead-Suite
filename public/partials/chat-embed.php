@@ -44,8 +44,7 @@ do_action( 'wp_enqueue_scripts' );
 <body class="nexulesuite_chat-embed-doc">
 
 	<?php
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by build_livechat_parts(), which escapes at output.
-	echo $nexulesuite_chat_embed_html;
+	echo wp_kses( $nexulesuite_chat_embed_html, \nexulesuite_\Public\Shortcodes::allowed_embed_html() );
 
 	wp_print_footer_scripts();
 	?>

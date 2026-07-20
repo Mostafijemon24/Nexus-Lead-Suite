@@ -576,6 +576,15 @@ final class Client_Access {
 			true
 		);
 
+		// Auto-print view: attached to the enqueued handle instead of an inline <script> tag.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only view flag.
+		if ( isset( $_GET['print'] ) && '1' === sanitize_text_field( wp_unslash( (string) $_GET['print'] ) ) ) {
+			wp_add_inline_script(
+				'nexulesuite_client-access-gateway',
+				"window.addEventListener('load', function () { window.print(); });"
+			);
+		}
+
 		wp_localize_script(
 			'nexulesuite_client-access-gateway',
 			'nexulesuite_ClientPdfCfg',

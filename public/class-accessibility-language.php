@@ -28,7 +28,7 @@ final class Accessibility_Language {
 	 */
 	public function register_hooks(): void {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ), 40 );
-		add_action( 'wp_head', array( $this, 'print_early_translate_css' ), 1 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'print_early_translate_css' ), 1 );
 		add_action( 'wp_footer', array( $this, 'render_markup' ), 40 );
 	}
 
@@ -45,7 +45,17 @@ final class Accessibility_Language {
 		if ( empty( $settings['languageEnabled'] ) ) {
 			return;
 		}
-		echo '<style id="nexulesuite-gt-anti-flicker">.goog-te-banner-frame,iframe.goog-te-banner-frame,body>.skiptranslate:not(#nexulesuite_a11y-root):not(.nexulesuite_gt-host),.goog-te-spinner-pos{display:none!important;visibility:hidden!important;height:0!important}html.translated-ltr,html.translated-rtl{margin-top:0!important}body{top:0!important;position:static!important}html.translated-ltr font,html.translated-rtl font{background:transparent!important;box-shadow:none!important}#nexulesuite_a11y-root{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;overflow:visible!important}.nexulesuite_a11y-dock{display:block!important;visibility:visible!important;opacity:1!important;overflow:visible!important}.nexulesuite_a11y-fab,.nexulesuite_a11y-lang-btn{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;aspect-ratio:1/1!important;border-radius:50%!important;box-sizing:border-box!important;padding:0!important}</style>';
+
+		/*
+		 * Attached to the plugin's own registered stylesheet rather than printed as a raw
+		 * <style> tag, so it goes through the core enqueue pipeline while still landing in
+		 * wp_head() early enough to prevent the Google Translate banner from flashing.
+		 */
+		if ( ! wp_style_is( 'nexulesuite_a11y-anti-flicker', 'registered' ) ) {
+			wp_register_style( 'nexulesuite_a11y-anti-flicker', false, array(), nexulesuite_VERSION ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+		}
+		wp_enqueue_style( 'nexulesuite_a11y-anti-flicker' );
+		wp_add_inline_style( 'nexulesuite_a11y-anti-flicker', '.goog-te-banner-frame,iframe.goog-te-banner-frame,body>.skiptranslate:not(#nexulesuite_a11y-root):not(.nexulesuite_gt-host),.goog-te-spinner-pos{display:none!important;visibility:hidden!important;height:0!important}html.translated-ltr,html.translated-rtl{margin-top:0!important}body{top:0!important;position:static!important}html.translated-ltr font,html.translated-rtl font{background:transparent!important;box-shadow:none!important}#nexulesuite_a11y-root{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;overflow:visible!important}.nexulesuite_a11y-dock{display:block!important;visibility:visible!important;opacity:1!important;overflow:visible!important}.nexulesuite_a11y-fab,.nexulesuite_a11y-lang-btn{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;aspect-ratio:1/1!important;border-radius:50%!important;box-sizing:border-box!important;padding:0!important}' );
 	}
 
 	/**
@@ -499,7 +509,13 @@ final class Accessibility_Language {
 		}
 
 		$settings = self::get_settings();
-		if ( empty( $settings['accessibilityEnabled'] ) && empty( $settings['languageEnabled'] ) ) {
+		$general  = get_option( 'nexulesuite_general_settings_v1', array() );
+		if ( ! is_array( $general ) ) {
+			$general = array();
+		}
+		$livechat_on   = ! empty( $general['enableLivechat'] );
+		$livechat_dock = $livechat_on && ! empty( $settings['liveChatInDock'] );
+		if ( empty( $settings['accessibilityEnabled'] ) && empty( $settings['languageEnabled'] ) && ! $livechat_dock ) {
 			return;
 		}
 
@@ -512,14 +528,16 @@ final class Accessibility_Language {
 			$ver
 		);
 
+		/*
+		 * The dyslexia-friendly reading mode renders in Lexend. The font file ships in
+		 * assets/fonts/ and is declared locally — no third-party request is made.
+		 */
 		if ( ! empty( $settings['accessibilityEnabled'] ) ) {
-			wp_enqueue_style(
-				'nexulesuite_a11y-lexend',
-				'https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap',
-				array(),
-				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- third-party CDN asset; it is versioned by Google, and appending our own ?ver= would only bust their cache.
-				null
-			);
+			require_once nexulesuite_PLUGIN_DIR . 'core/class-global-font.php';
+			$lexend_css = \nexulesuite_\Core\Global_Font::get_font_face_css( 'Lexend' );
+			if ( '' !== $lexend_css ) {
+				wp_add_inline_style( 'nexulesuite_a11y-lang', $lexend_css );
+			}
 		}
 
 		wp_enqueue_script(
@@ -542,12 +560,6 @@ final class Accessibility_Language {
 				'flag'  => $catalog[ $code ]['flag'],
 			);
 		}
-
-		$general = get_option( 'nexulesuite_general_settings_v1', array() );
-		if ( ! is_array( $general ) ) {
-			$general = array();
-		}
-		$livechat_on = ! empty( $general['enableLivechat'] );
 
 		wp_localize_script(
 			'nexulesuite_a11y-lang',
@@ -646,7 +658,12 @@ final class Accessibility_Language {
 		}
 
 		$settings = self::get_settings();
-		if ( empty( $settings['accessibilityEnabled'] ) && empty( $settings['languageEnabled'] ) ) {
+		$general  = get_option( 'nexulesuite_general_settings_v1', array() );
+		if ( ! is_array( $general ) ) {
+			$general = array();
+		}
+		$livechat_dock = ! empty( $general['enableLivechat'] ) && ! empty( $settings['liveChatInDock'] );
+		if ( empty( $settings['accessibilityEnabled'] ) && empty( $settings['languageEnabled'] ) && ! $livechat_dock ) {
 			return;
 		}
 

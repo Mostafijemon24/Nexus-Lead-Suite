@@ -31,7 +31,7 @@ final class Plugin_List_Links {
 	}
 
 	/**
-	 * Prepends Settings (opens plugin settings; {@see Access_Gate} runs on that admin page).
+	 * Prepends a Settings link that opens the plugin settings screen.
 	 *
 	 * @param array<int, string> $links Existing action links.
 	 * @return array<int, string>
