@@ -1,0 +1,24 @@
+.nexulesuite_chat-embed {
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	container-type: inline-size;
+	margin-bottom: 36px;
+}
+
+.nexulesuite_chat-embed__frame {
+	width: 100%;
+	box-sizing: border-box;
+	height: clamp(380px, 145cqw, var(--nls-chat-h, 680px));
+	min-height: 0;
+	overflow: hidden;
+}
+
+.nexulesuite_chat-embed__frame iframe {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	display: block;
+	vertical-align: top;
+}

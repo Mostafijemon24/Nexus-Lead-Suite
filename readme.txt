@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.2.2
+Stable tag: 1.2.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,14 +29,16 @@ The admin experience is a modern single-page app (React + Vite, shipped as compi
 
 == External services ==
 
-This plugin can optionally connect to third-party anti-spam services when you enable them in the form builder or settings:
+This plugin can connect to the third-party services listed below. **None of them are contacted unless you explicitly enable the matching feature and enter your own credentials.** With a default installation the plugin makes no outbound requests at all.
 
 = Google reCAPTCHA =
 
 When reCAPTCHA is enabled on a form, the visitor's browser loads Google's reCAPTCHA script and sends a response token to your WordPress site on form submit. Your server then sends that token (and your site/secret keys) to Google's verification API to confirm the submission is not automated spam.
 
 * Service: Google reCAPTCHA (Google LLC)
+* Endpoints: https://www.google.com/recaptcha/
 * Data sent: reCAPTCHA response token, site key, secret key (server-side), and the visitor IP address as required by Google's API
+* When: on page load and on form submit, only on forms where you enabled reCAPTCHA
 * Terms of Service: https://policies.google.com/terms
 * Privacy Policy: https://policies.google.com/privacy
 
@@ -45,11 +47,71 @@ When reCAPTCHA is enabled on a form, the visitor's browser loads Google's reCAPT
 When Turnstile is enabled on a form, the visitor's browser loads Cloudflare's Turnstile widget and sends a response token to your WordPress site on form submit. Your server then sends that token (and your site/secret keys) to Cloudflare's siteverify endpoint to validate the submission.
 
 * Service: Cloudflare Turnstile (Cloudflare, Inc.)
+* Endpoints: https://challenges.cloudflare.com/
 * Data sent: Turnstile response token, site key, secret key (server-side), and the visitor IP address as required by Cloudflare's API
+* When: on page load and on form submit, only on forms where you enabled Turnstile
 * Terms of Service: https://www.cloudflare.com/website-terms/
 * Privacy Policy: https://www.cloudflare.com/privacypolicy/
 
-No data is sent to these services unless you configure and enable them. Webhook URLs you add in settings are separate endpoints you control; the plugin POSTs sanitized form submission payloads only to URLs you provide.
+= Google Website Translator =
+
+If you turn on the language switcher in Accessibility & Language settings, the visitor's browser loads Google's Website Translator widget so page text can be machine-translated. Translation is performed on Google's servers and cannot be done locally by the plugin.
+
+* Service: Google Website Translator (Google LLC)
+* Endpoints: https://translate.google.com/translate_a/element.js
+* Data sent: the page text the visitor asks to translate, plus the request metadata Google's widget collects (IP address, user agent)
+* When: only on front-end page views, and only while the language switcher setting is enabled
+* Terms of Service: https://policies.google.com/terms
+* Privacy Policy: https://policies.google.com/privacy
+
+= AI chat providers (optional AI Chatbot feature) =
+
+The AI Chatbot is disabled by default. If you enable it and choose a provider in Settings -> AI Chatbot, your server sends chat requests to that provider's API using the API key you supply. The provider generates the reply and, where supported, the embedding vectors used to search your own site content; this processing cannot be performed locally by the plugin.
+
+Data sent on each request: the visitor's message, recent conversation turns, the system prompt you configured, and matching excerpts of your own published content. When training the knowledge base, the text of your published posts, pages and products is sent to the selected embedding provider. Requests are made only while the AI Chatbot is enabled and a provider and key are configured. No data is sent to any provider you have not selected.
+
+You select exactly one chat provider (and optionally one embedding provider) from:
+
+* OpenAI (OpenAI, L.L.C.) - https://api.openai.com/v1 - Terms: https://openai.com/policies/terms-of-use - Privacy: https://openai.com/policies/privacy-policy
+* Anthropic Claude (Anthropic PBC) - https://api.anthropic.com/v1 - Terms: https://www.anthropic.com/legal/consumer-terms - Privacy: https://www.anthropic.com/legal/privacy
+* Google Gemini (Google LLC) - https://generativelanguage.googleapis.com/v1beta - Terms: https://ai.google.dev/gemini-api/terms - Privacy: https://policies.google.com/privacy
+* Groq (Groq, Inc.) - https://api.groq.com/openai/v1 - Terms: https://groq.com/terms-of-use/ - Privacy: https://groq.com/privacy-policy/
+* DeepSeek (Hangzhou DeepSeek Artificial Intelligence Co., Ltd.) - https://api.deepseek.com/v1 - Terms: https://platform.deepseek.com/downloads/DeepSeek%20Terms%20of%20Use.html - Privacy: https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html
+* Mistral AI (Mistral AI SAS) - https://api.mistral.ai/v1 - Terms: https://mistral.ai/terms - Privacy: https://mistral.ai/terms#privacy-policy
+* Together AI (Together Computer, Inc.) - https://api.together.xyz/v1 - Terms: https://www.together.ai/terms-of-service - Privacy: https://www.together.ai/privacy
+* OpenRouter (OpenRouter, Inc.) - https://openrouter.ai/api/v1 - Terms: https://openrouter.ai/terms - Privacy: https://openrouter.ai/privacy
+* xAI Grok (X.AI Corp.) - https://api.x.ai/v1 - Terms: https://x.ai/legal/terms-of-service - Privacy: https://x.ai/legal/privacy-policy
+* Voyage AI (Voyage AI Inc., embeddings only) - https://api.voyageai.com/v1 - Terms: https://www.voyageai.com/terms-of-service - Privacy: https://www.voyageai.com/privacy-policy
+
+Alternatively you may point the AI Chatbot at a self-hosted Nexus AI Server (FastAPI + Ollama) running on infrastructure you control. In that mode the plugin sends the same data only to the base URL you enter; no third party is involved.
+
+= Google Gmail / Workspace SMTP (OAuth 2.0) =
+
+If you choose the Gmail mailer in Settings -> SMTP, the plugin sends outbound site email through Google's servers and uses Google's OAuth 2.0 endpoints to obtain and refresh an access token with the client ID and secret you supply.
+
+* Service: Google Gmail API / OAuth 2.0 (Google LLC)
+* Endpoints: https://accounts.google.com/o/oauth2/v2/auth, https://oauth2.googleapis.com/token, https://mail.google.com/
+* Data sent: your OAuth client ID and secret, authorization and refresh tokens, and the contents of the emails your site sends
+* When: only while the Gmail mailer is enabled and connected
+* Terms of Service: https://policies.google.com/terms
+* Privacy Policy: https://policies.google.com/privacy
+
+= Microsoft 365 / Outlook SMTP (OAuth 2.0) =
+
+If you choose the Outlook mailer in Settings -> SMTP, the plugin sends outbound site email through Microsoft's servers and uses Microsoft's OAuth 2.0 endpoints to obtain and refresh an access token with the client ID and secret you supply.
+
+* Service: Microsoft 365 / Outlook (Microsoft Corporation)
+* Endpoints: https://login.microsoftonline.com/common/oauth2/v2.0/authorize, https://login.microsoftonline.com/common/oauth2/v2.0/token, https://outlook.office.com/
+* Data sent: your OAuth client ID and secret, authorization and refresh tokens, and the contents of the emails your site sends
+* When: only while the Outlook mailer is enabled and connected
+* Terms of Service: https://www.microsoft.com/en-us/servicesagreement
+* Privacy Policy: https://privacy.microsoft.com/privacystatement
+
+= Your own SMTP server and webhook endpoints =
+
+Any custom SMTP host, or any CRM / webhook URL you enter in the form or global settings, is an endpoint you choose and control. The plugin POSTs the sanitized form submission payload only to URLs you have entered yourself. It is your responsibility to ensure those destinations comply with your privacy policy.
+
+The plugin does not contact the author's servers, does not include analytics or telemetry, and does not load fonts or other assets from third-party CDNs. All webfonts ship inside the plugin (assets/fonts/) under the SIL Open Font License 1.1 and are served from your own site.
 
 == Source Code ==
 
@@ -101,6 +163,32 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 == Screenshots ==
 
 1. Dashboard (coming soon)
+
+= 1.2.6 =
+* Acc & Lang: single “Enable Live Chat” toggle (default off); chat can show in the Acc & Lang dock without enabling Accessibility.
+* AI Live Chat page: removed Enable/Dock toggles; keeps button style and embed codes.
+* Includes 1.2.5 live-chat master-switch wiring (default off) via Acc & Lang / Live Chat API.
+
+= 1.2.5 =
+* Live Chat: admin master switch “Enable Live Chat widget” (default off) so the floating chat is not shown until you turn it on.
+* Live Chat: clearer dock-placement labels (placement only — does not enable the widget).
+* Live Chat settings save/load the master switch with Acc & Lang / Live Chat API.
+
+= 1.2.4 =
+* Global fonts are now bundled with the plugin (23 families, SIL OFL 1.1, WOFF2 latin subset) and served from your own server — the feature works again with no third-party request.
+* Accessibility reading mode gets its Lexend typeface back, also from the bundled file.
+* Embedded-media import stops with a clear message on hosts that cannot write directly, instead of failing silently.
+* Clearer error when a bundle contains a file type the site does not allow uploads for.
+
+= 1.2.3 =
+* Removed the admin unlock/password gate entirely; every feature is available with no restriction.
+* Removed all Google Fonts requests from the admin and front end; the global font feature now uses locally available fonts only.
+* Removed the per-form Custom CSS and Custom Header/Footer HTML fields; use the theme Customizer's Additional CSS and the block editor instead.
+* readme.txt: full External services disclosure for every AI provider, Google Translate, and the Gmail/Outlook OAuth mailers.
+* Bundle import now writes only to a plugin-owned uploads folder, rejects file types WordPress would not accept, and uses WP_Filesystem.
+* Share links are now checked against their granted sections before activity rows are returned.
+* Late-escaped all embedded shortcode markup with wp_kses() and sanitized preview input with wp_kses_post().
+* Replaced every inline <style>/<script> tag with wp_add_inline_style() / wp_add_inline_script() or an enqueued stylesheet.
 
 = 1.2.2 =
 * Display conditions: Default tab applies the same rules to all four dock buttons at once.

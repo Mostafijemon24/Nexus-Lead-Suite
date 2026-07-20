@@ -49,67 +49,148 @@ final class Global_Font {
 	}
 
 	/**
-	 * Google Font weight axes per family.
+	 * Families bundled with the plugin, in load order.
 	 *
-	 * @return array<string, string>
+	 * Each entry: file basename (without extension) under assets/fonts/, the CSS
+	 * generic fallback, and the font-weight range the file covers. Variable files
+	 * carry the whole 100-900 axis in one request; fixed-weight families list the
+	 * individual files they ship.
+	 *
+	 * Nothing here is fetched remotely — every file lives in assets/fonts/.
+	 *
+	 * @return array<string, array{files: array<string, string>, fallback: string, variable: bool}>
 	 */
-	public static function get_weights_map(): array {
-		return array(
-			'Inter'               => '400;500;600;700',
-			'Roboto'              => '400;500;700',
-			'Open Sans'           => '400;600;700',
-			'Lato'                => '400;700',
-			'Montserrat'          => '400;500;600;700',
-			'Poppins'             => '400;500;600;700',
-			'Raleway'             => '400;600;700',
-			'Nunito'              => '400;600;700',
-			'Ubuntu'              => '400;500;700',
-			'Rubik'               => '400;500;600;700',
-			'Work Sans'           => '400;500;600;700',
-			'DM Sans'             => '400;500;700',
-			'Figtree'             => '400;500;600;700',
-			'Plus Jakarta Sans'   => '400;500;600;700',
-			'Outfit'              => '400;500;600;700',
-			'Barlow'              => '400;500;600;700',
-			'Manrope'             => '400;500;600;700',
-			'Mulish'              => '400;600;700',
-			'Quicksand'           => '400;500;600;700',
-			'Cabin'               => '400;500;600;700',
-			'Karla'               => '400;500;700',
-			'Josefin Sans'        => '400;600;700',
-			'Exo 2'               => '400;500;600;700',
-			'Space Grotesk'       => '400;500;600;700',
-			'Noto Sans'           => '400;700',
-			'IBM Plex Sans'       => '400;500;600;700',
-			'Syne'                => '400;500;600;700;800',
-			'Oswald'              => '400;500;600;700',
-			'Bebas Neue'          => '400',
-			'Anton'               => '400',
-			'Fjalla One'          => '400',
-			'Righteous'           => '400',
-			'Titan One'           => '400',
-			'Secular One'         => '400',
-			'Abril Fatface'       => '400',
-			'Playfair Display'    => '400;600;700',
-			'Merriweather'        => '400;700',
-			'Lora'                => '400;500;600;700',
-			'PT Serif'            => '400;700',
-			'Libre Baskerville'   => '400;700',
-			'Cormorant Garamond'  => '400;500;600;700',
-			'EB Garamond'         => '400;500;600;700',
-			'Spectral'            => '400;500;600;700',
-			'Cinzel'              => '400;600;700',
-			'Crimson Text'        => '400;600;700',
-			'Dancing Script'      => '400;600;700',
-			'Pacifico'            => '400',
-			'Caveat'              => '400;600;700',
-			'Satisfy'             => '400',
-			'Permanent Marker'    => '400',
-			'Inconsolata'         => '400;600;700',
-			'Source Code Pro'     => '400;600;700',
-			'JetBrains Mono'      => '400;500;700',
-			'Fira Code'           => '400;500;700',
+	public static function get_bundled_fonts(): array {
+		$variable = array(
+			'Inter'            => 'sans-serif',
+			'Roboto'           => 'sans-serif',
+			'Open Sans'        => 'sans-serif',
+			'Montserrat'       => 'sans-serif',
+			'Nunito'           => 'sans-serif',
+			'Work Sans'        => 'sans-serif',
+			'Figtree'          => 'sans-serif',
+			'Outfit'           => 'sans-serif',
+			'Manrope'          => 'sans-serif',
+			'Raleway'          => 'sans-serif',
+			'Rubik'            => 'sans-serif',
+			'Lexend'           => 'sans-serif',
+			'Oswald'           => 'sans-serif',
+			'Playfair Display' => 'serif',
+			'Lora'             => 'serif',
+			'Merriweather'     => 'serif',
+			'Dancing Script'   => 'cursive',
+			'JetBrains Mono'   => 'monospace',
+			'Source Code Pro'  => 'monospace',
 		);
+
+		$fonts = array();
+
+		foreach ( $variable as $family => $fallback ) {
+			$slug              = self::family_slug( $family );
+			$fonts[ $family ] = array(
+				'files'    => array( '100 900' => $slug . '-latin-wght-normal.woff2' ),
+				'fallback' => $fallback,
+				'variable' => true,
+			);
+		}
+
+		$fonts['Poppins'] = array(
+			'files'    => array(
+				'400' => 'poppins-latin-400-normal.woff2',
+				'500' => 'poppins-latin-500-normal.woff2',
+				'600' => 'poppins-latin-600-normal.woff2',
+				'700' => 'poppins-latin-700-normal.woff2',
+			),
+			'fallback' => 'sans-serif',
+			'variable' => false,
+		);
+		$fonts['Lato'] = array(
+			'files'    => array(
+				'400' => 'lato-latin-400-normal.woff2',
+				'700' => 'lato-latin-700-normal.woff2',
+			),
+			'fallback' => 'sans-serif',
+			'variable' => false,
+		);
+		$fonts['Bebas Neue'] = array(
+			'files'    => array( '400' => 'bebas-neue-latin-400-normal.woff2' ),
+			'fallback' => 'sans-serif',
+			'variable' => false,
+		);
+		$fonts['Pacifico'] = array(
+			'files'    => array( '400' => 'pacifico-latin-400-normal.woff2' ),
+			'fallback' => 'cursive',
+			'variable' => false,
+		);
+
+		ksort( $fonts );
+
+		return $fonts;
+	}
+
+	/**
+	 * Lowercase, hyphenated file slug for a family name.
+	 *
+	 * @param string $family Family name.
+	 * @return string
+	 */
+	private static function family_slug( string $family ): string {
+		return str_replace( ' ', '-', strtolower( $family ) );
+	}
+
+	/**
+	 * Whether a family ships with the plugin.
+	 *
+	 * @param string $font Family name.
+	 * @return bool
+	 */
+	public static function is_bundled( string $font ): bool {
+		return isset( self::get_bundled_fonts()[ $font ] );
+	}
+
+	/**
+	 * Builds the @font-face block for one bundled family.
+	 *
+	 * @param string $font Family name.
+	 * @return string CSS, or '' when the family is not bundled.
+	 */
+	public static function get_font_face_css( string $font ): string {
+		$fonts = self::get_bundled_fonts();
+		if ( ! isset( $fonts[ $font ] ) ) {
+			return '';
+		}
+
+		$css = '';
+		foreach ( $fonts[ $font ]['files'] as $weight => $file ) {
+			$css .= '@font-face{'
+				. "font-family:'" . $font . "';"
+				. 'font-style:normal;'
+				. 'font-display:swap;'
+				. 'font-weight:' . $weight . ';'
+				. "src:url('" . esc_url( nexulesuite_PLUGIN_URL . 'assets/fonts/' . $file ) . "') format('woff2');"
+				. 'unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;'
+				. '}';
+		}
+
+		return $css;
+	}
+
+	/**
+	 * @font-face blocks for every bundled family.
+	 *
+	 * Used on the plugin's own admin screens so the font picker can preview each
+	 * family in its own typeface. Front-end pages only ever load the one family
+	 * that is actually selected.
+	 *
+	 * @return string
+	 */
+	public static function get_all_font_faces_css(): string {
+		$css = '';
+		foreach ( array_keys( self::get_bundled_fonts() ) as $family ) {
+			$css .= self::get_font_face_css( $family );
+		}
+
+		return $css;
 	}
 
 	/**
@@ -117,8 +198,11 @@ final class Global_Font {
 	 * @return string
 	 */
 	public static function get_weights_for_font( string $font ): string {
-		$map = self::get_weights_map();
-		return isset( $map[ $font ] ) ? $map[ $font ] : '400;700';
+		$fonts = self::get_bundled_fonts();
+		if ( ! isset( $fonts[ $font ] ) ) {
+			return '400;700';
+		}
+		return implode( ';', array_keys( $fonts[ $font ]['files'] ) );
 	}
 
 	/**
@@ -126,7 +210,10 @@ final class Global_Font {
 	 * @return string
 	 */
 	public static function get_font_stack( string $font ): string {
-		return "'" . esc_attr( $font ) . "', sans-serif";
+		$fonts    = self::get_bundled_fonts();
+		$fallback = isset( $fonts[ $font ] ) ? $fonts[ $font ]['fallback'] : 'sans-serif';
+
+		return "'" . esc_attr( $font ) . "', " . $fallback;
 	}
 
 	/**
@@ -161,7 +248,7 @@ final class Global_Font {
 	}
 
 	/**
-	 * Enqueues the Google Font stylesheet and returns inline CSS for the handle.
+	 * Registers an inline-only style handle and returns the global-font CSS.
 	 *
 	 * @param string      $style_handle Enqueued style handle to attach inline CSS to.
 	 * @param string|null $font         Optional font override.
@@ -173,17 +260,16 @@ final class Global_Font {
 			$font = self::DEFAULT_FONT;
 		}
 
-		$weights = self::get_weights_for_font( $font );
-		$gf_url  = 'https://fonts.googleapis.com/css2?family=' . rawurlencode( $font ) . ':wght@' . $weights . '&display=swap';
+		/*
+		 * The font file ships inside the plugin (assets/fonts/) and is declared with a
+		 * local @font-face rule. No request leaves the visitor's browser for a
+		 * third-party CDN, per the WordPress.org plugin guidelines.
+		 */
+		wp_register_style( 'nexulesuite_global-font', false, array(), nexulesuite_VERSION ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+		wp_enqueue_style( 'nexulesuite_global-font' );
 
-		wp_enqueue_style(
-			'nexulesuite_global-font',
-			esc_url( $gf_url ),
-			array(),
-			null // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-		);
-
-		$css = ':root { --nexulesuite_font: ' . self::get_font_stack( $font ) . '; }' . "\n";
+		$css = self::get_font_face_css( $font );
+		$css .= ':root { --nexulesuite_font: ' . self::get_font_stack( $font ) . '; }' . "\n";
 
 		if ( is_admin() ) {
 			$css .= self::get_admin_font_rules();

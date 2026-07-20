@@ -1645,6 +1645,13 @@ final class Rest_Api {
 			);
 		}
 
+		/* Live Chat master switch lives in general settings (default off). */
+		$general = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
+		if ( ! is_array( $general ) ) {
+			$general = array();
+		}
+		$settings['enableLivechat'] = ! empty( $general['enableLivechat'] );
+
 		return new \WP_REST_Response(
 			array(
 				'settings'  => $settings,
@@ -1670,15 +1677,24 @@ final class Rest_Api {
 		$clean = \nexulesuite_\Public\Accessibility_Language::sanitize( $input );
 		update_option( \nexulesuite_\Public\Accessibility_Language::OPTION_KEY, $clean, false );
 
+		$general = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
+		if ( ! is_array( $general ) ) {
+			$general = array();
+		}
+
+		/* Master livechat switch (default off) — only when the Live Chat UI sends the key. */
+		if ( array_key_exists( 'enableLivechat', $input ) ) {
+			$general['enableLivechat'] = ! empty( $input['enableLivechat'] );
+		}
+
 		/* Keep livechat panel/trigger avatar in sync with dock button image. */
 		if ( ! empty( $clean['liveChatButtonImage'] ) ) {
-			$general = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
-			if ( ! is_array( $general ) ) {
-				$general = array();
-			}
 			$general['chatButtonImage'] = (string) $clean['liveChatButtonImage'];
-			update_option( self::GENERAL_SETTINGS_OPTION_KEY, $general, false );
 		}
+
+		update_option( self::GENERAL_SETTINGS_OPTION_KEY, $general, false );
+
+		$clean['enableLivechat'] = ! empty( $general['enableLivechat'] );
 
 		return new \WP_REST_Response(
 			array(
@@ -5646,7 +5662,9 @@ final class Rest_Api {
 			}
 		}
 
-		$data = \nexulesuite_\build_popup_preview_payload( $raw );
+		// Sanitised before rendering: wp_kses_post() removes script/style tags,
+		// event-handler attributes and any other unsafe markup.
+		$data = \nexulesuite_\build_popup_preview_payload( wp_kses_post( $raw ) );
 
 		return rest_ensure_response(
 			array(
@@ -5662,9 +5680,6 @@ final class Rest_Api {
 	 * @return bool
 	 */
 	public function can_manage_settings(): bool {
-		if ( ! \nexulesuite_\Core\Access_Gate::is_unlocked() ) {
-			return false;
-		}
 		return current_user_can( 'manage_options' );
 	}
 
@@ -6049,14 +6064,12 @@ final class Rest_Api {
 			$styling_in  = isset( $form['styling'] ) && is_array( $form['styling'] ) ? $form['styling'] : array();
 			$styling_out = $this->sanitize_form_styling( $styling_in );
 
-			$custom_html_in = isset( $form['customHTML'] ) && is_array( $form['customHTML'] ) ? $form['customHTML'] : array();
-			$custom_html_out = array(
-				'header' => wp_kses_post( (string) ( $custom_html_in['header'] ?? '' ) ),
-				'footer' => wp_kses_post( (string) ( $custom_html_in['footer'] ?? '' ) ),
-			);
+			// Custom header/footer HTML is intentionally not accepted or stored: arbitrary
+			// markup insertion is not permitted through the plugin interface.
 
-			$custom_css_out = isset( $form['customCSS'] ) ? sanitize_textarea_field( (string) $form['customCSS'] ) : '';
-			$terms_out      = isset( $form['termsConditionText'] ) ? sanitize_textarea_field( (string) $form['termsConditionText'] ) : '';
+			// Custom CSS is intentionally not accepted or stored: arbitrary style/code
+			// insertion is not permitted. Use the theme Customizer's Additional CSS instead.
+			$terms_out = isset( $form['termsConditionText'] ) ? sanitize_textarea_field( (string) $form['termsConditionText'] ) : '';
 
 			$steps_in = isset( $form['steps'] ) && is_array( $form['steps'] ) ? $form['steps'] : array();
 			$steps_out = array();
@@ -6149,8 +6162,6 @@ final class Rest_Api {
 				'notificationEmail' => $notification_email_raw,
 				'crmWebhookUrl'     => $crm_webhook,
 				'styling'           => $styling_out,
-				'customHTML'        => $custom_html_out,
-				'customCSS'         => $custom_css_out,
 				'termsConditionText'=> $terms_out,
 				'confirmations'     => $confirmations_out,
 				'emailRoutes'       => $email_routes_out,
@@ -6880,6 +6891,28 @@ final class Rest_Api {
 	 */
 	public function list_activities_report( \WP_REST_Request $request ): \WP_REST_Response {
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-activities-store.php';
+
+		/*
+		 * can_access_reports_rest() only proves the token is valid. A share link is also
+		 * scoped to a set of sections, so re-check that this link was granted "activities"
+		 * before returning any rows; otherwise a link created for summary-only access
+		 * could read the full activity log.
+		 */
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$permitted = $this->permitted_report_sections( $request );
+			if ( ! in_array( 'activities', $permitted, true ) ) {
+				$denied = rest_ensure_response(
+					array(
+						'success' => false,
+						'code'    => 'nexulesuite_section_forbidden',
+						'message' => __( 'This link cannot view activities.', 'nexus-lead-suite' ),
+					)
+				);
+				$denied->set_status( 403 );
+
+				return $denied;
+			}
+		}
 
 		$tab    = $this->sanitize_activity_tab( (string) $request->get_param( 'tab' ) );
 		$from   = sanitize_text_field( (string) $request->get_param( 'dateFrom' ) );

@@ -997,10 +997,15 @@
 	var dock;
 
 	function initA11y() {
-		if (!cfg.accessibilityEnabled) return;
-		loadState();
-		buildMask();
-		panel = buildPanel();
+		var wantsChatDock = !!(cfg.liveChatInDock && cfg.liveChatAvailable);
+		var wantsCustomDock = !!(cfg.customButtonEnabled && cfg.customButtonUrl);
+		if (!cfg.accessibilityEnabled && !wantsChatDock && !wantsCustomDock) return;
+
+		if (cfg.accessibilityEnabled) {
+			loadState();
+			buildMask();
+			panel = buildPanel();
+		}
 
 		var pos = cfg.buttonPosition || 'right';
 		var btnSizeRaw = parseInt(cfg.buttonSize, 10);
@@ -1021,20 +1026,23 @@
 		document.documentElement.setAttribute('data-nls-a11y-pos', pos);
 		document.documentElement.style.setProperty('--nls-a11y-dock-btn', btnSize + 'px');
 
-		var a11yTip = t('accessibility', 'Accessibility');
-		fab = el('button', {
-			type: 'button',
-			className: 'nexulesuite_a11y-fab',
-			'aria-label': t('openPanel', 'Open accessibility options'),
-			'aria-expanded': 'false',
-			'aria-controls': 'nexulesuite-a11y-panel',
-			onClick: togglePanel,
-			html:
-				'<img class="nexulesuite_a11y-fab__icon" src="' +
-				((cfg.icons && cfg.icons.accessibility) || '') +
-				'" alt="" width="26" height="26" decoding="async" />' +
-				dockTipHtml(a11yTip),
-		});
+		fab = null;
+		if (cfg.accessibilityEnabled) {
+			var a11yTip = t('accessibility', 'Accessibility');
+			fab = el('button', {
+				type: 'button',
+				className: 'nexulesuite_a11y-fab',
+				'aria-label': t('openPanel', 'Open accessibility options'),
+				'aria-expanded': 'false',
+				'aria-controls': 'nexulesuite-a11y-panel',
+				onClick: togglePanel,
+				html:
+					'<img class="nexulesuite_a11y-fab__icon" src="' +
+					((cfg.icons && cfg.icons.accessibility) || '') +
+					'" alt="" width="26" height="26" decoding="async" />' +
+					dockTipHtml(a11yTip),
+			});
+		}
 
 		var stack = buildDockStack(fab);
 		if (!stack.childNodes.length) {
@@ -1043,12 +1051,14 @@
 		dock.appendChild(stack);
 		applyButtonOffset(dock, stack._nlsVisibleKeys || []);
 
-		panel.id = 'nexulesuite-a11y-panel';
 		root.appendChild(dock);
-		if (dockButtonVisible('accessibility')) {
-			root.appendChild(panel);
+		if (cfg.accessibilityEnabled && panel) {
+			panel.id = 'nexulesuite-a11y-panel';
+			if (dockButtonVisible('accessibility')) {
+				root.appendChild(panel);
+			}
+			applyState();
 		}
-		applyState();
 		syncLangChips(currentLang());
 
 		/* Live chat may render after a11y boot — retry attach briefly. */
@@ -1069,13 +1079,13 @@
 				closeLangMenu();
 				return;
 			}
-			if (open) closePanel();
+			if (cfg.accessibilityEnabled && open) closePanel();
 		});
 		document.addEventListener('click', function (e) {
 			if (dock && !dock.contains(e.target)) {
 				closeLangMenu();
 			}
-			if (!open) return;
+			if (!cfg.accessibilityEnabled || !open || !panel) return;
 			if (panel.contains(e.target) || (dock && dock.contains(e.target))) return;
 			closePanel();
 		});
@@ -1084,8 +1094,10 @@
 	function initLangOnlyBar() {
 		if (!cfg.languageEnabled) return;
 		if (!dockButtonVisible('language')) return;
-		/* When accessibility is on, language FAB sits above the a11y button — no separate bar. */
+		/* When accessibility or dock features are on, language sits in the shared dock — no separate bar. */
 		if (cfg.accessibilityEnabled) return;
+		if (cfg.liveChatInDock && cfg.liveChatAvailable) return;
+		if (cfg.customButtonEnabled && cfg.customButtonUrl) return;
 		var bar = buildLangSection(false);
 		if (bar && bar.setAttribute) bar.setAttribute('data-nls-dock-btn', 'language');
 		applyButtonOffset(bar, ['language']);
