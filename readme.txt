@@ -117,21 +117,25 @@ The plugin does not contact the author's servers, does not include analytics or 
 
 The WordPress admin single-page app is distributed as a production build:
 
-* `assets/admin/js/main.js` — JavaScript bundle (minified)
-* `assets/admin/css/main.css` — compiled styles
+* `assets/admin/js/main.js` — JavaScript bundle (minified; built with Vite and React)
+* `assets/admin/css/main.css` — compiled styles (built with Vite)
 
-Human-readable (unminified) copies of those admin assets are included in the plugin and in the public repository:
-
-* `admin/src/main.js` — unminified admin JavaScript
-* `admin/src/main.css` — unminified admin CSS
-
-Public front-end scripts under `public/js/` are already unminified.
-
-Repository (public):
+Human-readable source (JSX components, styles, and build configuration) is available in this public repository:
 
 https://github.com/Mostafijemon24/Nexus-Lead-Suite/tree/main/admin/src
 
 Full repository root: https://github.com/Mostafijemon24/Nexus-Lead-Suite
+
+The same `admin/src` tree (and `admin/package.json` / `admin/vite.config.js`) is also included in the plugin package. Public front-end scripts under `public/js/` are already unminified.
+
+To rebuild the admin assets from source:
+
+1. Clone https://github.com/Mostafijemon24/Nexus-Lead-Suite
+2. `cd admin` then run `npm ci`
+3. Build for production: `npm run build`
+4. Output is written to `assets/admin/js/main.js` and `assets/admin/css/main.css` (see `admin/vite.config.js`).
+
+For local development with hot reload, run `npm run dev` and add `define( 'nexulesuite_VITE_DEV', true );` to `wp-config.php` (see `admin/class-admin-app.php`).
 
 == Installation ==
 
@@ -165,10 +169,10 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 1. Dashboard (coming soon)
 
 = 1.2.17 =
-* WordPress.org review: fixed broken Source Code and Voyage AI Terms/Privacy URLs in readme.txt.
+* WordPress.org review: made the Source Code GitHub repository public and confirmed admin/src is reachable.
+* WordPress.org review: fixed Voyage AI Terms/Privacy URLs (now /tos and /privacy).
 * readme.txt: refreshed AI provider legal links (DeepSeek, Groq, Mistral, xAI) to current working URLs.
 * Language switcher: use local Unicode flag emoji instead of loading images from flagcdn.com.
-* Packaging: ship unminified admin assets under admin/src/ for source disclosure.
 
 = 1.2.16 =
 * Admin: Visual Editor toggle knob now slides when enabled (inline switch styles).
