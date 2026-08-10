@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.2.8
+Stable tag: 1.2.17
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,13 +75,13 @@ You select exactly one chat provider (and optionally one embedding provider) fro
 * OpenAI (OpenAI, L.L.C.) - https://api.openai.com/v1 - Terms: https://openai.com/policies/terms-of-use - Privacy: https://openai.com/policies/privacy-policy
 * Anthropic Claude (Anthropic PBC) - https://api.anthropic.com/v1 - Terms: https://www.anthropic.com/legal/consumer-terms - Privacy: https://www.anthropic.com/legal/privacy
 * Google Gemini (Google LLC) - https://generativelanguage.googleapis.com/v1beta - Terms: https://ai.google.dev/gemini-api/terms - Privacy: https://policies.google.com/privacy
-* Groq (Groq, Inc.) - https://api.groq.com/openai/v1 - Terms: https://groq.com/terms-of-use/ - Privacy: https://groq.com/privacy-policy/
-* DeepSeek (Hangzhou DeepSeek Artificial Intelligence Co., Ltd.) - https://api.deepseek.com/v1 - Terms: https://platform.deepseek.com/downloads/DeepSeek%20Terms%20of%20Use.html - Privacy: https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html
-* Mistral AI (Mistral AI SAS) - https://api.mistral.ai/v1 - Terms: https://mistral.ai/terms - Privacy: https://mistral.ai/terms#privacy-policy
+* Groq (Groq, Inc.) - https://api.groq.com/openai/v1 - Terms: https://groq.com/terms-of-use - Privacy: https://groq.com/privacy-policy
+* DeepSeek (Hangzhou DeepSeek Artificial Intelligence Co., Ltd.) - https://api.deepseek.com/v1 - Terms: https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html - Privacy: https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html
+* Mistral AI (Mistral AI SAS) - https://api.mistral.ai/v1 - Terms: https://legal.mistral.ai/terms - Privacy: https://legal.mistral.ai/terms/privacy-policy
 * Together AI (Together Computer, Inc.) - https://api.together.xyz/v1 - Terms: https://www.together.ai/terms-of-service - Privacy: https://www.together.ai/privacy
 * OpenRouter (OpenRouter, Inc.) - https://openrouter.ai/api/v1 - Terms: https://openrouter.ai/terms - Privacy: https://openrouter.ai/privacy
-* xAI Grok (X.AI Corp.) - https://api.x.ai/v1 - Terms: https://x.ai/legal/terms-of-service - Privacy: https://x.ai/legal/privacy-policy
-* Voyage AI (Voyage AI Inc., embeddings only) - https://api.voyageai.com/v1 - Terms: https://www.voyageai.com/terms-of-service - Privacy: https://www.voyageai.com/privacy-policy
+* xAI Grok (X.AI LLC) - https://api.x.ai/v1 - Terms: https://x.ai/legal/terms-of-service-enterprise - Privacy: https://x.ai/legal/privacy-policy
+* Voyage AI (Voyage AI Innovations, Inc., embeddings only) - https://api.voyageai.com/v1 - Terms: https://www.voyageai.com/tos - Privacy: https://www.voyageai.com/privacy
 
 Alternatively you may point the AI Chatbot at a self-hosted Nexus AI Server (FastAPI + Ollama) running on infrastructure you control. In that mode the plugin sends the same data only to the base URL you enter; no third party is involved.
 
@@ -111,27 +111,27 @@ If you choose the Outlook mailer in Settings -> SMTP, the plugin sends outbound 
 
 Any custom SMTP host, or any CRM / webhook URL you enter in the form or global settings, is an endpoint you choose and control. The plugin POSTs the sanitized form submission payload only to URLs you have entered yourself. It is your responsibility to ensure those destinations comply with your privacy policy.
 
-The plugin does not contact the author's servers, does not include analytics or telemetry, and does not load fonts or other assets from third-party CDNs. All webfonts ship inside the plugin (assets/fonts/) under the SIL Open Font License 1.1 and are served from your own site.
+The plugin does not contact the author's servers, does not include analytics or telemetry, and does not load fonts or flag images from third-party CDNs. Language-switcher flags use local Unicode emoji. All webfonts ship inside the plugin (assets/fonts/) under the SIL Open Font License 1.1 and are served from your own site.
 
 == Source Code ==
 
 The WordPress admin single-page app is distributed as a production build:
 
-* `assets/admin/js/main.js` — JavaScript bundle (minified; built with Vite and React)
-* `assets/admin/css/main.css` — compiled styles (built with Vite)
+* `assets/admin/js/main.js` — JavaScript bundle (minified)
+* `assets/admin/css/main.css` — compiled styles
 
-Human-readable source (JSX components, styles, and build configuration) is available in this public repository:
+Human-readable (unminified) copies of those admin assets are included in the plugin and in the public repository:
+
+* `admin/src/main.js` — unminified admin JavaScript
+* `admin/src/main.css` — unminified admin CSS
+
+Public front-end scripts under `public/js/` are already unminified.
+
+Repository (public):
 
 https://github.com/Mostafijemon24/Nexus-Lead-Suite/tree/main/admin/src
 
-To rebuild the admin assets from source:
-
-1. Clone the repository above.
-2. `cd admin` then run `npm ci`
-3. Build for production: `npm run build`
-4. Output is written to `assets/admin/js/main.js` and `assets/admin/css/main.css` (see `admin/vite.config.js`).
-
-For local development with hot reload, run `npm run dev` and add `define( 'nexulesuite_VITE_DEV', true );` to `wp-config.php` (see `admin/class-admin-app.php`).
+Full repository root: https://github.com/Mostafijemon24/Nexus-Lead-Suite
 
 == Installation ==
 
@@ -163,6 +163,45 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 == Screenshots ==
 
 1. Dashboard (coming soon)
+
+= 1.2.17 =
+* WordPress.org review: fixed broken Source Code and Voyage AI Terms/Privacy URLs in readme.txt.
+* readme.txt: refreshed AI provider legal links (DeepSeek, Groq, Mistral, xAI) to current working URLs.
+* Language switcher: use local Unicode flag emoji instead of loading images from flagcdn.com.
+* Packaging: ship unminified admin assets under admin/src/ for source disclosure.
+
+= 1.2.16 =
+* Admin: Visual Editor toggle knob now slides when enabled (inline switch styles).
+* Visual Editor: ignore WP admin bar, open popups, chat/a11y docks; only target page content.
+
+= 1.2.15 =
+* Admin Analytics: restore Visual Editor toggle (enable front-end visual editing from the Activities screen).
+
+= 1.2.14 =
+* SMTP OAuth: load PHPMailer’s OAuthTokenProvider (WordPress does not) so Gmail XOAUTH2 actually runs — fixes “Could not authenticate” + misleading 221 reply.
+* SMTP test: prefer real auth error lines over connection-close chatter.
+
+= 1.2.13 =
+* SMTP test: clearer OAuth auth-failure hints; capture sanitized Gmail server reply when login is rejected.
+
+= 1.2.12 =
+* SMTP Gmail preset uses port 587/TLS (hosts often block 465); clearer “could not connect” host-firewall hint.
+* SMTP admin: .local OAuth warning only when redirect URI host is actually private.
+
+= 1.2.11 =
+* SMTP: never fall back to PHP mail() on OAuth/SMTP errors (fixes “Call to undefined function PHPMailer\\PHPMailer\\mail()”).
+* SMTP: Disconnect via REST (fixes “The link you followed has expired”).
+* SMTP test: clear error when Default mail() is disabled on the host.
+
+= 1.2.10 =
+* SMTP OAuth: treat Connected only when refresh token decrypts; clearer test errors (token/salt/auth/host).
+* SMTP OAuth: pin From/Username to the authorized account; probe access token before test send.
+* SMTP test: richer PHPMailer failure details in the admin UI.
+
+= 1.2.9 =
+* Form Builder: Submit Button Text editable under Appearance → Colors → Submit Button (simple forms).
+* SMTP OAuth: Authorize starts via REST with a fresh consent URL (fixes “The link you followed has expired”).
+* SMTP OAuth: warn when redirect URI uses .local / private hosts; optional `nexulesuite_SMTP_OAUTH_REDIRECT_URI` override.
 
 = 1.2.8 =
 * Acc & Lang: dock layout controls (position, offset, size, icon size, gap, order, display conditions, live preview) stay available when Accessibility is off, for Live Chat / Language / Custom buttons.

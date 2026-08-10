@@ -577,13 +577,21 @@
 		setInterval(killTranslateChrome, 1500);
 	}
 
+	function flagEmoji(code) {
+		var cc = String(code || '').toLowerCase();
+		if (cc.length !== 2) {
+			return '';
+		}
+		return String.fromCodePoint(127397 + cc.charCodeAt(0)) + String.fromCodePoint(127397 + cc.charCodeAt(1));
+	}
+
 	function flagButton(lang, chip) {
-		var img = el('img', {
-			src: 'https://flagcdn.com/w40/' + lang.flag + '.png',
-			alt: '',
-			width: chip ? '20' : '28',
-			height: chip ? '14' : '20',
-			loading: 'lazy',
+		// Local Unicode flag emoji — no third-party CDN request.
+		var emoji = flagEmoji(lang.flag);
+		var mark = el('span', {
+			className: 'nexulesuite_lang-flag-emoji',
+			text: emoji || String(lang.flag || '').toUpperCase(),
+			'aria-hidden': 'true',
 		});
 		return el(
 			'button',
@@ -600,8 +608,8 @@
 				},
 			},
 			chip
-				? [img, document.createTextNode(lang.label)]
-				: [img, el('span', { text: lang.label })]
+				? [mark, document.createTextNode(lang.label)]
+				: [mark, el('span', { text: lang.label })]
 		);
 	}
 
