@@ -121,9 +121,13 @@ final class Mailer {
 	public static function mailer_presets(): array {
 		return array(
 			'gmail'   => array(
+				/*
+				 * Prefer 587/TLS — many shared hosts block outbound 465/SSL while
+				 * still allowing submission on 587.
+				 */
 				'host'   => 'smtp.gmail.com',
-				'port'   => 465,
-				'secure' => 'ssl',
+				'port'   => 587,
+				'secure' => 'tls',
 			),
 			'outlook' => array(
 				'host'   => 'smtp.office365.com',
@@ -156,7 +160,8 @@ final class Mailer {
 			'from_name'       => isset( $opt['from_name'] ) ? (string) $opt['from_name'] : '',
 			'force_from_name' => ! empty( $opt['force_from_name'] ),
 			'oauth_email'     => isset( $opt['oauth_email'] ) ? (string) $opt['oauth_email'] : '',
-			'oauth_connected' => ! empty( $opt['oauth_refresh_token'] ),
+			// Must decrypt successfully — a non-empty ciphertext after salt rotation still looks "connected".
+			'oauth_connected' => '' !== self::decrypt_secret( (string) ( $opt['oauth_refresh_token'] ?? '' ) ),
 		);
 
 		// Provider preset (Gmail / Outlook): auto-configure the SMTP relay host/port/encryption.
@@ -225,6 +230,12 @@ final class Mailer {
 			return $from;
 		}
 
+		// Gmail/Outlook selected but not authorized — do not rewrite From while still using PHP mail().
+		$mailer = (string) ( $settings['mailer'] ?? 'other' );
+		if ( self::is_oauth_mailer( $mailer ) && empty( $settings['oauth_connected'] ) ) {
+			return $from;
+		}
+
 		$candidate = self::resolve_from_email( $settings );
 		if ( '' !== $candidate && is_email( $candidate ) ) {
 			return $candidate;
@@ -241,6 +252,11 @@ final class Mailer {
 		$name = is_string( $name ) ? $name : '';
 		$settings = self::get_effective_settings();
 		if ( empty( $settings['enabled'] ) || empty( $settings['host'] ) ) {
+			return $name;
+		}
+
+		$mailer = (string) ( $settings['mailer'] ?? 'other' );
+		if ( self::is_oauth_mailer( $mailer ) && empty( $settings['oauth_connected'] ) ) {
 			return $name;
 		}
 
@@ -297,6 +313,7 @@ final class Mailer {
 	 */
 	private static function make_oauth_provider( array $settings ) {
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-smtp-oauth.php';
+		// Must load OAuthTokenProvider before the provider file (WP does not autoload it).
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-smtp-xoauth2-provider.php';
 		if ( ! class_exists( '\\nexulesuite_\\Smtp_XOAuth2_Provider' ) ) {
 			return null;
@@ -348,13 +365,30 @@ final class Mailer {
 			if ( $is_oauth ) {
 				$provider = self::make_oauth_provider( $settings );
 				if ( null === $provider ) {
-					// OAuth requested but unusable (old PHPMailer / no email) — bail to default.
-					$phpmailer->isMail();
+					/*
+					 * Never fall back to isMail()/mail() here. On many hosts mail() is disabled and
+					 * PHPMailer then fatals as "Call to undefined function PHPMailer\PHPMailer\mail()".
+					 * Keep SMTP mode so the send fails with a normal auth error instead.
+					 * Do NOT set AuthType=XOAUTH2 without setOAuth() — PHPMailer then fails
+					 * immediately with a misleading "Could not authenticate" + 221 quit.
+					 */
+					$phpmailer->SMTPAuth = true;
+					$phpmailer->Password = '';
 					return;
 				}
+				$oauth_email = '' !== (string) ( $settings['oauth_email'] ?? '' )
+					? (string) $settings['oauth_email']
+					: self::resolve_from_email( $settings );
 				$phpmailer->SMTPAuth = true;
 				$phpmailer->AuthType = 'XOAUTH2';
+				$phpmailer->Username = $oauth_email;
+				$phpmailer->Password = '';
 				$phpmailer->setOAuth( $provider );
+				// Gmail/Outlook reject mismatched From; pin to the authorized account.
+				if ( '' !== $oauth_email && is_email( $oauth_email ) ) {
+					$from_name = isset( $settings['from_name'] ) ? trim( (string) $settings['from_name'] ) : '';
+					$phpmailer->setFrom( $oauth_email, $from_name !== '' ? $from_name : get_bloginfo( 'name' ), false );
+				}
 			} else {
 				$phpmailer->SMTPAuth = ! empty( $settings['username'] ) && ! empty( $settings['password'] );
 				$phpmailer->Username = (string) ( $settings['username'] ?? '' );
@@ -365,18 +399,17 @@ final class Mailer {
 			$phpmailer->Timeout    = 30;
 			$phpmailer->SMTPAutoTLS = ( 'ssl' !== strtolower( (string) ( $settings['secure'] ?? '' ) ) );
 
-			$from_email = self::resolve_from_email( $settings );
-			$from_name  = isset( $settings['from_name'] ) ? trim( (string) $settings['from_name'] ) : '';
+			if ( ! $is_oauth ) {
+				$from_email = self::resolve_from_email( $settings );
+				$from_name  = isset( $settings['from_name'] ) ? trim( (string) $settings['from_name'] ) : '';
 
-			if ( '' !== $from_email && is_email( $from_email ) ) {
-				$phpmailer->setFrom( $from_email, $from_name !== '' ? $from_name : get_bloginfo( 'name' ), false );
+				if ( '' !== $from_email && is_email( $from_email ) ) {
+					$phpmailer->setFrom( $from_email, $from_name !== '' ? $from_name : get_bloginfo( 'name' ), false );
+				}
 			}
 		} catch ( \Throwable $e ) {
-			try {
-				$phpmailer->isMail();
-			} catch ( \Throwable $inner ) {
-				unset( $inner );
-			}
+			// Do not switch to mail() — same disabled-mail() fatal risk as above.
+			unset( $e );
 		}
 	}
 }

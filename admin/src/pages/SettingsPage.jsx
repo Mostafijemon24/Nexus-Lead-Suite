@@ -445,6 +445,175 @@ const InfoTip = ( { text, label = 'More information' } ) => (
 	</button>
 );
 
+/**
+ * Exclusion Rules picker: paste a live permalink (or search a title), then Add.
+ * Native <select> cannot accept a URL — that is why pasting a page link used to do nothing.
+ */
+function ExclusionField( {
+	label,
+	chipClass,
+	placeholder,
+	options,
+	selected,
+	type,
+	onToggle,
+	onAdd,
+	resolve,
+} ) {
+	const [ query, setQuery ] = useState( '' );
+	const [ hint, setHint ] = useState( '' );
+	const [ busy, setBusy ] = useState( false );
+	const [ results, setResults ] = useState( [] );
+	const debounceRef = useRef( 0 );
+	const selectedIds = new Set( ( Array.isArray( selected ) ? selected : [] ).map( ( s ) => Number( s.id ) ) );
+
+	const pick = ( item ) => {
+		if ( ! item || item.id == null ) {
+			return;
+		}
+		onAdd( { id: Number( item.id ), title: String( item.title ?? '' ) } );
+		setQuery( '' );
+		setResults( [] );
+		setHint( '' );
+	};
+
+	const submit = async () => {
+		const q = query.trim();
+		if ( ! q || busy ) {
+			return;
+		}
+		setBusy( true );
+		setHint( '' );
+		try {
+			const json = await resolve( q, type );
+			if ( json?.success && json.data?.id ) {
+				pick( json.data );
+			} else if ( json?.code === 'ambiguous' && Array.isArray( json.data?.results ) ) {
+				setResults( json.data.results );
+				setHint( json.message || 'Pick a match from the list.' );
+			} else {
+				setHint( json?.message || 'Could not add that link.' );
+				setResults( [] );
+			}
+		} catch {
+			setHint( 'Could not look up that link.' );
+		} finally {
+			setBusy( false );
+		}
+	};
+
+	useEffect( () => {
+		const q = query.trim();
+		window.clearTimeout( debounceRef.current );
+		if ( q.length < 2 ) {
+			setResults( [] );
+			return undefined;
+		}
+		debounceRef.current = window.setTimeout( async () => {
+			try {
+				const json = await resolve( q, type );
+				if ( json?.success && json.data?.id ) {
+					setResults( [ json.data ] );
+				} else if ( json?.code === 'ambiguous' && Array.isArray( json.data?.results ) ) {
+					setResults( json.data.results );
+				} else {
+					setResults( [] );
+				}
+			} catch {
+				setResults( [] );
+			}
+		}, 280 );
+		return () => window.clearTimeout( debounceRef.current );
+	}, [ query, type, resolve ] );
+
+	const qLower = query.trim().toLowerCase();
+	const localHits = ( Array.isArray( options ) ? options : [] )
+		.filter( ( o ) => ! selectedIds.has( Number( o.id ) ) )
+		.filter( ( o ) => ( ! qLower ? true : String( o.title || '' ).toLowerCase().includes( qLower ) ) )
+		.slice( 0, 12 );
+	const merged = [];
+	const seen = new Set();
+	[ ...results, ...localHits ].forEach( ( row ) => {
+		const id = Number( row.id );
+		if ( ! id || seen.has( id ) || selectedIds.has( id ) ) {
+			return;
+		}
+		seen.add( id );
+		merged.push( row );
+	} );
+
+	return (
+		<div className="nexulesuite_sap-excl-field">
+			<span className="lbl">{ label }</span>
+			<div className="nexulesuite_sap-excl-link-row">
+				<input
+					type="search"
+					className="inp"
+					value={ query }
+					onChange={ ( e ) => {
+						setQuery( e.target.value );
+						setHint( '' );
+					} }
+					onKeyDown={ ( e ) => {
+						if ( e.key === 'Enter' ) {
+							e.preventDefault();
+							submit();
+						}
+					} }
+					placeholder={ placeholder }
+					autoComplete="off"
+					spellCheck={ false }
+					aria-label={ label }
+				/>
+				<button
+					type="button"
+					className="nexulesuite_sap-excl-link-btn"
+					onClick={ submit }
+					disabled={ busy || ! query.trim() }
+				>
+					{ busy ? '…' : 'Add' }
+				</button>
+			</div>
+			<p className="nexulesuite_sap-excl-hint">
+				Paste the live page URL (e.g. https://yoursite.com/contact/) or search by title, then Add.
+			</p>
+			{ hint ? <p className="nexulesuite_sap-excl-hint is-error">{ hint }</p> : null }
+			{ query.trim().length >= 1 && merged.length > 0 ? (
+				<div className="nexulesuite_sap-excl-results" role="listbox">
+					{ merged.map( ( row ) => (
+						<button
+							key={ row.id }
+							type="button"
+							className="nexulesuite_sap-excl-result"
+							onClick={ () => pick( row ) }
+						>
+							<span className="t">{ row.title || `#${ row.id }` }</span>
+							<span className="meta">#{ row.id }</span>
+						</button>
+					) ) }
+				</div>
+			) : null }
+			{ selected.length > 0 && (
+				<div className="nexulesuite_sap-excl-tags">
+					{ selected.map( ( row ) => (
+						<span key={ row.id } className={ `nexulesuite_sap-excl-chip ${ chipClass }` }>
+							{ row.title || `#${ row.id }` }
+							<button
+								type="button"
+								className="nexulesuite_sap-excl-chip-remove"
+								onClick={ () => onToggle( row ) }
+								aria-label={ `Remove ${ row.title }` }
+							>
+								<X size={ 12 } />
+							</button>
+						</span>
+					) ) }
+				</div>
+			) }
+		</div>
+	);
+}
+
 /* ─────────────────────────────────────────────────────────────
    Main component
 ───────────────────────────────────────────────────────── */
@@ -516,8 +685,8 @@ export function SettingsPage() {
 				const [ gResult, tResult, postsRaw, pagesRaw, popupsResult, formsResult, smtpResult ] = await Promise.allSettled( [
 					apiFetch( '/settings/general', { method: 'GET' } ),
 					apiFetch( '/emails/templates', { method: 'GET' } ),
-					wpFetch( 'wp/v2/posts?per_page=50&_fields=id,title' ),
-					wpFetch( 'wp/v2/pages?per_page=50&_fields=id,title' ),
+					wpFetch( 'wp/v2/posts?per_page=100&_fields=id,title' ),
+					wpFetch( 'wp/v2/pages?per_page=100&_fields=id,title' ),
 					apiFetch( '/popups', { method: 'GET' } ),
 					apiFetch( '/forms', { method: 'GET' } ),
 					apiFetch( '/smtp/settings', { method: 'GET' } ),
@@ -1104,10 +1273,36 @@ export function SettingsPage() {
 	};
 
 	const toggleExclusion = ( field, item ) => {
-		const list = settings[ field ];
-		const exists = list.find( ( i ) => i.id === item.id );
-		updateSetting( field, exists ? list.filter( ( i ) => i.id !== item.id ) : [ ...list, item ] );
+		const list = Array.isArray( settings[ field ] ) ? settings[ field ] : [];
+		const itemId = Number( item?.id );
+		const exists = list.some( ( i ) => Number( i.id ) === itemId );
+		updateSetting(
+			field,
+			exists
+				? list.filter( ( i ) => Number( i.id ) !== itemId )
+				: [ ...list, { id: itemId, title: String( item?.title ?? '' ) } ]
+		);
 	};
+
+	const addExclusion = ( field, item ) => {
+		setSettings( ( prev ) => {
+			const list = Array.isArray( prev[ field ] ) ? prev[ field ] : [];
+			const itemId = Number( item?.id );
+			if ( ! itemId || list.some( ( i ) => Number( i.id ) === itemId ) ) {
+				return prev;
+			}
+			return {
+				...prev,
+				[ field ]: [ ...list, { id: itemId, title: String( item?.title ?? '' ) } ],
+			};
+		} );
+	};
+
+	const resolveExclusionContent = useCallback( async ( q, type ) => {
+		const params = new URLSearchParams( { q, type } );
+		const { json } = await apiFetch( `/settings/resolve-content?${ params.toString() }`, { method: 'GET' } );
+		return json;
+	}, [] );
 
 	const getHoverClass = ( effect ) => {
 		const map = {
@@ -1635,72 +1830,28 @@ export function SettingsPage() {
 															</div>
 														</div>
 														<div className="nexulesuite_sap-excl-stack">
-															<div className="nexulesuite_sap-excl-field">
-																<span className="lbl">Exclude Posts</span>
-																<select
-																	onChange={ ( e ) => {
-																		const item = allPosts.find( ( p ) => p.id === parseInt( e.target.value ) );
-																		if ( item ) toggleExclusion( 'excludePosts', item );
-																		e.target.value = '';
-																	} }
-																	className="sel"
-																>
-																	<option value="">Select posts...</option>
-																	{ allPosts.filter( ( p ) => ! settings.excludePosts.some( ( ex ) => ex.id === p.id ) ).map( ( p ) => (
-																		<option key={ p.id } value={ p.id }>{ p.title }</option>
-																	) ) }
-																</select>
-																{ settings.excludePosts.length > 0 && (
-																	<div className="nexulesuite_sap-excl-tags">
-																		{ settings.excludePosts.map( ( post ) => (
-																			<span key={ post.id } className="nexulesuite_sap-excl-chip is-post">
-																				{ post.title }
-																				<button
-																					type="button"
-																					className="nexulesuite_sap-excl-chip-remove"
-																					onClick={ () => toggleExclusion( 'excludePosts', post ) }
-																					aria-label={ `Remove ${ post.title }` }
-																				>
-																					<X size={ 12 } />
-																				</button>
-																			</span>
-																		) ) }
-																	</div>
-																) }
-															</div>
-															<div className="nexulesuite_sap-excl-field">
-																<span className="lbl">Exclude Pages</span>
-																<select
-																	onChange={ ( e ) => {
-																		const item = allPages.find( ( p ) => p.id === parseInt( e.target.value ) );
-																		if ( item ) toggleExclusion( 'excludePages', item );
-																		e.target.value = '';
-																	} }
-																	className="sel"
-																>
-																	<option value="">Select pages...</option>
-																	{ allPages.filter( ( p ) => ! settings.excludePages.some( ( ex ) => ex.id === p.id ) ).map( ( p ) => (
-																		<option key={ p.id } value={ p.id }>{ p.title }</option>
-																	) ) }
-																</select>
-																{ settings.excludePages.length > 0 && (
-																	<div className="nexulesuite_sap-excl-tags">
-																		{ settings.excludePages.map( ( page ) => (
-																			<span key={ page.id } className="nexulesuite_sap-excl-chip is-page">
-																				{ page.title }
-																				<button
-																					type="button"
-																					className="nexulesuite_sap-excl-chip-remove"
-																					onClick={ () => toggleExclusion( 'excludePages', page ) }
-																					aria-label={ `Remove ${ page.title }` }
-																				>
-																					<X size={ 12 } />
-																				</button>
-																			</span>
-																		) ) }
-																	</div>
-																) }
-															</div>
+															<ExclusionField
+																label="Exclude Posts"
+																chipClass="is-post"
+																placeholder="Paste post URL or search title…"
+																options={ allPosts }
+																selected={ settings.excludePosts }
+																type="post"
+																onToggle={ ( item ) => toggleExclusion( 'excludePosts', item ) }
+																onAdd={ ( item ) => addExclusion( 'excludePosts', item ) }
+																resolve={ resolveExclusionContent }
+															/>
+															<ExclusionField
+																label="Exclude Pages"
+																chipClass="is-page"
+																placeholder="Paste page URL or search title…"
+																options={ allPages }
+																selected={ settings.excludePages }
+																type="page"
+																onToggle={ ( item ) => toggleExclusion( 'excludePages', item ) }
+																onAdd={ ( item ) => addExclusion( 'excludePages', item ) }
+																resolve={ resolveExclusionContent }
+															/>
 														</div>
 													</section>
 												</div>

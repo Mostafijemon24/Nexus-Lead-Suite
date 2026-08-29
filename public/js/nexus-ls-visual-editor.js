@@ -13,13 +13,48 @@
 
 	var __classGroups = []; // Optional; kept for future compatibility.
 
+	/**
+	 * Plugin / WP chrome that Visual Editor must never target.
+	 * Keep aligned with nexus-ls-track-utils isExcludedPluginUiClick().
+	 */
+	var VE_IGNORE_SEL =
+		'#wpadminbar, #nexulesuite_ve-root, #nexulesuite_a11y-root, .nexulesuite_ve, .nexulesuite_ve-successBackdrop, .nexulesuite_popup-overlay, .nexulesuite_chat-widget, .nexulesuite_bottom-nav, .nexulesuite_menu-widget, .nexulesuite_a11y-panel, .nexulesuite_a11y-dock, .nexulesuite_lang-fab';
+
 	function isEditorUi( node ) {
-		if ( ! node ) return false;
+		if ( ! node ) return true;
 		try {
-			if ( node.id === 'nexulesuite_ve-root' ) return true;
-			if ( node.closest && node.closest( '#nexulesuite_ve-root' ) ) return true;
+			if ( node.closest && node.closest( VE_IGNORE_SEL ) ) return true;
 		} catch ( e ) {}
 		return false;
+	}
+
+	/** True while a Nexus popup overlay is open — pause VE on the whole page. */
+	function isPopupBlockingVe() {
+		try {
+			return !! document.querySelector( '.nexulesuite_popup-overlay.nexulesuite_popup--open' );
+		} catch ( e ) {
+			return false;
+		}
+	}
+
+	/**
+	 * Restrict VE to page content (not admin bar, popups, chat, docks).
+	 * Prefers WP content containers; falls back to body minus ignored chrome.
+	 */
+	function isInPageContent( node ) {
+		if ( ! node || isEditorUi( node ) ) return false;
+		try {
+			var preferred = document.querySelector(
+				'.entry-content, .wp-block-post-content, .elementor, .e-con, #content, #primary, main, [role="main"], .site-content, .page-content'
+			);
+			if ( preferred ) {
+				return preferred.contains( node );
+			}
+			// Fallback: anything under body that is not chrome.
+			return !!( document.body && document.body.contains( node ) ) && ! isEditorUi( node );
+		} catch ( e ) {
+			return false;
+		}
 	}
 
 	function resolveVePostId() {
@@ -140,9 +175,11 @@
 	}
 
 	function pickHoverTarget( x, y ) {
+		if ( isPopupBlockingVe() ) return null;
 		var node = document.elementFromPoint( x, y );
 		if ( ! node || node === document.body || node === document.documentElement ) return null;
 		if ( isEditorUi( node ) ) return null;
+		if ( ! isInPageContent( node ) ) return null;
 		var tag = ( node.tagName || '' ).toLowerCase();
 		if ( tag === 'html' || tag === 'body' || tag === 'script' || tag === 'style' ) return null;
 		return node;
@@ -152,8 +189,13 @@
 		if ( raf ) return;
 		raf = window.requestAnimationFrame( function () {
 			raf = 0;
+			if ( isPopupBlockingVe() ) {
+				clearOutline();
+				return;
+			}
 			var node = pickHoverTarget( e.clientX, e.clientY );
 			if ( node ) applyOutline( node );
+			else clearOutline();
 		} );
 	}
 
@@ -967,7 +1009,9 @@
 
 	function onClick( e ) {
 		if ( e.button !== 0 ) return;
+		if ( isPopupBlockingVe() ) return;
 		if ( isEditorUi( e.target ) ) return;
+		if ( ! isInPageContent( e.target ) ) return;
 		if ( ! last ) return;
 
 		e.preventDefault();

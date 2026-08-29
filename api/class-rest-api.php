@@ -133,6 +133,28 @@ final class Rest_Api {
 
 		register_rest_route(
 			'nexulesuite_/v1',
+			'/settings/resolve-content',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'resolve_exclusion_content' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+				'args'                => array(
+					'q'    => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'type' => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_key',
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
 			'/settings/accessibility-language',
 			array(
 				'methods'             => 'GET',
@@ -460,6 +482,33 @@ final class Rest_Api {
 						'default'  => true,
 					),
 				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/smtp/oauth/start',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'smtp_oauth_start' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
+				'args'                => array(
+					'provider' => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_key',
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'nexulesuite_/v1',
+			'/smtp/oauth/disconnect',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'smtp_oauth_disconnect' ),
+				'permission_callback' => array( $this, 'can_manage_settings' ),
 			)
 		);
 
@@ -1935,6 +1984,33 @@ final class Rest_Api {
 	}
 
 	/**
+	 * Unique { id, title } rows for auto-popup exclusion lists. Drops empty / zero IDs.
+	 *
+	 * @param array<int,mixed> $raw Client payload.
+	 * @return array<int,array{id:int,title:string}>
+	 */
+	private function sanitize_popup_exclusion_list( array $raw ): array {
+		$out  = array();
+		$seen = array();
+		foreach ( $raw as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+			$id = (int) ( $item['id'] ?? 0 );
+			if ( $id <= 0 || isset( $seen[ $id ] ) ) {
+				continue;
+			}
+			$seen[ $id ] = true;
+			$out[]       = array(
+				'id'    => $id,
+				'title' => sanitize_text_field( (string) ( $item['title'] ?? '' ) ),
+			);
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Validates auto-popup form selection against persisted builder forms (empty allowed).
 	 *
 	 * @param string $raw Raw form id from client.
@@ -2149,28 +2225,10 @@ final class Rest_Api {
 		$form_field_gap     = max( 0, min( 100, (int) ( $input['formFieldGap'] ?? 16 ) ) );
 
 		$exclude_posts_raw = isset( $input['excludePosts'] ) && is_array( $input['excludePosts'] ) ? $input['excludePosts'] : array();
-		$exclude_posts = array();
-		foreach ( $exclude_posts_raw as $item ) {
-			if ( ! is_array( $item ) ) {
-				continue;
-			}
-			$exclude_posts[] = array(
-				'id'    => (int) ( $item['id'] ?? 0 ),
-				'title' => sanitize_text_field( (string) ( $item['title'] ?? '' ) ),
-			);
-		}
+		$exclude_posts     = $this->sanitize_popup_exclusion_list( $exclude_posts_raw );
 
 		$exclude_pages_raw = isset( $input['excludePages'] ) && is_array( $input['excludePages'] ) ? $input['excludePages'] : array();
-		$exclude_pages = array();
-		foreach ( $exclude_pages_raw as $item ) {
-			if ( ! is_array( $item ) ) {
-				continue;
-			}
-			$exclude_pages[] = array(
-				'id'    => (int) ( $item['id'] ?? 0 ),
-				'title' => sanitize_text_field( (string) ( $item['title'] ?? '' ) ),
-			);
-		}
+		$exclude_pages     = $this->sanitize_popup_exclusion_list( $exclude_pages_raw );
 
 		$auto_popup_form_ids = $this->sanitize_saved_auto_popup_form_ids( $input['autoPopupFormIds'] ?? null );
 		if ( empty( $auto_popup_form_ids ) && isset( $input['autoPopupFormId'] ) ) {
@@ -5149,6 +5207,274 @@ final class Rest_Api {
 	}
 
 	/**
+	 * Whether a string looks like a site URL or path (not a plain title).
+	 *
+	 * @param string $raw User input.
+	 */
+	private function looks_like_content_url( string $raw ): bool {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			return false;
+		}
+		if ( 0 === stripos( $raw, 'http://' ) || 0 === stripos( $raw, 'https://' ) ) {
+			return true;
+		}
+		if ( 0 === strpos( $raw, '/' ) ) {
+			return true;
+		}
+		if ( false !== strpos( $raw, '.php' ) && ( false !== strpos( $raw, 'page_id=' ) || false !== strpos( $raw, '?p=' ) ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Resolve a public URL or path to a published post ID.
+	 *
+	 * url_to_postid() misses the static homepage and some pretty-permalink edge
+	 * cases, so we also try query args, trailing-slash variants, and page paths.
+	 *
+	 * @param string             $raw           URL, path, or permalink.
+	 * @param array<int,string>  $wanted_types  post|page.
+	 * @return array{id:int,title:string,type:string}|null Matched row, or null.
+	 */
+	private function resolve_public_content( string $raw, array $wanted_types ) {
+		$raw = html_entity_decode( trim( $raw ), ENT_QUOTES, 'UTF-8' );
+		if ( '' === $raw ) {
+			return null;
+		}
+
+		$url = $raw;
+		if ( 0 === strpos( $raw, '/' ) ) {
+			$url = home_url( $raw );
+		} elseif ( 0 !== stripos( $raw, 'http://' ) && 0 !== stripos( $raw, 'https://' ) && false !== strpos( $raw, 'page_id=' ) ) {
+			$url = home_url( '/' . ltrim( $raw, '/' ) );
+		}
+
+		$url = esc_url_raw( $url );
+		if ( '' === $url ) {
+			return null;
+		}
+
+		$parts = wp_parse_url( $url );
+		$path  = is_array( $parts ) && isset( $parts['path'] ) ? (string) $parts['path'] : '';
+		$query = array();
+		if ( is_array( $parts ) && ! empty( $parts['query'] ) ) {
+			parse_str( (string) $parts['query'], $query );
+		}
+
+		$id = 0;
+		if ( ! empty( $query['page_id'] ) ) {
+			$id = absint( $query['page_id'] );
+		} elseif ( ! empty( $query['p'] ) ) {
+			$id = absint( $query['p'] );
+		} elseif ( ! empty( $query['post'] ) && false !== strpos( $url, 'post.php' ) ) {
+			$id = absint( $query['post'] );
+		}
+
+		$candidates = array();
+		if ( 0 === $id ) {
+			$plain = $url;
+			if ( is_array( $parts ) ) {
+				$scheme = isset( $parts['scheme'] ) ? $parts['scheme'] . '://' : '';
+				$host   = isset( $parts['host'] ) ? $parts['host'] : '';
+				$port   = isset( $parts['port'] ) ? ':' . (int) $parts['port'] : '';
+				$plain  = $scheme . $host . $port . $path;
+			}
+			$candidates[] = $plain;
+			$candidates[] = trailingslashit( $plain );
+			$candidates[] = untrailingslashit( $plain );
+			$candidates   = array_values( array_unique( array_filter( $candidates ) ) );
+			foreach ( $candidates as $try ) {
+				$found = (int) url_to_postid( $try );
+				if ( $found > 0 ) {
+					$id = $found;
+					break;
+				}
+			}
+		}
+
+		if ( 0 === $id ) {
+			$home      = untrailingslashit( home_url() );
+			$check     = untrailingslashit( is_array( $parts ) ? ( ( isset( $parts['scheme'] ) ? $parts['scheme'] . '://' : '' ) . ( $parts['host'] ?? '' ) . $path ) : $url );
+			$home_path = (string) ( wp_parse_url( home_url( '/' ), PHP_URL_PATH ) ?? '/' );
+			$page_path = $path;
+			if ( '/' !== $home_path && 0 === strpos( $page_path, untrailingslashit( $home_path ) ) ) {
+				$page_path = substr( $page_path, strlen( untrailingslashit( $home_path ) ) );
+				if ( ! is_string( $page_path ) ) {
+					$page_path = '';
+				}
+			}
+			$page_path = trim( (string) $page_path, '/' );
+
+			if ( '' === $page_path && ( $check === $home || $url === home_url( '/' ) || $url === home_url() ) ) {
+				$front = (int) get_option( 'page_on_front' );
+				if ( $front > 0 ) {
+					$id = $front;
+				}
+			}
+
+			if ( 0 === $id && '' !== $page_path ) {
+				foreach ( $wanted_types as $ptype ) {
+					$path_args = array(
+						'post_type'              => $ptype,
+						'post_status'            => 'publish',
+						'posts_per_page'         => 1,
+						'no_found_rows'          => true,
+						'update_post_meta_cache' => false,
+						'update_post_term_cache' => false,
+					);
+					if ( 'page' === $ptype ) {
+						$path_args['pagename'] = $page_path;
+					} else {
+						$path_args['name'] = basename( $page_path );
+					}
+					$path_query = new \WP_Query( $path_args );
+					if ( isset( $path_query->posts[0] ) && $path_query->posts[0] instanceof \WP_Post ) {
+						$id = (int) $path_query->posts[0]->ID;
+						break;
+					}
+				}
+			}
+		}
+
+		if ( $id <= 0 ) {
+			return null;
+		}
+
+		$post = get_post( $id );
+		if ( ! $post instanceof \WP_Post || 'publish' !== $post->post_status ) {
+			return null;
+		}
+
+		return array(
+			'id'    => (int) $post->ID,
+			'title' => get_the_title( $post ),
+			'type'  => (string) $post->post_type,
+		);
+	}
+
+	/**
+	 * Settings → Exclusion Rules: turn a pasted URL / path / title into a page or post.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function resolve_exclusion_content( \WP_REST_Request $request ) {
+		$raw  = trim( (string) ( $request->get_param( 'q' ) ?? '' ) );
+		$type = sanitize_key( (string) ( $request->get_param( 'type' ) ?? 'page' ) );
+		if ( 'post' !== $type ) {
+			$type = 'page';
+		}
+
+		if ( '' === $raw ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => 'Enter a page URL or title.',
+				)
+			);
+		}
+
+		$wanted = array( $type );
+		$hit    = null;
+
+		if ( $this->looks_like_content_url( $raw ) ) {
+			$hit = $this->resolve_public_content( $raw, array( 'page', 'post' ) );
+			if ( is_array( $hit ) && $hit['type'] !== $type ) {
+				$other = 'page' === $hit['type'] ? 'Exclude Pages' : 'Exclude Posts';
+				return rest_ensure_response(
+					array(
+						'success' => false,
+						'code'    => 'wrong_type',
+						'message' => sprintf(
+							'That link is a %1$s. Add it under %2$s.',
+							$hit['type'],
+							$other
+						),
+						'data'    => $hit,
+					)
+				);
+			}
+			if ( is_array( $hit ) && $hit['type'] === $type ) {
+				return rest_ensure_response(
+					array(
+						'success' => true,
+						'data'    => $hit,
+					)
+				);
+			}
+
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => 'page' === $type
+						? 'No published page matches this URL. Use the live permalink (not a preview or admin link).'
+						: 'No published post matches this URL. Use the live permalink (not a preview or admin link).',
+				)
+			);
+		}
+
+		$query = new \WP_Query(
+			array(
+				'post_type'              => $wanted,
+				'post_status'            => 'publish',
+				's'                      => $raw,
+				'posts_per_page'         => 8,
+				'orderby'                => 'title',
+				'order'                  => 'ASC',
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+			)
+		);
+
+		$results = array();
+		foreach ( $query->posts as $post ) {
+			if ( ! $post instanceof \WP_Post ) {
+				continue;
+			}
+			$results[] = array(
+				'id'    => (int) $post->ID,
+				'title' => get_the_title( $post ),
+				'type'  => (string) $post->post_type,
+			);
+		}
+
+		if ( 1 === count( $results ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => true,
+					'data'    => $results[0],
+				)
+			);
+		}
+
+		if ( count( $results ) > 1 ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'code'    => 'ambiguous',
+					'message' => 'Several matches — pick one from the list.',
+					'data'    => array(
+						'results' => $results,
+					),
+				)
+			);
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => false,
+				'message' => 'page' === $type
+					? 'No published page matches that title or URL.'
+					: 'No published post matches that title or URL.',
+			)
+		);
+	}
+
+	/**
 	 * Searches published pages/posts for the menu condition picker.
 	 *
 	 * @param \WP_REST_Request $request Request.
@@ -5188,12 +5514,25 @@ final class Rest_Api {
 		$query   = new \WP_Query( $query_args );
 		$results = array();
 
+		if ( '' !== $search && $this->looks_like_content_url( $search ) ) {
+			$hit = $this->resolve_public_content( $search, $wanted );
+			if ( is_array( $hit ) && in_array( $hit['type'], $wanted, true ) ) {
+				$results[] = $hit;
+			}
+		}
+
 		foreach ( $query->posts as $post ) {
 			if ( ! $post instanceof \WP_Post ) {
 				continue;
 			}
+			$id = (int) $post->ID;
+			foreach ( $results as $existing ) {
+				if ( (int) $existing['id'] === $id ) {
+					continue 2;
+				}
+			}
 			$results[] = array(
-				'id'    => (int) $post->ID,
+				'id'    => $id,
 				'title' => get_the_title( $post ),
 				'type'  => $post->post_type,
 			);
@@ -6832,7 +7171,7 @@ final class Rest_Api {
 			'settings'        => $public,
 			'hasPassword'     => ! empty( $opt['password'] ),
 			'hasClientSecret' => ! empty( $opt['oauth_client_secret'] ),
-			'connected'       => ! empty( $opt['oauth_refresh_token'] ),
+			'connected'       => '' !== \nexulesuite_\Mailer::decrypt_secret( (string) ( $opt['oauth_refresh_token'] ?? '' ) ),
 			'oauth_email'     => isset( $opt['oauth_email'] ) ? (string) $opt['oauth_email'] : '',
 			'redirect_uri'    => \nexulesuite_\Smtp_OAuth::redirect_uri(),
 			'authorize_urls'  => array(
@@ -6844,15 +7183,225 @@ final class Rest_Api {
 	}
 
 	/**
+	 * POST: mint a fresh Google/Microsoft consent URL (avoids stale admin-post nonces).
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function smtp_oauth_start( \WP_REST_Request $request ) {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-smtp-oauth.php';
+
+		$provider = sanitize_key( (string) $request->get_param( 'provider' ) );
+		$url      = \nexulesuite_\Smtp_OAuth::build_consent_url( $provider );
+		if ( is_wp_error( $url ) ) {
+			return $url;
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'url'     => $url,
+			)
+		);
+	}
+
+	/**
+	 * POST: clear OAuth tokens without relying on a stale admin-post nonce.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function smtp_oauth_disconnect() {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-mailer.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-smtp-oauth.php';
+
+		$opt = get_option( \nexulesuite_\Mailer::OPTION_KEY, array() );
+		$opt = is_array( $opt ) ? $opt : array();
+		unset( $opt['oauth_refresh_token'], $opt['oauth_access_token'], $opt['oauth_expires'], $opt['oauth_email'] );
+		$opt['enabled'] = false;
+		update_option( \nexulesuite_\Mailer::OPTION_KEY, $opt, false );
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'data'    => $this->smtp_public_payload( $opt ),
+			)
+		);
+	}
+
+	/**
+	 * Extracts a safe, short SMTP server response from PHPMailer debug output.
+	 *
+	 * Prefers auth/error replies (5xx, 4xx, 334 challenge payloads) over the
+	 * trailing 221 "closing connection" that follows a failed auth + QUIT.
+	 *
+	 * @param string $debug Raw debug log.
+	 * @return string Sanitized server line or ''.
+	 */
+	private static function smtp_test_server_excerpt( string $debug ): string {
+		if ( '' === trim( $debug ) ) {
+			return '';
+		}
+		$debug = preg_replace( '/AUTH XOAUTH2 [A-Za-z0-9+\/=]+/i', 'AUTH XOAUTH2 [redacted]', $debug );
+		$debug = preg_replace( '/Bearer [^\s]+/i', 'Bearer [redacted]', (string) $debug );
+		$lines = array_filter( array_map( 'trim', explode( "\n", (string) $debug ) ) );
+		$candidates = array();
+		foreach ( $lines as $line ) {
+			$code_line = '';
+			if ( preg_match( '/SERVER -> CLIENT:\s*(.+)$/i', $line, $m ) ) {
+				$code_line = trim( $m[1] );
+			} elseif ( preg_match( '/^(\d{3}[\s-].+)/', $line, $m ) ) {
+				$code_line = trim( $m[1] );
+			}
+			if ( '' === $code_line || ! preg_match( '/^(\d{3})\b/', $code_line, $cm ) ) {
+				continue;
+			}
+			$code = (int) $cm[1];
+			// Ignore successful/closing chatter — it masks the real auth failure.
+			if ( in_array( $code, array( 220, 221, 250 ), true ) ) {
+				continue;
+			}
+			$decoded = self::smtp_decode_xoauth_challenge( $code_line );
+			$candidates[] = array(
+				'code' => $code,
+				'text' => '' !== $decoded ? $decoded : $code_line,
+			);
+		}
+		if ( empty( $candidates ) ) {
+			return '';
+		}
+		// Prefer 5xx, then 4xx, then 334 (Gmail often returns base64 JSON on auth fail).
+		usort(
+			$candidates,
+			static function ( $a, $b ) {
+				$score = static function ( $c ) {
+					$code = (int) $c['code'];
+					if ( $code >= 500 ) {
+						return 300 + $code;
+					}
+					if ( $code >= 400 ) {
+						return 200 + $code;
+					}
+					if ( 334 === $code ) {
+						return 150;
+					}
+					return $code;
+				};
+				return $score( $b ) <=> $score( $a );
+			}
+		);
+		return (string) $candidates[0]['text'];
+	}
+
+	/**
+	 * Decodes Gmail's XOAUTH2 334 base64 JSON challenge into a short hint.
+	 *
+	 * @param string $line SMTP reply line.
+	 * @return string Decoded hint or ''.
+	 */
+	private static function smtp_decode_xoauth_challenge( string $line ): string {
+		if ( ! preg_match( '/^334\s+([A-Za-z0-9+\/=]+)/', $line, $m ) ) {
+			return '';
+		}
+		$raw = base64_decode( $m[1], true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+		if ( false === $raw || '' === $raw ) {
+			return '';
+		}
+		$json = json_decode( $raw, true );
+		if ( ! is_array( $json ) ) {
+			return '';
+		}
+		$status = isset( $json['status'] ) ? (string) $json['status'] : '';
+		$scope  = isset( $json['scope'] ) ? (string) $json['scope'] : '';
+		$parts  = array();
+		if ( '' !== $status ) {
+			$parts[] = 'status ' . $status;
+		}
+		if ( '' !== $scope ) {
+			$parts[] = 'scope ' . $scope;
+		}
+		if ( empty( $parts ) ) {
+			return '';
+		}
+		return '334 XOAUTH2 rejected (' . implode( ', ', $parts ) . ')';
+	}
+
+	/**
 	 * Sends a test email using current wp_mail configuration.
 	 *
 	 * @param \WP_REST_Request $request Request.
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function smtp_send_test_email( \WP_REST_Request $request ) {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-mailer.php';
+
 		$to = sanitize_email( (string) $request->get_param( 'to' ) );
 		if ( ! $to || ! is_email( $to ) ) {
 			return new \WP_Error( 'nexulesuite_invalid_email', 'Invalid email address.' );
+		}
+
+		$settings = \nexulesuite_\Mailer::get_effective_settings();
+		$mailer   = isset( $settings['mailer'] ) ? (string) $settings['mailer'] : 'other';
+
+		if ( empty( $settings['enabled'] ) && ! function_exists( 'mail' ) ) {
+			return new \WP_Error(
+				'nexulesuite_mail_disabled',
+				__( 'Default (PHP) mail() is disabled on this host. Choose Gmail/Outlook (Authorize) or Other SMTP, Save, then Test.', 'nexus-lead-suite' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		if ( ! empty( $settings['enabled'] ) ) {
+			if ( in_array( $mailer, array( 'gmail', 'outlook' ), true ) ) {
+				require_once nexulesuite_PLUGIN_DIR . 'core/class-smtp-oauth.php';
+				if ( empty( $settings['oauth_connected'] ) ) {
+					$stored = get_option( \nexulesuite_\Mailer::OPTION_KEY, array() );
+					$hint   = ( is_array( $stored ) && ! empty( $stored['oauth_refresh_token'] ) )
+						? __( 'SMTP shows a saved connection but the token cannot be read (site keys may have changed). Disconnect, then Authorize again.', 'nexus-lead-suite' )
+						: __( 'SMTP is set to Gmail/Outlook but OAuth is not connected. Click Authorize first, or switch to Other SMTP (App Password) / Default (PHP) and Save.', 'nexus-lead-suite' );
+					return new \WP_Error( 'nexulesuite_smtp_oauth_required', $hint, array( 'status' => 400 ) );
+				}
+				$token = \nexulesuite_\Smtp_OAuth::acquire_access_token();
+				if ( is_wp_error( $token ) ) {
+					return new \WP_Error(
+						$token->get_error_code(),
+						$token->get_error_message(),
+						array( 'status' => 400 )
+					);
+				}
+				if ( '' === trim( (string) ( $settings['oauth_email'] ?? '' ) ) ) {
+					return new \WP_Error(
+						'nexulesuite_smtp_oauth_email',
+						__( 'Connected account email is missing. Disconnect, then Authorize again.', 'nexus-lead-suite' ),
+						array( 'status' => 400 )
+					);
+				}
+				require_once nexulesuite_PLUGIN_DIR . 'core/class-smtp-xoauth2-provider.php';
+				$oauth_email = trim( (string) ( $settings['oauth_email'] ?? '' ) );
+				if ( ! class_exists( '\nexulesuite_\Smtp_XOAuth2_Provider' ) ) {
+					return new \WP_Error(
+						'nexulesuite_smtp_oauth_provider',
+						__( 'PHPMailer OAuth support is missing on this WordPress install (OAuthTokenProvider). Update WordPress, or use Other SMTP + Gmail App Password.', 'nexus-lead-suite' ),
+						array( 'status' => 500 )
+					);
+				}
+				if ( '' !== $oauth_email ) {
+					$xoauth_probe = new \nexulesuite_\Smtp_XOAuth2_Provider( $oauth_email );
+					if ( '' === $xoauth_probe->getOauth64() ) {
+						return new \WP_Error(
+							'nexulesuite_smtp_oauth_xoauth2',
+							__( 'OAuth shows Connected but the SMTP login token is empty. Disconnect, remove the app at myaccount.google.com/permissions, then Authorize again and allow all Gmail permissions.', 'nexus-lead-suite' ),
+							array( 'status' => 400 )
+						);
+					}
+				}
+			}
+			if ( 'other' === $mailer && ( '' === trim( (string) ( $settings['host'] ?? '' ) ) || empty( $settings['username'] ) || empty( $settings['password'] ) ) ) {
+				return new \WP_Error(
+					'nexulesuite_smtp_incomplete',
+					__( 'Other SMTP needs host, username, and password. Fill them in, click Save Configuration, then Test.', 'nexus-lead-suite' ),
+					array( 'status' => 400 )
+				);
+			}
 		}
 
 		$as_html = (bool) $request->get_param( 'html' );
@@ -6873,19 +7422,47 @@ final class Rest_Api {
 		}
 
 		$last_mail_error = null;
+		$phpmailer_ref   = null;
+		$smtp_debug      = '';
 		$listener        = static function ( $wp_error ) use ( &$last_mail_error ) {
 			if ( $wp_error instanceof \WP_Error ) {
 				$last_mail_error = $wp_error;
 			}
 		};
+		$capture_pm = static function ( $phpmailer ) use ( &$phpmailer_ref ) {
+			$phpmailer_ref = $phpmailer;
+		};
+		$debug_pm = static function ( $phpmailer ) use ( &$smtp_debug ) {
+			if ( ! $phpmailer instanceof \PHPMailer\PHPMailer\PHPMailer ) {
+				return;
+			}
+			$debug_level = 2;
+			if ( class_exists( '\PHPMailer\PHPMailer\SMTP' ) && defined( '\PHPMailer\PHPMailer\SMTP::DEBUG_SERVER' ) ) {
+				$debug_level = \PHPMailer\PHPMailer\SMTP::DEBUG_SERVER;
+			}
+			$phpmailer->SMTPDebug   = $debug_level;
+			$phpmailer->Debugoutput = static function ( $str ) use ( &$smtp_debug ) {
+				$line = trim( preg_replace( '/\s+/', ' ', (string) $str ) );
+				if ( '' !== $line ) {
+					$smtp_debug .= $line . "\n";
+				}
+			};
+		};
 		$sent = false;
 		try {
 			add_action( 'wp_mail_failed', $listener, 10, 1 );
+			add_action( 'phpmailer_init', $capture_pm, 9999, 1 );
+			add_action( 'phpmailer_init', $debug_pm, 10000, 1 );
 			$sent = wp_mail( array( $to ), $subject, $message, $headers );
 			remove_action( 'wp_mail_failed', $listener, 10 );
+			remove_action( 'phpmailer_init', $capture_pm, 9999 );
+			remove_action( 'phpmailer_init', $debug_pm, 10000 );
 		} catch ( \Throwable $e ) {
 			remove_action( 'wp_mail_failed', $listener, 10 );
+			remove_action( 'phpmailer_init', $capture_pm, 9999 );
+			remove_action( 'phpmailer_init', $debug_pm, 10000 );
 			$sent = false;
+			$last_mail_error = new \WP_Error( 'nexulesuite_test_exception', $e->getMessage() );
 		}
 
 		if ( ! $sent ) {
@@ -6893,12 +7470,48 @@ final class Rest_Api {
 			if ( $last_mail_error instanceof \WP_Error ) {
 				$detail = $last_mail_error->get_error_message();
 			}
-			return new \WP_Error( 'nexulesuite_test_failed', $detail !== '' ? $detail : 'Test email failed.' );
+			if ( ( '' === $detail || 'SMTP Error: Could not authenticate.' === $detail ) && is_object( $phpmailer_ref ) && ! empty( $phpmailer_ref->ErrorInfo ) ) {
+				$detail = (string) $phpmailer_ref->ErrorInfo;
+			}
+			if ( '' === $detail ) {
+				$detail = __( 'Test email failed. If OAuth shows Connected, Disconnect and Authorize again. Or use Other SMTP with an App Password. Hosts that block outbound port 465/587 will also fail.', 'nexus-lead-suite' );
+			} elseif ( false !== stripos( $detail, 'could not connect' ) || false !== stripos( $detail, 'failed to connect' ) ) {
+				$detail .= ' ' . __( 'Your server likely blocks outbound SMTP to smtp.gmail.com (ports 587/465). Ask the host to allow it, or send via their SMTP relay / a transactional provider.', 'nexus-lead-suite' );
+			} elseif (
+				false !== stripos( $detail, 'could not authenticate' )
+				|| false !== stripos( $detail, 'authentication failed' )
+				|| false !== stripos( $detail, '535' )
+				|| false !== stripos( $detail, '534' )
+			) {
+				if ( in_array( $mailer, array( 'gmail', 'outlook' ), true ) && ! empty( $settings['oauth_connected'] ) ) {
+					$detail .= ' ' . __(
+						'Gmail/Outlook rejected the OAuth SMTP login even though Authorize succeeded. Try: (1) Disconnect, remove the app at myaccount.google.com/permissions, then Authorize again and allow all Gmail permissions. (2) In Google Cloud Console, publish the OAuth app (Testing mode tokens expire after ~7 days). (3) Set From Email to the same address as the connected account. (4) Or switch to Other SMTP + Gmail App Password.',
+						'nexus-lead-suite'
+					);
+				} elseif ( 'other' === $mailer ) {
+					$detail .= ' ' . __( 'For Gmail App Password SMTP: username must be the full email, password must be a 16-character App Password (not your normal password), host smtp.gmail.com, port 587, TLS.', 'nexus-lead-suite' );
+				}
+				$server_hint = self::smtp_test_server_excerpt( $smtp_debug );
+				if ( '' !== $server_hint && false === stripos( $detail, $server_hint ) ) {
+					$detail .= ' ' . sprintf(
+						/* translators: %s: last SMTP server response line (sanitized) */
+						__( 'Server replied: %s', 'nexus-lead-suite' ),
+						$server_hint
+					);
+				}
+			}
+			return new \WP_Error( 'nexulesuite_test_failed', $detail, array( 'status' => 500 ) );
+		}
+
+		$note = '';
+		if ( empty( $settings['enabled'] ) ) {
+			$note = __( 'Sent with Default (PHP) mail — not custom SMTP. On Local WP, check Mailpit instead of the Gmail inbox.', 'nexus-lead-suite' );
 		}
 
 		return rest_ensure_response(
 			array(
 				'success' => true,
+				'note'    => $note,
 			)
 		);
 	}

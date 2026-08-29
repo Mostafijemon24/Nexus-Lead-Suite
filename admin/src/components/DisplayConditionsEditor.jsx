@@ -63,6 +63,43 @@ const RULE_REF_PLACEHOLDERS = {
 	post: 'e.g. 105, 233',
 };
 
+function asIdList( raw ) {
+	if ( ! Array.isArray( raw ) ) {
+		return [];
+	}
+	return raw
+		.map( ( id ) => Number( id ) )
+		.filter( ( id ) => Number.isInteger( id ) && id > 0 );
+}
+
+function listHasId( ids, id ) {
+	const n = Number( id );
+	return ids.some( ( x ) => Number( x ) === n );
+}
+
+function toggleIdList( ids, id, checked ) {
+	const next = new Set( asIdList( ids ) );
+	const n = Number( id );
+	if ( ! Number.isInteger( n ) || n <= 0 ) {
+		return [ ...next ];
+	}
+	if ( checked ) {
+		next.add( n );
+	} else {
+		next.delete( n );
+	}
+	return [ ...next ];
+}
+
+function mergeSelectedSearchItems( ids, results ) {
+	const list = Array.isArray( results ) ? results : [];
+	const seen = new Set( list.map( ( item ) => Number( item.id ) ) );
+	const extras = asIdList( ids )
+		.filter( ( id ) => ! seen.has( id ) )
+		.map( ( id ) => ( { id, title: `Selected #${ id }` } ) );
+	return extras.length ? [ ...extras, ...list ] : list;
+}
+
 function ruleLabel( rule, meta ) {
 	const def = RULE_DEFS.find( ( r ) => r.type === rule.type );
 	if ( ! def ) {
@@ -259,21 +296,15 @@ function ReferenceConditionsEditor( {
 				<div className="nexulesuite_gd-cond-panel">
 					<div className="pick-list">
 						{ ( conditionMeta.categories || [] ).map( ( cat ) => {
-							const ids = Array.isArray( rule?.ids ) ? rule.ids : [];
-							const checked = ids.includes( cat.id );
+							const ids = asIdList( rule?.ids );
+							const checked = listHasId( ids, cat.id );
 							return (
 								<label key={ cat.id } className="pick-item">
 									<input
 										type="checkbox"
 										checked={ checked }
 										onChange={ ( e ) => {
-											const next = new Set( ids );
-											if ( e.target.checked ) {
-												next.add( cat.id );
-											} else {
-												next.delete( cat.id );
-											}
-											updateRule( def.type, { ids: [ ...next ] } );
+											updateRule( def.type, { ids: toggleIdList( ids, cat.id, e.target.checked ) } );
 										} }
 										onClick={ ( e ) => e.stopPropagation() }
 									/>
@@ -292,21 +323,15 @@ function ReferenceConditionsEditor( {
 				<div className="nexulesuite_gd-cond-panel">
 					<div className="pick-list">
 						{ ( conditionMeta.tags || [] ).map( ( tag ) => {
-							const ids = Array.isArray( rule?.ids ) ? rule.ids : [];
-							const checked = ids.includes( tag.id );
+							const ids = asIdList( rule?.ids );
+							const checked = listHasId( ids, tag.id );
 							return (
 								<label key={ tag.id } className="pick-item">
 									<input
 										type="checkbox"
 										checked={ checked }
 										onChange={ ( e ) => {
-											const next = new Set( ids );
-											if ( e.target.checked ) {
-												next.add( tag.id );
-											} else {
-												next.delete( tag.id );
-											}
-											updateRule( def.type, { ids: [ ...next ] } );
+											updateRule( def.type, { ids: toggleIdList( ids, tag.id, e.target.checked ) } );
 										} }
 										onClick={ ( e ) => e.stopPropagation() }
 									/>
@@ -330,22 +355,16 @@ function ReferenceConditionsEditor( {
 						onClick={ ( e ) => e.stopPropagation() }
 					/>
 					<div className="pick-list">
-						{ ( contentSearch[ `${ searchKeyPrefix }-${ def.type }` ]?.results || [] ).map( ( item ) => {
-							const ids = Array.isArray( rule?.ids ) ? rule.ids : [];
-							const checked = ids.includes( item.id );
+						{ mergeSelectedSearchItems( rule?.ids, contentSearch[ `${ searchKeyPrefix }-${ def.type }` ]?.results ).map( ( item ) => {
+							const ids = asIdList( rule?.ids );
+							const checked = listHasId( ids, item.id );
 							return (
 								<label key={ item.id } className="pick-item">
 									<input
 										type="checkbox"
 										checked={ checked }
 										onChange={ ( e ) => {
-											const next = new Set( ids );
-											if ( e.target.checked ) {
-												next.add( item.id );
-											} else {
-												next.delete( item.id );
-											}
-											updateRule( def.type, { ids: [ ...next ] } );
+											updateRule( def.type, { ids: toggleIdList( ids, item.id, e.target.checked ) } );
 										} }
 										onClick={ ( e ) => e.stopPropagation() }
 									/>
@@ -589,21 +608,15 @@ export function DisplayConditionsEditor( {
 							{ active && def.taxonomy === 'category' ? (
 								<div className="mt-3 max-h-36 overflow-y-auto space-y-1">
 									{ ( conditionMeta.categories || [] ).map( ( cat ) => {
-										const ids = Array.isArray( rule?.ids ) ? rule.ids : [];
-										const checked = ids.includes( cat.id );
+										const ids = asIdList( rule?.ids );
+										const checked = listHasId( ids, cat.id );
 										return (
 											<label key={ cat.id } className="flex items-center gap-2 text-xs text-slate-600">
 												<input
 													type="checkbox"
 													checked={ checked }
 													onChange={ ( e ) => {
-														const next = new Set( ids );
-														if ( e.target.checked ) {
-															next.add( cat.id );
-														} else {
-															next.delete( cat.id );
-														}
-														updateRule( def.type, { ids: [ ...next ] } );
+														updateRule( def.type, { ids: toggleIdList( ids, cat.id, e.target.checked ) } );
 													} }
 												/>
 												{ cat.name }
@@ -615,21 +628,15 @@ export function DisplayConditionsEditor( {
 							{ active && def.taxonomy === 'tag' ? (
 								<div className="mt-3 max-h-36 overflow-y-auto space-y-1">
 									{ ( conditionMeta.tags || [] ).map( ( tag ) => {
-										const ids = Array.isArray( rule?.ids ) ? rule.ids : [];
-										const checked = ids.includes( tag.id );
+										const ids = asIdList( rule?.ids );
+										const checked = listHasId( ids, tag.id );
 										return (
 											<label key={ tag.id } className="flex items-center gap-2 text-xs text-slate-600">
 												<input
 													type="checkbox"
 													checked={ checked }
 													onChange={ ( e ) => {
-														const next = new Set( ids );
-														if ( e.target.checked ) {
-															next.add( tag.id );
-														} else {
-															next.delete( tag.id );
-														}
-														updateRule( def.type, { ids: [ ...next ] } );
+														updateRule( def.type, { ids: toggleIdList( ids, tag.id, e.target.checked ) } );
 													} }
 												/>
 												{ tag.name }
@@ -647,22 +654,16 @@ export function DisplayConditionsEditor( {
 										onChange={ ( e ) => onSearchContent( `${ searchKeyPrefix }-${ def.type }`, def.searchTypes, e.target.value ) }
 									/>
 									<div className="max-h-28 overflow-y-auto space-y-1">
-										{ ( contentSearch[ `${ searchKeyPrefix }-${ def.type }` ]?.results || [] ).map( ( item ) => {
-											const ids = Array.isArray( rule?.ids ) ? rule.ids : [];
-											const checked = ids.includes( item.id );
+										{ mergeSelectedSearchItems( rule?.ids, contentSearch[ `${ searchKeyPrefix }-${ def.type }` ]?.results ).map( ( item ) => {
+											const ids = asIdList( rule?.ids );
+											const checked = listHasId( ids, item.id );
 											return (
 												<label key={ item.id } className="flex items-center gap-2 text-xs text-slate-600">
 													<input
 														type="checkbox"
 														checked={ checked }
 														onChange={ ( e ) => {
-															const next = new Set( ids );
-															if ( e.target.checked ) {
-																next.add( item.id );
-															} else {
-																next.delete( item.id );
-															}
-															updateRule( def.type, { ids: [ ...next ] } );
+															updateRule( def.type, { ids: toggleIdList( ids, item.id, e.target.checked ) } );
 														} }
 													/>
 													{ item.title } (#{ item.id })

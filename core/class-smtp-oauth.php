@@ -97,7 +97,25 @@ final class Smtp_OAuth {
 	 * @return string
 	 */
 	public static function redirect_uri(): string {
-		return admin_url( 'admin-post.php?action=' . self::CB_ACTION );
+		if ( defined( 'nexulesuite_SMTP_OAUTH_REDIRECT_URI' ) ) {
+			$override = trim( (string) nexulesuite_SMTP_OAUTH_REDIRECT_URI );
+			if ( '' !== $override ) {
+				/**
+				 * Allows a public tunnel / Live Link URL when the site host is not a public TLD
+				 * (e.g. *.local). Must still end at admin-post.php?action=nexulesuite_smtp_oauth_cb.
+				 */
+				return $override;
+			}
+		}
+
+		$uri = admin_url( 'admin-post.php?action=' . self::CB_ACTION );
+
+		/**
+		 * Filters the SMTP OAuth redirect URI registered with Google/Microsoft.
+		 *
+		 * @param string $uri Absolute callback URL.
+		 */
+		return (string) apply_filters( 'nexulesuite_smtp_oauth_redirect_uri', $uri );
 	}
 
 	/**
@@ -140,7 +158,7 @@ final class Smtp_OAuth {
 	 */
 	public static function is_connected(): bool {
 		$opt = self::read_option();
-		return ! empty( $opt['oauth_refresh_token'] );
+		return '' !== Mailer::decrypt_secret( (string) ( $opt['oauth_refresh_token'] ?? '' ) );
 	}
 
 	/**
@@ -152,27 +170,29 @@ final class Smtp_OAuth {
 	}
 
 	/**
-	 * admin-post: build the consent URL and redirect the browser to the provider.
+	 * Builds the provider consent URL (creates a one-time `state` transient).
 	 *
-	 * @return void
+	 * Used by the REST start endpoint so the SPA does not rely on a long-lived
+	 * admin-post nonce that shows “The link you followed has expired.”
+	 *
+	 * @param string $provider Provider id (gmail|outlook).
+	 * @return string|\WP_Error Absolute consent URL or error.
 	 */
-	public function handle_start(): void {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'nexus-lead-suite' ), 403 );
-		}
-		$provider = isset( $_GET['provider'] ) ? sanitize_key( wp_unslash( $_GET['provider'] ) ) : '';
-		check_admin_referer( self::START_ACTION . '_' . $provider );
-
+	public static function build_consent_url( string $provider ) {
+		$provider  = sanitize_key( $provider );
 		$providers = self::providers();
 		if ( ! isset( $providers[ $provider ] ) ) {
-			$this->redirect_back( 'error', __( 'Unknown mailer.', 'nexus-lead-suite' ) );
+			return new \WP_Error( 'nexulesuite_oauth', __( 'Unknown mailer.', 'nexus-lead-suite' ) );
 		}
 
 		$opt           = self::read_option();
 		$client_id     = isset( $opt['oauth_client_id'] ) ? (string) $opt['oauth_client_id'] : '';
 		$client_secret = isset( $opt['oauth_client_secret'] ) ? Mailer::decrypt_secret( (string) $opt['oauth_client_secret'] ) : '';
 		if ( '' === $client_id || '' === $client_secret ) {
-			$this->redirect_back( 'error', __( 'Enter and Save the Client ID & Client Secret before authorizing.', 'nexus-lead-suite' ) );
+			return new \WP_Error(
+				'nexulesuite_oauth',
+				__( 'Enter and Save the Client ID & Client Secret before authorizing.', 'nexus-lead-suite' )
+			);
 		}
 
 		$state = wp_generate_password( 24, false );
@@ -196,8 +216,28 @@ final class Smtp_OAuth {
 			$providers[ $provider ]['auth_extra']
 		);
 
+		return $providers[ $provider ]['auth_url'] . '?' . http_build_query( $args );
+	}
+
+	/**
+	 * admin-post: build the consent URL and redirect the browser to the provider.
+	 *
+	 * @return void
+	 */
+	public function handle_start(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You are not allowed to do this.', 'nexus-lead-suite' ), 403 );
+		}
+		$provider = isset( $_GET['provider'] ) ? sanitize_key( wp_unslash( $_GET['provider'] ) ) : '';
+		check_admin_referer( self::START_ACTION . '_' . $provider );
+
+		$url = self::build_consent_url( $provider );
+		if ( is_wp_error( $url ) ) {
+			$this->redirect_back( 'error', $url->get_error_message() );
+		}
+
 		// phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- deliberate off-site hop to a hardcoded provider endpoint from self::providers(); wp_safe_redirect() would strip it and break the OAuth handshake.
-		wp_redirect( $providers[ $provider ]['auth_url'] . '?' . http_build_query( $args ) );
+		wp_redirect( $url );
 		exit;
 	}
 
@@ -301,10 +341,20 @@ final class Smtp_OAuth {
 	 * @return string Access token, or '' when unavailable.
 	 */
 	public static function get_access_token(): string {
+		$token = self::acquire_access_token();
+		return is_wp_error( $token ) ? '' : $token;
+	}
+
+	/**
+	 * Like {@see get_access_token()} but returns a WP_Error with the failure reason.
+	 *
+	 * @return string|\WP_Error Access token or error.
+	 */
+	public static function acquire_access_token() {
 		$opt    = self::read_option();
 		$mailer = (string) ( $opt['mailer'] ?? '' );
 		if ( ! self::is_oauth_mailer( $mailer ) ) {
-			return '';
+			return new \WP_Error( 'nexulesuite_oauth', __( 'OAuth mailer is not selected.', 'nexus-lead-suite' ) );
 		}
 
 		$expires = (int) ( $opt['oauth_expires'] ?? 0 );
@@ -315,7 +365,16 @@ final class Smtp_OAuth {
 
 		$refresh = Mailer::decrypt_secret( (string) ( $opt['oauth_refresh_token'] ?? '' ) );
 		if ( '' === $refresh ) {
-			return '';
+			if ( ! empty( $opt['oauth_refresh_token'] ) ) {
+				return new \WP_Error(
+					'nexulesuite_oauth_decrypt',
+					__( 'Saved OAuth tokens cannot be read (site keys may have changed). Disconnect, then Authorize again.', 'nexus-lead-suite' )
+				);
+			}
+			return new \WP_Error(
+				'nexulesuite_oauth',
+				__( 'No OAuth refresh token. Click Authorize to connect the account.', 'nexus-lead-suite' )
+			);
 		}
 
 		$tokens = self::request_tokens(
@@ -328,12 +387,12 @@ final class Smtp_OAuth {
 			Mailer::decrypt_secret( (string) ( $opt['oauth_client_secret'] ?? '' ) )
 		);
 		if ( is_wp_error( $tokens ) ) {
-			return '';
+			return $tokens;
 		}
 
 		$access = (string) ( $tokens['access_token'] ?? '' );
 		if ( '' === $access ) {
-			return '';
+			return new \WP_Error( 'nexulesuite_oauth', __( 'Provider returned an empty access token. Disconnect and Authorize again.', 'nexus-lead-suite' ) );
 		}
 
 		$opt['oauth_access_token'] = Mailer::encrypt_secret( $access );
