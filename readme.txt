@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.2.19
+Stable tag: 1.2.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -167,6 +167,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 == Screenshots ==
 
 1. Dashboard (coming soon)
+
+= 1.2.20 =
+* Admin: restore layout CSS (Tailwind theme tokens). Fixes broken Settings / Auto PopUp chrome after 1.2.19.
 
 = 1.2.19 =
 * Settings → Exclusion Rules: paste a live page/post URL (or search by title) instead of only picking from a 50-item dropdown.
