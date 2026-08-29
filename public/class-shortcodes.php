@@ -1995,9 +1995,13 @@ final class Shortcodes {
 
 		/* Read the global "Enable Auto Popup" setting.
 		 * When false, timer / scroll / exit-intent triggers are suppressed;
-		 * only Manual Click (data-nexulesuite_trigger button) still works. */
-		$general       = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
-		$auto_popup_on   = is_array( $general ) ? (bool) ( $general['enableAutoPopup'] ?? false ) : false;
+		 * only Manual Click (data-nexulesuite_trigger button) still works.
+		 * Settings → Exclusion Rules also suppress auto popup on selected posts/pages. */
+		$general        = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
+		$auto_popup_on  = is_array( $general ) ? (bool) ( $general['enableAutoPopup'] ?? false ) : false;
+		if ( $auto_popup_on && $this->is_current_request_auto_popup_excluded( is_array( $general ) ? $general : array() ) ) {
+			$auto_popup_on = false;
+		}
 		$auto_popup_forms = is_array( $general ) ? $this->get_auto_popup_default_form_ids( $general ) : array();
 
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-global-font.php';
@@ -2364,11 +2368,66 @@ final class Shortcodes {
 	}
 
 	/**
-	 * Enqueues sticky bottom navigation CSS (globally, on every frontend page).
-	 * Actual visibility is controlled by CSS media query (mobile/tablet only).
+	 * Integer IDs from Settings → excludePosts / excludePages ({ id, title } rows).
 	 *
-	 * @return void
+	 * @param mixed $raw Stored exclusion list.
+	 * @return array<int,int>
 	 */
+	private function exclusion_ids_from_settings( $raw ): array {
+		if ( ! is_array( $raw ) ) {
+			return array();
+		}
+
+		$ids = array();
+		foreach ( $raw as $item ) {
+			if ( is_array( $item ) ) {
+				$id = (int) ( $item['id'] ?? 0 );
+			} elseif ( is_numeric( $item ) ) {
+				$id = (int) $item;
+			} else {
+				continue;
+			}
+			if ( $id > 0 ) {
+				$ids[] = $id;
+			}
+		}
+
+		return array_values( array_unique( $ids ) );
+	}
+
+	/**
+	 * Whether Settings → Auto PopUp Logic exclusion lists match this front-end request.
+	 * Click-triggered popups still render; only timer / scroll / exit are suppressed.
+	 *
+	 * @param array<string,mixed> $general General settings.
+	 */
+	private function is_current_request_auto_popup_excluded( array $general ): bool {
+		$exclude_post_ids = $this->exclusion_ids_from_settings( $general['excludePosts'] ?? array() );
+		$exclude_page_ids = $this->exclusion_ids_from_settings( $general['excludePages'] ?? array() );
+		if ( empty( $exclude_post_ids ) && empty( $exclude_page_ids ) ) {
+			return false;
+		}
+
+		$qid = (int) get_queried_object_id();
+
+		if ( $qid > 0 && is_singular( 'post' ) && in_array( $qid, $exclude_post_ids, true ) ) {
+			return true;
+		}
+
+		if ( $qid > 0 && ( is_page() || ( is_front_page() && ! is_home() ) ) && in_array( $qid, $exclude_page_ids, true ) ) {
+			return true;
+		}
+
+		if ( is_home() && ! is_front_page() ) {
+			$posts_page_id = (int) get_option( 'page_for_posts' );
+			if ( $posts_page_id > 0 && in_array( $posts_page_id, $exclude_page_ids, true ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	/**
 	 * Returns popups whose display conditions match the current request.
 	 *
@@ -2436,6 +2495,12 @@ final class Shortcodes {
 		return $resolver->get_buttons_for_request( $groups );
 	}
 
+	/**
+	 * Enqueues sticky bottom navigation CSS (globally, on every frontend page).
+	 * Actual visibility is controlled by CSS media query (mobile/tablet only).
+	 *
+	 * @return void
+	 */
 	public function enqueue_bottom_nav_styles(): void {
 		$opt = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
 		if ( ! is_array( $opt ) || empty( $opt['enableNavigation'] ) ) {

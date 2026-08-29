@@ -254,12 +254,29 @@ final class Menu_Group_Resolver {
 			return false;
 		}
 
-		if ( 'page' === $object_type && is_page( $ids ) ) {
-			return true;
+		$qid = (int) get_queried_object_id();
+
+		if ( 'page' === $object_type ) {
+			if ( $qid > 0 && in_array( $qid, $ids, true ) && ( is_page() || ( is_front_page() && ! is_home() ) ) ) {
+				return true;
+			}
+			if ( is_page( $ids ) ) {
+				return true;
+			}
+			if ( is_home() && ! is_front_page() ) {
+				$posts_page_id = (int) get_option( 'page_for_posts' );
+				if ( $posts_page_id > 0 && in_array( $posts_page_id, $ids, true ) ) {
+					return true;
+				}
+			}
+			return false;
 		}
 
-		if ( 'post' === $object_type && is_single( $ids ) ) {
-			return true;
+		if ( 'post' === $object_type ) {
+			if ( is_singular( 'post' ) && $qid > 0 && in_array( $qid, $ids, true ) ) {
+				return true;
+			}
+			return is_single( $ids );
 		}
 
 		return false;
