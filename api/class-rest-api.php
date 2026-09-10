@@ -142,7 +142,7 @@ final class Rest_Api {
 					'q'    => array(
 						'type'              => 'string',
 						'required'          => true,
-						'sanitize_callback' => 'sanitize_text_field',
+						'sanitize_callback' => array( $this, 'sanitize_exclusion_lookup' ),
 					),
 					'type' => array(
 						'type'              => 'string',
@@ -1984,26 +1984,42 @@ final class Rest_Api {
 	}
 
 	/**
-	 * Unique { id, title } rows for auto-popup exclusion lists. Drops empty / zero IDs.
+	 * Unique exclusion rows. A published post/page ID and/or a pasted URL/path is enough.
 	 *
 	 * @param array<int,mixed> $raw Client payload.
-	 * @return array<int,array{id:int,title:string}>
+	 * @return array<int,array{id:int,title:string,url:string}>
 	 */
 	private function sanitize_popup_exclusion_list( array $raw ): array {
 		$out  = array();
 		$seen = array();
 		foreach ( $raw as $item ) {
+			if ( is_numeric( $item ) ) {
+				$item = array( 'id' => (int) $item );
+			}
 			if ( ! is_array( $item ) ) {
 				continue;
 			}
-			$id = (int) ( $item['id'] ?? 0 );
-			if ( $id <= 0 || isset( $seen[ $id ] ) ) {
+			$id    = (int) ( $item['id'] ?? 0 );
+			$url   = $this->normalize_exclusion_path( (string) ( $item['url'] ?? '' ) );
+			$title = sanitize_text_field( (string) ( $item['title'] ?? '' ) );
+			if ( '' === $url && $this->looks_like_content_url( $title ) ) {
+				$url = $this->normalize_exclusion_path( $title );
+			}
+			if ( $id <= 0 && '' === $url ) {
 				continue;
 			}
-			$seen[ $id ] = true;
-			$out[]       = array(
-				'id'    => $id,
-				'title' => sanitize_text_field( (string) ( $item['title'] ?? '' ) ),
+			$key = $id > 0 ? 'id:' . $id : 'url:' . $url;
+			if ( isset( $seen[ $key ] ) ) {
+				continue;
+			}
+			$seen[ $key ] = true;
+			if ( '' === $title ) {
+				$title = '' !== $url ? $url : ( '#' . $id );
+			}
+			$out[] = array(
+				'id'    => $id > 0 ? $id : 0,
+				'title' => $title,
+				'url'   => $url,
 			);
 		}
 
@@ -5207,6 +5223,17 @@ final class Rest_Api {
 	}
 
 	/**
+	 * Keep pasted permalinks intact (sanitize_text_field can mangle query URLs).
+	 *
+	 * @param mixed $value Raw REST param.
+	 */
+	public function sanitize_exclusion_lookup( $value ): string {
+		$value = is_string( $value ) ? trim( wp_unslash( $value ) ) : '';
+		$value = preg_replace( '/[\r\n\t]+/', ' ', $value );
+		return is_string( $value ) ? trim( $value ) : '';
+	}
+
+	/**
 	 * Whether a string looks like a site URL or path (not a plain title).
 	 *
 	 * @param string $raw User input.
@@ -5225,8 +5252,91 @@ final class Rest_Api {
 		if ( false !== strpos( $raw, '.php' ) && ( false !== strpos( $raw, 'page_id=' ) || false !== strpos( $raw, '?p=' ) ) ) {
 			return true;
 		}
+		if ( preg_match( '#^[a-z0-9.-]+\.[a-z]{2,}(/|$)#i', $raw ) ) {
+			return true;
+		}
 
 		return false;
+	}
+
+	/**
+	 * Site-relative path used for Exclusion Rules URL matching.
+	 *
+	 * https://www.site.com/contact/?utm=1 → /contact/
+	 *
+	 * @param string $raw URL, path, or title.
+	 */
+	private function normalize_exclusion_path( string $raw ): string {
+		$raw = html_entity_decode( trim( $raw ), ENT_QUOTES, 'UTF-8' );
+		if ( '' === $raw || ! $this->looks_like_content_url( $raw ) ) {
+			return '';
+		}
+
+		if ( 0 !== stripos( $raw, 'http://' ) && 0 !== stripos( $raw, 'https://' ) ) {
+			if ( 0 === strpos( $raw, '/' ) ) {
+				$raw = home_url( $raw );
+			} else {
+				$raw = 'https://' . ltrim( $raw, '/' );
+			}
+		}
+
+		$raw   = esc_url_raw( $raw );
+		$parts = wp_parse_url( $raw );
+		if ( ! is_array( $parts ) ) {
+			return '';
+		}
+
+		$path = isset( $parts['path'] ) ? (string) $parts['path'] : '/';
+		$home_path = (string) ( wp_parse_url( home_url( '/' ), PHP_URL_PATH ) ?? '/' );
+		$home_path = untrailingslashit( $home_path );
+		if ( '' !== $home_path && '/' !== $home_path && 0 === strpos( $path, $home_path ) ) {
+			$path = substr( $path, strlen( $home_path ) );
+			if ( ! is_string( $path ) ) {
+				$path = '';
+			}
+		}
+
+		$path = '/' . trim( (string) $path, '/' );
+		if ( '/' !== $path ) {
+			$path = trailingslashit( $path );
+		}
+
+		return $path;
+	}
+
+	/**
+	 * Rewrite a pasted URL onto this site's scheme/host so url_to_postid() can match.
+	 *
+	 * @param string $url Absolute URL.
+	 */
+	private function rewrite_content_url_for_site( string $url ): string {
+		$home  = wp_parse_url( home_url( '/' ) );
+		$parts = wp_parse_url( $url );
+		if ( ! is_array( $home ) || ! is_array( $parts ) || empty( $home['host'] ) ) {
+			return $url;
+		}
+
+		$path  = isset( $parts['path'] ) ? (string) $parts['path'] : '/';
+		$query = array();
+		if ( ! empty( $parts['query'] ) ) {
+			parse_str( (string) $parts['query'], $query );
+		}
+		$keep = array();
+		foreach ( array( 'page_id', 'p', 'pagename', 'name', 'post' ) as $key ) {
+			if ( ! empty( $query[ $key ] ) ) {
+				$keep[ $key ] = $query[ $key ];
+			}
+		}
+
+		$scheme = isset( $home['scheme'] ) ? (string) $home['scheme'] : 'https';
+		$host   = (string) $home['host'];
+		$port   = isset( $home['port'] ) ? ':' . (int) $home['port'] : '';
+		$out    = $scheme . '://' . $host . $port . $path;
+		if ( ! empty( $keep ) ) {
+			$out .= '?' . http_build_query( $keep );
+		}
+
+		return $out;
 	}
 
 	/**
@@ -5248,14 +5358,18 @@ final class Rest_Api {
 		$url = $raw;
 		if ( 0 === strpos( $raw, '/' ) ) {
 			$url = home_url( $raw );
-		} elseif ( 0 !== stripos( $raw, 'http://' ) && 0 !== stripos( $raw, 'https://' ) && false !== strpos( $raw, 'page_id=' ) ) {
-			$url = home_url( '/' . ltrim( $raw, '/' ) );
+		} elseif ( 0 !== stripos( $raw, 'http://' ) && 0 !== stripos( $raw, 'https://' ) ) {
+			$url = ( false !== strpos( $raw, 'page_id=' ) || false !== strpos( $raw, '?p=' ) )
+				? home_url( '/' . ltrim( $raw, '/' ) )
+				: 'https://' . ltrim( $raw, '/' );
 		}
 
 		$url = esc_url_raw( $url );
 		if ( '' === $url ) {
 			return null;
 		}
+
+		$url = $this->rewrite_content_url_for_site( $url );
 
 		$parts = wp_parse_url( $url );
 		$path  = is_array( $parts ) && isset( $parts['path'] ) ? (string) $parts['path'] : '';
@@ -5316,6 +5430,13 @@ final class Rest_Api {
 			}
 
 			if ( 0 === $id && '' !== $page_path ) {
+				$by_path = get_page_by_path( $page_path, OBJECT, $wanted_types );
+				if ( $by_path instanceof \WP_Post ) {
+					$id = (int) $by_path->ID;
+				}
+			}
+
+			if ( 0 === $id && '' !== $page_path ) {
 				foreach ( $wanted_types as $ptype ) {
 					$path_args = array(
 						'post_type'              => $ptype,
@@ -5352,6 +5473,7 @@ final class Rest_Api {
 			'id'    => (int) $post->ID,
 			'title' => get_the_title( $post ),
 			'type'  => (string) $post->post_type,
+			'url'   => $this->normalize_exclusion_path( get_permalink( $post ) ),
 		);
 	}
 
@@ -5381,23 +5503,12 @@ final class Rest_Api {
 		$hit    = null;
 
 		if ( $this->looks_like_content_url( $raw ) ) {
-			$hit = $this->resolve_public_content( $raw, array( 'page', 'post' ) );
-			if ( is_array( $hit ) && $hit['type'] !== $type ) {
-				$other = 'page' === $hit['type'] ? 'Exclude Pages' : 'Exclude Posts';
-				return rest_ensure_response(
-					array(
-						'success' => false,
-						'code'    => 'wrong_type',
-						'message' => sprintf(
-							'That link is a %1$s. Add it under %2$s.',
-							$hit['type'],
-							$other
-						),
-						'data'    => $hit,
-					)
-				);
-			}
-			if ( is_array( $hit ) && $hit['type'] === $type ) {
+			$path = $this->normalize_exclusion_path( $raw );
+			$hit  = $this->resolve_public_content( $raw, array( 'page', 'post' ) );
+			if ( is_array( $hit ) ) {
+				if ( empty( $hit['url'] ) && '' !== $path ) {
+					$hit['url'] = $path;
+				}
 				return rest_ensure_response(
 					array(
 						'success' => true,
@@ -5406,12 +5517,29 @@ final class Rest_Api {
 				);
 			}
 
+			if ( '' === $path ) {
+				return rest_ensure_response(
+					array(
+						'success' => false,
+						'message' => 'That does not look like a usable page URL.',
+					)
+				);
+			}
+
+			$label = trim( basename( untrailingslashit( $path ) ) );
+			if ( '' === $label || '/' === $path ) {
+				$label = '/' === $path ? 'Homepage' : $path;
+			}
+
 			return rest_ensure_response(
 				array(
-					'success' => false,
-					'message' => 'page' === $type
-						? 'No published page matches this URL. Use the live permalink (not a preview or admin link).'
-						: 'No published post matches this URL. Use the live permalink (not a preview or admin link).',
+					'success' => true,
+					'data'    => array(
+						'id'    => 0,
+						'title' => $label,
+						'type'  => $type,
+						'url'   => $path,
+					),
 				)
 			);
 		}
@@ -5439,6 +5567,7 @@ final class Rest_Api {
 				'id'    => (int) $post->ID,
 				'title' => get_the_title( $post ),
 				'type'  => (string) $post->post_type,
+				'url'   => $this->normalize_exclusion_path( get_permalink( $post ) ),
 			);
 		}
 
