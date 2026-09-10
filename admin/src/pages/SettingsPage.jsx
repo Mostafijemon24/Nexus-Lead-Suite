@@ -247,15 +247,63 @@ function newAutoPopupFormRow() {
 /* Exclusion lists must be arrays of { id, title }. Legacy saves, imports, and PHP
    associative arrays (serialized as JSON objects) otherwise crash the popup tab
    with "excludePosts.some is not a function". */
+function looksLikeContentUrl( raw ) {
+	const q = String( raw || '' ).trim();
+	if ( ! q ) {
+		return false;
+	}
+	if ( /^https?:\/\//i.test( q ) || q.startsWith( '/' ) ) {
+		return true;
+	}
+	if ( q.includes( '.php' ) && ( q.includes( 'page_id=' ) || q.includes( '?p=' ) ) ) {
+		return true;
+	}
+	return /^[a-z0-9.-]+\.[a-z]{2,}(\/|$)/i.test( q );
+}
+
+function exclusionRowKey( item ) {
+	const id = Number( item?.id );
+	if ( id > 0 ) {
+		return `id:${ id }`;
+	}
+	const url = String( item?.url || '' ).trim();
+	if ( url ) {
+		return `url:${ url }`;
+	}
+	return '';
+}
+
 function normalizeExclusionList( value ) {
 	const list = Array.isArray( value )
 		? value
 		: value && typeof value === 'object'
 			? Object.values( value )
 			: [];
-	return list
-		.filter( ( item ) => item && typeof item === 'object' && item.id != null && ! Number.isNaN( Number( item.id ) ) )
-		.map( ( item ) => ( { id: Number( item.id ), title: String( item.title ?? '' ) } ) );
+	const out = [];
+	const seen = new Set();
+	list.forEach( ( item ) => {
+		if ( ! item || typeof item !== 'object' ) {
+			return;
+		}
+		const id = Number( item.id );
+		const url = String( item.url ?? '' ).trim();
+		const title = String( item.title ?? '' );
+		if ( ! ( id > 0 ) && ! url && ! looksLikeContentUrl( title ) ) {
+			return;
+		}
+		const row = {
+			id: id > 0 ? id : 0,
+			title: title || url || ( id > 0 ? `#${ id }` : '' ),
+			url,
+		};
+		const key = exclusionRowKey( row );
+		if ( ! key || seen.has( key ) ) {
+			return;
+		}
+		seen.add( key );
+		out.push( row );
+	} );
+	return out;
 }
 
 function normalizeExclusionFields( s ) {
@@ -446,8 +494,8 @@ const InfoTip = ( { text, label = 'More information' } ) => (
 );
 
 /**
- * Exclusion Rules picker: paste a live permalink (or search a title), then Add.
- * Native <select> cannot accept a URL — that is why pasting a page link used to do nothing.
+ * Exclusion Rules picker: a pasted permalink is added as that URL.
+ * Title search is only a helper when you do not have the link.
  */
 function ExclusionField( {
 	label,
@@ -465,13 +513,20 @@ function ExclusionField( {
 	const [ busy, setBusy ] = useState( false );
 	const [ results, setResults ] = useState( [] );
 	const debounceRef = useRef( 0 );
-	const selectedIds = new Set( ( Array.isArray( selected ) ? selected : [] ).map( ( s ) => Number( s.id ) ) );
+	const selectedKeys = new Set( ( Array.isArray( selected ) ? selected : [] ).map( exclusionRowKey ).filter( Boolean ) );
+
+	const toRow = ( item ) => ( {
+		id: Number( item?.id ) > 0 ? Number( item.id ) : 0,
+		title: String( item?.title ?? '' ),
+		url: String( item?.url ?? '' ).trim(),
+	} );
 
 	const pick = ( item ) => {
-		if ( ! item || item.id == null ) {
+		const row = toRow( item );
+		if ( ! exclusionRowKey( row ) ) {
 			return;
 		}
-		onAdd( { id: Number( item.id ), title: String( item.title ?? '' ) } );
+		onAdd( row );
 		setQuery( '' );
 		setResults( [] );
 		setHint( '' );
@@ -486,17 +541,23 @@ function ExclusionField( {
 		setHint( '' );
 		try {
 			const json = await resolve( q, type );
-			if ( json?.success && json.data?.id ) {
+			if ( json?.success && ( Number( json.data?.id ) > 0 || json.data?.url ) ) {
 				pick( json.data );
+			} else if ( looksLikeContentUrl( q ) ) {
+				pick( { id: 0, title: q, url: q } );
 			} else if ( json?.code === 'ambiguous' && Array.isArray( json.data?.results ) ) {
 				setResults( json.data.results );
 				setHint( json.message || 'Pick a match from the list.' );
 			} else {
-				setHint( json?.message || 'Could not add that link.' );
+				setHint( json?.message || 'Could not add that page.' );
 				setResults( [] );
 			}
 		} catch {
-			setHint( 'Could not look up that link.' );
+			if ( looksLikeContentUrl( q ) ) {
+				pick( { id: 0, title: q, url: q } );
+			} else {
+				setHint( 'Could not look up that page.' );
+			}
 		} finally {
 			setBusy( false );
 		}
@@ -509,36 +570,44 @@ function ExclusionField( {
 			setResults( [] );
 			return undefined;
 		}
+		if ( looksLikeContentUrl( q ) ) {
+			setResults( [ { id: 0, title: q, url: q } ] );
+		}
 		debounceRef.current = window.setTimeout( async () => {
 			try {
 				const json = await resolve( q, type );
-				if ( json?.success && json.data?.id ) {
+				if ( json?.success && ( Number( json.data?.id ) > 0 || json.data?.url ) ) {
 					setResults( [ json.data ] );
 				} else if ( json?.code === 'ambiguous' && Array.isArray( json.data?.results ) ) {
 					setResults( json.data.results );
+				} else if ( looksLikeContentUrl( q ) ) {
+					setResults( [ { id: 0, title: q, url: q } ] );
 				} else {
 					setResults( [] );
 				}
 			} catch {
-				setResults( [] );
+				setResults( looksLikeContentUrl( q ) ? [ { id: 0, title: q, url: q } ] : [] );
 			}
 		}, 280 );
 		return () => window.clearTimeout( debounceRef.current );
 	}, [ query, type, resolve ] );
 
 	const qLower = query.trim().toLowerCase();
-	const localHits = ( Array.isArray( options ) ? options : [] )
-		.filter( ( o ) => ! selectedIds.has( Number( o.id ) ) )
-		.filter( ( o ) => ( ! qLower ? true : String( o.title || '' ).toLowerCase().includes( qLower ) ) )
-		.slice( 0, 12 );
+	const queryIsUrl = looksLikeContentUrl( query );
+	const localHits = queryIsUrl
+		? []
+		: ( Array.isArray( options ) ? options : [] )
+			.filter( ( o ) => ! selectedKeys.has( exclusionRowKey( o ) ) )
+			.filter( ( o ) => ( ! qLower ? true : String( o.title || '' ).toLowerCase().includes( qLower ) ) )
+			.slice( 0, 12 );
 	const merged = [];
 	const seen = new Set();
 	[ ...results, ...localHits ].forEach( ( row ) => {
-		const id = Number( row.id );
-		if ( ! id || seen.has( id ) || selectedIds.has( id ) ) {
+		const key = exclusionRowKey( row );
+		if ( ! key || seen.has( key ) || selectedKeys.has( key ) ) {
 			return;
 		}
-		seen.add( id );
+		seen.add( key );
 		merged.push( row );
 	} );
 
@@ -575,20 +644,20 @@ function ExclusionField( {
 				</button>
 			</div>
 			<p className="nexulesuite_sap-excl-hint">
-				Paste the live page URL (e.g. https://yoursite.com/contact/) or search by title, then Add.
+				Paste the page link and click Add. Title search is optional if you do not have the URL.
 			</p>
 			{ hint ? <p className="nexulesuite_sap-excl-hint is-error">{ hint }</p> : null }
 			{ query.trim().length >= 1 && merged.length > 0 ? (
 				<div className="nexulesuite_sap-excl-results" role="listbox">
 					{ merged.map( ( row ) => (
 						<button
-							key={ row.id }
+							key={ exclusionRowKey( row ) || row.title }
 							type="button"
 							className="nexulesuite_sap-excl-result"
 							onClick={ () => pick( row ) }
 						>
-							<span className="t">{ row.title || `#${ row.id }` }</span>
-							<span className="meta">#{ row.id }</span>
+							<span className="t">{ row.title || row.url || `#${ row.id }` }</span>
+							<span className="meta">{ Number( row.id ) > 0 ? `#${ row.id }` : ( row.url || 'URL' ) }</span>
 						</button>
 					) ) }
 				</div>
@@ -596,13 +665,13 @@ function ExclusionField( {
 			{ selected.length > 0 && (
 				<div className="nexulesuite_sap-excl-tags">
 					{ selected.map( ( row ) => (
-						<span key={ row.id } className={ `nexulesuite_sap-excl-chip ${ chipClass }` }>
-							{ row.title || `#${ row.id }` }
+						<span key={ exclusionRowKey( row ) || row.title } className={ `nexulesuite_sap-excl-chip ${ chipClass }` }>
+							{ row.title || row.url || `#${ row.id }` }
 							<button
 								type="button"
 								className="nexulesuite_sap-excl-chip-remove"
 								onClick={ () => onToggle( row ) }
-								aria-label={ `Remove ${ row.title }` }
+								aria-label={ `Remove ${ row.title || row.url }` }
 							>
 								<X size={ 12 } />
 							</button>
@@ -1274,26 +1343,33 @@ export function SettingsPage() {
 
 	const toggleExclusion = ( field, item ) => {
 		const list = Array.isArray( settings[ field ] ) ? settings[ field ] : [];
-		const itemId = Number( item?.id );
-		const exists = list.some( ( i ) => Number( i.id ) === itemId );
-		updateSetting(
-			field,
-			exists
-				? list.filter( ( i ) => Number( i.id ) !== itemId )
-				: [ ...list, { id: itemId, title: String( item?.title ?? '' ) } ]
-		);
+		const key = exclusionRowKey( item );
+		const exists = key && list.some( ( i ) => exclusionRowKey( i ) === key );
+		const next = exists
+			? list.filter( ( i ) => exclusionRowKey( i ) !== key )
+			: [ ...list, {
+				id: Number( item?.id ) > 0 ? Number( item.id ) : 0,
+				title: String( item?.title ?? '' ),
+				url: String( item?.url ?? '' ).trim(),
+			} ];
+		updateSetting( field, next );
 	};
 
 	const addExclusion = ( field, item ) => {
 		setSettings( ( prev ) => {
 			const list = Array.isArray( prev[ field ] ) ? prev[ field ] : [];
-			const itemId = Number( item?.id );
-			if ( ! itemId || list.some( ( i ) => Number( i.id ) === itemId ) ) {
+			const row = {
+				id: Number( item?.id ) > 0 ? Number( item.id ) : 0,
+				title: String( item?.title ?? '' ),
+				url: String( item?.url ?? '' ).trim(),
+			};
+			const key = exclusionRowKey( row );
+			if ( ! key || list.some( ( i ) => exclusionRowKey( i ) === key ) ) {
 				return prev;
 			}
 			return {
 				...prev,
-				[ field ]: [ ...list, { id: itemId, title: String( item?.title ?? '' ) } ],
+				[ field ]: [ ...list, row ],
 			};
 		} );
 	};

@@ -2368,7 +2368,7 @@ final class Shortcodes {
 	}
 
 	/**
-	 * Integer IDs from Settings → excludePosts / excludePages ({ id, title } rows).
+	 * Integer IDs from Settings → excludePosts / excludePages ({ id, title, url } rows).
 	 *
 	 * @param mixed $raw Stored exclusion list.
 	 * @return array<int,int>
@@ -2396,15 +2396,125 @@ final class Shortcodes {
 	}
 
 	/**
+	 * Site-relative paths from Settings → excludePosts / excludePages.
+	 *
+	 * @param mixed $raw Stored exclusion list.
+	 * @return array<int,string>
+	 */
+	private function exclusion_paths_from_settings( $raw ): array {
+		if ( ! is_array( $raw ) ) {
+			return array();
+		}
+
+		$paths = array();
+		foreach ( $raw as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+			foreach ( array( $item['url'] ?? '', $item['title'] ?? '' ) as $candidate ) {
+				$path = $this->normalize_exclusion_request_path( (string) $candidate );
+				if ( '' !== $path ) {
+					$paths[] = $path;
+				}
+			}
+		}
+
+		return array_values( array_unique( $paths ) );
+	}
+
+	/**
+	 * Normalize a pasted permalink or path for Exclusion Rules matching.
+	 *
+	 * @param string $raw URL or path.
+	 */
+	private function normalize_exclusion_request_path( string $raw ): string {
+		$raw = html_entity_decode( trim( $raw ), ENT_QUOTES, 'UTF-8' );
+		if ( '' === $raw ) {
+			return '';
+		}
+
+		$looks_url = ( 0 === stripos( $raw, 'http://' ) || 0 === stripos( $raw, 'https://' ) || 0 === strpos( $raw, '/' ) );
+		if ( ! $looks_url && ! preg_match( '#^[a-z0-9.-]+\.[a-z]{2,}(/|$)#i', $raw ) ) {
+			return '';
+		}
+
+		if ( 0 !== stripos( $raw, 'http://' ) && 0 !== stripos( $raw, 'https://' ) ) {
+			$raw = ( 0 === strpos( $raw, '/' ) ) ? home_url( $raw ) : 'https://' . ltrim( $raw, '/' );
+		}
+
+		$raw   = esc_url_raw( $raw );
+		$parts = wp_parse_url( $raw );
+		if ( ! is_array( $parts ) ) {
+			return '';
+		}
+
+		$path      = isset( $parts['path'] ) ? (string) $parts['path'] : '/';
+		$home_path = (string) ( wp_parse_url( home_url( '/' ), PHP_URL_PATH ) ?? '/' );
+		$home_path = untrailingslashit( $home_path );
+		if ( '' !== $home_path && '/' !== $home_path && 0 === strpos( $path, $home_path ) ) {
+			$path = substr( $path, strlen( $home_path ) );
+			if ( ! is_string( $path ) ) {
+				$path = '';
+			}
+		}
+
+		$path = '/' . trim( (string) $path, '/' );
+		if ( '/' !== $path ) {
+			$path = trailingslashit( $path );
+		}
+
+		return $path;
+	}
+
+	/**
+	 * Current front-end path variants used to match pasted exclusion URLs.
+	 *
+	 * @return array<int,string>
+	 */
+	private function current_request_exclusion_paths(): array {
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+		$path        = (string) ( wp_parse_url( $request_uri, PHP_URL_PATH ) ?? '/' );
+		$from_uri    = $this->normalize_exclusion_request_path( $path );
+
+		$paths = array();
+		if ( '' !== $from_uri ) {
+			$paths[] = $from_uri;
+		}
+
+		$qid = (int) get_queried_object_id();
+		if ( $qid > 0 ) {
+			$permalink = get_permalink( $qid );
+			if ( is_string( $permalink ) && '' !== $permalink ) {
+				$from_perm = $this->normalize_exclusion_request_path( $permalink );
+				if ( '' !== $from_perm ) {
+					$paths[] = $from_perm;
+				}
+			}
+		}
+
+		return array_values( array_unique( $paths ) );
+	}
+
+	/**
 	 * Whether Settings → Auto PopUp Logic exclusion lists match this front-end request.
 	 * Click-triggered popups still render; only timer / scroll / exit are suppressed.
 	 *
 	 * @param array<string,mixed> $general General settings.
 	 */
 	private function is_current_request_auto_popup_excluded( array $general ): bool {
-		$exclude_post_ids = $this->exclusion_ids_from_settings( $general['excludePosts'] ?? array() );
-		$exclude_page_ids = $this->exclusion_ids_from_settings( $general['excludePages'] ?? array() );
-		if ( empty( $exclude_post_ids ) && empty( $exclude_page_ids ) ) {
+		$exclude_posts = is_array( $general['excludePosts'] ?? null ) ? $general['excludePosts'] : array();
+		$exclude_pages = is_array( $general['excludePages'] ?? null ) ? $general['excludePages'] : array();
+		$exclude_post_ids = $this->exclusion_ids_from_settings( $exclude_posts );
+		$exclude_page_ids = $this->exclusion_ids_from_settings( $exclude_pages );
+		$exclude_paths    = array_values(
+			array_unique(
+				array_merge(
+					$this->exclusion_paths_from_settings( $exclude_posts ),
+					$this->exclusion_paths_from_settings( $exclude_pages )
+				)
+			)
+		);
+		if ( empty( $exclude_post_ids ) && empty( $exclude_page_ids ) && empty( $exclude_paths ) ) {
 			return false;
 		}
 
@@ -2422,6 +2532,14 @@ final class Shortcodes {
 			$posts_page_id = (int) get_option( 'page_for_posts' );
 			if ( $posts_page_id > 0 && in_array( $posts_page_id, $exclude_page_ids, true ) ) {
 				return true;
+			}
+		}
+
+		if ( ! empty( $exclude_paths ) ) {
+			foreach ( $this->current_request_exclusion_paths() as $current ) {
+				if ( in_array( $current, $exclude_paths, true ) ) {
+					return true;
+				}
 			}
 		}
 
