@@ -27,6 +27,17 @@ final class Accessibility_Language {
 	 * @return void
 	 */
 	public function register_hooks(): void {
+		/*
+		 * The Accessibility & Language dock — the accessibility button, the language /
+		 * Google Translate button, the dock-hosted live chat button, and any custom
+		 * button — is fully removed from the front end while its admin controller is
+		 * rebuilt. No dock CSS, JS, or markup is output on any page. The saved settings
+		 * in the database are left untouched. To bring the dock back, return true from
+		 * the filter below (e.g. add_filter( 'nexulesuite_enable_a11y_dock', '__return_true' )).
+		 */
+		if ( ! apply_filters( 'nexulesuite_enable_a11y_dock', false ) ) {
+			return;
+		}
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ), 40 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'print_early_translate_css' ), 1 );
 		add_action( 'wp_footer', array( $this, 'render_markup' ), 40 );
