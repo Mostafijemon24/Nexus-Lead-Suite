@@ -546,33 +546,30 @@ final class Shortcodes {
 			// Activity log must not break submissions or visitor-facing responses.
 		}
 
-		if ( $sent ) {
-			$conf_type = isset( $confirmation['type'] ) ? (string) $confirmation['type'] : 'message';
-			$conf_url  = isset( $confirmation['redirectUrl'] ) ? esc_url_raw( (string) $confirmation['redirectUrl'] ) : '';
-			if ( 'redirect' === $conf_type && '' !== $conf_url ) {
-				wp_send_json_success( array(
-					'redirect' => $conf_url,
-					'message'  => __( 'Thank you! Redirecting…', 'nexus-lead-suite' ),
-				) );
-				return;
-			}
-			$conf_msg = isset( $confirmation['message'] ) ? trim( (string) $confirmation['message'] ) : '';
-			$default_success = __(
-				"Thanks for reaching out! We've received your request and are reviewing your details. We will follow up soon to confirm your insurance and finalize your appointment.\n\nNeed help right away? Please call us during our office hours. For all medical emergencies, please call 911 immediately.",
-				'nexus-lead-suite'
-			);
+		/*
+		 * The submission is already stored, logged, and queued to any webhooks above.
+		 * A failed notification email (missing/broken SMTP) must not surface to the
+		 * visitor — always return the configured confirmation (or redirect). Email
+		 * delivery status is kept in the DB / Activities log ($sent) for the admin.
+		 */
+		$conf_type = isset( $confirmation['type'] ) ? (string) $confirmation['type'] : 'message';
+		$conf_url  = isset( $confirmation['redirectUrl'] ) ? esc_url_raw( (string) $confirmation['redirectUrl'] ) : '';
+		if ( 'redirect' === $conf_type && '' !== $conf_url ) {
 			wp_send_json_success( array(
-				'message' => '' !== $conf_msg ? wp_kses_post( $conf_msg ) : $default_success,
-				'html'    => '' !== $conf_msg,
+				'redirect' => $conf_url,
+				'message'  => __( 'Thank you! Redirecting…', 'nexus-lead-suite' ),
 			) );
 			return;
 		}
-
-		wp_send_json_error(
-			array(
-				'message' => __( 'Please set up your SMTP properly.', 'nexus-lead-suite' ),
-			)
+		$conf_msg = isset( $confirmation['message'] ) ? trim( (string) $confirmation['message'] ) : '';
+		$default_success = __(
+			"Thanks for reaching out! We've received your request and are reviewing your details. We will follow up soon to confirm your insurance and finalize your appointment.\n\nNeed help right away? Please call us during our office hours. For all medical emergencies, please call 911 immediately.",
+			'nexus-lead-suite'
 		);
+		wp_send_json_success( array(
+			'message' => '' !== $conf_msg ? wp_kses_post( $conf_msg ) : $default_success,
+			'html'    => '' !== $conf_msg,
+		) );
 	}
 
 	/**
