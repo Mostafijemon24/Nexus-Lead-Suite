@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.2.22
+Stable tag: 1.2.23
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -167,6 +167,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 == Screenshots ==
 
 1. Dashboard (coming soon)
+
+= 1.2.23 =
+* Accessibility dock: temporarily hide the front-end Custom Button while the admin controller is being rebuilt. Saved settings are untouched; re-enable via the nexulesuite_a11y_show_custom_button filter or nexulesuite_A11Y_SHOW_CUSTOM_BUTTON constant.
 
 = 1.2.22 =
 * Forms: a failed notification email no longer shows visitors an SMTP error. The configured Thank You message (or redirect) always appears; delivery status is still logged for the admin.
