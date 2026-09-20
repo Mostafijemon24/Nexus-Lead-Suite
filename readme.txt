@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.2.25
+Stable tag: 1.2.26
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -167,6 +167,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 == Screenshots ==
 
 1. Dashboard (coming soon)
+
+= 1.2.26 =
+* Backup: export/import now saves and restores the complete plugin — forms (including logic and field colors), menu buttons, popups, emails, appearance, settings, tables, and uploads. After a full plugin delete, importing the JSON on another site recreates the same setup.
 
 = 1.2.25 =
 * Forms: phone fields no longer force US (XXX) XXX-XXXX formatting. Numbers display as typed, including in notification emails. Optional National / International / Character Limit validation still applies.

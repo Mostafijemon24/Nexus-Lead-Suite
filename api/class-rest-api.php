@@ -4944,7 +4944,7 @@ final class Rest_Api {
 			array(
 				'success' => true,
 				'data'    => array(
-					'message' => __( 'Import finished. Previous plugin settings, forms, popups, email, menu, activity tables, and media mapping were replaced entirely by this file.', 'nexus-lead-suite' ),
+					'message' => __( 'Import finished. Forms, buttons, popups, logic, colors, emails, settings, media, and tables now match the export file.', 'nexus-lead-suite' ),
 				),
 			)
 		);

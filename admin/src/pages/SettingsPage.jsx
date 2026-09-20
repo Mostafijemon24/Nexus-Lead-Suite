@@ -730,6 +730,7 @@ export function SettingsPage() {
 	const [ aiTraining, setAiTraining ] = useState( false );
 	const [ aiTrainResult, setAiTrainResult ] = useState( null );
 	const [ aiResetting, setAiResetting ] = useState( false );
+	const [ backupBusy, setBackupBusy ] = useState( false );
 
 	const showNotice = ( type, text ) => {
 		if ( type === 'success' ) {
@@ -821,6 +822,102 @@ export function SettingsPage() {
 	}, [] );
 
 	const updateSetting = ( field, value ) => setSettings( ( prev ) => ( { ...prev, [ field ]: value } ) );
+
+	const extractFullBackupBundle = ( parsed ) => {
+		if ( ! parsed || typeof parsed !== 'object' ) {
+			return null;
+		}
+		if ( parsed.nexulesuite_export_format != null || parsed.nexus_ls_export_format != null ) {
+			return parsed;
+		}
+		if ( parsed.bundle && typeof parsed.bundle === 'object' ) {
+			return parsed.bundle;
+		}
+		if ( parsed.data && parsed.data.bundle && typeof parsed.data.bundle === 'object' ) {
+			return parsed.data.bundle;
+		}
+		return null;
+	};
+
+	const handleExportFullBackup = async () => {
+		setBackupBusy( true );
+		try {
+			let { res, json } = await apiFetch( '/settings/full-export?embed_media=1', { method: 'GET' } );
+			let settingsOnly = false;
+			if ( ! res.ok || ! json?.success ) {
+				( { res, json } = await apiFetch( '/settings/full-export?embed_media=0', { method: 'GET' } ) );
+				if ( res.ok && json?.success ) {
+					settingsOnly = true;
+				} else {
+					const msg = typeof json?.message === 'string' ? json.message : `Export failed (${ res.status }).`;
+					throw new Error( msg );
+				}
+			}
+			const bundle = json?.data?.bundle;
+			if ( ! bundle || typeof bundle !== 'object' ) {
+				throw new Error( 'Server returned an empty backup.' );
+			}
+			const blob = new Blob( [ JSON.stringify( bundle, null, 2 ) ], { type: 'application/json' } );
+			const url = URL.createObjectURL( blob );
+			const a = document.createElement( 'a' );
+			a.href = url;
+			a.download = settingsOnly ? 'nexus-lead-suite-export-settings-only.json' : 'nexus-lead-suite-full-export.json';
+			a.click();
+			URL.revokeObjectURL( url );
+			if ( settingsOnly ) {
+				showNotice( 'error', 'Full export with embedded files failed. A data-only backup was downloaded (no media files). Retry on a host with more PHP memory to include uploads.' );
+			}
+		} catch ( err ) {
+			showNotice( 'error', err?.message || 'Could not export backup.' );
+		} finally {
+			setBackupBusy( false );
+		}
+	};
+
+	const handleImportFullBackup = ( file ) => {
+		if ( ! file ) {
+			return;
+		}
+		const reader = new FileReader();
+		reader.onload = async ( ev ) => {
+			setBackupBusy( true );
+			try {
+				const parsed = JSON.parse( String( ev.target?.result ?? '' ) );
+				const bundle = extractFullBackupBundle( parsed );
+				const fmt = bundle
+					? Number( bundle.nexulesuite_export_format ?? bundle.nexus_ls_export_format ?? 0 )
+					: 0;
+				if ( ! bundle || ! [ 2, 3, 4, 5 ].includes( fmt ) ) {
+					if ( parsed?.settings && ! bundle ) {
+						throw new Error( 'This file is a settings-only export from an older version. Update the plugin, then export again so forms, buttons, popups, logic, and colors are included.' );
+					}
+					throw new Error( 'This file is not a Nexus Lead Suite full export. Use Backup → Download backup JSON.' );
+				}
+				const { res, json } = await apiFetch( '/settings/full-import', {
+					method: 'POST',
+					body: JSON.stringify( { bundle } ),
+				} );
+				if ( ! res.ok || ! json?.success ) {
+					const detail = typeof json?.data?.detail === 'string' && json.data.detail.trim() !== '' ? json.data.detail.trim() : '';
+					let msg = typeof json?.message === 'string' && json.message
+						? json.message
+						: ( typeof json?.code === 'string' ? json.code : `Import failed (${ res.status }).` );
+					if ( detail ) {
+						msg = `${ msg } (${ detail })`;
+					}
+					throw new Error( msg );
+				}
+				setSuccessOpen( true );
+				window.setTimeout( () => {
+					window.location.reload();
+				}, 700 );
+			} catch ( err ) {
+				showNotice( 'error', err?.message || 'Invalid backup file.' );
+				setBackupBusy( false );
+			}
+		};
+		reader.readAsText( file );
+	};
 
 	const updateSmtp = ( field, value ) => setSmtp( ( prev ) => ( { ...prev, [ field ]: value } ) );
 
@@ -3075,24 +3172,20 @@ export function SettingsPage() {
 													<div className="p-2.5 bg-green-50 text-green-600 rounded-2xl"><Download size={ 20 } /></div>
 													<div>
 														<h4 className="text-sm font-bold text-slate-800 capitalize leading-none">Export full backup</h4>
-														<p className="text-[10px] text-slate-400 font-medium mt-0.5">Settings, forms, popups, emails, nav, analytics &amp; uploads — one JSON file.</p>
+														<p className="text-[10px] text-slate-400 font-medium mt-0.5">Forms, buttons, popups, logic, colors, emails, settings, tables &amp; uploads — one JSON file.</p>
 													</div>
 												</div>
+												<p className="text-[11px] text-slate-500 leading-relaxed">
+													This downloads everything needed to recreate this site after deleting the plugin: form builder (including conditional logic and field colors), menu buttons, popups, emails, SMTP, captcha, appearance, analytics, chat logs, and media files.
+												</p>
 												<button
 													type="button"
-													onClick={ () => {
-														const data = { version: pluginVersion, settings };
-														const blob = new Blob( [ JSON.stringify( data, null, 2 ) ], { type: 'application/json' } );
-														const url = URL.createObjectURL( blob );
-														const a = document.createElement( 'a' );
-														a.href = url;
-														a.download = 'nexus-settings-export.json';
-														a.click();
-														URL.revokeObjectURL( url );
-													} }
-													className="w-full flex items-center justify-center gap-2 py-4 bg-green-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all hover:bg-green-500"
+													disabled={ backupBusy }
+													onClick={ handleExportFullBackup }
+													className="w-full flex items-center justify-center gap-2 py-4 bg-green-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all hover:bg-green-500 disabled:opacity-60"
 												>
-													<Download size={ 16 } /> Export Settings JSON
+													{ backupBusy ? <Loader2 size={ 16 } className="animate-spin" /> : <Download size={ 16 } /> }
+													{ backupBusy ? 'Preparing backup…' : 'Download backup JSON' }
 												</button>
 											</div>
 
@@ -3104,26 +3197,20 @@ export function SettingsPage() {
 														<p className="text-[10px] text-slate-400 font-medium mt-0.5">Upload a full export (.json). Replaces all plugin data — no Save step.</p>
 													</div>
 												</div>
-												<label className="w-full flex items-center justify-center gap-2 py-4 bg-blue-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all hover:bg-blue-500 cursor-pointer">
-													<Upload size={ 16 } /> Import Settings JSON
+												<p className="text-[11px] text-slate-500 leading-relaxed">
+													On a new or empty site this restores the export exactly as it was saved. Existing plugin data on this site is overwritten.
+												</p>
+												<label className={ `w-full flex items-center justify-center gap-2 py-4 bg-blue-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all hover:bg-blue-500 cursor-pointer ${ backupBusy ? 'opacity-60 pointer-events-none' : '' }` }>
+													{ backupBusy ? <Loader2 size={ 16 } className="animate-spin" /> : <Upload size={ 16 } /> }
+													{ backupBusy ? 'Importing…' : 'Import backup JSON' }
 													<input
 														type="file"
-														accept=".json"
+														disabled={ backupBusy }
+														accept=".json,application/json"
 														className="hidden"
 														onChange={ ( e ) => {
-															const file = e.target.files[ 0 ];
-															if ( ! file ) return;
-															const reader = new FileReader();
-															reader.onload = ( ev ) => {
-																try {
-																	const data = JSON.parse( ev.target.result );
-																	if ( data.settings ) setSettings( ( prev ) => ( { ...prev, ...data.settings, ...normalizeExclusionFields( data.settings ) } ) );
-																	showNotice( 'success', 'Settings imported. Click "Save Configuration" to apply.' );
-																} catch ( _err ) {
-																	showNotice( 'error', 'Invalid JSON file.' );
-																}
-															};
-															reader.readAsText( file );
+															const file = e.target.files?.[ 0 ];
+															handleImportFullBackup( file );
 															e.target.value = '';
 														} }
 													/>
@@ -3136,7 +3223,7 @@ export function SettingsPage() {
 											<div className="space-y-1">
 												<h6 className="text-xs font-bold text-amber-900 capitalize leading-tight">Important Notice</h6>
 												<p className="text-[10px] text-amber-700/80 leading-relaxed font-medium">
-													Importing a settings file will overwrite your current configuration. Always export a backup before importing.
+													Import replaces the current plugin configuration. Always export a backup first. After a full plugin delete, install Nexus Lead Suite on the new site, then import this file — no extra Save is required.
 												</p>
 											</div>
 										</div>
