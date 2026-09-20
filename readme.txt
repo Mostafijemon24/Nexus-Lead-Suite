@@ -4,7 +4,7 @@ Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.2.24
+Stable tag: 1.2.25
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -167,6 +167,9 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 == Screenshots ==
 
 1. Dashboard (coming soon)
+
+= 1.2.25 =
+* Forms: phone fields no longer force US (XXX) XXX-XXXX formatting. Numbers display as typed, including in notification emails. Optional National / International / Character Limit validation still applies.
 
 = 1.2.24 =
 * Accessibility & Language dock removed from the front end (accessibility, translate, live chat, and custom buttons) while the admin controller is rebuilt. Saved settings are untouched; re-enable with add_filter( 'nexulesuite_enable_a11y_dock', '__return_true' ).
