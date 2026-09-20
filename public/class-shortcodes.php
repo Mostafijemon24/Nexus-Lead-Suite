@@ -3530,6 +3530,38 @@ final class Shortcodes {
 	}
 
 	/**
+	 * Phone inputs stay as typed. Form builder has no country mask; only optional
+	 * validation (national / international / character limit) is applied.
+	 *
+	 * @param array<string,mixed> $settings Field settings.
+	 * @return string Extra HTML attributes (no leading space).
+	 */
+	private function phone_field_extra_attrs( array $settings ): string {
+		$parts = array( 'inputmode="tel"', 'autocomplete="tel"' );
+		$pv    = isset( $settings['phoneValidation'] ) && is_array( $settings['phoneValidation'] ) ? $settings['phoneValidation'] : array();
+		$type  = isset( $pv['type'] ) ? sanitize_text_field( (string) $pv['type'] ) : 'none';
+
+		if ( 'national' === $type ) {
+			$parts[] = 'pattern="[0-9]{10,15}"';
+			$parts[] = 'maxlength="15"';
+			$parts[] = 'title="' . esc_attr__( 'Enter 10–15 digits', 'nexus-lead-suite' ) . '"';
+		} elseif ( 'international' === $type ) {
+			$parts[] = 'pattern="\\+?[0-9]{10,20}"';
+			$parts[] = 'maxlength="21"';
+			$parts[] = 'title="' . esc_attr__( 'Enter an international number, e.g. +8801XXXXXXXXX', 'nexus-lead-suite' ) . '"';
+		} elseif ( 'character_limit' === $type ) {
+			$limit = isset( $pv['characterLimit'] ) ? (int) $pv['characterLimit'] : 0;
+			if ( $limit >= 1 && $limit <= 64 ) {
+				$parts[] = 'maxlength="' . $limit . '"';
+				$parts[] = 'minlength="' . $limit . '"';
+				$parts[] = 'pattern=".{' . $limit . '}"';
+			}
+		}
+
+		return implode( ' ', $parts );
+	}
+
+	/**
 	 * Formats hardcoded extra HTML attributes from internal call sites (mask, inputmode, etc.).
 	 *
 	 * @param string $attrs Space-separated attribute string.
@@ -3812,7 +3844,7 @@ final class Shortcodes {
 					$label,
 					$show_label,
 					$required,
-					'data-nexulesuite_mask="us-phone" inputmode="tel" autocomplete="tel"'
+					$this->phone_field_extra_attrs( $settings )
 				);
 				break;
 			case 'textarea':

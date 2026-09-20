@@ -255,31 +255,6 @@
     return formatted.length;
   }
 
-  /**
-   * US / NANP: (XXX) XXX-XXXX; strips leading country digit 1 when 11 digits.
-   */
-  function formatUsPhoneDisplay(value) {
-    let d = String(value || "").replace(/\D/g, "");
-    if (d.length === 11 && d.startsWith("1")) d = d.slice(1);
-    d = d.slice(0, 10);
-    if (!d.length) return "";
-    if (d.length <= 3) return "(" + d;
-    if (d.length <= 6) return "(" + d.slice(0, 3) + ") " + d.slice(3);
-    return "(" + d.slice(0, 3) + ") " + d.slice(3, 6) + "-" + d.slice(6);
-  }
-
-  function onUsPhoneInput(ev) {
-    const el = ev.target;
-    if (!(el instanceof HTMLInputElement)) return;
-    const prev = el.value;
-    const cursor = el.selectionStart ?? prev.length;
-    const digitCount = digitsBeforeCursor(prev, cursor);
-    const next = formatUsPhoneDisplay(prev);
-    el.value = next;
-    const pos = caretAfterNthDigit(next, digitCount);
-    el.setSelectionRange(pos, pos);
-  }
-
   /** American date entry: MM/DD/YYYY (2 / 2 / 4 digits). */
   function formatDateMdyDisplay(value) {
     const d = String(value || "").replace(/\D/g, "").slice(0, 8);
@@ -306,9 +281,7 @@
     if (!(el instanceof HTMLInputElement)) return;
     const mask = el.dataset.nexulesuite_mask;
     if (!mask) return;
-    if (mask === "us-phone") {
-      el.addEventListener("input", onUsPhoneInput);
-    } else if (mask === "date-mdy" || mask === "date-dmy") {
+    if (mask === "date-mdy" || mask === "date-dmy") {
       el.addEventListener("input", onDateMdyInput);
     }
   }
