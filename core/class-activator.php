@@ -46,7 +46,7 @@ final class Activator {
 		}
 
 		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
-		\nexulesuite_\Public\Client_Access::activation_flush_rewrite_rules();
+		\nexulesuite_\Frontend\Client_Access::activation_flush_rewrite_rules();
 	}
 
 	/**

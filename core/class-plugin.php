@@ -175,7 +175,7 @@ final class Plugin {
 		}
 
 		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
-		\nexulesuite_\Public\Client_Access::sync_rewrite_rules();
+		\nexulesuite_\Frontend\Client_Access::sync_rewrite_rules();
 		flush_rewrite_rules( false );
 		update_option( 'nexulesuite_ca_rw_ok', '1', false );
 	}
@@ -245,7 +245,7 @@ final class Plugin {
 
 		if ( $had_client ) {
 			require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
-			\nexulesuite_\Public\Client_Access::sync_rewrite_rules();
+			\nexulesuite_\Frontend\Client_Access::sync_rewrite_rules();
 			flush_rewrite_rules( false );
 		}
 
@@ -354,17 +354,17 @@ final class Plugin {
 	 */
 	public function init_public(): void {
 		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
-		$client_access = new \nexulesuite_\Public\Client_Access();
+		$client_access = new \nexulesuite_\Frontend\Client_Access();
 		$client_access->register_hooks();
 
 		require_once nexulesuite_PLUGIN_DIR . 'public/class-accessibility-language.php';
-		$a11y_lang = new \nexulesuite_\Public\Accessibility_Language();
+		$a11y_lang = new \nexulesuite_\Frontend\Accessibility_Language();
 		$a11y_lang->register_hooks();
 
 		if ( $this->should_load_shortcodes_module() ) {
 			require_once nexulesuite_PLUGIN_DIR . 'public/class-forminator-ui-bridge.php';
 			require_once nexulesuite_PLUGIN_DIR . 'public/class-shortcodes.php';
-			$shortcodes = new \nexulesuite_\Public\Shortcodes();
+			$shortcodes = new \nexulesuite_\Frontend\Shortcodes();
 			$shortcodes->register_hooks();
 		}
 	}
