@@ -47,6 +47,16 @@ final class Llm_Client {
 	 * @return array<string,array<string,mixed>>
 	 */
 	private static function registry(): array {
+		/*
+		 * The provider endpoints below are intentional, user-selected, opt-in
+		 * integrations. The AI Chatbot is disabled by default; no request is made
+		 * unless the admin enables it, picks a provider and enters their own API
+		 * key. Every provider and the data sent to it is disclosed under
+		 * "External services" in readme.txt. WordPress 7.0's wp_ai_client_prompt()
+		 * cannot be adopted because this plugin supports WordPress 6.2+, where that
+		 * API does not exist. The provider host strings are therefore required.
+		 */
+		// phpcs:disable PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- See note above: opt-in, disclosed provider registry; wp_ai_client_prompt() requires WP 7.0 while this plugin supports WP 6.2+.
 		return array(
 			'openai'     => array(
 				'label'        => 'OpenAI',
@@ -247,6 +257,7 @@ final class Llm_Client {
 				'key_url'      => '',
 			),
 		);
+		// phpcs:enable PluginCheck.CodeAnalysis.AIProvider.DirectIntegration
 	}
 
 	/**
@@ -476,6 +487,7 @@ final class Llm_Client {
 			'Authorization' => 'Bearer ' . $api_key,
 		);
 		// OpenRouter attributes requests to the calling app; harmless elsewhere, so keep it scoped.
+		// phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- Opt-in, disclosed provider; this only matches the base URL already defined in the registry to add OpenRouter's attribution headers.
 		if ( 'https://openrouter.ai/api/v1' === $p['base'] ) {
 			$headers['HTTP-Referer'] = home_url();
 			$headers['X-Title']      = wp_strip_all_tags( (string) get_bloginfo( 'name' ) );

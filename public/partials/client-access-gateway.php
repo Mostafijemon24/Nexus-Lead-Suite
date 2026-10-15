@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use nexulesuite_\Public\Client_Access;
+use nexulesuite_\Frontend\Client_Access;
 
 if ( ! isset( $nexulesuite_ca_report_logo ) ) {
 	$nexulesuite_ca_report_logo = '';

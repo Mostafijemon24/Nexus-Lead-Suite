@@ -133,28 +133,6 @@ final class Rest_Api {
 
 		register_rest_route(
 			'nexulesuite_/v1',
-			'/settings/resolve-content',
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'resolve_exclusion_content' ),
-				'permission_callback' => array( $this, 'can_manage_settings' ),
-				'args'                => array(
-					'q'    => array(
-						'type'              => 'string',
-						'required'          => true,
-						'sanitize_callback' => array( $this, 'sanitize_exclusion_lookup' ),
-					),
-					'type' => array(
-						'type'              => 'string',
-						'required'          => false,
-						'sanitize_callback' => 'sanitize_key',
-					),
-				),
-			)
-		);
-
-		register_rest_route(
-			'nexulesuite_/v1',
 			'/settings/accessibility-language',
 			array(
 				'methods'             => 'GET',
@@ -1683,8 +1661,8 @@ final class Rest_Api {
 	 */
 	public function get_accessibility_language_settings(): \WP_REST_Response {
 		require_once nexulesuite_PLUGIN_DIR . 'public/class-accessibility-language.php';
-		$settings = \nexulesuite_\Public\Accessibility_Language::get_settings();
-		$catalog  = \nexulesuite_\Public\Accessibility_Language::language_catalog();
+		$settings = \nexulesuite_\Frontend\Accessibility_Language::get_settings();
+		$catalog  = \nexulesuite_\Frontend\Accessibility_Language::language_catalog();
 		$langs    = array();
 		foreach ( $catalog as $code => $meta ) {
 			$langs[] = array(
@@ -1723,8 +1701,8 @@ final class Rest_Api {
 			return new \WP_Error( 'invalid_settings', __( 'Invalid settings payload.', 'nexus-lead-suite' ), array( 'status' => 400 ) );
 		}
 
-		$clean = \nexulesuite_\Public\Accessibility_Language::sanitize( $input );
-		update_option( \nexulesuite_\Public\Accessibility_Language::OPTION_KEY, $clean, false );
+		$clean = \nexulesuite_\Frontend\Accessibility_Language::sanitize( $input );
+		update_option( \nexulesuite_\Frontend\Accessibility_Language::OPTION_KEY, $clean, false );
 
 		$general = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
 		if ( ! is_array( $general ) ) {
@@ -1984,49 +1962,6 @@ final class Rest_Api {
 	}
 
 	/**
-	 * Unique exclusion rows. A published post/page ID and/or a pasted URL/path is enough.
-	 *
-	 * @param array<int,mixed> $raw Client payload.
-	 * @return array<int,array{id:int,title:string,url:string}>
-	 */
-	private function sanitize_popup_exclusion_list( array $raw ): array {
-		$out  = array();
-		$seen = array();
-		foreach ( $raw as $item ) {
-			if ( is_numeric( $item ) ) {
-				$item = array( 'id' => (int) $item );
-			}
-			if ( ! is_array( $item ) ) {
-				continue;
-			}
-			$id    = (int) ( $item['id'] ?? 0 );
-			$url   = $this->normalize_exclusion_path( (string) ( $item['url'] ?? '' ) );
-			$title = sanitize_text_field( (string) ( $item['title'] ?? '' ) );
-			if ( '' === $url && $this->looks_like_content_url( $title ) ) {
-				$url = $this->normalize_exclusion_path( $title );
-			}
-			if ( $id <= 0 && '' === $url ) {
-				continue;
-			}
-			$key = $id > 0 ? 'id:' . $id : 'url:' . $url;
-			if ( isset( $seen[ $key ] ) ) {
-				continue;
-			}
-			$seen[ $key ] = true;
-			if ( '' === $title ) {
-				$title = '' !== $url ? $url : ( '#' . $id );
-			}
-			$out[] = array(
-				'id'    => $id > 0 ? $id : 0,
-				'title' => $title,
-				'url'   => $url,
-			);
-		}
-
-		return $out;
-	}
-
-	/**
 	 * Validates auto-popup form selection against persisted builder forms (empty allowed).
 	 *
 	 * @param string $raw Raw form id from client.
@@ -2241,10 +2176,28 @@ final class Rest_Api {
 		$form_field_gap     = max( 0, min( 100, (int) ( $input['formFieldGap'] ?? 16 ) ) );
 
 		$exclude_posts_raw = isset( $input['excludePosts'] ) && is_array( $input['excludePosts'] ) ? $input['excludePosts'] : array();
-		$exclude_posts     = $this->sanitize_popup_exclusion_list( $exclude_posts_raw );
+		$exclude_posts = array();
+		foreach ( $exclude_posts_raw as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+			$exclude_posts[] = array(
+				'id'    => (int) ( $item['id'] ?? 0 ),
+				'title' => sanitize_text_field( (string) ( $item['title'] ?? '' ) ),
+			);
+		}
 
 		$exclude_pages_raw = isset( $input['excludePages'] ) && is_array( $input['excludePages'] ) ? $input['excludePages'] : array();
-		$exclude_pages     = $this->sanitize_popup_exclusion_list( $exclude_pages_raw );
+		$exclude_pages = array();
+		foreach ( $exclude_pages_raw as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+			$exclude_pages[] = array(
+				'id'    => (int) ( $item['id'] ?? 0 ),
+				'title' => sanitize_text_field( (string) ( $item['title'] ?? '' ) ),
+			);
+		}
 
 		$auto_popup_form_ids = $this->sanitize_saved_auto_popup_form_ids( $input['autoPopupFormIds'] ?? null );
 		if ( empty( $auto_popup_form_ids ) && isset( $input['autoPopupFormId'] ) ) {
@@ -2447,7 +2400,7 @@ final class Rest_Api {
 
 		if ( $need_rewrite_flush ) {
 			require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
-			\nexulesuite_\Public\Client_Access::sync_rewrite_rules();
+			\nexulesuite_\Frontend\Client_Access::sync_rewrite_rules();
 			flush_rewrite_rules( false );
 		}
 
@@ -2847,7 +2800,7 @@ final class Rest_Api {
 
 	/**
 	 * Allowed icon keys for FAQ / action buttons (mirrors
-	 * {@see \nexulesuite_\Public\Shortcodes::livechat_ai_icon_set()} keys).
+	 * {@see \nexulesuite_\Frontend\Shortcodes::livechat_ai_icon_set()} keys).
 	 *
 	 * @return array<int,string>
 	 */
@@ -4715,13 +4668,13 @@ final class Rest_Api {
 			: $ttl_saved;
 
 		$token = wp_generate_password( 48, false, false );
-		\nexulesuite_\Public\Client_Access::store_token( $token, MINUTE_IN_SECONDS * $ttl_min );
+		\nexulesuite_\Frontend\Client_Access::store_token( $token, MINUTE_IN_SECONDS * $ttl_min );
 
 		return rest_ensure_response(
 			array(
 				'success' => true,
 				'data'    => array(
-					'url'              => \nexulesuite_\Public\Client_Access::build_access_url( $token ),
+					'url'              => \nexulesuite_\Frontend\Client_Access::build_access_url( $token ),
 					'expiresInMinutes' => $ttl_min,
 				),
 			)
@@ -4739,7 +4692,7 @@ final class Rest_Api {
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-report-source.php';
 
 		$links = array();
-		foreach ( \nexulesuite_\Public\Client_Access::all_links() as $link ) {
+		foreach ( \nexulesuite_\Frontend\Client_Access::all_links() as $link ) {
 			$links[] = array(
 				'id'       => (string) ( $link['id'] ?? '' ),
 				'label'    => (string) ( $link['label'] ?? '' ),
@@ -4772,7 +4725,7 @@ final class Rest_Api {
 		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-report-source.php';
 
-		if ( ! \nexulesuite_\Public\Client_Access::is_allowed_from_db() ) {
+		if ( ! \nexulesuite_\Frontend\Client_Access::is_allowed_from_db() ) {
 			return new \WP_Error(
 				'nexulesuite_client_access_disabled',
 				__( 'Save settings with "Allow Client Access" enabled before generating a link.', 'nexus-lead-suite' ),
@@ -4793,7 +4746,7 @@ final class Rest_Api {
 			$sections = \nexulesuite_\Core\Report_Source::DEFAULT_SHARED_SECTIONS;
 		}
 
-		$created = \nexulesuite_\Public\Client_Access::create_link( $label, $expires_days, $sections );
+		$created = \nexulesuite_\Frontend\Client_Access::create_link( $label, $expires_days, $sections );
 
 		return rest_ensure_response(
 			array(
@@ -4819,7 +4772,7 @@ final class Rest_Api {
 		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
 
 		$id = sanitize_text_field( (string) $request->get_param( 'id' ) );
-		if ( ! \nexulesuite_\Public\Client_Access::revoke_link( $id ) ) {
+		if ( ! \nexulesuite_\Frontend\Client_Access::revoke_link( $id ) ) {
 			return new \WP_Error( 'nexulesuite_link_not_found', __( 'That link no longer exists.', 'nexus-lead-suite' ), array( 'status' => 404 ) );
 		}
 
@@ -4944,7 +4897,7 @@ final class Rest_Api {
 			array(
 				'success' => true,
 				'data'    => array(
-					'message' => __( 'Import finished. Forms, buttons, popups, logic, colors, emails, settings, media, and tables now match the export file.', 'nexus-lead-suite' ),
+					'message' => __( 'Import finished. Previous plugin settings, forms, popups, email, menu, activity tables, and media mapping were replaced entirely by this file.', 'nexus-lead-suite' ),
 				),
 			)
 		);
@@ -5223,387 +5176,6 @@ final class Rest_Api {
 	}
 
 	/**
-	 * Keep pasted permalinks intact (sanitize_text_field can mangle query URLs).
-	 *
-	 * @param mixed $value Raw REST param.
-	 */
-	public function sanitize_exclusion_lookup( $value ): string {
-		$value = is_string( $value ) ? trim( wp_unslash( $value ) ) : '';
-		$value = preg_replace( '/[\r\n\t]+/', ' ', $value );
-		return is_string( $value ) ? trim( $value ) : '';
-	}
-
-	/**
-	 * Whether a string looks like a site URL or path (not a plain title).
-	 *
-	 * @param string $raw User input.
-	 */
-	private function looks_like_content_url( string $raw ): bool {
-		$raw = trim( $raw );
-		if ( '' === $raw ) {
-			return false;
-		}
-		if ( 0 === stripos( $raw, 'http://' ) || 0 === stripos( $raw, 'https://' ) ) {
-			return true;
-		}
-		if ( 0 === strpos( $raw, '/' ) ) {
-			return true;
-		}
-		if ( false !== strpos( $raw, '.php' ) && ( false !== strpos( $raw, 'page_id=' ) || false !== strpos( $raw, '?p=' ) ) ) {
-			return true;
-		}
-		if ( preg_match( '#^[a-z0-9.-]+\.[a-z]{2,}(/|$)#i', $raw ) ) {
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Site-relative path used for Exclusion Rules URL matching.
-	 *
-	 * https://www.site.com/contact/?utm=1 → /contact/
-	 *
-	 * @param string $raw URL, path, or title.
-	 */
-	private function normalize_exclusion_path( string $raw ): string {
-		$raw = html_entity_decode( trim( $raw ), ENT_QUOTES, 'UTF-8' );
-		if ( '' === $raw || ! $this->looks_like_content_url( $raw ) ) {
-			return '';
-		}
-
-		if ( 0 !== stripos( $raw, 'http://' ) && 0 !== stripos( $raw, 'https://' ) ) {
-			if ( 0 === strpos( $raw, '/' ) ) {
-				$raw = home_url( $raw );
-			} else {
-				$raw = 'https://' . ltrim( $raw, '/' );
-			}
-		}
-
-		$raw   = esc_url_raw( $raw );
-		$parts = wp_parse_url( $raw );
-		if ( ! is_array( $parts ) ) {
-			return '';
-		}
-
-		$path = isset( $parts['path'] ) ? (string) $parts['path'] : '/';
-		$home_path = (string) ( wp_parse_url( home_url( '/' ), PHP_URL_PATH ) ?? '/' );
-		$home_path = untrailingslashit( $home_path );
-		if ( '' !== $home_path && '/' !== $home_path && 0 === strpos( $path, $home_path ) ) {
-			$path = substr( $path, strlen( $home_path ) );
-			if ( ! is_string( $path ) ) {
-				$path = '';
-			}
-		}
-
-		$path = '/' . trim( (string) $path, '/' );
-		if ( '/' !== $path ) {
-			$path = trailingslashit( $path );
-		}
-
-		return $path;
-	}
-
-	/**
-	 * Rewrite a pasted URL onto this site's scheme/host so url_to_postid() can match.
-	 *
-	 * @param string $url Absolute URL.
-	 */
-	private function rewrite_content_url_for_site( string $url ): string {
-		$home  = wp_parse_url( home_url( '/' ) );
-		$parts = wp_parse_url( $url );
-		if ( ! is_array( $home ) || ! is_array( $parts ) || empty( $home['host'] ) ) {
-			return $url;
-		}
-
-		$path  = isset( $parts['path'] ) ? (string) $parts['path'] : '/';
-		$query = array();
-		if ( ! empty( $parts['query'] ) ) {
-			parse_str( (string) $parts['query'], $query );
-		}
-		$keep = array();
-		foreach ( array( 'page_id', 'p', 'pagename', 'name', 'post' ) as $key ) {
-			if ( ! empty( $query[ $key ] ) ) {
-				$keep[ $key ] = $query[ $key ];
-			}
-		}
-
-		$scheme = isset( $home['scheme'] ) ? (string) $home['scheme'] : 'https';
-		$host   = (string) $home['host'];
-		$port   = isset( $home['port'] ) ? ':' . (int) $home['port'] : '';
-		$out    = $scheme . '://' . $host . $port . $path;
-		if ( ! empty( $keep ) ) {
-			$out .= '?' . http_build_query( $keep );
-		}
-
-		return $out;
-	}
-
-	/**
-	 * Resolve a public URL or path to a published post ID.
-	 *
-	 * url_to_postid() misses the static homepage and some pretty-permalink edge
-	 * cases, so we also try query args, trailing-slash variants, and page paths.
-	 *
-	 * @param string             $raw           URL, path, or permalink.
-	 * @param array<int,string>  $wanted_types  post|page.
-	 * @return array{id:int,title:string,type:string}|null Matched row, or null.
-	 */
-	private function resolve_public_content( string $raw, array $wanted_types ) {
-		$raw = html_entity_decode( trim( $raw ), ENT_QUOTES, 'UTF-8' );
-		if ( '' === $raw ) {
-			return null;
-		}
-
-		$url = $raw;
-		if ( 0 === strpos( $raw, '/' ) ) {
-			$url = home_url( $raw );
-		} elseif ( 0 !== stripos( $raw, 'http://' ) && 0 !== stripos( $raw, 'https://' ) ) {
-			$url = ( false !== strpos( $raw, 'page_id=' ) || false !== strpos( $raw, '?p=' ) )
-				? home_url( '/' . ltrim( $raw, '/' ) )
-				: 'https://' . ltrim( $raw, '/' );
-		}
-
-		$url = esc_url_raw( $url );
-		if ( '' === $url ) {
-			return null;
-		}
-
-		$url = $this->rewrite_content_url_for_site( $url );
-
-		$parts = wp_parse_url( $url );
-		$path  = is_array( $parts ) && isset( $parts['path'] ) ? (string) $parts['path'] : '';
-		$query = array();
-		if ( is_array( $parts ) && ! empty( $parts['query'] ) ) {
-			parse_str( (string) $parts['query'], $query );
-		}
-
-		$id = 0;
-		if ( ! empty( $query['page_id'] ) ) {
-			$id = absint( $query['page_id'] );
-		} elseif ( ! empty( $query['p'] ) ) {
-			$id = absint( $query['p'] );
-		} elseif ( ! empty( $query['post'] ) && false !== strpos( $url, 'post.php' ) ) {
-			$id = absint( $query['post'] );
-		}
-
-		$candidates = array();
-		if ( 0 === $id ) {
-			$plain = $url;
-			if ( is_array( $parts ) ) {
-				$scheme = isset( $parts['scheme'] ) ? $parts['scheme'] . '://' : '';
-				$host   = isset( $parts['host'] ) ? $parts['host'] : '';
-				$port   = isset( $parts['port'] ) ? ':' . (int) $parts['port'] : '';
-				$plain  = $scheme . $host . $port . $path;
-			}
-			$candidates[] = $plain;
-			$candidates[] = trailingslashit( $plain );
-			$candidates[] = untrailingslashit( $plain );
-			$candidates   = array_values( array_unique( array_filter( $candidates ) ) );
-			foreach ( $candidates as $try ) {
-				$found = (int) url_to_postid( $try );
-				if ( $found > 0 ) {
-					$id = $found;
-					break;
-				}
-			}
-		}
-
-		if ( 0 === $id ) {
-			$home      = untrailingslashit( home_url() );
-			$check     = untrailingslashit( is_array( $parts ) ? ( ( isset( $parts['scheme'] ) ? $parts['scheme'] . '://' : '' ) . ( $parts['host'] ?? '' ) . $path ) : $url );
-			$home_path = (string) ( wp_parse_url( home_url( '/' ), PHP_URL_PATH ) ?? '/' );
-			$page_path = $path;
-			if ( '/' !== $home_path && 0 === strpos( $page_path, untrailingslashit( $home_path ) ) ) {
-				$page_path = substr( $page_path, strlen( untrailingslashit( $home_path ) ) );
-				if ( ! is_string( $page_path ) ) {
-					$page_path = '';
-				}
-			}
-			$page_path = trim( (string) $page_path, '/' );
-
-			if ( '' === $page_path && ( $check === $home || $url === home_url( '/' ) || $url === home_url() ) ) {
-				$front = (int) get_option( 'page_on_front' );
-				if ( $front > 0 ) {
-					$id = $front;
-				}
-			}
-
-			if ( 0 === $id && '' !== $page_path ) {
-				$by_path = get_page_by_path( $page_path, OBJECT, $wanted_types );
-				if ( $by_path instanceof \WP_Post ) {
-					$id = (int) $by_path->ID;
-				}
-			}
-
-			if ( 0 === $id && '' !== $page_path ) {
-				foreach ( $wanted_types as $ptype ) {
-					$path_args = array(
-						'post_type'              => $ptype,
-						'post_status'            => 'publish',
-						'posts_per_page'         => 1,
-						'no_found_rows'          => true,
-						'update_post_meta_cache' => false,
-						'update_post_term_cache' => false,
-					);
-					if ( 'page' === $ptype ) {
-						$path_args['pagename'] = $page_path;
-					} else {
-						$path_args['name'] = basename( $page_path );
-					}
-					$path_query = new \WP_Query( $path_args );
-					if ( isset( $path_query->posts[0] ) && $path_query->posts[0] instanceof \WP_Post ) {
-						$id = (int) $path_query->posts[0]->ID;
-						break;
-					}
-				}
-			}
-		}
-
-		if ( $id <= 0 ) {
-			return null;
-		}
-
-		$post = get_post( $id );
-		if ( ! $post instanceof \WP_Post || 'publish' !== $post->post_status ) {
-			return null;
-		}
-
-		return array(
-			'id'    => (int) $post->ID,
-			'title' => get_the_title( $post ),
-			'type'  => (string) $post->post_type,
-			'url'   => $this->normalize_exclusion_path( get_permalink( $post ) ),
-		);
-	}
-
-	/**
-	 * Settings → Exclusion Rules: turn a pasted URL / path / title into a page or post.
-	 *
-	 * @param \WP_REST_Request $request Request.
-	 * @return \WP_REST_Response
-	 */
-	public function resolve_exclusion_content( \WP_REST_Request $request ) {
-		$raw  = trim( (string) ( $request->get_param( 'q' ) ?? '' ) );
-		$type = sanitize_key( (string) ( $request->get_param( 'type' ) ?? 'page' ) );
-		if ( 'post' !== $type ) {
-			$type = 'page';
-		}
-
-		if ( '' === $raw ) {
-			return rest_ensure_response(
-				array(
-					'success' => false,
-					'message' => 'Enter a page URL or title.',
-				)
-			);
-		}
-
-		$wanted = array( $type );
-		$hit    = null;
-
-		if ( $this->looks_like_content_url( $raw ) ) {
-			$path = $this->normalize_exclusion_path( $raw );
-			$hit  = $this->resolve_public_content( $raw, array( 'page', 'post' ) );
-			if ( is_array( $hit ) ) {
-				if ( empty( $hit['url'] ) && '' !== $path ) {
-					$hit['url'] = $path;
-				}
-				return rest_ensure_response(
-					array(
-						'success' => true,
-						'data'    => $hit,
-					)
-				);
-			}
-
-			if ( '' === $path ) {
-				return rest_ensure_response(
-					array(
-						'success' => false,
-						'message' => 'That does not look like a usable page URL.',
-					)
-				);
-			}
-
-			$label = trim( basename( untrailingslashit( $path ) ) );
-			if ( '' === $label || '/' === $path ) {
-				$label = '/' === $path ? 'Homepage' : $path;
-			}
-
-			return rest_ensure_response(
-				array(
-					'success' => true,
-					'data'    => array(
-						'id'    => 0,
-						'title' => $label,
-						'type'  => $type,
-						'url'   => $path,
-					),
-				)
-			);
-		}
-
-		$query = new \WP_Query(
-			array(
-				'post_type'              => $wanted,
-				'post_status'            => 'publish',
-				's'                      => $raw,
-				'posts_per_page'         => 8,
-				'orderby'                => 'title',
-				'order'                  => 'ASC',
-				'no_found_rows'          => true,
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
-			)
-		);
-
-		$results = array();
-		foreach ( $query->posts as $post ) {
-			if ( ! $post instanceof \WP_Post ) {
-				continue;
-			}
-			$results[] = array(
-				'id'    => (int) $post->ID,
-				'title' => get_the_title( $post ),
-				'type'  => (string) $post->post_type,
-				'url'   => $this->normalize_exclusion_path( get_permalink( $post ) ),
-			);
-		}
-
-		if ( 1 === count( $results ) ) {
-			return rest_ensure_response(
-				array(
-					'success' => true,
-					'data'    => $results[0],
-				)
-			);
-		}
-
-		if ( count( $results ) > 1 ) {
-			return rest_ensure_response(
-				array(
-					'success' => false,
-					'code'    => 'ambiguous',
-					'message' => 'Several matches — pick one from the list.',
-					'data'    => array(
-						'results' => $results,
-					),
-				)
-			);
-		}
-
-		return rest_ensure_response(
-			array(
-				'success' => false,
-				'message' => 'page' === $type
-					? 'No published page matches that title or URL.'
-					: 'No published post matches that title or URL.',
-			)
-		);
-	}
-
-	/**
 	 * Searches published pages/posts for the menu condition picker.
 	 *
 	 * @param \WP_REST_Request $request Request.
@@ -5643,25 +5215,12 @@ final class Rest_Api {
 		$query   = new \WP_Query( $query_args );
 		$results = array();
 
-		if ( '' !== $search && $this->looks_like_content_url( $search ) ) {
-			$hit = $this->resolve_public_content( $search, $wanted );
-			if ( is_array( $hit ) && in_array( $hit['type'], $wanted, true ) ) {
-				$results[] = $hit;
-			}
-		}
-
 		foreach ( $query->posts as $post ) {
 			if ( ! $post instanceof \WP_Post ) {
 				continue;
 			}
-			$id = (int) $post->ID;
-			foreach ( $results as $existing ) {
-				if ( (int) $existing['id'] === $id ) {
-					continue 2;
-				}
-			}
 			$results[] = array(
-				'id'    => $id,
+				'id'    => (int) $post->ID,
 				'title' => get_the_title( $post ),
 				'type'  => $post->post_type,
 			);
@@ -6122,7 +5681,7 @@ final class Rest_Api {
 
 		$token = sanitize_text_field( (string) $request->get_param( 'token' ) );
 
-		return \nexulesuite_\Public\Client_Access::is_token_valid( $token );
+		return \nexulesuite_\Frontend\Client_Access::is_token_valid( $token );
 	}
 
 	/**
@@ -7117,19 +6676,8 @@ final class Rest_Api {
 	 * @return array<int,array<string,mixed>>
 	 */
 	private function sanitize_email_templates_payload( array $templates ): array {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-mailer.php';
 		$out = array();
-		$allowed_html = wp_kses_allowed_html( 'post' );
-		$allowed_html['html']   = array( 'lang' => true );
-		$allowed_html['head']   = array();
-		$allowed_html['body']   = array();
-		$allowed_html['title']  = array();
-		$allowed_html['meta']   = array(
-			'charset'    => true,
-			'name'       => true,
-			'content'    => true,
-			'http-equiv' => true,
-		);
-		$allowed_html['style']  = array( 'type' => true );
 
 		foreach ( $templates as $tpl ) {
 			if ( ! is_array( $tpl ) ) {
@@ -7146,10 +6694,9 @@ final class Rest_Api {
 			$subject = isset( $tpl['subject'] ) ? sanitize_text_field( (string) $tpl['subject'] ) : '';
 			$content = isset( $tpl['content'] ) ? (string) $tpl['content'] : '';
 
-			// Block scripts explicitly.
-			$content = preg_replace( '#<\s*script[^>]*>.*?<\s*/\s*script\s*>#is', '', $content );
-			$content = is_string( $content ) ? $content : '';
-			$content = wp_kses( $content, $allowed_html );
+			// Strip <style>/<script>/etc. active content and run the shared email
+			// allowlist so arbitrary CSS/JS can never be stored (WordPress.org review).
+			$content = \nexulesuite_\Mailer::sanitize_email_template_html( $content );
 
 			$recipients_in = isset( $tpl['recipients'] ) && is_array( $tpl['recipients'] ) ? $tpl['recipients'] : array();
 			$recipients = array();
@@ -8010,7 +7557,7 @@ final class Rest_Api {
 		}
 
 		require_once nexulesuite_PLUGIN_DIR . 'public/class-client-access.php';
-		$granted = \nexulesuite_\Public\Client_Access::token_sections( (string) $request->get_param( 'token' ) );
+		$granted = \nexulesuite_\Frontend\Client_Access::token_sections( (string) $request->get_param( 'token' ) );
 
 		return array_values( array_intersect( $requested, $granted ) );
 	}

@@ -247,63 +247,15 @@ function newAutoPopupFormRow() {
 /* Exclusion lists must be arrays of { id, title }. Legacy saves, imports, and PHP
    associative arrays (serialized as JSON objects) otherwise crash the popup tab
    with "excludePosts.some is not a function". */
-function looksLikeContentUrl( raw ) {
-	const q = String( raw || '' ).trim();
-	if ( ! q ) {
-		return false;
-	}
-	if ( /^https?:\/\//i.test( q ) || q.startsWith( '/' ) ) {
-		return true;
-	}
-	if ( q.includes( '.php' ) && ( q.includes( 'page_id=' ) || q.includes( '?p=' ) ) ) {
-		return true;
-	}
-	return /^[a-z0-9.-]+\.[a-z]{2,}(\/|$)/i.test( q );
-}
-
-function exclusionRowKey( item ) {
-	const id = Number( item?.id );
-	if ( id > 0 ) {
-		return `id:${ id }`;
-	}
-	const url = String( item?.url || '' ).trim();
-	if ( url ) {
-		return `url:${ url }`;
-	}
-	return '';
-}
-
 function normalizeExclusionList( value ) {
 	const list = Array.isArray( value )
 		? value
 		: value && typeof value === 'object'
 			? Object.values( value )
 			: [];
-	const out = [];
-	const seen = new Set();
-	list.forEach( ( item ) => {
-		if ( ! item || typeof item !== 'object' ) {
-			return;
-		}
-		const id = Number( item.id );
-		const url = String( item.url ?? '' ).trim();
-		const title = String( item.title ?? '' );
-		if ( ! ( id > 0 ) && ! url && ! looksLikeContentUrl( title ) ) {
-			return;
-		}
-		const row = {
-			id: id > 0 ? id : 0,
-			title: title || url || ( id > 0 ? `#${ id }` : '' ),
-			url,
-		};
-		const key = exclusionRowKey( row );
-		if ( ! key || seen.has( key ) ) {
-			return;
-		}
-		seen.add( key );
-		out.push( row );
-	} );
-	return out;
+	return list
+		.filter( ( item ) => item && typeof item === 'object' && item.id != null && ! Number.isNaN( Number( item.id ) ) )
+		.map( ( item ) => ( { id: Number( item.id ), title: String( item.title ?? '' ) } ) );
 }
 
 function normalizeExclusionFields( s ) {
@@ -493,196 +445,6 @@ const InfoTip = ( { text, label = 'More information' } ) => (
 	</button>
 );
 
-/**
- * Exclusion Rules picker: a pasted permalink is added as that URL.
- * Title search is only a helper when you do not have the link.
- */
-function ExclusionField( {
-	label,
-	chipClass,
-	placeholder,
-	options,
-	selected,
-	type,
-	onToggle,
-	onAdd,
-	resolve,
-} ) {
-	const [ query, setQuery ] = useState( '' );
-	const [ hint, setHint ] = useState( '' );
-	const [ busy, setBusy ] = useState( false );
-	const [ results, setResults ] = useState( [] );
-	const debounceRef = useRef( 0 );
-	const selectedKeys = new Set( ( Array.isArray( selected ) ? selected : [] ).map( exclusionRowKey ).filter( Boolean ) );
-
-	const toRow = ( item ) => ( {
-		id: Number( item?.id ) > 0 ? Number( item.id ) : 0,
-		title: String( item?.title ?? '' ),
-		url: String( item?.url ?? '' ).trim(),
-	} );
-
-	const pick = ( item ) => {
-		const row = toRow( item );
-		if ( ! exclusionRowKey( row ) ) {
-			return;
-		}
-		onAdd( row );
-		setQuery( '' );
-		setResults( [] );
-		setHint( '' );
-	};
-
-	const submit = async () => {
-		const q = query.trim();
-		if ( ! q || busy ) {
-			return;
-		}
-		setBusy( true );
-		setHint( '' );
-		try {
-			const json = await resolve( q, type );
-			if ( json?.success && ( Number( json.data?.id ) > 0 || json.data?.url ) ) {
-				pick( json.data );
-			} else if ( looksLikeContentUrl( q ) ) {
-				pick( { id: 0, title: q, url: q } );
-			} else if ( json?.code === 'ambiguous' && Array.isArray( json.data?.results ) ) {
-				setResults( json.data.results );
-				setHint( json.message || 'Pick a match from the list.' );
-			} else {
-				setHint( json?.message || 'Could not add that page.' );
-				setResults( [] );
-			}
-		} catch {
-			if ( looksLikeContentUrl( q ) ) {
-				pick( { id: 0, title: q, url: q } );
-			} else {
-				setHint( 'Could not look up that page.' );
-			}
-		} finally {
-			setBusy( false );
-		}
-	};
-
-	useEffect( () => {
-		const q = query.trim();
-		window.clearTimeout( debounceRef.current );
-		if ( q.length < 2 ) {
-			setResults( [] );
-			return undefined;
-		}
-		if ( looksLikeContentUrl( q ) ) {
-			setResults( [ { id: 0, title: q, url: q } ] );
-		}
-		debounceRef.current = window.setTimeout( async () => {
-			try {
-				const json = await resolve( q, type );
-				if ( json?.success && ( Number( json.data?.id ) > 0 || json.data?.url ) ) {
-					setResults( [ json.data ] );
-				} else if ( json?.code === 'ambiguous' && Array.isArray( json.data?.results ) ) {
-					setResults( json.data.results );
-				} else if ( looksLikeContentUrl( q ) ) {
-					setResults( [ { id: 0, title: q, url: q } ] );
-				} else {
-					setResults( [] );
-				}
-			} catch {
-				setResults( looksLikeContentUrl( q ) ? [ { id: 0, title: q, url: q } ] : [] );
-			}
-		}, 280 );
-		return () => window.clearTimeout( debounceRef.current );
-	}, [ query, type, resolve ] );
-
-	const qLower = query.trim().toLowerCase();
-	const queryIsUrl = looksLikeContentUrl( query );
-	const localHits = queryIsUrl
-		? []
-		: ( Array.isArray( options ) ? options : [] )
-			.filter( ( o ) => ! selectedKeys.has( exclusionRowKey( o ) ) )
-			.filter( ( o ) => ( ! qLower ? true : String( o.title || '' ).toLowerCase().includes( qLower ) ) )
-			.slice( 0, 12 );
-	const merged = [];
-	const seen = new Set();
-	[ ...results, ...localHits ].forEach( ( row ) => {
-		const key = exclusionRowKey( row );
-		if ( ! key || seen.has( key ) || selectedKeys.has( key ) ) {
-			return;
-		}
-		seen.add( key );
-		merged.push( row );
-	} );
-
-	return (
-		<div className="nexulesuite_sap-excl-field">
-			<span className="lbl">{ label }</span>
-			<div className="nexulesuite_sap-excl-link-row">
-				<input
-					type="search"
-					className="inp"
-					value={ query }
-					onChange={ ( e ) => {
-						setQuery( e.target.value );
-						setHint( '' );
-					} }
-					onKeyDown={ ( e ) => {
-						if ( e.key === 'Enter' ) {
-							e.preventDefault();
-							submit();
-						}
-					} }
-					placeholder={ placeholder }
-					autoComplete="off"
-					spellCheck={ false }
-					aria-label={ label }
-				/>
-				<button
-					type="button"
-					className="nexulesuite_sap-excl-link-btn"
-					onClick={ submit }
-					disabled={ busy || ! query.trim() }
-				>
-					{ busy ? '…' : 'Add' }
-				</button>
-			</div>
-			<p className="nexulesuite_sap-excl-hint">
-				Paste the page link and click Add. Title search is optional if you do not have the URL.
-			</p>
-			{ hint ? <p className="nexulesuite_sap-excl-hint is-error">{ hint }</p> : null }
-			{ query.trim().length >= 1 && merged.length > 0 ? (
-				<div className="nexulesuite_sap-excl-results" role="listbox">
-					{ merged.map( ( row ) => (
-						<button
-							key={ exclusionRowKey( row ) || row.title }
-							type="button"
-							className="nexulesuite_sap-excl-result"
-							onClick={ () => pick( row ) }
-						>
-							<span className="t">{ row.title || row.url || `#${ row.id }` }</span>
-							<span className="meta">{ Number( row.id ) > 0 ? `#${ row.id }` : ( row.url || 'URL' ) }</span>
-						</button>
-					) ) }
-				</div>
-			) : null }
-			{ selected.length > 0 && (
-				<div className="nexulesuite_sap-excl-tags">
-					{ selected.map( ( row ) => (
-						<span key={ exclusionRowKey( row ) || row.title } className={ `nexulesuite_sap-excl-chip ${ chipClass }` }>
-							{ row.title || row.url || `#${ row.id }` }
-							<button
-								type="button"
-								className="nexulesuite_sap-excl-chip-remove"
-								onClick={ () => onToggle( row ) }
-								aria-label={ `Remove ${ row.title || row.url }` }
-							>
-								<X size={ 12 } />
-							</button>
-						</span>
-					) ) }
-				</div>
-			) }
-		</div>
-	);
-}
-
 /* ─────────────────────────────────────────────────────────────
    Main component
 ───────────────────────────────────────────────────────── */
@@ -730,7 +492,6 @@ export function SettingsPage() {
 	const [ aiTraining, setAiTraining ] = useState( false );
 	const [ aiTrainResult, setAiTrainResult ] = useState( null );
 	const [ aiResetting, setAiResetting ] = useState( false );
-	const [ backupBusy, setBackupBusy ] = useState( false );
 
 	const showNotice = ( type, text ) => {
 		if ( type === 'success' ) {
@@ -755,8 +516,8 @@ export function SettingsPage() {
 				const [ gResult, tResult, postsRaw, pagesRaw, popupsResult, formsResult, smtpResult ] = await Promise.allSettled( [
 					apiFetch( '/settings/general', { method: 'GET' } ),
 					apiFetch( '/emails/templates', { method: 'GET' } ),
-					wpFetch( 'wp/v2/posts?per_page=100&_fields=id,title' ),
-					wpFetch( 'wp/v2/pages?per_page=100&_fields=id,title' ),
+					wpFetch( 'wp/v2/posts?per_page=50&_fields=id,title' ),
+					wpFetch( 'wp/v2/pages?per_page=50&_fields=id,title' ),
 					apiFetch( '/popups', { method: 'GET' } ),
 					apiFetch( '/forms', { method: 'GET' } ),
 					apiFetch( '/smtp/settings', { method: 'GET' } ),
@@ -822,102 +583,6 @@ export function SettingsPage() {
 	}, [] );
 
 	const updateSetting = ( field, value ) => setSettings( ( prev ) => ( { ...prev, [ field ]: value } ) );
-
-	const extractFullBackupBundle = ( parsed ) => {
-		if ( ! parsed || typeof parsed !== 'object' ) {
-			return null;
-		}
-		if ( parsed.nexulesuite_export_format != null || parsed.nexus_ls_export_format != null ) {
-			return parsed;
-		}
-		if ( parsed.bundle && typeof parsed.bundle === 'object' ) {
-			return parsed.bundle;
-		}
-		if ( parsed.data && parsed.data.bundle && typeof parsed.data.bundle === 'object' ) {
-			return parsed.data.bundle;
-		}
-		return null;
-	};
-
-	const handleExportFullBackup = async () => {
-		setBackupBusy( true );
-		try {
-			let { res, json } = await apiFetch( '/settings/full-export?embed_media=1', { method: 'GET' } );
-			let settingsOnly = false;
-			if ( ! res.ok || ! json?.success ) {
-				( { res, json } = await apiFetch( '/settings/full-export?embed_media=0', { method: 'GET' } ) );
-				if ( res.ok && json?.success ) {
-					settingsOnly = true;
-				} else {
-					const msg = typeof json?.message === 'string' ? json.message : `Export failed (${ res.status }).`;
-					throw new Error( msg );
-				}
-			}
-			const bundle = json?.data?.bundle;
-			if ( ! bundle || typeof bundle !== 'object' ) {
-				throw new Error( 'Server returned an empty backup.' );
-			}
-			const blob = new Blob( [ JSON.stringify( bundle, null, 2 ) ], { type: 'application/json' } );
-			const url = URL.createObjectURL( blob );
-			const a = document.createElement( 'a' );
-			a.href = url;
-			a.download = settingsOnly ? 'nexus-lead-suite-export-settings-only.json' : 'nexus-lead-suite-full-export.json';
-			a.click();
-			URL.revokeObjectURL( url );
-			if ( settingsOnly ) {
-				showNotice( 'error', 'Full export with embedded files failed. A data-only backup was downloaded (no media files). Retry on a host with more PHP memory to include uploads.' );
-			}
-		} catch ( err ) {
-			showNotice( 'error', err?.message || 'Could not export backup.' );
-		} finally {
-			setBackupBusy( false );
-		}
-	};
-
-	const handleImportFullBackup = ( file ) => {
-		if ( ! file ) {
-			return;
-		}
-		const reader = new FileReader();
-		reader.onload = async ( ev ) => {
-			setBackupBusy( true );
-			try {
-				const parsed = JSON.parse( String( ev.target?.result ?? '' ) );
-				const bundle = extractFullBackupBundle( parsed );
-				const fmt = bundle
-					? Number( bundle.nexulesuite_export_format ?? bundle.nexus_ls_export_format ?? 0 )
-					: 0;
-				if ( ! bundle || ! [ 2, 3, 4, 5 ].includes( fmt ) ) {
-					if ( parsed?.settings && ! bundle ) {
-						throw new Error( 'This file is a settings-only export from an older version. Update the plugin, then export again so forms, buttons, popups, logic, and colors are included.' );
-					}
-					throw new Error( 'This file is not a Nexus Lead Suite full export. Use Backup → Download backup JSON.' );
-				}
-				const { res, json } = await apiFetch( '/settings/full-import', {
-					method: 'POST',
-					body: JSON.stringify( { bundle } ),
-				} );
-				if ( ! res.ok || ! json?.success ) {
-					const detail = typeof json?.data?.detail === 'string' && json.data.detail.trim() !== '' ? json.data.detail.trim() : '';
-					let msg = typeof json?.message === 'string' && json.message
-						? json.message
-						: ( typeof json?.code === 'string' ? json.code : `Import failed (${ res.status }).` );
-					if ( detail ) {
-						msg = `${ msg } (${ detail })`;
-					}
-					throw new Error( msg );
-				}
-				setSuccessOpen( true );
-				window.setTimeout( () => {
-					window.location.reload();
-				}, 700 );
-			} catch ( err ) {
-				showNotice( 'error', err?.message || 'Invalid backup file.' );
-				setBackupBusy( false );
-			}
-		};
-		reader.readAsText( file );
-	};
 
 	const updateSmtp = ( field, value ) => setSmtp( ( prev ) => ( { ...prev, [ field ]: value } ) );
 
@@ -1439,43 +1104,10 @@ export function SettingsPage() {
 	};
 
 	const toggleExclusion = ( field, item ) => {
-		const list = Array.isArray( settings[ field ] ) ? settings[ field ] : [];
-		const key = exclusionRowKey( item );
-		const exists = key && list.some( ( i ) => exclusionRowKey( i ) === key );
-		const next = exists
-			? list.filter( ( i ) => exclusionRowKey( i ) !== key )
-			: [ ...list, {
-				id: Number( item?.id ) > 0 ? Number( item.id ) : 0,
-				title: String( item?.title ?? '' ),
-				url: String( item?.url ?? '' ).trim(),
-			} ];
-		updateSetting( field, next );
+		const list = settings[ field ];
+		const exists = list.find( ( i ) => i.id === item.id );
+		updateSetting( field, exists ? list.filter( ( i ) => i.id !== item.id ) : [ ...list, item ] );
 	};
-
-	const addExclusion = ( field, item ) => {
-		setSettings( ( prev ) => {
-			const list = Array.isArray( prev[ field ] ) ? prev[ field ] : [];
-			const row = {
-				id: Number( item?.id ) > 0 ? Number( item.id ) : 0,
-				title: String( item?.title ?? '' ),
-				url: String( item?.url ?? '' ).trim(),
-			};
-			const key = exclusionRowKey( row );
-			if ( ! key || list.some( ( i ) => exclusionRowKey( i ) === key ) ) {
-				return prev;
-			}
-			return {
-				...prev,
-				[ field ]: [ ...list, row ],
-			};
-		} );
-	};
-
-	const resolveExclusionContent = useCallback( async ( q, type ) => {
-		const params = new URLSearchParams( { q, type } );
-		const { json } = await apiFetch( `/settings/resolve-content?${ params.toString() }`, { method: 'GET' } );
-		return json;
-	}, [] );
 
 	const getHoverClass = ( effect ) => {
 		const map = {
@@ -2003,28 +1635,72 @@ export function SettingsPage() {
 															</div>
 														</div>
 														<div className="nexulesuite_sap-excl-stack">
-															<ExclusionField
-																label="Exclude Posts"
-																chipClass="is-post"
-																placeholder="Paste post URL or search title…"
-																options={ allPosts }
-																selected={ settings.excludePosts }
-																type="post"
-																onToggle={ ( item ) => toggleExclusion( 'excludePosts', item ) }
-																onAdd={ ( item ) => addExclusion( 'excludePosts', item ) }
-																resolve={ resolveExclusionContent }
-															/>
-															<ExclusionField
-																label="Exclude Pages"
-																chipClass="is-page"
-																placeholder="Paste page URL or search title…"
-																options={ allPages }
-																selected={ settings.excludePages }
-																type="page"
-																onToggle={ ( item ) => toggleExclusion( 'excludePages', item ) }
-																onAdd={ ( item ) => addExclusion( 'excludePages', item ) }
-																resolve={ resolveExclusionContent }
-															/>
+															<div className="nexulesuite_sap-excl-field">
+																<span className="lbl">Exclude Posts</span>
+																<select
+																	onChange={ ( e ) => {
+																		const item = allPosts.find( ( p ) => p.id === parseInt( e.target.value ) );
+																		if ( item ) toggleExclusion( 'excludePosts', item );
+																		e.target.value = '';
+																	} }
+																	className="sel"
+																>
+																	<option value="">Select posts...</option>
+																	{ allPosts.filter( ( p ) => ! settings.excludePosts.some( ( ex ) => ex.id === p.id ) ).map( ( p ) => (
+																		<option key={ p.id } value={ p.id }>{ p.title }</option>
+																	) ) }
+																</select>
+																{ settings.excludePosts.length > 0 && (
+																	<div className="nexulesuite_sap-excl-tags">
+																		{ settings.excludePosts.map( ( post ) => (
+																			<span key={ post.id } className="nexulesuite_sap-excl-chip is-post">
+																				{ post.title }
+																				<button
+																					type="button"
+																					className="nexulesuite_sap-excl-chip-remove"
+																					onClick={ () => toggleExclusion( 'excludePosts', post ) }
+																					aria-label={ `Remove ${ post.title }` }
+																				>
+																					<X size={ 12 } />
+																				</button>
+																			</span>
+																		) ) }
+																	</div>
+																) }
+															</div>
+															<div className="nexulesuite_sap-excl-field">
+																<span className="lbl">Exclude Pages</span>
+																<select
+																	onChange={ ( e ) => {
+																		const item = allPages.find( ( p ) => p.id === parseInt( e.target.value ) );
+																		if ( item ) toggleExclusion( 'excludePages', item );
+																		e.target.value = '';
+																	} }
+																	className="sel"
+																>
+																	<option value="">Select pages...</option>
+																	{ allPages.filter( ( p ) => ! settings.excludePages.some( ( ex ) => ex.id === p.id ) ).map( ( p ) => (
+																		<option key={ p.id } value={ p.id }>{ p.title }</option>
+																	) ) }
+																</select>
+																{ settings.excludePages.length > 0 && (
+																	<div className="nexulesuite_sap-excl-tags">
+																		{ settings.excludePages.map( ( page ) => (
+																			<span key={ page.id } className="nexulesuite_sap-excl-chip is-page">
+																				{ page.title }
+																				<button
+																					type="button"
+																					className="nexulesuite_sap-excl-chip-remove"
+																					onClick={ () => toggleExclusion( 'excludePages', page ) }
+																					aria-label={ `Remove ${ page.title }` }
+																				>
+																					<X size={ 12 } />
+																				</button>
+																			</span>
+																		) ) }
+																	</div>
+																) }
+															</div>
 														</div>
 													</section>
 												</div>
@@ -3172,20 +2848,24 @@ export function SettingsPage() {
 													<div className="p-2.5 bg-green-50 text-green-600 rounded-2xl"><Download size={ 20 } /></div>
 													<div>
 														<h4 className="text-sm font-bold text-slate-800 capitalize leading-none">Export full backup</h4>
-														<p className="text-[10px] text-slate-400 font-medium mt-0.5">Forms, buttons, popups, logic, colors, emails, settings, tables &amp; uploads — one JSON file.</p>
+														<p className="text-[10px] text-slate-400 font-medium mt-0.5">Settings, forms, popups, emails, nav, analytics &amp; uploads — one JSON file.</p>
 													</div>
 												</div>
-												<p className="text-[11px] text-slate-500 leading-relaxed">
-													This downloads everything needed to recreate this site after deleting the plugin: form builder (including conditional logic and field colors), menu buttons, popups, emails, SMTP, captcha, appearance, analytics, chat logs, and media files.
-												</p>
 												<button
 													type="button"
-													disabled={ backupBusy }
-													onClick={ handleExportFullBackup }
-													className="w-full flex items-center justify-center gap-2 py-4 bg-green-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all hover:bg-green-500 disabled:opacity-60"
+													onClick={ () => {
+														const data = { version: pluginVersion, settings };
+														const blob = new Blob( [ JSON.stringify( data, null, 2 ) ], { type: 'application/json' } );
+														const url = URL.createObjectURL( blob );
+														const a = document.createElement( 'a' );
+														a.href = url;
+														a.download = 'nexus-settings-export.json';
+														a.click();
+														URL.revokeObjectURL( url );
+													} }
+													className="w-full flex items-center justify-center gap-2 py-4 bg-green-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all hover:bg-green-500"
 												>
-													{ backupBusy ? <Loader2 size={ 16 } className="animate-spin" /> : <Download size={ 16 } /> }
-													{ backupBusy ? 'Preparing backup…' : 'Download backup JSON' }
+													<Download size={ 16 } /> Export Settings JSON
 												</button>
 											</div>
 
@@ -3197,20 +2877,26 @@ export function SettingsPage() {
 														<p className="text-[10px] text-slate-400 font-medium mt-0.5">Upload a full export (.json). Replaces all plugin data — no Save step.</p>
 													</div>
 												</div>
-												<p className="text-[11px] text-slate-500 leading-relaxed">
-													On a new or empty site this restores the export exactly as it was saved. Existing plugin data on this site is overwritten.
-												</p>
-												<label className={ `w-full flex items-center justify-center gap-2 py-4 bg-blue-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all hover:bg-blue-500 cursor-pointer ${ backupBusy ? 'opacity-60 pointer-events-none' : '' }` }>
-													{ backupBusy ? <Loader2 size={ 16 } className="animate-spin" /> : <Upload size={ 16 } /> }
-													{ backupBusy ? 'Importing…' : 'Import backup JSON' }
+												<label className="w-full flex items-center justify-center gap-2 py-4 bg-blue-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all hover:bg-blue-500 cursor-pointer">
+													<Upload size={ 16 } /> Import Settings JSON
 													<input
 														type="file"
-														disabled={ backupBusy }
-														accept=".json,application/json"
+														accept=".json"
 														className="hidden"
 														onChange={ ( e ) => {
-															const file = e.target.files?.[ 0 ];
-															handleImportFullBackup( file );
+															const file = e.target.files[ 0 ];
+															if ( ! file ) return;
+															const reader = new FileReader();
+															reader.onload = ( ev ) => {
+																try {
+																	const data = JSON.parse( ev.target.result );
+																	if ( data.settings ) setSettings( ( prev ) => ( { ...prev, ...data.settings, ...normalizeExclusionFields( data.settings ) } ) );
+																	showNotice( 'success', 'Settings imported. Click "Save Configuration" to apply.' );
+																} catch ( _err ) {
+																	showNotice( 'error', 'Invalid JSON file.' );
+																}
+															};
+															reader.readAsText( file );
 															e.target.value = '';
 														} }
 													/>
@@ -3223,7 +2909,7 @@ export function SettingsPage() {
 											<div className="space-y-1">
 												<h6 className="text-xs font-bold text-amber-900 capitalize leading-tight">Important Notice</h6>
 												<p className="text-[10px] text-amber-700/80 leading-relaxed font-medium">
-													Import replaces the current plugin configuration. Always export a backup first. After a full plugin delete, install Nexus Lead Suite on the new site, then import this file — no extra Save is required.
+													Importing a settings file will overwrite your current configuration. Always export a backup before importing.
 												</p>
 											</div>
 										</div>
