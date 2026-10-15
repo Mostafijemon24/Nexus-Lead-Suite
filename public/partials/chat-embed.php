@@ -8,7 +8,7 @@
  * assets, so the plugin's form runtime, global font and popup styles still load exactly as they do
  * on a normal page, while the frame stays just the chat.
  *
- * Expected variables from {@see \nexulesuite_\Public\Shortcodes::maybe_serve_chat_embed()}:
+ * Expected variables from {@see \nexulesuite_\Frontend\Shortcodes::maybe_serve_chat_embed()}:
  * string $nexulesuite_chat_embed_html Pre-escaped widget markup.
  *
  * @package nexulesuite_
@@ -44,7 +44,7 @@ do_action( 'wp_enqueue_scripts' );
 <body class="nexulesuite_chat-embed-doc">
 
 	<?php
-	echo wp_kses( $nexulesuite_chat_embed_html, \nexulesuite_\Public\Shortcodes::allowed_embed_html() );
+	echo wp_kses( $nexulesuite_chat_embed_html, \nexulesuite_\Frontend\Shortcodes::allowed_embed_html() );
 
 	wp_print_footer_scripts();
 	?>

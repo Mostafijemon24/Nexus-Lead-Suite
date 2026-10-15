@@ -32,7 +32,7 @@ final class Smtp_OAuth {
 	public const CB_ACTION         = 'nexulesuite_smtp_oauth_cb';
 	public const DISCONNECT_ACTION = 'nexulesuite_smtp_oauth_disconnect';
 
-	private const STATE_PREFIX   = 'nls_smtp_oauth_';
+	private const STATE_PREFIX   = 'nexulesuite_smtp_oauth_';
 	private const SETTINGS_SLUG  = 'nexus-lead-suite-settings';
 
 	/**

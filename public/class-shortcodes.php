@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace nexulesuite_\Public;
+namespace nexulesuite_\Frontend;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -546,30 +546,33 @@ final class Shortcodes {
 			// Activity log must not break submissions or visitor-facing responses.
 		}
 
-		/*
-		 * The submission is already stored, logged, and queued to any webhooks above.
-		 * A failed notification email (missing/broken SMTP) must not surface to the
-		 * visitor — always return the configured confirmation (or redirect). Email
-		 * delivery status is kept in the DB / Activities log ($sent) for the admin.
-		 */
-		$conf_type = isset( $confirmation['type'] ) ? (string) $confirmation['type'] : 'message';
-		$conf_url  = isset( $confirmation['redirectUrl'] ) ? esc_url_raw( (string) $confirmation['redirectUrl'] ) : '';
-		if ( 'redirect' === $conf_type && '' !== $conf_url ) {
+		if ( $sent ) {
+			$conf_type = isset( $confirmation['type'] ) ? (string) $confirmation['type'] : 'message';
+			$conf_url  = isset( $confirmation['redirectUrl'] ) ? esc_url_raw( (string) $confirmation['redirectUrl'] ) : '';
+			if ( 'redirect' === $conf_type && '' !== $conf_url ) {
+				wp_send_json_success( array(
+					'redirect' => $conf_url,
+					'message'  => __( 'Thank you! Redirecting…', 'nexus-lead-suite' ),
+				) );
+				return;
+			}
+			$conf_msg = isset( $confirmation['message'] ) ? trim( (string) $confirmation['message'] ) : '';
+			$default_success = __(
+				"Thanks for reaching out! We've received your request and are reviewing your details. We will follow up soon to confirm your insurance and finalize your appointment.\n\nNeed help right away? Please call us during our office hours. For all medical emergencies, please call 911 immediately.",
+				'nexus-lead-suite'
+			);
 			wp_send_json_success( array(
-				'redirect' => $conf_url,
-				'message'  => __( 'Thank you! Redirecting…', 'nexus-lead-suite' ),
+				'message' => '' !== $conf_msg ? wp_kses_post( $conf_msg ) : $default_success,
+				'html'    => '' !== $conf_msg,
 			) );
 			return;
 		}
-		$conf_msg = isset( $confirmation['message'] ) ? trim( (string) $confirmation['message'] ) : '';
-		$default_success = __(
-			"Thanks for reaching out! We've received your request and are reviewing your details. We will follow up soon to confirm your insurance and finalize your appointment.\n\nNeed help right away? Please call us during our office hours. For all medical emergencies, please call 911 immediately.",
-			'nexus-lead-suite'
+
+		wp_send_json_error(
+			array(
+				'message' => __( 'Please set up your SMTP properly.', 'nexus-lead-suite' ),
+			)
 		);
-		wp_send_json_success( array(
-			'message' => '' !== $conf_msg ? wp_kses_post( $conf_msg ) : $default_success,
-			'html'    => '' !== $conf_msg,
-		) );
 	}
 
 	/**
@@ -920,6 +923,7 @@ final class Shortcodes {
 			return false;
 		}
 		$response = wp_remote_post(
+			// phpcs:ignore PluginCheck.CodeAnalysis.Offloading.OffloadedContent -- Server-side Cloudflare Turnstile token verification endpoint (not asset offloading); Turnstile is an opt-in, disclosed External Service and the secret is validated only against the provider.
 			'https://challenges.cloudflare.com/turnstile/v0/siteverify',
 			array(
 				'timeout' => 15,
@@ -1992,13 +1996,9 @@ final class Shortcodes {
 
 		/* Read the global "Enable Auto Popup" setting.
 		 * When false, timer / scroll / exit-intent triggers are suppressed;
-		 * only Manual Click (data-nexulesuite_trigger button) still works.
-		 * Settings → Exclusion Rules also suppress auto popup on selected posts/pages. */
-		$general        = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
-		$auto_popup_on  = is_array( $general ) ? (bool) ( $general['enableAutoPopup'] ?? false ) : false;
-		if ( $auto_popup_on && $this->is_current_request_auto_popup_excluded( is_array( $general ) ? $general : array() ) ) {
-			$auto_popup_on = false;
-		}
+		 * only Manual Click (data-nexulesuite_trigger button) still works. */
+		$general       = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
+		$auto_popup_on   = is_array( $general ) ? (bool) ( $general['enableAutoPopup'] ?? false ) : false;
 		$auto_popup_forms = is_array( $general ) ? $this->get_auto_popup_default_form_ids( $general ) : array();
 
 		require_once nexulesuite_PLUGIN_DIR . 'core/class-global-font.php';
@@ -2365,184 +2365,11 @@ final class Shortcodes {
 	}
 
 	/**
-	 * Integer IDs from Settings → excludePosts / excludePages ({ id, title, url } rows).
+	 * Enqueues sticky bottom navigation CSS (globally, on every frontend page).
+	 * Actual visibility is controlled by CSS media query (mobile/tablet only).
 	 *
-	 * @param mixed $raw Stored exclusion list.
-	 * @return array<int,int>
+	 * @return void
 	 */
-	private function exclusion_ids_from_settings( $raw ): array {
-		if ( ! is_array( $raw ) ) {
-			return array();
-		}
-
-		$ids = array();
-		foreach ( $raw as $item ) {
-			if ( is_array( $item ) ) {
-				$id = (int) ( $item['id'] ?? 0 );
-			} elseif ( is_numeric( $item ) ) {
-				$id = (int) $item;
-			} else {
-				continue;
-			}
-			if ( $id > 0 ) {
-				$ids[] = $id;
-			}
-		}
-
-		return array_values( array_unique( $ids ) );
-	}
-
-	/**
-	 * Site-relative paths from Settings → excludePosts / excludePages.
-	 *
-	 * @param mixed $raw Stored exclusion list.
-	 * @return array<int,string>
-	 */
-	private function exclusion_paths_from_settings( $raw ): array {
-		if ( ! is_array( $raw ) ) {
-			return array();
-		}
-
-		$paths = array();
-		foreach ( $raw as $item ) {
-			if ( ! is_array( $item ) ) {
-				continue;
-			}
-			foreach ( array( $item['url'] ?? '', $item['title'] ?? '' ) as $candidate ) {
-				$path = $this->normalize_exclusion_request_path( (string) $candidate );
-				if ( '' !== $path ) {
-					$paths[] = $path;
-				}
-			}
-		}
-
-		return array_values( array_unique( $paths ) );
-	}
-
-	/**
-	 * Normalize a pasted permalink or path for Exclusion Rules matching.
-	 *
-	 * @param string $raw URL or path.
-	 */
-	private function normalize_exclusion_request_path( string $raw ): string {
-		$raw = html_entity_decode( trim( $raw ), ENT_QUOTES, 'UTF-8' );
-		if ( '' === $raw ) {
-			return '';
-		}
-
-		$looks_url = ( 0 === stripos( $raw, 'http://' ) || 0 === stripos( $raw, 'https://' ) || 0 === strpos( $raw, '/' ) );
-		if ( ! $looks_url && ! preg_match( '#^[a-z0-9.-]+\.[a-z]{2,}(/|$)#i', $raw ) ) {
-			return '';
-		}
-
-		if ( 0 !== stripos( $raw, 'http://' ) && 0 !== stripos( $raw, 'https://' ) ) {
-			$raw = ( 0 === strpos( $raw, '/' ) ) ? home_url( $raw ) : 'https://' . ltrim( $raw, '/' );
-		}
-
-		$raw   = esc_url_raw( $raw );
-		$parts = wp_parse_url( $raw );
-		if ( ! is_array( $parts ) ) {
-			return '';
-		}
-
-		$path      = isset( $parts['path'] ) ? (string) $parts['path'] : '/';
-		$home_path = (string) ( wp_parse_url( home_url( '/' ), PHP_URL_PATH ) ?? '/' );
-		$home_path = untrailingslashit( $home_path );
-		if ( '' !== $home_path && '/' !== $home_path && 0 === strpos( $path, $home_path ) ) {
-			$path = substr( $path, strlen( $home_path ) );
-			if ( ! is_string( $path ) ) {
-				$path = '';
-			}
-		}
-
-		$path = '/' . trim( (string) $path, '/' );
-		if ( '/' !== $path ) {
-			$path = trailingslashit( $path );
-		}
-
-		return $path;
-	}
-
-	/**
-	 * Current front-end path variants used to match pasted exclusion URLs.
-	 *
-	 * @return array<int,string>
-	 */
-	private function current_request_exclusion_paths(): array {
-		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
-		$path        = (string) ( wp_parse_url( $request_uri, PHP_URL_PATH ) ?? '/' );
-		$from_uri    = $this->normalize_exclusion_request_path( $path );
-
-		$paths = array();
-		if ( '' !== $from_uri ) {
-			$paths[] = $from_uri;
-		}
-
-		$qid = (int) get_queried_object_id();
-		if ( $qid > 0 ) {
-			$permalink = get_permalink( $qid );
-			if ( is_string( $permalink ) && '' !== $permalink ) {
-				$from_perm = $this->normalize_exclusion_request_path( $permalink );
-				if ( '' !== $from_perm ) {
-					$paths[] = $from_perm;
-				}
-			}
-		}
-
-		return array_values( array_unique( $paths ) );
-	}
-
-	/**
-	 * Whether Settings → Auto PopUp Logic exclusion lists match this front-end request.
-	 * Click-triggered popups still render; only timer / scroll / exit are suppressed.
-	 *
-	 * @param array<string,mixed> $general General settings.
-	 */
-	private function is_current_request_auto_popup_excluded( array $general ): bool {
-		$exclude_posts = is_array( $general['excludePosts'] ?? null ) ? $general['excludePosts'] : array();
-		$exclude_pages = is_array( $general['excludePages'] ?? null ) ? $general['excludePages'] : array();
-		$exclude_post_ids = $this->exclusion_ids_from_settings( $exclude_posts );
-		$exclude_page_ids = $this->exclusion_ids_from_settings( $exclude_pages );
-		$exclude_paths    = array_values(
-			array_unique(
-				array_merge(
-					$this->exclusion_paths_from_settings( $exclude_posts ),
-					$this->exclusion_paths_from_settings( $exclude_pages )
-				)
-			)
-		);
-		if ( empty( $exclude_post_ids ) && empty( $exclude_page_ids ) && empty( $exclude_paths ) ) {
-			return false;
-		}
-
-		$qid = (int) get_queried_object_id();
-
-		if ( $qid > 0 && is_singular( 'post' ) && in_array( $qid, $exclude_post_ids, true ) ) {
-			return true;
-		}
-
-		if ( $qid > 0 && ( is_page() || ( is_front_page() && ! is_home() ) ) && in_array( $qid, $exclude_page_ids, true ) ) {
-			return true;
-		}
-
-		if ( is_home() && ! is_front_page() ) {
-			$posts_page_id = (int) get_option( 'page_for_posts' );
-			if ( $posts_page_id > 0 && in_array( $posts_page_id, $exclude_page_ids, true ) ) {
-				return true;
-			}
-		}
-
-		if ( ! empty( $exclude_paths ) ) {
-			foreach ( $this->current_request_exclusion_paths() as $current ) {
-				if ( in_array( $current, $exclude_paths, true ) ) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
 	/**
 	 * Returns popups whose display conditions match the current request.
 	 *
@@ -2610,12 +2437,6 @@ final class Shortcodes {
 		return $resolver->get_buttons_for_request( $groups );
 	}
 
-	/**
-	 * Enqueues sticky bottom navigation CSS (globally, on every frontend page).
-	 * Actual visibility is controlled by CSS media query (mobile/tablet only).
-	 *
-	 * @return void
-	 */
 	public function enqueue_bottom_nav_styles(): void {
 		$opt = get_option( self::GENERAL_SETTINGS_OPTION_KEY, array() );
 		if ( ! is_array( $opt ) || empty( $opt['enableNavigation'] ) ) {
@@ -2917,6 +2738,7 @@ final class Shortcodes {
 				'script_loader_src',
 				static function ( $src, $handle ) {
 					if ( 'nexulesuite_turnstile' === $handle ) {
+						// phpcs:ignore PluginCheck.CodeAnalysis.Offloading.OffloadedContent -- Cloudflare Turnstile widget script must be served from the provider to function; it is an opt-in, disclosed External Service and cannot be self-hosted.
 						return 'https://challenges.cloudflare.com/turnstile/v0/api.js';
 					}
 					return $src;
@@ -3530,38 +3352,6 @@ final class Shortcodes {
 	}
 
 	/**
-	 * Phone inputs stay as typed. Form builder has no country mask; only optional
-	 * validation (national / international / character limit) is applied.
-	 *
-	 * @param array<string,mixed> $settings Field settings.
-	 * @return string Extra HTML attributes (no leading space).
-	 */
-	private function phone_field_extra_attrs( array $settings ): string {
-		$parts = array( 'inputmode="tel"', 'autocomplete="tel"' );
-		$pv    = isset( $settings['phoneValidation'] ) && is_array( $settings['phoneValidation'] ) ? $settings['phoneValidation'] : array();
-		$type  = isset( $pv['type'] ) ? sanitize_text_field( (string) $pv['type'] ) : 'none';
-
-		if ( 'national' === $type ) {
-			$parts[] = 'pattern="[0-9]{10,15}"';
-			$parts[] = 'maxlength="15"';
-			$parts[] = 'title="' . esc_attr__( 'Enter 10–15 digits', 'nexus-lead-suite' ) . '"';
-		} elseif ( 'international' === $type ) {
-			$parts[] = 'pattern="\\+?[0-9]{10,20}"';
-			$parts[] = 'maxlength="21"';
-			$parts[] = 'title="' . esc_attr__( 'Enter an international number, e.g. +8801XXXXXXXXX', 'nexus-lead-suite' ) . '"';
-		} elseif ( 'character_limit' === $type ) {
-			$limit = isset( $pv['characterLimit'] ) ? (int) $pv['characterLimit'] : 0;
-			if ( $limit >= 1 && $limit <= 64 ) {
-				$parts[] = 'maxlength="' . $limit . '"';
-				$parts[] = 'minlength="' . $limit . '"';
-				$parts[] = 'pattern=".{' . $limit . '}"';
-			}
-		}
-
-		return implode( ' ', $parts );
-	}
-
-	/**
 	 * Formats hardcoded extra HTML attributes from internal call sites (mask, inputmode, etc.).
 	 *
 	 * @param string $attrs Space-separated attribute string.
@@ -3844,7 +3634,7 @@ final class Shortcodes {
 					$label,
 					$show_label,
 					$required,
-					$this->phone_field_extra_attrs( $settings )
+					'data-nexulesuite_mask="us-phone" inputmode="tel" autocomplete="tel"'
 				);
 				break;
 			case 'textarea':
@@ -4239,8 +4029,8 @@ final class Shortcodes {
 		 * and must honor that button's display conditions. If chat is not allowed on
 		 * this page, skip the whole widget (no legacy corner bubble).
 		 */
-		if ( class_exists( '\\nexulesuite_\\Public\\Accessibility_Language' ) ) {
-			$a11y_vis = \nexulesuite_\Public\Accessibility_Language::dock_button_visibility();
+		if ( class_exists( '\\nexulesuite_\\Frontend\\Accessibility_Language' ) ) {
+			$a11y_vis = \nexulesuite_\Frontend\Accessibility_Language::dock_button_visibility();
 			if ( empty( $a11y_vis['chat'] ) ) {
 				return;
 			}
@@ -4287,8 +4077,8 @@ final class Shortcodes {
 		/* Avatar / bubble image: attachment URL or legacy data URI (must match sanitizer on save). */
 		$btn_raw_img = trim( (string) ( $opt['chatButtonImage'] ?? '' ) );
 		// Prefer Acc & Lang dock image when set (same photo on FAB + chat panel).
-		if ( class_exists( '\\nexulesuite_\\Public\\Accessibility_Language' ) ) {
-			$a11y_set = \nexulesuite_\Public\Accessibility_Language::get_settings();
+		if ( class_exists( '\\nexulesuite_\\Frontend\\Accessibility_Language' ) ) {
+			$a11y_set = \nexulesuite_\Frontend\Accessibility_Language::get_settings();
 			$a11y_img = trim( (string) ( $a11y_set['liveChatButtonImage'] ?? '' ) );
 			if ( '' !== $a11y_img ) {
 				$btn_raw_img = $a11y_img;

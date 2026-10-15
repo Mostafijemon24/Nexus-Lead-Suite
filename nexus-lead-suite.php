@@ -3,7 +3,7 @@
  * Plugin Name:       Nexus Lead Suite
  * Plugin URI:        https://wordpress.org/plugins/nexus-lead-suite/
  * Description:       A high-performance, all-in-one lead generation and user analytics suite with a modern admin experience.
- * Version:           1.2.26
+ * Version:           1.2.18
  * Requires at least: 6.2
  * Requires PHP:      7.4
  * Author:            Nexus Lead Suite
@@ -52,38 +52,15 @@ if ( defined( 'PHP_VERSION_ID' ) && PHP_VERSION_ID < 70400 ) {
 	return;
 }
 
-define( 'nexulesuite_VERSION', '1.2.26' );
+define( 'nexulesuite_VERSION', '1.2.18' );
 define( 'nexulesuite_PLUGIN_FILE', __FILE__ );
 define( 'nexulesuite_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'nexulesuite_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'nexulesuite_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
-// Minimal polyfills in entry file (in case host/plugin uploader skips new files).
-if ( ! function_exists( 'str_starts_with' ) ) {
-	function str_starts_with( string $haystack, string $needle ): bool {
-		if ( '' === $needle ) {
-			return true;
-		}
-		return 0 === strncmp( $haystack, $needle, strlen( $needle ) );
-	}
-}
-if ( ! function_exists( 'str_contains' ) ) {
-	function str_contains( string $haystack, string $needle ): bool {
-		if ( '' === $needle ) {
-			return true;
-		}
-		return strpos( $haystack, $needle ) !== false;
-	}
-}
-if ( ! function_exists( 'str_ends_with' ) ) {
-	function str_ends_with( string $haystack, string $needle ): bool {
-		if ( '' === $needle ) {
-			return true;
-		}
-		$len = strlen( $needle );
-		return $len === 0 ? true : substr( $haystack, -$len ) === $needle;
-	}
-}
+// No string-function polyfills are needed: WordPress core (wp-includes/compat.php)
+// has provided str_starts_with(), str_contains() and str_ends_with() since
+// WordPress 5.9, and this plugin requires WordPress 6.2+.
 
 try {
 	$nexulesuite_polyfills = nexulesuite_PLUGIN_DIR . 'core/polyfills.php';
