@@ -362,6 +362,11 @@ final class Activity_Notifier {
 			$html = (string) $tpl['contents'];
 		}
 
+		// Defense in depth: neutralize any arbitrary CSS/JS that may have been
+		// stored by an older build before the save-time allowlist was tightened.
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-mailer.php';
+		$html = \nexulesuite_\Mailer::sanitize_email_template_html( $html );
+
 		return $html;
 	}
 

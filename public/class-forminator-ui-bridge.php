@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace nexulesuite_\Public;
+namespace nexulesuite_\Frontend;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {

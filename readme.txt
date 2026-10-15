@@ -2,9 +2,9 @@
 Contributors: nexusleadcontributors
 Tags: leads, analytics, forms, crm, marketing
 Requires at least: 6.2
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.26
+Stable tag: 1.2.18
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,18 +120,20 @@ The WordPress admin single-page app is distributed as a production build:
 * `assets/admin/js/main.js` — JavaScript bundle (minified; built with Vite and React)
 * `assets/admin/css/main.css` — compiled styles (built with Vite)
 
-Human-readable source (JSX components, styles, and build configuration) is available in this public repository:
+The complete human-readable source (JSX components, styles, and build configuration) is shipped **inside this plugin package** and is sufficient to rebuild every compiled asset without any external download:
 
-https://github.com/Mostafijemon24/Nexus-Lead-Suite/tree/main/admin/src
+* `admin/src/` — all React/JSX components and styles
+* `admin/package.json` — exact build dependencies
+* `admin/vite.config.js` — build configuration
 
-Full repository root: https://github.com/Mostafijemon24/Nexus-Lead-Suite
+Public front-end scripts under `public/js/` are already unminified.
 
-The same `admin/src` tree (and `admin/package.json` / `admin/vite.config.js`) is also included in the plugin package. Public front-end scripts under `public/js/` are already unminified.
+The same source is also mirrored in the project's public repository: https://github.com/Mostafijemon24/Nexus-Lead-Suite
 
-To rebuild the admin assets from source:
+To rebuild the admin assets from the source included in this package:
 
-1. Clone https://github.com/Mostafijemon24/Nexus-Lead-Suite
-2. `cd admin` then run `npm ci`
+1. `cd admin` (inside the extracted plugin folder)
+2. Run `npm ci`
 3. Build for production: `npm run build`
 4. Output is written to `assets/admin/js/main.js` and `assets/admin/css/main.css` (see `admin/vite.config.js`).
 
@@ -139,7 +141,7 @@ For local development with hot reload, run `npm run dev` and add `define( 'nexul
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/nexulesuite_` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/nexus-lead-suite` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Use the Nexus Lead Suite menu in the admin area to configure the plugin.
 
@@ -168,33 +170,15 @@ The optional uninstall cleanup removes custom tables (`wp_nexulesuite_interactio
 
 1. Dashboard (coming soon)
 
-= 1.2.26 =
-* Backup: export/import now saves and restores the complete plugin — forms (including logic and field colors), menu buttons, popups, emails, appearance, settings, tables, and uploads. After a full plugin delete, importing the JSON on another site recreates the same setup.
-
-= 1.2.25 =
-* Forms: phone fields no longer force US (XXX) XXX-XXXX formatting. Numbers display as typed, including in notification emails. Optional National / International / Character Limit validation still applies.
-
-= 1.2.24 =
-* Accessibility & Language dock removed from the front end (accessibility, translate, live chat, and custom buttons) while the admin controller is rebuilt. Saved settings are untouched; re-enable with add_filter( 'nexulesuite_enable_a11y_dock', '__return_true' ).
-
-= 1.2.23 =
-* Accessibility dock: temporarily hide the front-end Custom Button while the admin controller is being rebuilt. Saved settings are untouched; re-enable via the nexulesuite_a11y_show_custom_button filter or nexulesuite_A11Y_SHOW_CUSTOM_BUTTON constant.
-
-= 1.2.22 =
-* Forms: a failed notification email no longer shows visitors an SMTP error. The configured Thank You message (or redirect) always appears; delivery status is still logged for the admin.
-
-= 1.2.21 =
-* Exclusion Rules: a pasted page link is excluded as that URL. Title search is no longer required.
-
-= 1.2.20 =
-* Admin: restore layout CSS (Tailwind theme tokens). Fixes broken Settings / Auto PopUp chrome after 1.2.19.
-
-= 1.2.19 =
-* Settings → Exclusion Rules: paste a live page/post URL (or search by title) instead of only picking from a 50-item dropdown.
-
 = 1.2.18 =
-* Auto popup: Exclusion Rules now actually suppress timer/scroll/exit popups on selected posts and pages.
-* Display conditions: more reliable page/post matching (static homepage, posts page, numeric IDs).
+* Compatibility: fixed a fatal parse error on PHP 7.4/7.x by renaming the reserved-word namespace segment `Public` to `Frontend` (the plugin now loads on its declared minimum PHP 7.4).
+* Plugin Check: `Tested up to` set to 7.1; removed redundant `str_starts_with`/`str_contains`/`str_ends_with` polyfills (WordPress core has provided these since 5.9 and the plugin requires 6.2+).
+* Plugin Check: documented the Cloudflare Turnstile verification endpoint and widget script as a required, opt-in, disclosed External Service (they cannot be self-hosted).
+* Security (WordPress.org review): email templates can no longer store or send arbitrary CSS/JavaScript. `<style>`/`<script>` blocks are stripped on every save, import, and send path; legitimate inline styling (filtered by WordPress `safecss`) still works.
+* Security: full-site import now runs imported email templates through the same allowlist, so an uploaded bundle cannot reintroduce active content.
+* Dependency (WordPress.org review): removed the bundled, unused Select2 4.1.0-rc.0 release candidate and its dead CSS slices (they were never enqueued; no functionality change).
+* Naming (WordPress.org review): renamed the SMTP OAuth state transient prefix from `nls_smtp_oauth_` to `nexulesuite_smtp_oauth_` for a consistent plugin-specific prefix.
+* Docs: rebuild instructions now use the human-readable source bundled inside the package (no external clone required); corrected the installation directory name.
 
 = 1.2.17 =
 * WordPress.org review: made the Source Code GitHub repository public and confirmed admin/src is reachable.

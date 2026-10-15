@@ -10,8 +10,6 @@ declare(strict_types=1);
 namespace nexulesuite_;
 
 use nexulesuite_\Core\Activities_Store;
-use nexulesuite_\Core\Chat_Store;
-use nexulesuite_\Core\Vector_Store;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -30,9 +28,7 @@ final class Data_Bundle {
 	 */
 	private const MAX_EMBEDDED_MEDIA_BYTES = 10485760;
 
-	public const EXPORT_FORMAT_CURRENT = 5;
-
-	public const EXPORT_FORMAT_WITH_TABLES_AND_EXTRAS = 4;
+	public const EXPORT_FORMAT_CURRENT = 4;
 
 	public const EXPORT_FORMAT_WITH_MEDIA_NATIVE_FORMS = 3;
 
@@ -59,12 +55,7 @@ final class Data_Bundle {
 		'nexulesuite_migrate_nav_client_off_v3',
 		'nexulesuite_migrate_auto_popup_off_v1',
 		'nexulesuite_migrate_livechat_off_v1',
-		'nexulesuite_migrate_menu_groups_v1',
-		'nexulesuite_migrate_step_option_keys_v1',
 		'nexulesuite_general_settings_v1',
-		'nexulesuite_global_appearance_v1',
-		'nexulesuite_a11y_lang_v1',
-		'nexulesuite_client_links_v1',
 		'nexulesuite_forms_builder_v0',
 		'nexulesuite_recaptcha_keys_v0',
 		'nexulesuite_turnstile_keys_v0',
@@ -75,6 +66,31 @@ final class Data_Bundle {
 		'nexulesuite_smtp_settings',
 		'nexulesuite_erase_on_uninstall',
 	);
+
+	/**
+	 * Sanitizes an imported email-templates option so arbitrary CSS/JS/HTML in an
+	 * uploaded bundle cannot be stored (mirrors the REST save-path allowlist).
+	 *
+	 * @param array<int,mixed> $templates Imported templates payload.
+	 * @return array<int,array<string,mixed>>
+	 */
+	private static function sanitize_imported_email_templates( array $templates ): array {
+		require_once nexulesuite_PLUGIN_DIR . 'core/class-mailer.php';
+		$out = array();
+		foreach ( $templates as $tpl ) {
+			if ( ! is_array( $tpl ) ) {
+				continue;
+			}
+			if ( isset( $tpl['content'] ) ) {
+				$tpl['content'] = \nexulesuite_\Mailer::sanitize_email_template_html( (string) $tpl['content'] );
+			}
+			if ( isset( $tpl['contents'] ) ) {
+				$tpl['contents'] = \nexulesuite_\Mailer::sanitize_email_template_html( (string) $tpl['contents'] );
+			}
+			$out[] = $tpl;
+		}
+		return $out;
+	}
 
 	/**
 	 * @param bool $embed_media When false, skips scanning uploads and Base64 payloads (settings + DB tables only).
@@ -235,20 +251,6 @@ final class Data_Bundle {
 					'included' => ! empty( $tables['submissions'] ),
 					'count'    => isset( $tables['submissions'] ) && is_array( $tables['submissions'] ) ? count( $tables['submissions'] ) : 0,
 				),
-				'appearance'  => array(
-					'option_key' => 'nexulesuite_global_appearance_v1',
-					'included'   => $has( 'nexulesuite_global_appearance_v1' ),
-				),
-				'chat_logs'   => array(
-					'table'    => 'chat_logs',
-					'included' => ! empty( $tables['chat_logs'] ),
-					'count'    => isset( $tables['chat_logs'] ) && is_array( $tables['chat_logs'] ) ? count( $tables['chat_logs'] ) : 0,
-				),
-				'ai_vectors'  => array(
-					'table'    => 'ai_vectors',
-					'included' => ! empty( $tables['ai_vectors'] ),
-					'count'    => isset( $tables['ai_vectors'] ) && is_array( $tables['ai_vectors'] ) ? count( $tables['ai_vectors'] ) : 0,
-				),
 			),
 		);
 	}
@@ -265,8 +267,6 @@ final class Data_Bundle {
 			return array(
 				'interactions' => array(),
 				'submissions'  => array(),
-				'chat_logs'    => array(),
-				'ai_vectors'   => array(),
 			);
 		}
 	}
@@ -308,7 +308,7 @@ final class Data_Bundle {
 		global $wpdb;
 
 		$known = array_flip( self::OPTION_KEYS );
-		$like  = $wpdb->esc_like( 'nexulesuite_' ) . '%';
+		$like  = $wpdb->esc_like( 'nexulesuite_ls' ) . '%';
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.DirectQuery
 		$rows = $wpdb->get_results(
@@ -345,13 +345,7 @@ final class Data_Bundle {
 	 * @param string $name Option name.
 	 */
 	private static function is_allowed_extra_option_name( string $name ): bool {
-		if ( ! preg_match( '/^nexulesuite_[A-Za-z0-9_]+$/', $name ) ) {
-			return false;
-		}
-
-		// Never treat transients or cron leftovers as plugin config.
-		return ! str_starts_with( $name, 'nexulesuite_transient' )
-			&& ! str_contains( $name, '_transient_' );
+		return (bool) preg_match( '/^nexulesuite_ls[A-Za-z0-9_]+$/', $name );
 	}
 
 	/**
@@ -465,8 +459,6 @@ final class Data_Bundle {
 		return array(
 			'interactions' => self::fetch_all_rows( $interactions ),
 			'submissions'  => self::fetch_all_rows( $submissions ),
-			'chat_logs'    => self::fetch_all_rows( Chat_Store::table() ),
-			'ai_vectors'   => self::encode_vector_rows_for_json( self::fetch_all_rows( Vector_Store::table() ) ),
 		);
 	}
 
@@ -491,44 +483,6 @@ final class Data_Bundle {
 		$rows = $wpdb->get_results( "SELECT * FROM {$table}", ARRAY_A );
 
 		return is_array( $rows ) ? $rows : array();
-	}
-
-	/**
-	 * Embeddings are binary blobs; JSON export needs Base64.
-	 *
-	 * @param array<int,array<string,mixed>> $rows Vector rows.
-	 * @return array<int,array<string,mixed>>
-	 */
-	private static function encode_vector_rows_for_json( array $rows ): array {
-		foreach ( $rows as $i => $row ) {
-			if ( ! is_array( $row ) || ! isset( $row['embedding'] ) || ! is_string( $row['embedding'] ) || '' === $row['embedding'] ) {
-				continue;
-			}
-			$rows[ $i ]['embedding']          = base64_encode( $row['embedding'] );
-			$rows[ $i ]['embedding_encoding'] = 'base64';
-		}
-
-		return $rows;
-	}
-
-	/**
-	 * @param array<int,array<string,mixed>> $rows Vector rows from a JSON bundle.
-	 * @return array<int,array<string,mixed>>
-	 */
-	private static function decode_vector_rows_from_json( array $rows ): array {
-		foreach ( $rows as $i => $row ) {
-			if ( ! is_array( $row ) ) {
-				continue;
-			}
-			$enc = isset( $row['embedding_encoding'] ) ? (string) $row['embedding_encoding'] : '';
-			if ( 'base64' === $enc && isset( $row['embedding'] ) && is_string( $row['embedding'] ) ) {
-				$decoded = base64_decode( $row['embedding'], true );
-				$rows[ $i ]['embedding'] = false !== $decoded ? $decoded : '';
-			}
-			unset( $rows[ $i ]['embedding_encoding'] );
-		}
-
-		return $rows;
 	}
 
 	/**
@@ -880,16 +834,10 @@ final class Data_Bundle {
 		}
 		set_time_limit( 300 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- large import/export may exceed default timeout.
 
-		$fmt = 0;
-		if ( isset( $bundle['nexulesuite_export_format'] ) ) {
-			$fmt = (int) $bundle['nexulesuite_export_format'];
-		} elseif ( isset( $bundle['nexus_ls_export_format'] ) ) {
-			$fmt = (int) $bundle['nexus_ls_export_format'];
-		}
+		$fmt = isset( $bundle['nexulesuite_export_format'] ) ? (int) $bundle['nexulesuite_export_format'] : 0;
 		$allowed = array(
 			self::EXPORT_FORMAT_LEGACY,
 			self::EXPORT_FORMAT_WITH_MEDIA_NATIVE_FORMS,
-			self::EXPORT_FORMAT_WITH_TABLES_AND_EXTRAS,
 			self::EXPORT_FORMAT_CURRENT,
 		);
 		if ( ! in_array( $fmt, $allowed, true ) ) {
@@ -905,6 +853,20 @@ final class Data_Bundle {
 		}
 
 		$opts = $bundle['options'];
+
+		foreach ( self::OPTION_KEYS as $key ) {
+			if ( ! array_key_exists( $key, $opts ) ) {
+				return new \WP_Error(
+					'nexulesuite_bundle_incomplete',
+					sprintf(
+						/* translators: %s: option key */
+						__( 'Export file is incomplete (missing option: %s). Re-export from the latest plugin version.', 'nexus-lead-suite' ),
+						$key
+					),
+					array( 'status' => 400 )
+				);
+			}
+		}
 
 		try {
 			self::ensure_tables_exist();
@@ -945,10 +907,6 @@ final class Data_Bundle {
 		$tables_in = self::deep_apply_url_map( $tables_in, $url_map );
 
 		foreach ( self::OPTION_KEYS as $key ) {
-			if ( ! array_key_exists( $key, $opts ) ) {
-				delete_option( $key );
-				continue;
-			}
 			$val = $opts[ $key ];
 			if ( null === $val ) {
 				delete_option( $key );
@@ -956,6 +914,11 @@ final class Data_Bundle {
 			}
 			if ( 'nexulesuite_forms_builder_v0' === $key ) {
 				$val = Forms_Payload_Codec::encode_mixed_for_storage( $val );
+			}
+			// Imported email templates must pass the same allowlist as the REST save
+			// path so an uploaded bundle cannot reintroduce arbitrary CSS/JS/HTML.
+			if ( ( 'nexulesuite_email_templates_v1' === $key || 'nexulesuite_email_templates' === $key ) && is_array( $val ) ) {
+				$val = self::sanitize_imported_email_templates( $val );
 			}
 			update_option( $key, $val, false );
 		}
@@ -1016,52 +979,8 @@ final class Data_Bundle {
 			return $db_err;
 		}
 
-		$db_err = self::restore_table(
-			Chat_Store::table(),
-			isset( $tables_in['chat_logs'] ) && is_array( $tables_in['chat_logs'] ) ? $tables_in['chat_logs'] : array(),
-			array(
-				'id'         => '%d',
-				'session_id' => '%s',
-				'question'   => '%s',
-				'answer'     => '%s',
-				'sources'    => '%s',
-				'has_image'  => '%d',
-				'intent'     => '%s',
-				'sentiment'  => '%s',
-				'page_url'   => '%s',
-				'ip_hash'    => '%s',
-				'ua_hash'    => '%s',
-				'created_at' => '%s',
-			)
-		);
-		if ( is_wp_error( $db_err ) ) {
-			return $db_err;
-		}
-
-		$vector_rows = isset( $tables_in['ai_vectors'] ) && is_array( $tables_in['ai_vectors'] ) ? $tables_in['ai_vectors'] : array();
-		$db_err        = self::restore_table(
-			Vector_Store::table(),
-			self::decode_vector_rows_from_json( $vector_rows ),
-			array(
-				'id'          => '%d',
-				'doc_id'      => '%s',
-				'chunk_index' => '%d',
-				'source_type' => '%s',
-				'source_ref'  => '%s',
-				'title'       => '%s',
-				'url'         => '%s',
-				'content'     => '%s',
-				'embedding'   => '%s',
-				'dims'        => '%d',
-				'created_at'  => '%s',
-			)
-		);
-		if ( is_wp_error( $db_err ) ) {
-			return $db_err;
-		}
-
 		/*
-		 * Full replace: remove orphan nexulesuite_* extras that existed on this site but were not in
+		 * Full replace: remove orphan nexulesuite_ls* options that existed on this site but were not in
 		 * the export (tracked keys + extra_options). Otherwise old data merges with the import.
 		 */
 		self::purge_extra_options_not_in_bundle( $bundle );
@@ -1076,7 +995,7 @@ final class Data_Bundle {
 	/**
 	 * Deletes wp_options rows for plugin-scoped extras not listed in the bundle (full import wipe).
 	 *
-	 * Core {@see OPTION_KEYS} are already updated above; this only targets `nexulesuite_*` names
+	 * Core {@see OPTION_KEYS} are already updated above; this only targets `nexulesuite_ls*` names
 	 * outside that set that are absent from `extra_options` in the file.
 	 *
 	 * @param array<string,mixed> $bundle Import bundle.
@@ -1088,7 +1007,7 @@ final class Data_Bundle {
 		$allowed_extra   = array_keys( $extra_in_bundle );
 		$known_flip      = array_flip( self::OPTION_KEYS );
 
-		$like = $wpdb->esc_like( 'nexulesuite_' ) . '%';
+		$like = $wpdb->esc_like( 'nexulesuite_ls' ) . '%';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rows = $wpdb->get_col(
 			$wpdb->prepare(
@@ -1484,7 +1403,7 @@ final class Data_Bundle {
 					continue;
 				}
 				$val = $row[ $col ];
-				if ( in_array( $col, array( 'meta', 'payload', 'sources' ), true ) ) {
+				if ( 'meta' === $col || 'payload' === $col ) {
 					if ( is_array( $val ) ) {
 						$val = wp_json_encode( $val );
 					} elseif ( is_object( $val ) ) {

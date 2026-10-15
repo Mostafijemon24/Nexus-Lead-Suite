@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace nexulesuite_\Public;
+namespace nexulesuite_\Frontend;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -525,7 +525,7 @@ final class Client_Access {
 				if ( ! is_array( $fn ) || ! is_object( $fn[0] ) || ! in_array( $fn[1], $ours, true ) ) {
 					continue;
 				}
-				if ( $fn[0] instanceof \nexulesuite_\Public\Shortcodes ) {
+				if ( $fn[0] instanceof \nexulesuite_\Frontend\Shortcodes ) {
 					remove_action( 'wp_footer', $fn, $priority );
 				}
 			}

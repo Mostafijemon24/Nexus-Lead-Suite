@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace nexulesuite_\Public;
+namespace nexulesuite_\Frontend;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,17 +27,6 @@ final class Accessibility_Language {
 	 * @return void
 	 */
 	public function register_hooks(): void {
-		/*
-		 * The Accessibility & Language dock — the accessibility button, the language /
-		 * Google Translate button, the dock-hosted live chat button, and any custom
-		 * button — is fully removed from the front end while its admin controller is
-		 * rebuilt. No dock CSS, JS, or markup is output on any page. The saved settings
-		 * in the database are left untouched. To bring the dock back, return true from
-		 * the filter below (e.g. add_filter( 'nexulesuite_enable_a11y_dock', '__return_true' )).
-		 */
-		if ( ! apply_filters( 'nexulesuite_enable_a11y_dock', false ) ) {
-			return;
-		}
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ), 40 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'print_early_translate_css' ), 1 );
 		add_action( 'wp_footer', array( $this, 'render_markup' ), 40 );
@@ -573,17 +562,6 @@ final class Accessibility_Language {
 			);
 		}
 
-		/*
-		 * TEMP (1.2.23): the Accessibility admin controller is being rebuilt, so the dock
-		 * "Custom Button" cannot be toggled from wp-admin yet. Hide it on the front end until
-		 * the controller returns. The saved DB value is left untouched — to re-enable early,
-		 * define nexulesuite_A11Y_SHOW_CUSTOM_BUTTON as true or use the filter below.
-		 */
-		$show_custom_button = defined( 'nexulesuite_A11Y_SHOW_CUSTOM_BUTTON' ) && nexulesuite_A11Y_SHOW_CUSTOM_BUTTON;
-		/** Allow re-enabling the dock custom button without editing code. */
-		$show_custom_button = (bool) apply_filters( 'nexulesuite_a11y_show_custom_button', $show_custom_button, $settings );
-		$custom_button_enabled_front = $show_custom_button ? (bool) $settings['customButtonEnabled'] : false;
-
 		wp_localize_script(
 			'nexulesuite_a11y-lang',
 			'nexulesuite_A11yLang',
@@ -596,7 +574,7 @@ final class Accessibility_Language {
 				'liveChatButtonBg'        => (string) $settings['liveChatButtonBg'],
 				'liveChatButtonText'      => (string) $settings['liveChatButtonText'],
 				'liveChatButtonIconSize'  => (int) $settings['liveChatButtonIconSize'],
-				'customButtonEnabled'     => $custom_button_enabled_front,
+				'customButtonEnabled'     => (bool) $settings['customButtonEnabled'],
 				'customButtonUrl'         => (string) $settings['customButtonUrl'],
 				'customButtonLabel'       => (string) $settings['customButtonLabel'],
 				'customButtonIcon'        => (string) $settings['customButtonIcon'],

@@ -25,6 +25,75 @@ final class Mailer {
 	public const OPTION_KEY = 'nexulesuite_smtp_settings';
 
 	/**
+	 * Sanitizes email-template HTML so stored/rendered templates can never carry
+	 * arbitrary CSS, JavaScript or other active content.
+	 *
+	 * WordPress.org review flagged that email templates could be saved with raw
+	 * `<style>` blocks (arbitrary CSS insertion). `wp_kses()` does NOT filter the
+	 * contents of a `<style>` element, so the whole element is removed here, along
+	 * with `<script>`/`<noscript>`/`<template>` blocks. Inline `style="…"`
+	 * attributes are still permitted — those pass through WordPress's
+	 * `safecss_filter_attr()` allowlist, which strips dangerous properties
+	 * (`expression()`, `behavior`, `javascript:` URLs, etc.). This keeps ordinary,
+	 * email-client-friendly inline styling working while removing the ability to
+	 * store unrestricted CSS/JS/PHP.
+	 *
+	 * Shared by the REST save path, the full-site import path and the send path so
+	 * no entry point can reintroduce unsafe content (including previously stored
+	 * templates).
+	 *
+	 * @param string $html Raw template HTML.
+	 * @return string Sanitized HTML.
+	 */
+	public static function sanitize_email_template_html( string $html ): string {
+		if ( '' === $html ) {
+			return '';
+		}
+
+		// Remove whole active-content blocks (tag + inner contents) before kses,
+		// so the CSS/JS inside them is dropped rather than surviving as text.
+		$html = (string) preg_replace(
+			'#<\s*(script|style|noscript|template|svg|iframe|object|embed|applet)\b[^>]*>.*?<\s*/\s*\1\s*>#is',
+			'',
+			$html
+		);
+		// Also strip any self-closing / unterminated variants of those tags.
+		$html = (string) preg_replace(
+			'#<\s*/?\s*(script|style|noscript|template|svg|iframe|object|embed|applet)\b[^>]*>#i',
+			'',
+			$html
+		);
+
+		$allowed_html = self::email_template_allowed_html();
+
+		return wp_kses( $html, $allowed_html );
+	}
+
+	/**
+	 * Allowed-HTML map for email templates: the post allowlist plus the structural
+	 * tags a full HTML email document needs (html/head/body/title/meta). The
+	 * `<style>` and `<script>` tags are intentionally NOT included.
+	 *
+	 * @return array<string,array<string,bool>>
+	 */
+	public static function email_template_allowed_html(): array {
+		$allowed_html = wp_kses_allowed_html( 'post' );
+
+		$allowed_html['html']  = array( 'lang' => true, 'xmlns' => true );
+		$allowed_html['head']  = array();
+		$allowed_html['body']  = array( 'style' => true, 'class' => true );
+		$allowed_html['title'] = array();
+		$allowed_html['meta']  = array(
+			'charset'    => true,
+			'name'       => true,
+			'content'    => true,
+			'http-equiv' => true,
+		);
+
+		return $allowed_html;
+	}
+
+	/**
 	 * Registers hooks.
 	 *
 	 * @return void
