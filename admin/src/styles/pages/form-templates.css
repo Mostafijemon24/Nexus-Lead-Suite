@@ -1,0 +1,105 @@
+/*
+ * Forms › Templates page (nlsFormTemplatesPage).
+ *
+ * Responsive template-card grid and the card anatomy: a full-card "use" button
+ * (icon chip, name, tagline, field chips) with a footer holding the hint and
+ * the Preview button.
+ */
+#nexulesuite_admin-root .nls-tpl-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--nls-space-4);
+}
+
+@media (max-width: 1100px) {
+	#nexulesuite_admin-root .nls-tpl-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 640px) {
+	#nexulesuite_admin-root .nls-tpl-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+#nexulesuite_admin-root .nls-tpl-card {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	transition: border-color var(--nls-transition), box-shadow var(--nls-transition);
+}
+
+#nexulesuite_admin-root .nls-tpl-card:hover,
+#nexulesuite_admin-root .nls-tpl-card:focus-within {
+	border-color: var(--nls-primary-border);
+	box-shadow: var(--nls-shadow-raised);
+}
+
+#nexulesuite_admin-root .nls-tpl-card__main {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	align-items: stretch;
+	gap: var(--nls-space-4);
+	width: 100%;
+	padding: var(--nls-card-pad);
+	border-radius: var(--nls-radius-card) var(--nls-radius-card) 0 0;
+	text-align: left;
+	color: var(--nls-ink);
+	cursor: pointer;
+	transition: background-color var(--nls-transition);
+}
+
+#nexulesuite_admin-root .nls-tpl-card__main:hover {
+	background: var(--nls-surface-2);
+}
+
+#nexulesuite_admin-root .nls-tpl-card__head {
+	display: flex;
+	align-items: center;
+	gap: var(--nls-space-3);
+	min-width: 0;
+}
+
+#nexulesuite_admin-root .nls-tpl-card__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 40px;
+	width: 40px;
+	height: 40px;
+	border-radius: var(--nls-radius-card);
+	background: var(--nls-primary-soft);
+	color: var(--nls-primary);
+}
+
+#nexulesuite_admin-root .nls-tpl-card__name {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: var(--nls-fs-body);
+	font-weight: var(--nls-fw-semibold);
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-tpl-card__tagline {
+	display: block;
+	margin-top: 2px;
+	font-size: var(--nls-fs-secondary);
+	line-height: 1.4;
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-tpl-card__fields {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	font-size: var(--nls-fs-secondary);
+}
+
+#nexulesuite_admin-root .nls-tpl-card__foot {
+	justify-content: space-between;
+	margin-top: auto;
+}

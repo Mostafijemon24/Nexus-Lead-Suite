@@ -1,8 +1,9 @@
 import * as b from "react";
 import * as e from "react/jsx-runtime";
-import { LayoutTemplate as mm } from "lucide-react";
+import { Eye as Rt, LayoutTemplate as mm } from "lucide-react";
 import {
   Di,
+  FIELD_CATALOG,
   FORM_TEMPLATES_PAGE,
   Fi,
   FormPreviewModal,
@@ -10,13 +11,14 @@ import {
   Jd,
   Oi,
   PageFrame,
-  TemplateCard,
-  Ui,
+  StickyFooter,
   cf,
   formFromTemplate,
   normalizeForm,
   restFetch,
 } from "../shared/common.js";
+
+const nlsFieldNames = new Map(FIELD_CATALOG.map((f) => [f.id, f.name]));
 
 export function nlsFormTemplatesPage({ onNavigate: nlsNav }) {
   const [nlsBusy, nlsSetBusy] = b.useState(!1),
@@ -50,53 +52,92 @@ export function nlsFormTemplatesPage({ onNavigate: nlsNav }) {
   return e.jsxs(PageFrame, {
     title: "Form Templates",
     subtitle: "Start from a ready-made template — fields, behavior, and notifications included.",
-    icon: e.jsx(mm, {
-      size: 18,
-    }),
+    icon: e.jsx(mm, { size: 20 }),
+    footer: e.jsx(StickyFooter, {}),
     children: [
       e.jsxs("div", {
-        className: "p-4 md:p-6 space-y-4",
+        className: "nls-stack nls-stack--tight",
         children: [
-          nlsErr
-            ? e.jsx("div", {
-                className: "rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700",
-                children: nlsErr,
-              })
-            : null,
+          nlsErr ? e.jsx("div", { className: "nls-notice nls-notice--danger", role: "alert", children: nlsErr }) : null,
           nlsBusy
-            ? e.jsx("div", {
-                className:
-                  "rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-500",
-                children: "Creating form…",
+            ? e.jsxs("div", {
+                className: "nls-notice nls-notice--info",
+                role: "status",
+                children: [e.jsx("span", { className: "nls-spinner", "aria-hidden": "true" }), "Creating form…"],
               })
             : null,
           e.jsx("div", {
-            className: "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3",
+            className: "nls-tpl-grid",
             children: nlsTpls.map((tpl) => {
               const Icon = tpl.Icon;
-              return e.jsx(
-                TemplateCard,
+              const fields = (tpl.fields || []).map(([mod]) => ({ moduleId: mod }));
+              return e.jsxs(
+                "div",
                 {
-                  icon: {
-                    node: e.jsx(Icon, {
-                      size: 20,
+                  className: "nls-card nls-tpl-card",
+                  children: [
+                    e.jsxs("button", {
+                      type: "button",
+                      onClick: () => nlsUse(tpl),
+                      className: "nls-tpl-card__main",
+                      children: [
+                        e.jsxs("span", {
+                          className: "nls-tpl-card__head",
+                          children: [
+                            e.jsx("span", {
+                              className: "nls-tpl-card__icon",
+                              "aria-hidden": "true",
+                              children: e.jsx(Icon, { size: 20 }),
+                            }),
+                            e.jsxs("span", {
+                              className: "min-w-0",
+                              children: [
+                                e.jsx("span", { className: "nls-tpl-card__name", children: tpl.name }),
+                                e.jsx("span", { className: "nls-tpl-card__tagline", children: tpl.tagline }),
+                              ],
+                            }),
+                          ],
+                        }),
+                        fields.length
+                          ? e.jsx("span", {
+                              className: "nls-tpl-card__fields",
+                              children: fields.map((f, idx) =>
+                                e.jsx(
+                                  "span",
+                                  {
+                                    className: "nls-badge nls-badge--muted",
+                                    children: nlsFieldNames.get(f.moduleId) || f.moduleId,
+                                  },
+                                  idx,
+                                ),
+                              ),
+                            })
+                          : e.jsx("span", {
+                              className: "nls-tpl-card__fields nls-muted",
+                              children: "Start from scratch",
+                            }),
+                      ],
                     }),
-                    accent: Ui[tpl.accent] || Ui.violet,
-                  },
-                  name: tpl.name,
-                  tagline: tpl.tagline,
-                  fields: (tpl.fields || []).map(([mod]) => ({
-                    moduleId: mod,
-                  })),
-                  onClick: () => nlsUse(tpl),
-                  onPreview: () => nlsSetPreview(formFromTemplate(tpl, "template-preview")),
+                    e.jsxs("div", {
+                      className: "nls-card__footer nls-tpl-card__foot",
+                      children: [
+                        e.jsx("span", { className: "nls-muted nls-text-xs", children: "Click card to use" }),
+                        e.jsxs("button", {
+                          type: "button",
+                          onClick: () => nlsSetPreview(formFromTemplate(tpl, "template-preview")),
+                          className: "nls-btn nls-btn--ghost nls-btn--sm",
+                          children: [e.jsx(Rt, { "aria-hidden": "true" }), "Preview"],
+                        }),
+                      ],
+                    }),
+                  ],
                 },
                 tpl.id,
               );
             }),
           }),
           e.jsx("p", {
-            className: "text-[11px] text-slate-400",
+            className: "nls-muted nls-text-xs",
             children:
               "Using a template creates a new form and opens the Form Builder. Remember to Save if you edit further.",
           }),

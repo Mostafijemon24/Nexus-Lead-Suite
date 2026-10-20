@@ -1,0 +1,357 @@
+/*
+ * Forms › Submissions page (nlsFormSubmissionsPage).
+ *
+ * Layout for the report (table + detail panel), the filter menubar restyled on
+ * top of the system toolbar/button/card primitives, and the key/value tables in
+ * the detail panel. The `.nls-sub-menubar*` class names are kept because the
+ * legacy chrome stylesheet and the page JS reference them; the rules below load
+ * later and override the legacy literal colours with tokens.
+ */
+
+/* ---- Table + detail panel ------------------------------------------------ */
+#nexulesuite_admin-root .nls-sub-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 300px;
+	gap: var(--nls-space-4);
+	align-items: start;
+}
+
+#nexulesuite_admin-root .nls-sub-detail {
+	position: sticky;
+	top: calc(var(--nls-wp-adminbar-h) + var(--nls-topbar-h) + var(--nls-space-4));
+	min-width: 0;
+}
+
+@media (max-width: 1100px) {
+	#nexulesuite_admin-root .nls-sub-layout {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	#nexulesuite_admin-root .nls-sub-detail {
+		position: static;
+	}
+}
+
+/* The two admin sidebars can leave the report under 1000px wide on laptops;
+   collapse by available space too, so the seven-column table never has to scroll
+   beside the detail panel. */
+#nexulesuite_admin-root .nls-submissions-report {
+	container-type: inline-size;
+}
+
+@container (max-width: 960px) {
+	#nexulesuite_admin-root .nls-sub-layout {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	#nexulesuite_admin-root .nls-sub-detail {
+		position: static;
+	}
+}
+
+/* ---- Submissions table --------------------------------------------------- */
+/* Seven columns share ~640px next to the detail panel: tighter cell padding
+   than the default table, and long tokens break only as a last resort. */
+#nexulesuite_admin-root .nls-sub-table th,
+#nexulesuite_admin-root .nls-sub-table td {
+	padding: 10px 10px;
+}
+
+#nexulesuite_admin-root .nls-sub-table th:first-child,
+#nexulesuite_admin-root .nls-sub-table td:first-child {
+	padding-left: 14px;
+}
+
+#nexulesuite_admin-root .nls-sub-table th:last-child,
+#nexulesuite_admin-root .nls-sub-table td:last-child {
+	padding-right: 14px;
+}
+
+#nexulesuite_admin-root .nls-sub-table th.nls-sub-table__check,
+#nexulesuite_admin-root .nls-sub-table td.nls-sub-table__check {
+	width: 32px;
+	padding-right: 4px;
+	padding-left: 10px;
+	text-align: center;
+}
+
+#nexulesuite_admin-root .nls-sub-table .nls-sub-table__check input {
+	vertical-align: middle;
+}
+
+#nexulesuite_admin-root .nls-sub-table th.nls-sub-table__actions,
+#nexulesuite_admin-root .nls-sub-table td.nls-sub-table__actions {
+	width: 1%;
+	padding-left: 4px;
+	text-align: right;
+	white-space: nowrap;
+}
+
+#nexulesuite_admin-root .nls-sub-table__btns {
+	display: inline-flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 0;
+}
+
+/* Date and time may sit on two lines so the row fits beside the detail panel. */
+#nexulesuite_admin-root .nls-sub-table td.nls-sub-table__date {
+	min-width: 108px;
+	font-variant-numeric: tabular-nums;
+	color: var(--nls-ink-2);
+}
+
+#nexulesuite_admin-root .nls-sub-table__form {
+	font-weight: var(--nls-fw-semibold);
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-sub-table td.nls-sub-table__preview {
+	min-width: 100px;
+	max-width: 280px;
+	color: var(--nls-ink-2);
+	overflow-wrap: break-word;
+}
+
+#nexulesuite_admin-root .nls-sub-table td.nls-sub-table__page {
+	max-width: 160px;
+	white-space: nowrap;
+}
+
+#nexulesuite_admin-root .nls-sub-table .nls-link .truncate {
+	max-width: 90px;
+}
+
+#nexulesuite_admin-root .nls-sub-table tbody tr.is-active td {
+	background: var(--nls-primary-soft);
+}
+
+#nexulesuite_admin-root .nls-sub-empty {
+	padding: var(--nls-space-8) var(--nls-space-4);
+}
+
+#nexulesuite_admin-root .nls-sub-empty__title {
+	margin-bottom: 4px;
+	font-size: var(--nls-fs-body);
+	font-weight: var(--nls-fw-semibold);
+	color: var(--nls-ink);
+}
+
+/* ---- Bulk-selection bar ---------------------------------------------------- */
+#nexulesuite_admin-root .nls-sub-bulk {
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	margin-top: var(--nls-space-3);
+}
+
+/* ---- Filter menubar (legacy class names, system styling) ------------------ */
+#nexulesuite_admin-root .nls-sub-menubar-wrap {
+	position: relative;
+	z-index: var(--nls-z-dropdown);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar {
+	justify-content: flex-start;
+	gap: var(--nls-space-2);
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__item {
+	position: relative;
+}
+
+/* The trigger is a `nls-btn nls-btn--secondary nls-btn--sm`; only the legacy
+   overrides that would fight the button styles are reset here. */
+#nexulesuite_admin-root .nls-sub-menubar__trigger {
+	height: auto;
+	border-radius: var(--nls-radius-control);
+	font-size: var(--nls-fs-secondary);
+	font-weight: var(--nls-fw-medium);
+	line-height: 1.2;
+	color: var(--nls-ink-2);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__trigger svg {
+	opacity: 1;
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__trigger em {
+	max-width: 140px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-style: normal;
+	font-size: var(--nls-fs-caption);
+	font-weight: var(--nls-fw-normal);
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__trigger:hover,
+#nexulesuite_admin-root .nls-sub-menubar__item.is-open .nls-sub-menubar__trigger {
+	background: var(--nls-surface-2);
+	border-color: var(--nls-gray-400);
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__item.is-active .nls-sub-menubar__trigger {
+	background: var(--nls-primary-soft);
+	border-color: var(--nls-primary-border);
+	color: var(--nls-primary-hover);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__item.is-active .nls-sub-menubar__trigger svg,
+#nexulesuite_admin-root .nls-sub-menubar__item.is-active .nls-sub-menubar__trigger em {
+	color: var(--nls-primary-hover);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__popup {
+	position: absolute;
+	top: calc(100% + 6px);
+	left: 0;
+	z-index: var(--nls-z-dropdown);
+	min-width: 220px;
+	max-width: min(320px, calc(100vw - 2 * var(--nls-page-gutter)));
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__popup--wide {
+	min-width: 320px;
+	width: min(440px, calc(100vw - 2 * var(--nls-page-gutter)));
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__panel {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: var(--nls-space-3);
+	border-radius: var(--nls-radius-card);
+	box-shadow: var(--nls-shadow-pop);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__panel-title {
+	margin: 0 0 4px;
+	padding: 0 4px;
+	color: var(--nls-muted);
+}
+
+/* Inputs inside popups use the base control styles; reset the legacy sizing. */
+#nexulesuite_admin-root .nls-sub-menubar__input,
+#nexulesuite_admin-root .nls-sub-menubar__popup--wide .nls-sub-menubar__input {
+	height: auto;
+	min-height: 36px;
+	padding: 6px 10px;
+	border: 1px solid var(--nls-border);
+	border-radius: var(--nls-radius-control);
+	background: var(--nls-surface);
+	color: var(--nls-ink);
+	font-size: var(--nls-fs-body);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__input:focus {
+	border-color: var(--nls-primary);
+	box-shadow: var(--nls-focus-ring);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__option {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	min-height: 34px;
+	margin: 0;
+	padding: 6px 10px;
+	border: 0;
+	border-radius: var(--nls-radius-control);
+	background: transparent;
+	color: var(--nls-ink-2);
+	font-size: var(--nls-fs-secondary);
+	font-weight: var(--nls-fw-medium);
+	text-align: left;
+	cursor: pointer;
+	transition: background-color var(--nls-transition), color var(--nls-transition);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__option:hover {
+	background: var(--nls-surface-2);
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__option.is-selected {
+	background: var(--nls-primary-soft);
+	color: var(--nls-primary-hover);
+	font-weight: var(--nls-fw-semibold);
+}
+
+/* "Clear" is a `nls-btn nls-btn--ghost nls-btn--sm`; undo the legacy block styling. */
+#nexulesuite_admin-root .nls-sub-menubar__clear {
+	display: inline-flex;
+	width: auto;
+	align-self: flex-start;
+	margin: 4px 0 0;
+	padding: 0 10px;
+	font-size: var(--nls-fs-secondary);
+	color: var(--nls-ink-2);
+}
+
+#nexulesuite_admin-root .nls-sub-menubar__clear:hover {
+	background: var(--nls-surface-3);
+	color: var(--nls-ink);
+}
+
+@media (max-width: 600px) {
+	#nexulesuite_admin-root .nls-sub-menubar__trigger em {
+		max-width: 80px;
+	}
+}
+
+/* ---- Detail panel ----------------------------------------------------------- */
+#nexulesuite_admin-root .nls-sub-kv th {
+	width: 34%;
+	background: var(--nls-surface-2);
+	font-size: var(--nls-fs-caption);
+	font-weight: var(--nls-fw-semibold);
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	color: var(--nls-muted);
+	white-space: nowrap;
+	vertical-align: top;
+}
+
+#nexulesuite_admin-root .nls-sub-kv th,
+#nexulesuite_admin-root .nls-sub-kv td {
+	padding: 8px 12px;
+}
+
+#nexulesuite_admin-root .nls-sub-kv tbody th[scope="row"] {
+	text-transform: none;
+	letter-spacing: 0;
+	font-size: var(--nls-fs-secondary);
+	white-space: normal;
+	overflow-wrap: anywhere;
+}
+
+#nexulesuite_admin-root .nls-sub-kv td {
+	overflow-wrap: anywhere;
+}
+
+#nexulesuite_admin-root .nls-sub-fields__value {
+	white-space: pre-wrap;
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-sub-detail__eyebrow {
+	margin-bottom: var(--nls-space-2);
+}
+
+#nexulesuite_admin-root .nls-sub-detail__link {
+	display: flex;
+	min-width: 0;
+}
+
+#nexulesuite_admin-root .nls-sub-detail__link .truncate {
+	max-width: 100%;
+}
