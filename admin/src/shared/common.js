@@ -392,18 +392,9 @@ function Lm(a, o) {
 }
 function SidebarLogo() {
   return e.jsx("div", {
-    className: "nexulesuite_sidebar-logo flex h-full w-full items-center justify-center rounded-xl",
+    className: "nexulesuite_sidebar-logo",
     "aria-hidden": "true",
-    children: e.jsx("span", {
-      className: "dashicons dashicons-screenoptions",
-      style: {
-        fontFamily: "dashicons",
-        fontSize: "22px",
-        lineHeight: 1,
-        width: "22px",
-        height: "22px",
-      },
-    }),
+    children: e.jsx("span", { className: "dashicons dashicons-screenoptions" }),
   });
 }
 function SidebarLink({
@@ -428,40 +419,29 @@ function SidebarLink({
         (x.preventDefault(), u == null || u(a.route));
     },
     className: [
-      "nexulesuite_sidebar-link flex w-full items-center outline-none",
-      nlsSub
-        ? "is-sub gap-2 rounded-lg px-2.5 py-1.5 text-[12.5px] font-medium"
-        : "gap-3.5 rounded-xl px-4 py-2.5 text-[14px] font-medium",
-      i ? "justify-center px-2.5" : "",
+      "nexulesuite_sidebar-link",
+      nlsSub ? "is-sub" : "",
+      i ? "is-collapsed" : "",
       o ? "is-active" : "",
       !o && nlsParent ? "is-parent-open" : "",
-    ].join(" "),
+    ]
+      .filter(Boolean)
+      .join(" "),
     title: i ? a.label : void 0,
     "aria-current": o ? "page" : void 0,
     children: [
-      p &&
-        e.jsx(p, {
-          className: nlsSub ? "h-3.5 w-3.5 shrink-0 opacity-80" : "h-5 w-5 shrink-0",
-        }),
+      p && e.jsx(p, { "aria-hidden": "true" }),
       !i &&
         e.jsxs(e.Fragment, {
           children: [
-            e.jsx("span", {
-              className: "min-w-0 flex-1 truncate",
-              children: Lm(a.label, d),
-            }),
-            a.soon &&
-              e.jsx("span", {
-                className:
-                  "nexulesuite_sidebar-soon shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
-                children: "Soon",
-              }),
+            e.jsx("span", { children: Lm(a.label, d) }),
+            a.soon && e.jsx("span", { className: "nexulesuite_sidebar-soon", children: "Soon" }),
           ],
         }),
     ],
   });
 }
-const COLLAPSE_MEDIA_QUERY = "(max-width: 782px)";
+const COLLAPSE_MEDIA_QUERY = "(min-width: 783px) and (max-width: 1100px)";
 function Im() {
   return (
     typeof window < "u" && typeof window.matchMedia == "function" && window.matchMedia(COLLAPSE_MEDIA_QUERY).matches
@@ -471,41 +451,20 @@ function nlsSidebarEntry({ item: a, activeId: o, collapsed: i, query: d, onNavig
   const p = Array.isArray(a.children) ? a.children : [],
     h = p.some((x) => x.route === o),
     x = o === a.route;
-  if (!p.length)
-    return e.jsx(SidebarLink, {
-      item: a,
-      isActive: x,
-      collapsed: i,
-      query: d,
-      onNavigate: u,
-    });
+  if (!p.length) return e.jsx(SidebarLink, { item: a, isActive: x, collapsed: i, query: d, onNavigate: u });
   return e.jsxs("div", {
-    className: "nexulesuite_sidebar-branch flex flex-col gap-0.5",
+    className: "nexulesuite_sidebar-branch",
     children: [
-      e.jsx(SidebarLink, {
-        item: a,
-        isActive: x,
-        parentOpen: h,
-        collapsed: i,
-        query: d,
-        onNavigate: u,
-      }),
+      e.jsx(SidebarLink, { item: a, isActive: x, parentOpen: h, collapsed: i, query: d, onNavigate: u }),
       !i &&
         e.jsx("div", {
-          className: "nexulesuite_sidebar-subnav ml-4 mt-0.5 flex flex-col gap-0.5 border-l border-slate-200 pl-2",
+          className: "nexulesuite_sidebar-subnav",
           role: "group",
           "aria-label": a.label + " submenu",
           children: p.map((c) =>
             e.jsx(
               SidebarLink,
-              {
-                item: c,
-                isActive: o === c.route,
-                collapsed: !1,
-                query: d,
-                onNavigate: u,
-                sub: !0,
-              },
+              { item: c, isActive: o === c.route, collapsed: !1, query: d, onNavigate: u, sub: !0 },
               c.route,
             ),
           ),
@@ -535,10 +494,7 @@ export function AdminSidebar({ activeId: a, onNavigate: o }) {
               .map((M) => {
                 const T = Array.isArray(M.children) ? M.children.filter((F) => F.label.toLowerCase().includes(y)) : [];
                 return M.label.toLowerCase().includes(y) || T.length
-                  ? {
-                      ...M,
-                      children: M.label.toLowerCase().includes(y) ? M.children : T,
-                    }
+                  ? { ...M, children: M.label.toLowerCase().includes(y) ? M.children : T }
                   : null;
               })
               .filter(Boolean),
@@ -547,46 +503,25 @@ export function AdminSidebar({ activeId: a, onNavigate: o }) {
     }, [h]),
     S = h.trim() !== "" && f.length === 0;
   return e.jsxs("aside", {
-    className: [
-      "nexulesuite_admin-sidebar flex h-full min-h-screen flex-col border-r py-5 transition-[width] duration-200 ease-out",
-      u ? "w-[4.5rem]" : "w-60",
-    ].join(" "),
+    className: ["nexulesuite_admin-sidebar", u ? "is-collapsed" : ""].filter(Boolean).join(" "),
     "aria-label": "Nexus Lead Suite navigation",
     children: [
       e.jsxs("div", {
-        className: u ? "flex justify-center px-2" : "grid grid-cols-[2.5rem_minmax(0,1fr)] items-center gap-3 px-3",
+        className: "nexulesuite_sidebar-head",
         children: [
-          e.jsx("div", {
-            className: "flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl",
-            children: e.jsx(SidebarLogo, {}),
-          }),
-          !u &&
-            e.jsx("div", {
-              className:
-                "nexulesuite_sidebar-brand flex min-h-10 min-w-0 items-center rounded-lg py-0 text-left text-[15px] font-semibold leading-normal tracking-tight",
-              children: e.jsx("span", {
-                className: "truncate",
-                children: "Nexus",
-              }),
-            }),
+          e.jsx(SidebarLogo, {}),
+          !u && e.jsx("div", { className: "nexulesuite_sidebar-brand", children: "Nexus" }),
         ],
       }),
       !u &&
         e.jsxs("div", {
-          className: "px-3 pt-4",
+          className: "nexulesuite_sidebar-search-wrap",
           children: [
-            e.jsx("label", {
-              htmlFor: d,
-              className: "sr-only",
-              children: "Search navigation",
-            }),
+            e.jsx("label", { htmlFor: d, className: "sr-only", children: "Search navigation" }),
             e.jsxs("div", {
-              className: "nexulesuite_sidebar-search flex items-center gap-2 rounded-lg border px-2.5 py-1.5",
+              className: "nexulesuite_sidebar-search",
               children: [
-                e.jsx(Yn, {
-                  className: "h-4 w-4 shrink-0 opacity-60",
-                  "aria-hidden": "true",
-                }),
+                e.jsx(Yn, { "aria-hidden": "true" }),
                 e.jsx("input", {
                   id: d,
                   type: "search",
@@ -594,59 +529,29 @@ export function AdminSidebar({ activeId: a, onNavigate: o }) {
                   onChange: (y) => x(y.target.value),
                   onKeyDown: (y) => y.key === "Escape" && x(""),
                   placeholder: "Search…",
-                  className: "min-w-0 flex-1 border-none bg-transparent text-[13px] outline-none",
                 }),
               ],
             }),
           ],
         }),
-      e.jsx("div", {
-        className: "nexulesuite_sidebar-divider mx-3 mt-4 border-t",
-        role: "presentation",
-      }),
+      e.jsx("div", { className: "nexulesuite_sidebar-divider", role: "presentation" }),
       e.jsxs("nav", {
         id: "nexulesuite_sidebar-nav",
-        className: "mt-3 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3",
         "aria-labelledby": i,
         children: [
-          e.jsx("h2", {
-            id: i,
-            className: "sr-only",
-            children: "Main menu",
-          }),
-          S &&
-            e.jsxs("p", {
-              className: "px-2 py-3 text-[12px] text-slate-400",
-              children: ["No matches for “", h.trim(), "”."],
-            }),
+          e.jsx("h2", { id: i, className: "sr-only", children: "Main menu" }),
+          S && e.jsxs("p", { className: "nexulesuite_sidebar-empty", children: ["No matches for “", h.trim(), "”."] }),
           f.map((y) =>
             e.jsxs(
               "div",
               {
-                className: "flex flex-col gap-1",
+                className: "nexulesuite_sidebar-items",
                 children: [
-                  u
-                    ? e.jsx("div", {
-                        className: "nexulesuite_sidebar-divider mx-1 my-1 border-t opacity-60",
-                        role: "presentation",
-                      })
-                    : y.label
-                      ? e.jsx("h3", {
-                          className:
-                            "nexulesuite_sidebar-group px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider opacity-60",
-                          children: y.label,
-                        })
-                      : null,
+                  y.label && !u ? e.jsx("h3", { className: "nexulesuite_sidebar-group", children: y.label }) : null,
                   y.items.map((P) =>
                     e.jsx(
                       nlsSidebarEntry,
-                      {
-                        item: P,
-                        activeId: a,
-                        collapsed: u,
-                        query: h.trim(),
-                        onNavigate: o,
-                      },
+                      { item: P, activeId: a, collapsed: u, query: h.trim(), onNavigate: o },
                       P.route,
                     ),
                   ),
@@ -658,27 +563,14 @@ export function AdminSidebar({ activeId: a, onNavigate: o }) {
         ],
       }),
       e.jsx("div", {
-        className:
-          "nexulesuite_sidebar-footer nexulesuite_sidebar-divider relative z-10 mx-3 mt-auto shrink-0 border-t pt-3",
+        className: "nexulesuite_sidebar-footer",
         children: e.jsxs("button", {
           type: "button",
           onClick: () => p((y) => !y),
-          className: [
-            "nexulesuite_sidebar-collapse flex w-full cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-medium outline-none ring-violet-500/50 transition focus-visible:ring-2",
-            u ? "justify-center px-2" : "",
-          ].join(" "),
+          className: ["nexulesuite_sidebar-collapse", u ? "is-collapsed" : ""].filter(Boolean).join(" "),
           "aria-label": u ? "Expand sidebar" : "Collapse sidebar",
-          children: [
-            e.jsx(bi, {
-              className: ["pointer-events-none h-4 w-4 shrink-0 transition-transform", u ? "rotate-180" : ""].join(" "),
-              "aria-hidden": "true",
-            }),
-            !u &&
-              e.jsx("span", {
-                className: "pointer-events-none",
-                children: "Collapse",
-              }),
-          ],
+          "aria-expanded": !u,
+          children: [e.jsx(bi, { "aria-hidden": "true" }), !u && e.jsx("span", { children: "Collapse" })],
         }),
       }),
     ],
@@ -711,14 +603,13 @@ export function AdminHeader({ route: a, onNavigate: o }) {
   const i = Am(a),
     d = Dm();
   return e.jsxs("header", {
-    className:
-      "nexulesuite_admin-header sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-2 md:px-6",
+    className: "nexulesuite_admin-header",
     children: [
       e.jsx("nav", {
         "aria-label": "Breadcrumb",
         className: "min-w-0",
         children: e.jsx("ol", {
-          className: "flex min-w-0 flex-wrap items-center gap-1 text-[13px]",
+          className: "nls-breadcrumb",
           children: i.map((u, p) => {
             var f, S;
             const h = p === i.length - 1,
@@ -726,14 +617,8 @@ export function AdminHeader({ route: a, onNavigate: o }) {
             return e.jsxs(
               "li",
               {
-                className: "flex min-w-0 items-center gap-1",
                 children: [
-                  p > 0 &&
-                    e.jsx("span", {
-                      className: "text-slate-300",
-                      "aria-hidden": "true",
-                      children: "/",
-                    }),
+                  p > 0 && e.jsx("span", { className: "nls-breadcrumb__sep", "aria-hidden": "true", children: "/" }),
                   x
                     ? e.jsx("a", {
                         href:
@@ -750,14 +635,10 @@ export function AdminHeader({ route: a, onNavigate: o }) {
                             y.button !== 0 ||
                             (y.preventDefault(), o == null || o(u.route));
                         },
-                        className: "truncate text-slate-500 no-underline hover:text-slate-800",
+                        className: "truncate",
                         children: u.label,
                       })
-                    : e.jsx("span", {
-                        className: h ? "truncate font-semibold text-slate-800" : "truncate text-slate-500",
-                        "aria-current": h ? "page" : void 0,
-                        children: u.label,
-                      }),
+                    : e.jsx("span", { className: "truncate", "aria-current": h ? "page" : void 0, children: u.label }),
                 ],
               },
               `${u.label}-${p}`,
@@ -769,29 +650,12 @@ export function AdminHeader({ route: a, onNavigate: o }) {
         e.jsxs("button", {
           type: "button",
           onClick: () => Om(),
-          className:
-            "nexulesuite_header-cmdk flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[12px] font-medium text-slate-500 outline-none transition hover:border-slate-300 hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-violet-500/40",
+          className: "nexulesuite_header-cmdk nls-btn nls-btn--ghost nls-btn--sm",
           "aria-label": "Open command palette",
           children: [
-            e.jsx(Yn, {
-              className: "h-3.5 w-3.5",
-              "aria-hidden": "true",
-            }),
-            e.jsx("span", {
-              className: "hidden sm:inline",
-              children: "Search",
-            }),
-            e.jsxs("kbd", {
-              className:
-                "hidden items-center gap-0.5 rounded border border-slate-200 bg-white px-1 py-0.5 text-[10px] text-slate-400 sm:inline-flex",
-              children: [
-                e.jsx(cm, {
-                  className: "h-2.5 w-2.5",
-                  "aria-hidden": "true",
-                }),
-                "K",
-              ],
-            }),
+            e.jsx(Yn, { "aria-hidden": "true" }),
+            e.jsx("span", { className: "hidden sm:inline", children: "Search" }),
+            e.jsxs("kbd", { "aria-hidden": "true", children: [e.jsx(cm, {}), "K"] }),
           ],
         }),
     ],
@@ -804,91 +668,59 @@ export function PageFrame({
   headerRight: d = null,
   footer: u = null,
   children: p,
+  width: nlsWidth = "default",
 }) {
-  return e.jsx("div", {
-    className: "min-h-screen bg-[#f6f7fb] px-2 py-2 sm:px-4 sm:py-4 md:px-8 md:py-6 font-sans text-slate-900",
-    children: e.jsxs("div", {
-      className:
-        "w-full bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col md:h-[calc(100vh-3.25rem)]",
-      children: [
-        e.jsxs("div", {
-          className:
-            "px-4 py-4 md:p-5 border-b border-slate-200 bg-white flex flex-wrap gap-3 justify-between items-center shrink-0",
-          children: [
-            e.jsxs("div", {
-              className: "flex items-center gap-3",
-              children: [
-                i
-                  ? e.jsx("div", {
-                      className: "bg-blue-600 p-2 rounded-lg text-white",
-                      children: i,
-                    })
-                  : null,
-                e.jsxs("div", {
-                  children: [
-                    e.jsx("h1", {
-                      className: "text-base md:text-lg font-bold",
-                      children: a,
-                    }),
-                    o
-                      ? e.jsx("p", {
-                          className: "text-xs text-slate-400 hidden sm:block",
-                          children: o,
-                        })
-                      : null,
-                  ],
-                }),
-              ],
-            }),
-            d
-              ? e.jsx("div", {
-                  className: "flex items-center gap-2",
-                  children: d,
-                })
-              : null,
-          ],
-        }),
-        e.jsxs("div", {
-          className: "flex min-h-0 flex-1 flex-col bg-white",
-          children: [
-            e.jsx("div", {
-              className: "min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8",
-              children: p,
-            }),
-            u,
-          ],
-        }),
-      ],
-    }),
-  });
-}
-export function StickyFooter({ actions: a = null }) {
-  return e.jsxs("footer", {
-    className:
-      "sticky bottom-0 z-30 flex shrink-0 flex-col gap-4 rounded-b-2xl border-t border-white/[0.08] bg-[#0B1120] px-6 py-4 md:flex-row md:items-center md:justify-between md:gap-4 md:px-8 md:py-4",
+  return e.jsxs("div", {
+    className: "nls-page",
     children: [
       e.jsxs("div", {
-        className: "flex min-w-0 items-center gap-2.5 text-slate-300",
+        className: "nls-page__header",
         children: [
-          e.jsx("span", {
-            className:
-              "flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500 shadow-sm shadow-emerald-900/30",
-            "aria-hidden": "true",
-            children: e.jsx(Lt, {
-              className: "h-3.5 w-3.5 text-white",
-              strokeWidth: 3,
-            }),
-          }),
-          e.jsxs("span", {
-            className: "text-[11px] font-medium leading-snug text-slate-200 md:text-xs",
+          e.jsxs("div", {
+            className: "nls-page__heading",
             children: [
-              "Developed by",
-              " ",
+              i ? e.jsx("div", { className: "nls-page__icon", "aria-hidden": "true", children: i }) : null,
+              e.jsxs("div", {
+                className: "min-w-0",
+                children: [
+                  e.jsx("h1", { className: "nls-page__title", children: a }),
+                  o ? e.jsx("p", { className: "nls-page__subtitle", children: o }) : null,
+                ],
+              }),
+            ],
+          }),
+          d ? e.jsx("div", { className: "nls-page__actions", children: d }) : null,
+        ],
+      }),
+      e.jsx("div", {
+        className: [
+          "nls-page__body",
+          nlsWidth === "wide" ? "nls-page__body--wide" : "",
+          nlsWidth === "flush" ? "nls-page__body--flush" : "",
+        ]
+          .filter(Boolean)
+          .join(" "),
+        children: p,
+      }),
+      u,
+    ],
+  });
+}
+export function StickyFooter({ actions: a = null, status: nlsStatus = null }) {
+  return e.jsxs("footer", {
+    className: "nls-actionbar",
+    children: [
+      e.jsxs("div", {
+        className: "nls-actionbar__meta",
+        children: [
+          nlsStatus ? e.jsx("span", { className: "nls-actionbar__status", children: nlsStatus }) : null,
+          e.jsxs("span", {
+            children: [
+              "Developed by ",
               e.jsx("a", {
                 href: "https://mostafijemon.com/",
                 target: "_blank",
                 rel: "noopener noreferrer",
-                className: "font-semibold text-white underline underline-offset-2 hover:text-slate-100",
                 children: "Mostafij Emon",
               }),
               ".",
@@ -896,25 +728,97 @@ export function StickyFooter({ actions: a = null }) {
           }),
         ],
       }),
-      a
-        ? e.jsx("div", {
-            className: "flex flex-wrap items-center justify-end gap-3 md:gap-4",
-            children: a,
-          })
-        : null,
+      a ? e.jsx("div", { className: "nls-actionbar__actions", children: a }) : null,
     ],
   });
 }
-export function ModalShell({ open: a, onClose: o, children: i }) {
+const nlsFocusableSelector =
+  'a[href],button:not([disabled]),input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+/**
+ * Dialog accessibility: initial focus, Tab focus trap, Escape to close,
+ * background scroll lock and focus restoration when the dialog closes.
+ */
+export function useModalA11y(open, onClose) {
+  const ref = b.useRef(null),
+    closeRef = b.useRef(onClose);
+  closeRef.current = onClose;
+  b.useEffect(() => {
+    if (!open) return;
+    const panel = ref.current;
+    if (!panel) return;
+    const previouslyFocused = typeof document < "u" ? document.activeElement : null,
+      focusables = () =>
+        Array.from(panel.querySelectorAll(nlsFocusableSelector)).filter(
+          (el) => el.offsetParent !== null || el === document.activeElement,
+        ),
+      timer = window.setTimeout(() => {
+        const initial = panel.querySelector("[data-autofocus]") || focusables()[0] || panel;
+        try {
+          initial.focus({ preventScroll: !0 });
+        } catch {}
+      }, 0),
+      onKey = (ev) => {
+        if (ev.key === "Escape") {
+          ev.stopPropagation();
+          typeof closeRef.current == "function" && closeRef.current();
+          return;
+        }
+        if (ev.key !== "Tab") return;
+        const list = focusables();
+        if (!list.length) {
+          ev.preventDefault();
+          panel.focus();
+          return;
+        }
+        const first = list[0],
+          last = list[list.length - 1];
+        ev.shiftKey && (document.activeElement === first || document.activeElement === panel)
+          ? (ev.preventDefault(), last.focus())
+          : !ev.shiftKey && document.activeElement === last && (ev.preventDefault(), first.focus());
+      },
+      prevOverflow = document.body.style.overflow;
+    return (
+      document.addEventListener("keydown", onKey, !0),
+      (document.body.style.overflow = "hidden"),
+      () => {
+        window.clearTimeout(timer);
+        document.removeEventListener("keydown", onKey, !0);
+        document.body.style.overflow = prevOverflow;
+        if (previouslyFocused && typeof previouslyFocused.focus == "function")
+          try {
+            previouslyFocused.focus({ preventScroll: !0 });
+          } catch {}
+      }
+    );
+  }, [open]);
+  return ref;
+}
+export function ModalShell({
+  open: a,
+  onClose: o,
+  children: i,
+  labelledBy: nlsLabelledBy = void 0,
+  size: nlsSize = "",
+  className: nlsClassName = "",
+}) {
+  const nlsRef = useModalA11y(a, o);
   return a
     ? e.jsx("div", {
-        className: "fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/50 p-4",
-        role: "dialog",
-        "aria-modal": "true",
+        className: "nls-modal",
         onMouseDown: (d) => {
           d.target === d.currentTarget && o && o();
         },
-        children: i,
+        children: e.jsx("div", {
+          ref: nlsRef,
+          className: ["nls-modal__panel", nlsSize ? "nls-modal__panel--" + nlsSize : "", nlsClassName]
+            .filter(Boolean)
+            .join(" "),
+          role: "dialog",
+          "aria-modal": "true",
+          "aria-labelledby": nlsLabelledBy,
+          tabIndex: -1,
+          children: i,
+        }),
       })
     : null;
 }
@@ -926,46 +830,33 @@ export function ResultModal({
   dismissLabel: u = "Dismiss",
   onDismiss: p,
 }) {
+  const nlsTitleId = b.useId();
   if (!a) return null;
   const h = o === "success",
     x = i ?? (h ? "Success!" : "Error!"),
     f = d ?? (h ? "Your settings have been successfully updated. All changes are now live." : "An error occurred."),
-    S = h ? Yc : Ss,
-    y = h ? "bg-emerald-50" : "bg-rose-50",
-    P = h ? "text-emerald-500" : "text-rose-500";
+    S = h ? Yc : Ss;
   return e.jsx(ModalShell, {
     open: a,
     onClose: p,
+    labelledBy: nlsTitleId,
     children: e.jsxs("div", {
-      className: "w-full max-w-md overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl",
+      className: "nls-dialog",
       children: [
-        e.jsxs("div", {
-          className: "px-8 pb-6 pt-8 text-center",
-          children: [
-            e.jsx("div", {
-              className: `mx-auto flex h-14 w-14 items-center justify-center rounded-full ${y}`,
-              children: e.jsx(S, {
-                size: 28,
-                className: P,
-              }),
-            }),
-            e.jsx("h3", {
-              className: "mt-5 text-xl font-extrabold text-slate-900",
-              children: x,
-            }),
-            e.jsx("p", {
-              className: "mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-500",
-              children: f,
-            }),
-          ],
-        }),
         e.jsx("div", {
-          className: "px-8 pb-8",
+          className: "nls-dialog__icon " + (h ? "nls-dialog__icon--success" : "nls-dialog__icon--danger"),
+          "aria-hidden": "true",
+          children: e.jsx(S, { size: 24 }),
+        }),
+        e.jsx("h3", { id: nlsTitleId, className: "nls-dialog__title", children: x }),
+        e.jsx("p", { className: "nls-dialog__message", children: f }),
+        e.jsx("div", {
+          className: "nls-dialog__actions",
           children: e.jsx("button", {
             type: "button",
             onClick: p,
-            className:
-              "w-full rounded-2xl bg-slate-900 py-4 text-sm font-extrabold text-white transition hover:bg-black",
+            className: "nls-btn nls-btn--primary nls-btn--lg",
+            "data-autofocus": "",
             children: u,
           }),
         }),

@@ -1,0 +1,157 @@
+/*
+ * Nexus Lead Suite — admin design tokens.
+ *
+ * Every colour, size, radius, shadow and motion value used by the admin UI is
+ * defined here once. Component CSS and the per-page stylesheets reference these
+ * tokens; nothing else should introduce new literal colours.
+ *
+ * Scope: tokens are declared on the plugin root so they never leak into the rest
+ * of wp-admin, and so the WP admin colour scheme variable can feed the primary hue.
+ */
+
+#nexulesuite_admin-root,
+.nexulesuite_admin-app {
+	/* ---- Neutral scale (slate) ---------------------------------------- */
+	--nls-gray-0: #ffffff;
+	--nls-gray-50: #f8fafc;
+	--nls-gray-100: #f1f5f9;
+	--nls-gray-200: #e2e8f0;
+	--nls-gray-300: #cbd5e1;
+	--nls-gray-400: #94a3b8;
+	--nls-gray-500: #64748b;
+	--nls-gray-600: #475569;
+	--nls-gray-700: #334155;
+	--nls-gray-800: #1e293b;
+	--nls-gray-900: #0f172a;
+
+	/* ---- Brand + semantic hues ---------------------------------------- */
+	--nls-indigo-50: #eef2ff;
+	--nls-indigo-100: #e0e7ff;
+	--nls-indigo-200: #c7d2fe;
+	--nls-indigo-500: #6366f1;
+	--nls-indigo-600: #4f46e5;
+	--nls-indigo-700: #4338ca;
+	--nls-green-50: #ecfdf5;
+	--nls-green-200: #a7f3d0;
+	--nls-green-600: #059669;
+	--nls-green-700: #047857;
+	--nls-amber-50: #fffbeb;
+	--nls-amber-200: #fde68a;
+	--nls-amber-600: #d97706;
+	--nls-amber-700: #b45309;
+	--nls-red-50: #fef2f2;
+	--nls-red-200: #fecaca;
+	--nls-red-600: #dc2626;
+	--nls-red-700: #b91c1c;
+
+	/* ---- Semantic colour roles ---------------------------------------- */
+	--nls-canvas: #f3f4f6;            /* page background behind cards */
+	--nls-surface: var(--nls-gray-0); /* cards, panels, inputs */
+	--nls-surface-2: var(--nls-gray-50);
+	--nls-surface-3: var(--nls-gray-100);
+	--nls-ink: var(--nls-gray-900);   /* primary text, 16.9:1 on white */
+	--nls-ink-2: var(--nls-gray-700); /* secondary headings, 9.7:1 */
+	--nls-muted: var(--nls-gray-500); /* helper text, 4.7:1 (AA) */
+	--nls-faint: var(--nls-gray-500); /* kept distinct for legacy mapping; same contrast floor */
+	--nls-placeholder: #6b7280;       /* 4.8:1 */
+	--nls-border: var(--nls-gray-200);
+	--nls-border-soft: var(--nls-gray-100);
+	--nls-border-strong: var(--nls-gray-300);
+
+	--nls-primary: var(--nls-indigo-600);
+	--nls-primary-hover: var(--nls-indigo-700);
+	--nls-primary-soft: var(--nls-indigo-50);
+	--nls-primary-soft-2: var(--nls-indigo-100);
+	--nls-primary-border: var(--nls-indigo-200);
+	--nls-primary-ink: #ffffff;
+	--nls-primary-ring: rgba(79, 70, 229, 0.28);
+
+	--nls-accent: var(--nls-primary);
+	--nls-accent-soft: var(--nls-primary-soft);
+
+	--nls-success: var(--nls-green-700);
+	--nls-success-soft: var(--nls-green-50);
+	--nls-success-border: var(--nls-green-200);
+	--nls-warning: var(--nls-amber-700);
+	--nls-warning-soft: var(--nls-amber-50);
+	--nls-warning-border: var(--nls-amber-200);
+	--nls-danger: var(--nls-red-600);
+	--nls-danger-hover: var(--nls-red-700);
+	--nls-danger-soft: var(--nls-red-50);
+	--nls-danger-border: var(--nls-red-200);
+	--nls-info: var(--nls-primary);
+	--nls-info-soft: var(--nls-primary-soft);
+
+	--nls-overlay: rgba(15, 23, 42, 0.55);
+
+	/* ---- Typography --------------------------------------------------- */
+	--nls-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell,
+		"Helvetica Neue", sans-serif;
+	--nls-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+	--nls-fs-page: 20px;
+	--nls-fs-section: 15px;
+	--nls-fs-card: 14px;
+	--nls-fs-body: 14px;
+	--nls-fs-secondary: 13px;
+	--nls-fs-caption: 12px; /* smallest text size used anywhere */
+	--nls-fs-stat: 24px;
+	--nls-lh-body: 1.5;
+	--nls-lh-tight: 1.3;
+	--nls-fw-normal: 400;
+	--nls-fw-medium: 500;
+	--nls-fw-semibold: 600;
+	--nls-fw-bold: 700;
+
+	/* ---- Spacing (4px grid) ------------------------------------------- */
+	--nls-space-1: 4px;
+	--nls-space-2: 8px;
+	--nls-space-3: 12px;
+	--nls-space-4: 16px;
+	--nls-space-5: 20px;
+	--nls-space-6: 24px;
+	--nls-space-7: 32px;
+	--nls-space-8: 40px;
+	--nls-page-gutter: 24px;
+	--nls-card-pad: 20px;
+
+	/* ---- Shape ---------------------------------------------------------- */
+	--nls-radius-control: 6px;
+	--nls-radius-card: 10px;
+	--nls-radius-dialog: 12px;
+	--nls-radius-pill: 999px;
+
+	/* ---- Elevation ------------------------------------------------------ */
+	--nls-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05);
+	--nls-shadow-raised: 0 2px 6px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+	--nls-shadow-pop: 0 10px 28px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.06);
+	--nls-shadow-dialog: 0 24px 56px rgba(15, 23, 42, 0.24), 0 4px 12px rgba(15, 23, 42, 0.08);
+
+	/* ---- Focus ---------------------------------------------------------- */
+	--nls-focus-outline: 2px solid var(--nls-primary);
+	--nls-focus-offset: 2px;
+	--nls-focus-ring: 0 0 0 3px var(--nls-primary-ring);
+
+	/* ---- Motion --------------------------------------------------------- */
+	--nls-transition: 150ms ease;
+
+	/* ---- Layout --------------------------------------------------------- */
+	--nls-sidebar-w: 232px;
+	--nls-sidebar-w-collapsed: 64px;
+	--nls-topbar-h: 48px;
+	--nls-actionbar-h: 64px;
+	--nls-content-max: 1240px;
+	--nls-wp-adminbar-h: 32px;
+
+	/* ---- Z-index ladder (WP admin bar is 99999) ----------------------- */
+	--nls-z-sticky: 30;
+	--nls-z-dropdown: 60;
+	--nls-z-modal: 100000;
+	--nls-z-toast: 100001;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#nexulesuite_admin-root,
+	.nexulesuite_admin-app {
+		--nls-transition: 0ms;
+	}
+}

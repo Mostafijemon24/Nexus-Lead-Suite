@@ -1,0 +1,288 @@
+/*
+ * Scoped base styles.
+ *
+ * Tailwind's global preflight is disabled (tailwind.config.js → corePlugins.preflight)
+ * because, enqueued as a normal stylesheet, it reset the whole wp-admin document
+ * (admin bar, menu, notices). The subset the app relies on is reproduced here but
+ * scoped to the plugin root, so WordPress core and other plugins are untouched.
+ *
+ * Specificity is deliberately kept low with :where() so that component classes,
+ * page classes and Tailwind utilities (all 0,1,0) can override these defaults,
+ * while still beating wp-admin's element styles through source order.
+ */
+
+#nexulesuite_admin-root {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	max-width: none;
+	font-family: var(--nls-font-sans);
+	font-size: var(--nls-fs-body);
+	line-height: var(--nls-lh-body);
+	color: var(--nls-ink);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-text-size-adjust: 100%;
+	tab-size: 4;
+}
+
+:where(#nexulesuite_admin-root) *,
+:where(#nexulesuite_admin-root) *::before,
+:where(#nexulesuite_admin-root) *::after {
+	box-sizing: border-box;
+	border-width: 0;
+	border-style: solid;
+	border-color: var(--nls-border);
+}
+
+:where(#nexulesuite_admin-root) h1,
+:where(#nexulesuite_admin-root) h2,
+:where(#nexulesuite_admin-root) h3,
+:where(#nexulesuite_admin-root) h4,
+:where(#nexulesuite_admin-root) h5,
+:where(#nexulesuite_admin-root) h6 {
+	margin: 0;
+	padding: 0;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	color: inherit;
+}
+
+:where(#nexulesuite_admin-root) p,
+:where(#nexulesuite_admin-root) blockquote,
+:where(#nexulesuite_admin-root) dl,
+:where(#nexulesuite_admin-root) dd,
+:where(#nexulesuite_admin-root) figure,
+:where(#nexulesuite_admin-root) pre,
+:where(#nexulesuite_admin-root) hr {
+	margin: 0;
+}
+
+:where(#nexulesuite_admin-root) hr {
+	height: 0;
+	color: inherit;
+	border-top-width: 1px;
+}
+
+:where(#nexulesuite_admin-root) a {
+	color: inherit;
+	text-decoration: inherit;
+}
+
+:where(#nexulesuite_admin-root) ol,
+:where(#nexulesuite_admin-root) ul,
+:where(#nexulesuite_admin-root) menu {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+:where(#nexulesuite_admin-root) fieldset {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+:where(#nexulesuite_admin-root) legend {
+	padding: 0;
+}
+
+:where(#nexulesuite_admin-root) table {
+	text-indent: 0;
+	border-color: inherit;
+	border-collapse: collapse;
+}
+
+:where(#nexulesuite_admin-root) img,
+:where(#nexulesuite_admin-root) svg,
+:where(#nexulesuite_admin-root) video,
+:where(#nexulesuite_admin-root) canvas,
+:where(#nexulesuite_admin-root) iframe {
+	display: block;
+	vertical-align: middle;
+}
+
+:where(#nexulesuite_admin-root) img,
+:where(#nexulesuite_admin-root) video {
+	max-width: 100%;
+	height: auto;
+}
+
+:where(#nexulesuite_admin-root) code,
+:where(#nexulesuite_admin-root) kbd,
+:where(#nexulesuite_admin-root) samp,
+:where(#nexulesuite_admin-root) pre {
+	font-family: var(--nls-font-mono);
+	font-size: 1em;
+}
+
+:where(#nexulesuite_admin-root) [hidden] {
+	display: none;
+}
+
+/* ---- Form controls --------------------------------------------------------
+ * wp-admin's forms.css styles bare controls with (0,1,1) selectors. The rules
+ * below use the same specificity and load later, so they win over wp-admin
+ * but still yield to page classes such as `.nexulesuite_sg-field .inp`.
+ */
+.nexulesuite_admin-app :where(button, input, optgroup, select, textarea) {
+	font-family: inherit;
+	font-size: 100%;
+	font-weight: inherit;
+	line-height: inherit;
+	color: inherit;
+	margin: 0;
+	padding: 0;
+}
+
+.nexulesuite_admin-app :where(button, [role="button"]) {
+	cursor: pointer;
+	border: 0;
+	background-color: transparent;
+	background-image: none;
+	text-transform: none;
+	-webkit-appearance: button;
+	appearance: button;
+}
+
+.nexulesuite_admin-app :where(button:disabled, [role="button"][aria-disabled="true"]) {
+	cursor: not-allowed;
+}
+
+.nexulesuite_admin-app input:where(:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="submit"]):not([type="button"])),
+.nexulesuite_admin-app select,
+.nexulesuite_admin-app textarea {
+	display: block;
+	width: 100%;
+	min-height: 36px;
+	padding: 6px 10px;
+	border: 1px solid var(--nls-border);
+	border-radius: var(--nls-radius-control);
+	background-color: var(--nls-surface);
+	color: var(--nls-ink);
+	font-size: var(--nls-fs-body);
+	line-height: 1.4;
+	box-shadow: none;
+	transition: border-color var(--nls-transition), box-shadow var(--nls-transition);
+}
+
+.nexulesuite_admin-app select {
+	padding-right: 32px;
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 10px center;
+	background-size: 16px;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.nexulesuite_admin-app select[multiple],
+.nexulesuite_admin-app select[size] {
+	padding-right: 10px;
+	background-image: none;
+}
+
+.nexulesuite_admin-app textarea {
+	min-height: 96px;
+	line-height: var(--nls-lh-body);
+	resize: vertical;
+}
+
+.nexulesuite_admin-app input::placeholder,
+.nexulesuite_admin-app textarea::placeholder {
+	color: var(--nls-placeholder);
+	opacity: 1;
+}
+
+.nexulesuite_admin-app input:where(:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"])):focus,
+.nexulesuite_admin-app select:focus,
+.nexulesuite_admin-app textarea:focus {
+	outline: none;
+	border-color: var(--nls-primary);
+	box-shadow: var(--nls-focus-ring);
+}
+
+.nexulesuite_admin-app input:disabled,
+.nexulesuite_admin-app select:disabled,
+.nexulesuite_admin-app textarea:disabled {
+	background-color: var(--nls-surface-3);
+	color: var(--nls-muted);
+	cursor: not-allowed;
+}
+
+.nexulesuite_admin-app input[type="checkbox"],
+.nexulesuite_admin-app input[type="radio"] {
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	flex: 0 0 auto;
+	accent-color: var(--nls-primary);
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+.nexulesuite_admin-app input[type="search"]::-webkit-search-decoration,
+.nexulesuite_admin-app input[type="search"]::-webkit-search-cancel-button {
+	-webkit-appearance: none;
+}
+
+.nexulesuite_admin-app input[type="number"] {
+	-moz-appearance: textfield;
+}
+
+.nexulesuite_admin-app input[type="file"] {
+	font-size: var(--nls-fs-secondary);
+}
+
+/* ---- Keyboard focus -------------------------------------------------------- */
+#nexulesuite_admin-root :focus {
+	outline: none;
+}
+
+#nexulesuite_admin-root :focus-visible {
+	outline: var(--nls-focus-outline);
+	outline-offset: var(--nls-focus-offset);
+}
+
+#nexulesuite_admin-root input:focus-visible,
+#nexulesuite_admin-root select:focus-visible,
+#nexulesuite_admin-root textarea:focus-visible {
+	outline: none;
+}
+
+/* ---- Text selection, scrollbars -------------------------------------------- */
+:where(#nexulesuite_admin-root) ::selection {
+	background: var(--nls-primary-soft-2);
+	color: var(--nls-ink);
+}
+
+:where(#nexulesuite_admin-root) * {
+	scrollbar-width: thin;
+	scrollbar-color: var(--nls-gray-300) transparent;
+}
+
+/* ---- Reduced motion -------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+	#nexulesuite_admin-root *,
+	#nexulesuite_admin-root *::before,
+	#nexulesuite_admin-root *::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* ---- Screen-reader-only helper (also provided by Tailwind) ----------------- */
+#nexulesuite_admin-root .sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}

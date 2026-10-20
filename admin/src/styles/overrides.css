@@ -1,0 +1,250 @@
+/*
+ * Overrides: map the legacy per-page palettes onto the shared tokens, and
+ * neutralise the handful of Tailwind utilities that conflict with the
+ * design system (sub-12px text, low-contrast slate-400 text, decorative
+ * display font). Loaded last so it wins over legacy-pages.css.
+ */
+
+/* ---- Legacy per-page palettes → shared tokens ------------------------------
+ * The former build kept nine parallel colour sets (gd, pop, be, em, fb, sg,
+ * sap, lc, act). Each wrapper now inherits the same values, so every page
+ * shares one palette without rewriting thousands of legacy rules.
+ */
+#nexulesuite_admin-root .nexulesuite_group-details-wrap,
+#nexulesuite_admin-root .nexulesuite_popup-sections-wrap,
+#nexulesuite_admin-root .nexulesuite_popups-editor-wrap,
+#nexulesuite_admin-root .nexulesuite_btn-editor-wrap,
+#nexulesuite_admin-root .nexulesuite_emails-editor-wrap,
+#nexulesuite_admin-root .nexulesuite_form-builder-wrap,
+#nexulesuite_admin-root .nexulesuite_settings-general-wrap,
+#nexulesuite_admin-root .nexulesuite_settings-autopopup-exclusion-wrap,
+#nexulesuite_admin-root .nexulesuite_settings-livechat-wrap,
+#nexulesuite_admin-root .nexulesuite_activities-wrap {
+	--nexulesuite_gd-primary: var(--nls-primary);
+	--nexulesuite_gd-primary-d: var(--nls-primary-hover);
+	--nexulesuite_gd-primary-soft: var(--nls-primary-soft);
+	--nexulesuite_gd-primary-ring: var(--nls-primary-ring);
+	--nexulesuite_gd-ink: var(--nls-ink);
+	--nexulesuite_gd-ink-2: var(--nls-ink-2);
+	--nexulesuite_gd-muted: var(--nls-muted);
+	--nexulesuite_gd-faint: var(--nls-muted);
+	--nexulesuite_gd-line: var(--nls-border);
+	--nexulesuite_gd-line-soft: var(--nls-border-soft);
+	--nexulesuite_gd-paper: var(--nls-surface);
+	--nexulesuite_gd-shadow: var(--nls-shadow-card);
+	--nexulesuite_gd-r-sm: var(--nls-radius-control);
+	--nexulesuite_gd-success: var(--nls-success);
+
+	--nexulesuite_pop-primary: var(--nls-primary);
+	--nexulesuite_pop-primary-d: var(--nls-primary-hover);
+	--nexulesuite_pop-primary-soft: var(--nls-primary-soft);
+	--nexulesuite_pop-primary-ring: var(--nls-primary-ring);
+	--nexulesuite_pop-pink: var(--nls-primary);
+	--nexulesuite_pop-pink-soft: var(--nls-primary-soft);
+	--nexulesuite_pop-ink: var(--nls-ink);
+	--nexulesuite_pop-ink-2: var(--nls-ink-2);
+	--nexulesuite_pop-muted: var(--nls-muted);
+	--nexulesuite_pop-faint: var(--nls-muted);
+	--nexulesuite_pop-line: var(--nls-border);
+	--nexulesuite_pop-line-soft: var(--nls-border-soft);
+	--nexulesuite_pop-paper: var(--nls-surface);
+	--nexulesuite_pop-canvas: var(--nls-surface-2);
+	--nexulesuite_pop-shadow: var(--nls-shadow-card);
+	--nexulesuite_pop-r-sm: var(--nls-radius-control);
+	--nexulesuite_pop-success: var(--nls-success);
+	--nexulesuite_pop-danger: var(--nls-danger);
+	--nexulesuite_pop-danger-soft: var(--nls-danger-soft);
+	--nexulesuite_pop-track: var(--nls-border);
+
+	--nexulesuite_be-primary: var(--nls-primary);
+	--nexulesuite_be-primary-d: var(--nls-primary-hover);
+	--nexulesuite_be-primary-soft: var(--nls-primary-soft);
+	--nexulesuite_be-primary-ring: var(--nls-primary-ring);
+	--nexulesuite_be-pink: var(--nls-primary);
+	--nexulesuite_be-pink-soft: var(--nls-primary-soft);
+	--nexulesuite_be-ink: var(--nls-ink);
+	--nexulesuite_be-ink-2: var(--nls-ink-2);
+	--nexulesuite_be-muted: var(--nls-muted);
+	--nexulesuite_be-faint: var(--nls-muted);
+	--nexulesuite_be-line: var(--nls-border);
+	--nexulesuite_be-line-soft: var(--nls-border-soft);
+	--nexulesuite_be-paper: var(--nls-surface);
+	--nexulesuite_be-canvas: var(--nls-surface-2);
+	--nexulesuite_be-shadow: var(--nls-shadow-card);
+	--nexulesuite_be-r-sm: var(--nls-radius-control);
+	--nexulesuite_be-track: var(--nls-border);
+
+	--nexulesuite_em-primary: var(--nls-primary);
+	--nexulesuite_em-primary-d: var(--nls-primary-hover);
+	--nexulesuite_em-primary-soft: var(--nls-primary-soft);
+	--nexulesuite_em-primary-ring: var(--nls-primary-ring);
+	--nexulesuite_em-ink: var(--nls-ink);
+	--nexulesuite_em-ink-2: var(--nls-ink-2);
+	--nexulesuite_em-muted: var(--nls-muted);
+	--nexulesuite_em-faint: var(--nls-muted);
+	--nexulesuite_em-line: var(--nls-border);
+	--nexulesuite_em-line-soft: var(--nls-border-soft);
+	--nexulesuite_em-paper: var(--nls-surface);
+	--nexulesuite_em-canvas: var(--nls-surface-2);
+	--nexulesuite_em-shadow: var(--nls-shadow-card);
+	--nexulesuite_em-r-sm: var(--nls-radius-control);
+	--nexulesuite_em-success: var(--nls-success);
+	--nexulesuite_em-success-soft: var(--nls-success-soft);
+	--nexulesuite_em-danger: var(--nls-danger);
+
+	--nexulesuite_fb-primary: var(--nls-primary);
+	--nexulesuite_fb-primary-d: var(--nls-primary-hover);
+	--nexulesuite_fb-primary-soft: var(--nls-primary-soft);
+	--nexulesuite_fb-primary-ring: var(--nls-primary-ring);
+	--nexulesuite_fb-ink: var(--nls-ink);
+	--nexulesuite_fb-ink-2: var(--nls-ink-2);
+	--nexulesuite_fb-muted: var(--nls-muted);
+	--nexulesuite_fb-faint: var(--nls-muted);
+	--nexulesuite_fb-line: var(--nls-border);
+	--nexulesuite_fb-line-soft: var(--nls-border-soft);
+	--nexulesuite_fb-paper: var(--nls-surface);
+	--nexulesuite_fb-shadow: var(--nls-shadow-card);
+	--nexulesuite_fb-r-sm: var(--nls-radius-control);
+	--nexulesuite_fb-success: var(--nls-success);
+	--nexulesuite_fb-success-soft: var(--nls-success-soft);
+	--nexulesuite_fb-warn: var(--nls-warning);
+	--nexulesuite_fb-warn-soft: var(--nls-warning-soft);
+	--nexulesuite_fb-danger: var(--nls-danger);
+	--nexulesuite_fb-danger-soft: var(--nls-danger-soft);
+
+	--nexulesuite_sg-primary: var(--nls-primary);
+	--nexulesuite_sg-primary-d: var(--nls-primary-hover);
+	--nexulesuite_sg-primary-soft: var(--nls-primary-soft);
+	--nexulesuite_sg-primary-ring: var(--nls-primary-ring);
+	--nexulesuite_sg-violet: var(--nls-primary);
+	--nexulesuite_sg-violet-soft: var(--nls-primary-soft);
+	--nexulesuite_sg-ink: var(--nls-ink);
+	--nexulesuite_sg-ink-2: var(--nls-ink-2);
+	--nexulesuite_sg-muted: var(--nls-muted);
+	--nexulesuite_sg-faint: var(--nls-muted);
+	--nexulesuite_sg-line: var(--nls-border);
+	--nexulesuite_sg-line-soft: var(--nls-border-soft);
+	--nexulesuite_sg-paper: var(--nls-surface);
+	--nexulesuite_sg-canvas: var(--nls-surface-2);
+	--nexulesuite_sg-shadow: var(--nls-shadow-card);
+	--nexulesuite_sg-r-sm: var(--nls-radius-control);
+	--nexulesuite_sg-success: var(--nls-success);
+	--nexulesuite_sg-warn: var(--nls-warning);
+	--nexulesuite_sg-warn-soft: var(--nls-warning-soft);
+	--nexulesuite_sg-warn-ink: var(--nls-warning);
+
+	--nexulesuite_sap-excl-primary: var(--nls-primary);
+	--nexulesuite_sap-excl-primary-ring: var(--nls-primary-ring);
+	--nexulesuite_sap-excl-ink: var(--nls-ink);
+	--nexulesuite_sap-excl-muted: var(--nls-muted);
+	--nexulesuite_sap-excl-faint: var(--nls-muted);
+	--nexulesuite_sap-excl-line: var(--nls-border);
+	--nexulesuite_sap-excl-paper: var(--nls-surface);
+	--nexulesuite_sap-excl-shadow: var(--nls-shadow-card);
+	--nexulesuite_sap-excl-r-sm: var(--nls-radius-control);
+	--nexulesuite_sap-excl-info: var(--nls-primary);
+	--nexulesuite_sap-excl-info-soft: var(--nls-primary-soft);
+	--nexulesuite_sap-excl-info-border: var(--nls-primary-border);
+	--nexulesuite_sap-excl-danger: var(--nls-danger);
+	--nexulesuite_sap-excl-danger-soft: var(--nls-danger-soft);
+	--nexulesuite_sap-excl-danger-border: var(--nls-danger-border);
+
+	--nexulesuite_lc-primary: var(--nls-primary);
+	--nexulesuite_lc-primary-d: var(--nls-primary-hover);
+	--nexulesuite_lc-primary-soft: var(--nls-primary-soft);
+	--nexulesuite_lc-primary-ring: var(--nls-primary-ring);
+	--nexulesuite_lc-violet: var(--nls-primary);
+	--nexulesuite_lc-violet-soft: var(--nls-primary-soft);
+	--nexulesuite_lc-ink: var(--nls-ink);
+	--nexulesuite_lc-ink-2: var(--nls-ink-2);
+	--nexulesuite_lc-muted: var(--nls-muted);
+	--nexulesuite_lc-faint: var(--nls-muted);
+	--nexulesuite_lc-line: var(--nls-border);
+	--nexulesuite_lc-line-soft: var(--nls-border-soft);
+	--nexulesuite_lc-paper: var(--nls-surface);
+	--nexulesuite_lc-canvas: var(--nls-surface-2);
+	--nexulesuite_lc-shadow: var(--nls-shadow-card);
+	--nexulesuite_lc-r-sm: var(--nls-radius-control);
+	--nexulesuite_lc-warn: var(--nls-warning);
+	--nexulesuite_lc-warn-soft: var(--nls-warning-soft);
+	--nexulesuite_lc-warn-ink: var(--nls-warning);
+
+	--nexulesuite_act-primary: var(--nls-primary);
+	--nexulesuite_act-primary-d: var(--nls-primary-hover);
+	--nexulesuite_act-primary-soft: var(--nls-primary-soft);
+	--nexulesuite_act-primary-ring: var(--nls-primary-ring);
+	--nexulesuite_act-violet: var(--nls-primary);
+	--nexulesuite_act-violet-soft: var(--nls-primary-soft);
+	--nexulesuite_act-ink: var(--nls-ink);
+	--nexulesuite_act-ink-2: var(--nls-ink-2);
+	--nexulesuite_act-muted: var(--nls-muted);
+	--nexulesuite_act-faint: var(--nls-muted);
+	--nexulesuite_act-line: var(--nls-border);
+	--nexulesuite_act-line-soft: var(--nls-border-soft);
+	--nexulesuite_act-paper: var(--nls-surface);
+	--nexulesuite_act-canvas: var(--nls-surface-2);
+	--nexulesuite_act-shadow: var(--nls-shadow-card);
+	--nexulesuite_act-r-sm: var(--nls-radius-control);
+	--nexulesuite_act-success: var(--nls-success);
+	--nexulesuite_act-danger: var(--nls-danger);
+	--nexulesuite_act-danger-soft: var(--nls-danger-soft);
+}
+
+/* ---- Tailwind utilities that conflict with the system -----------------------
+ * Pages still carry utility classes in places. The ones below are redefined
+ * at root scope so no text falls under 12px or below AA contrast, and so the
+ * decorative display face is not requested.
+ */
+#nexulesuite_admin-root .text-\[9px\],
+#nexulesuite_admin-root .text-\[10px\],
+#nexulesuite_admin-root .text-\[10\.5px\],
+#nexulesuite_admin-root .text-\[11px\] {
+	font-size: var(--nls-fs-caption);
+	letter-spacing: 0.02em;
+}
+
+#nexulesuite_admin-root .text-slate-400,
+#nexulesuite_admin-root .text-faint {
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .text-slate-300 {
+	color: var(--nls-gray-400);
+}
+
+#nexulesuite_admin-root .font-display {
+	font-family: var(--nls-font-sans);
+}
+
+#nexulesuite_admin-root .tracking-widest {
+	letter-spacing: 0.06em;
+}
+
+#nexulesuite_admin-root .font-black,
+#nexulesuite_admin-root .font-extrabold {
+	font-weight: var(--nls-fw-bold);
+}
+
+/* Legacy rounded "pill" corner radii on large surfaces become the card radius. */
+#nexulesuite_admin-root .rounded-3xl,
+#nexulesuite_admin-root .rounded-2xl,
+#nexulesuite_admin-root .rounded-card,
+#nexulesuite_admin-root .rounded-tile {
+	border-radius: var(--nls-radius-card);
+}
+
+#nexulesuite_admin-root .rounded-xl {
+	border-radius: 8px;
+}
+
+#nexulesuite_admin-root .shadow-2xl,
+#nexulesuite_admin-root .shadow-xl,
+#nexulesuite_admin-root .shadow-lift {
+	box-shadow: var(--nls-shadow-raised);
+}
+
+#nexulesuite_admin-root .shadow-lg,
+#nexulesuite_admin-root .shadow-md,
+#nexulesuite_admin-root .shadow-card {
+	box-shadow: var(--nls-shadow-card);
+}

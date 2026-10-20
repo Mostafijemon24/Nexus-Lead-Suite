@@ -97,34 +97,34 @@ function App() {
   const d = ROUTE_COMPONENTS[a] || null;
   return e.jsx(AdminErrorBoundary, {
     children: e.jsxs("div", {
-      className: "nexulesuite_admin-app flex min-h-screen",
+      className: "nexulesuite_admin-app",
       children: [
         e.jsx(AdminSidebar, {
           activeId: a,
           onNavigate: i,
         }),
         e.jsxs("div", {
-          className: "flex min-w-0 flex-1 flex-col",
+          className: "nls-main",
           children: [
             e.jsx(AdminHeader, {
               route: a,
               onNavigate: i,
             }),
             e.jsx("main", {
-              className: "min-h-0 flex-1",
+              className: "nls-main__content flex min-h-0 flex-1 flex-col",
               children: d
                 ? e.jsx(d, {
                     onNavigate: i,
                   })
                 : e.jsxs("div", {
-                    className: "min-h-screen bg-[#f6f7fb] px-8 py-6 text-slate-800",
+                    className: "nls-page__body",
                     children: [
                       e.jsx("h1", {
-                        className: "text-lg font-semibold",
+                        className: "nls-page__title",
                         children: "Coming soon",
                       }),
                       e.jsxs("p", {
-                        className: "mt-2 text-sm text-slate-600",
+                        className: "nls-page__subtitle",
                         children: [
                           "This section will be implemented next: ",
                           e.jsx("span", {
