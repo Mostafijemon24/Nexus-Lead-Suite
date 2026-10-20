@@ -1,0 +1,319 @@
+/*
+ * Emails page (Email Automation Builder).
+ * Page-scoped pieces that have no shared primitive: the UUID badge, the
+ * recipients chip input, the merge-tag toolbar, the HTML source panel and the
+ * two editor modals. Everything else on the page uses components.css.
+ */
+
+/* ---- Template list rows ---------------------------------------------------- */
+#nexulesuite_admin-root .nls-em-row-select {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 2px 0;
+	border: 0;
+	border-radius: 4px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+/* ---- Name + UUID row ------------------------------------------------------- */
+#nexulesuite_admin-root .nls-em-name-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: var(--nls-space-4);
+	align-items: end;
+}
+
+#nexulesuite_admin-root .nls-em-uuid {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--nls-space-2);
+	min-height: 36px;
+	min-width: 0;
+	padding: 0 4px 0 12px;
+	border: 1px solid var(--nls-primary-border);
+	border-radius: var(--nls-radius-control);
+	background: var(--nls-primary-soft);
+	color: var(--nls-primary-hover);
+}
+
+#nexulesuite_admin-root .nls-em-uuid > svg {
+	flex: 0 0 auto;
+	width: 14px;
+	height: 14px;
+}
+
+#nexulesuite_admin-root .nls-em-uuid__text {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-family: var(--nls-font-mono);
+	font-size: var(--nls-fs-caption);
+	font-weight: var(--nls-fw-semibold);
+}
+
+#nexulesuite_admin-root .nls-em-uuid__copy {
+	color: var(--nls-primary);
+}
+
+#nexulesuite_admin-root .nls-em-uuid__copy:hover:not(:disabled) {
+	background: var(--nls-primary-soft-2);
+	color: var(--nls-primary-hover);
+}
+
+#nexulesuite_admin-root .nls-em-uuid__copied {
+	color: var(--nls-success);
+}
+
+/* Section heads on this page carry a single-line title only. */
+#nexulesuite_admin-root .nls-em-sec-head {
+	align-items: center;
+}
+
+#nexulesuite_admin-root .nls-em-sec-head label {
+	cursor: pointer;
+}
+
+/* ---- Recipients chip input ------------------------------------------------- */
+#nexulesuite_admin-root .nls-em-recipients {
+	display: flex;
+	align-items: stretch;
+	min-height: 40px;
+	border: 1px solid var(--nls-border);
+	border-radius: var(--nls-radius-control);
+	background: var(--nls-surface);
+	overflow: hidden;
+	transition: border-color var(--nls-transition), box-shadow var(--nls-transition);
+}
+
+#nexulesuite_admin-root .nls-em-recipients:focus-within {
+	border-color: var(--nls-primary);
+	box-shadow: var(--nls-focus-ring);
+}
+
+#nexulesuite_admin-root .nls-em-recipients__inner {
+	display: flex;
+	flex: 1 1 auto;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+	padding: 5px 8px;
+}
+
+#nexulesuite_admin-root .nls-em-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	max-width: 100%;
+	min-height: 26px;
+	padding: 0 4px 0 10px;
+	border: 1px solid var(--nls-primary-border);
+	border-radius: var(--nls-radius-pill);
+	background: var(--nls-primary-soft);
+	color: var(--nls-primary-hover);
+	font-size: var(--nls-fs-caption);
+	font-weight: var(--nls-fw-semibold);
+}
+
+#nexulesuite_admin-root .nls-em-chip__text {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+#nexulesuite_admin-root .nls-em-chip__remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: 18px;
+	height: 18px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--nls-primary);
+	cursor: pointer;
+	transition: background-color var(--nls-transition), color var(--nls-transition);
+}
+
+#nexulesuite_admin-root .nls-em-chip__remove:hover {
+	background: var(--nls-danger-soft);
+	color: var(--nls-danger);
+}
+
+#nexulesuite_admin-root .nls-em-chip__remove svg {
+	width: 12px;
+	height: 12px;
+}
+
+#nexulesuite_admin-root .nls-em-recipients__input {
+	flex: 1 1 160px;
+	width: auto;
+	min-width: 160px;
+	min-height: 28px;
+	padding: 2px 4px;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+#nexulesuite_admin-root .nls-em-recipients__input:focus {
+	border: 0;
+	box-shadow: none;
+}
+
+#nexulesuite_admin-root .nls-em-recipients__mail {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 40px;
+	width: 40px;
+	border-left: 1px solid var(--nls-border);
+	background: var(--nls-surface-2);
+	color: var(--nls-muted);
+}
+
+/* ---- Merge-tag library ----------------------------------------------------- */
+#nexulesuite_admin-root .nls-em-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--nls-space-2);
+}
+
+#nexulesuite_admin-root .nls-em-tags .nls-btn {
+	max-width: 100%;
+}
+
+#nexulesuite_admin-root .nls-em-tags .nls-btn svg {
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-em-tags .nls-code {
+	padding: 1px 5px;
+	font-size: var(--nls-fs-caption);
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-em-tags .nls-btn:hover:not(:disabled) .nls-code {
+	color: var(--nls-ink);
+}
+
+/* ---- HTML source panel ----------------------------------------------------- */
+#nexulesuite_admin-root .nls-em-html {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--nls-space-3);
+	padding: var(--nls-space-7) var(--nls-space-5);
+	border-style: dashed;
+	text-align: center;
+}
+
+#nexulesuite_admin-root .nls-em-html__ico {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border: 1px solid var(--nls-border);
+	border-radius: var(--nls-radius-card);
+	background: var(--nls-surface);
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-em-html__copy {
+	max-width: 420px;
+}
+
+#nexulesuite_admin-root .nls-em-html__copy .nls-section__desc {
+	margin-top: 4px;
+}
+
+/* ---- HTML Code Editor modal ------------------------------------------------ */
+#nexulesuite_admin-root .nls-em-code-panel {
+	height: min(calc(100vh - 48px), 900px);
+}
+
+#nexulesuite_admin-root .nls-em-code-body {
+	display: flex;
+	flex-direction: column;
+	padding: var(--nls-space-4) var(--nls-space-5);
+}
+
+#nexulesuite_admin-root .nls-em-code {
+	flex: 1 1 auto;
+	width: 100%;
+	min-height: 60vh;
+	padding: 12px 14px;
+	resize: none;
+	font-size: 13px;
+	line-height: 1.6;
+	tab-size: 2;
+	white-space: pre;
+	overflow: auto;
+	overflow-wrap: normal;
+}
+
+/* ---- Render Preview modal -------------------------------------------------- */
+#nexulesuite_admin-root .nls-em-title-ico {
+	color: var(--nls-primary);
+}
+
+#nexulesuite_admin-root .nls-em-preview {
+	overflow: hidden;
+}
+
+#nexulesuite_admin-root .nls-em-preview__meta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--nls-space-3);
+	padding: 8px 14px;
+	border-bottom: 1px solid var(--nls-border);
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-em-preview__meta .truncate {
+	min-width: 0;
+}
+
+#nexulesuite_admin-root .nls-em-preview__devices {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	flex: 0 0 auto;
+}
+
+#nexulesuite_admin-root .nls-em-preview__frame {
+	max-width: 100%;
+	padding: 4px;
+	background: var(--nls-surface);
+	overflow: auto;
+}
+
+/* ---- Responsive ------------------------------------------------------------ */
+@media (max-width: 760px) {
+	#nexulesuite_admin-root .nls-em-name-row {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	#nexulesuite_admin-root .nls-em-uuid {
+		width: 100%;
+	}
+
+	#nexulesuite_admin-root .nls-em-uuid__text {
+		flex: 1 1 auto;
+	}
+
+	#nexulesuite_admin-root .nls-em-recipients__input {
+		min-width: 120px;
+	}
+}

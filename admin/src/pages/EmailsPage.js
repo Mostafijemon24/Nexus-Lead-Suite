@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import * as b from "react";
 import * as e from "react/jsx-runtime";
-import { SuccessModal } from "../shared/common.js";
+import { ModalShell, PageFrame, StickyFooter, SuccessModal } from "../shared/common.js";
 
 function jx(a) {
   var o;
@@ -411,7 +411,41 @@ export function EmailsPage() {
         )
         .replace(/{siteUrl}/g, ((me = window == null ? void 0 : window.location) == null ? void 0 : me.origin) || "");
     };
-  return e.jsxs(e.Fragment, {
+  return e.jsxs(PageFrame, {
+    title: "Email Automation Builder",
+    subtitle: "Manage dynamic email triggers and contents",
+    icon: e.jsx(qt, { size: 20 }),
+    headerRight: e.jsxs("button", {
+      type: "button",
+      onClick: I,
+      className: "nls-btn nls-btn--primary",
+      children: [e.jsx(dt, { size: 16, "aria-hidden": "true" }), " Create New Template"],
+    }),
+    footer: e.jsx(StickyFooter, {
+      status: "Ready",
+      actions: e.jsxs(e.Fragment, {
+        children: [
+          e.jsx("button", {
+            type: "button",
+            onClick: j,
+            disabled: !H || T.saving,
+            className: "nls-btn nls-btn--ghost",
+            children: "Discard",
+          }),
+          e.jsxs("button", {
+            type: "button",
+            onClick: le,
+            disabled: T.saving || !H,
+            className: "nls-btn nls-btn--primary",
+            children: [
+              e.jsx(bn, { size: 16, "aria-hidden": "true" }),
+              " ",
+              T.saving ? "Saving…" : "Save & Deploy Template",
+            ],
+          }),
+        ],
+      }),
+    }),
     children: [
       e.jsx(SuccessModal, {
         open: V,
@@ -419,620 +453,438 @@ export function EmailsPage() {
         onDismiss: () => z(!1),
       }),
       e.jsxs("div", {
-        className: "min-h-screen bg-[#f8fafc] p-4 md:p-8 font-sans text-slate-900",
+        className: "nls-split",
         children: [
-          e.jsxs("div", {
-            className:
-              "w-full bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[90vh]",
+          e.jsxs("aside", {
+            className: "nls-split__aside nls-card",
             children: [
-              e.jsxs("header", {
-                className: "p-6 border-b border-slate-200 bg-white flex justify-between items-center shrink-0",
+              e.jsxs("div", {
+                className: "nls-split__aside-head",
                 children: [
-                  e.jsxs("div", {
-                    className: "flex items-center gap-4",
-                    children: [
-                      e.jsx("div", {
-                        className: "bg-indigo-600 p-3 rounded-2xl text-white shadow-lg",
-                        children: e.jsx(qt, {
-                          size: 24,
-                        }),
-                      }),
-                      e.jsxs("div", {
-                        children: [
-                          e.jsx("h1", {
-                            className: "text-xl font-bold tracking-tight",
-                            children: "Email Automation Builder",
-                          }),
-                          e.jsx("p", {
-                            className: "text-xs text-slate-400",
-                            children: "Manage dynamic email triggers and contents",
-                          }),
-                        ],
-                      }),
-                    ],
-                  }),
-                  e.jsxs("button", {
-                    type: "button",
-                    onClick: I,
-                    className:
-                      "flex items-center gap-2 bg-slate-900 hover:bg-black text-white px-6 py-3 rounded-2xl transition-all text-sm font-bold shadow-xl active:scale-95",
-                    children: [
-                      e.jsx(dt, {
-                        size: 18,
-                      }),
-                      " Create New Template",
-                    ],
-                  }),
+                  e.jsx("h2", { className: "nls-split__aside-title", children: "Template Layers" }),
+                  e.jsx(Wl, { size: 14, "aria-hidden": "true", className: "nls-muted" }),
                 ],
               }),
               e.jsxs("div", {
-                className: "flex flex-1 overflow-hidden",
+                className: "nls-split__aside-body",
                 children: [
-                  e.jsxs("aside", {
-                    className: "w-72 border-r border-slate-100 bg-slate-50 flex flex-col shrink-0",
-                    children: [
-                      e.jsxs("div", {
-                        className: "p-4 border-b border-slate-100 flex items-center justify-between",
+                  T.loading
+                    ? e.jsxs("div", {
+                        className: "nls-loading",
+                        children: [e.jsx("span", { className: "nls-spinner", "aria-hidden": "true" }), "Loading…"],
+                      })
+                    : null,
+                  a.map((O) => {
+                    const te = O.id === d;
+                    return e.jsxs(
+                      "div",
+                      {
+                        onClick: () => u(O.id),
+                        className: ["nls-list-row", te ? "is-active" : ""].filter(Boolean).join(" "),
                         children: [
-                          e.jsx("h2", {
-                            className: "text-[10px] font-bold text-slate-400 uppercase tracking-widest",
-                            children: "Template Layers",
+                          e.jsxs("button", {
+                            type: "button",
+                            className: "nls-list-row__main nls-em-row-select",
+                            "aria-current": te ? "true" : void 0,
+                            children: [
+                              e.jsx(qt, { size: 16, "aria-hidden": "true" }),
+                              e.jsx("span", { className: "nls-list-row__title", children: O.name }),
+                            ],
                           }),
-                          e.jsx(Wl, {
-                            size: 14,
-                            className: "text-slate-300",
-                          }),
-                        ],
-                      }),
-                      e.jsxs("div", {
-                        className: "flex-1 overflow-y-auto p-3 space-y-2",
-                        children: [
-                          T.loading
-                            ? e.jsx("div", {
-                                className: "px-2 py-3 text-sm text-slate-500",
-                                children: "Loading…",
-                              })
-                            : null,
-                          a.map((O) => {
-                            const te = O.id === d;
-                            return e.jsxs(
-                              "div",
-                              {
-                                onClick: () => u(O.id),
-                                className: [
-                                  "group relative p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between",
-                                  te
-                                    ? "bg-white border-indigo-500 shadow-md ring-2 ring-indigo-500/5"
-                                    : "bg-transparent border-transparent hover:bg-slate-200/50",
-                                ].join(" "),
-                                children: [
-                                  e.jsxs("div", {
-                                    className: "flex items-center gap-3 truncate",
-                                    children: [
-                                      e.jsx(qt, {
-                                        size: 16,
-                                        className: te ? "text-indigo-600" : "text-slate-400",
-                                      }),
-                                      e.jsx("span", {
-                                        className: [
-                                          "text-sm font-bold truncate",
-                                          te ? "text-slate-900" : "text-slate-500",
-                                        ].join(" "),
-                                        children: O.name,
-                                      }),
-                                    ],
-                                  }),
-                                  e.jsxs("div", {
-                                    className:
-                                      "flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity",
-                                    onClick: (pe) => pe.stopPropagation(),
-                                    children: [
-                                      e.jsx("button", {
-                                        type: "button",
-                                        onClick: () => M(O),
-                                        className:
-                                          "p-1.5 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-white shadow-sm",
-                                        "aria-label": "Preview",
-                                        children: e.jsx(Rt, {
-                                          size: 12,
-                                        }),
-                                      }),
-                                      e.jsx("button", {
-                                        type: "button",
-                                        onClick: () => C(O.id),
-                                        className:
-                                          "p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-white shadow-sm",
-                                        "aria-label": "Delete",
-                                        children: e.jsx(yt, {
-                                          size: 12,
-                                        }),
-                                      }),
-                                    ],
-                                  }),
-                                ],
-                              },
-                              O.id,
-                            );
-                          }),
-                        ],
-                      }),
-                    ],
-                  }),
-                  e.jsx("main", {
-                    className: "flex-1 overflow-y-auto p-8",
-                    style: {
-                      background: "#f4f5f8",
-                    },
-                    children: e.jsxs("div", {
-                      className: "nexulesuite_emails-editor-wrap max-w-[1080px] mx-auto pb-20",
-                      children: [
-                        T.error
-                          ? e.jsx("div", {
-                              className: "nexulesuite_em-alert",
-                              children: T.error,
-                            })
-                          : null,
-                        e.jsxs("div", {
-                          className: "nexulesuite_em-card",
-                          children: [
-                            e.jsx("section", {
-                              className: "nexulesuite_em-section is-first",
-                              children: e.jsxs("div", {
-                                className: "nexulesuite_em-name-row",
-                                children: [
-                                  e.jsxs("div", {
-                                    className: "nexulesuite_em-field",
-                                    children: [
-                                      e.jsx("span", {
-                                        className: "lbl",
-                                        children: "Template Name",
-                                      }),
-                                      e.jsx("input", {
-                                        type: "text",
-                                        className: "inp",
-                                        value: (N == null ? void 0 : N.name) || "",
-                                        onChange: (O) =>
-                                          W({
-                                            name: O.target.value,
-                                          }),
-                                        placeholder: "Template Name...",
-                                      }),
-                                    ],
-                                  }),
-                                  e.jsxs("div", {
-                                    className: "nexulesuite_em-uuid-badge",
-                                    children: [
-                                      e.jsx(Ul, {
-                                        size: 14,
-                                      }),
-                                      e.jsxs("span", {
-                                        className: "nexulesuite_em-uuid-text",
-                                        children: ["# ", ((N == null ? void 0 : N.uuid) || "").substring(0, 18), "..."],
-                                      }),
-                                      e.jsx("button", {
-                                        type: "button",
-                                        onClick: () => {
-                                          (jx((N == null ? void 0 : N.uuid) || ""),
-                                            f(!0),
-                                            setTimeout(() => f(!1), 1800));
-                                        },
-                                        className: "nexulesuite_em-uuid-copy",
-                                        "aria-label": "Copy UUID",
-                                        children: x
-                                          ? e.jsx(Lt, {
-                                              size: 14,
-                                              className: "nexulesuite_em-uuid-copied",
-                                            })
-                                          : e.jsx($s, {
-                                              size: 14,
-                                            }),
-                                      }),
-                                    ],
-                                  }),
-                                ],
+                          e.jsxs("div", {
+                            className: "nls-list-row__actions",
+                            onClick: (pe) => pe.stopPropagation(),
+                            children: [
+                              e.jsx("button", {
+                                type: "button",
+                                onClick: () => M(O),
+                                className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--primary",
+                                "aria-label": "Preview",
+                                children: e.jsx(Rt, { size: 14 }),
                               }),
-                            }),
-                            e.jsxs("section", {
-                              className: "nexulesuite_em-section",
-                              children: [
-                                e.jsxs("div", {
-                                  className: "nexulesuite_em-sec-head",
-                                  children: [
-                                    e.jsx("span", {
-                                      className: "nexulesuite_em-sec-ico",
-                                      children: e.jsx(hd, {
-                                        size: 16,
-                                      }),
-                                    }),
-                                    e.jsx("span", {
-                                      className: "nexulesuite_em-sec-title",
-                                      children: "Recipients Management",
-                                    }),
-                                  ],
-                                }),
-                                e.jsxs("div", {
-                                  className: "nexulesuite_em-recipients-box",
-                                  children: [
-                                    e.jsxs("div", {
-                                      className: "nexulesuite_em-recipients-inner",
-                                      children: [
-                                        ((N == null ? void 0 : N.recipients) || []).map((O, te) =>
-                                          e.jsxs(
-                                            "span",
-                                            {
-                                              className: "nexulesuite_em-recipient-chip",
-                                              children: [
-                                                O,
-                                                e.jsx("button", {
-                                                  type: "button",
-                                                  onClick: () =>
-                                                    W({
-                                                      recipients: N.recipients.filter((pe, me) => me !== te),
-                                                    }),
-                                                  className: "nexulesuite_em-recipient-remove",
-                                                  "aria-label": "Remove recipient",
-                                                  children: e.jsx(_t, {
-                                                    size: 12,
-                                                  }),
-                                                }),
-                                              ],
-                                            },
-                                            `${O}-${te}`,
-                                          ),
-                                        ),
-                                        e.jsx("input", {
-                                          type: "text",
-                                          value: p,
-                                          onChange: (O) => h(O.target.value),
-                                          onKeyDown: J,
-                                          placeholder: "Enter email address...",
-                                          className: "nexulesuite_em-recipients-inp",
-                                        }),
-                                      ],
-                                    }),
-                                    e.jsx("span", {
-                                      className: "nexulesuite_em-recipients-mail",
-                                      "aria-hidden": "true",
-                                      children: e.jsx(qt, {
-                                        size: 16,
-                                      }),
-                                    }),
-                                  ],
-                                }),
-                              ],
-                            }),
-                            e.jsxs("section", {
-                              className: "nexulesuite_em-section",
-                              children: [
-                                e.jsxs("div", {
-                                  className: "nexulesuite_em-sec-head",
-                                  children: [
-                                    e.jsx("span", {
-                                      className: "nexulesuite_em-sec-ico",
-                                      children: e.jsx(ud, {
-                                        size: 16,
-                                      }),
-                                    }),
-                                    e.jsx("span", {
-                                      className: "nexulesuite_em-sec-title",
-                                      children: "Email Subject Line",
-                                    }),
-                                  ],
-                                }),
-                                e.jsx("input", {
-                                  type: "text",
-                                  className: "inp",
-                                  value: (N == null ? void 0 : N.subject) || "",
-                                  onChange: (O) =>
-                                    W({
-                                      subject: O.target.value,
-                                    }),
-                                  placeholder: "Enter Subject...",
-                                }),
-                              ],
-                            }),
-                            e.jsxs("section", {
-                              className: "nexulesuite_em-section",
-                              children: [
-                                e.jsxs("div", {
-                                  className: "nexulesuite_em-tags-head",
-                                  children: [
-                                    e.jsxs("div", {
-                                      className: "nexulesuite_em-sec-head nexulesuite_em-sec-head--dense",
-                                      children: [
-                                        e.jsx("span", {
-                                          className: "nexulesuite_em-sec-ico",
-                                          children: e.jsx(Gn, {
-                                            size: 16,
-                                          }),
-                                        }),
-                                        e.jsx("span", {
-                                          className: "nexulesuite_em-sec-title",
-                                          children: "Data Injection Library",
-                                        }),
-                                      ],
-                                    }),
-                                    e.jsx("span", {
-                                      className: "nexulesuite_em-tags-hint",
-                                      children: "Click tag to auto-insert into subject",
-                                    }),
-                                  ],
-                                }),
-                                e.jsx("div", {
-                                  className: "nexulesuite_em-tags",
-                                  children: kx.map((O) =>
-                                    e.jsxs(
-                                      "button",
-                                      {
-                                        type: "button",
-                                        onClick: () =>
-                                          W({
-                                            subject: ((N == null ? void 0 : N.subject) || "") + O.val,
-                                          }),
-                                        className: "nexulesuite_em-tag",
-                                        children: [
-                                          e.jsx(O.Icon, {
-                                            size: 12,
-                                          }),
-                                          e.jsx("span", {
-                                            children: O.label,
-                                          }),
-                                          e.jsx("code", {
-                                            children: O.val,
-                                          }),
-                                        ],
-                                      },
-                                      O.val,
-                                    ),
-                                  ),
-                                }),
-                              ],
-                            }),
-                            e.jsxs("section", {
-                              className: "nexulesuite_em-section nexulesuite_em-html-panel",
-                              children: [
-                                e.jsx("div", {
-                                  className: "nexulesuite_em-html-ico",
-                                  children: e.jsx(Dl, {
-                                    size: 28,
-                                  }),
-                                }),
-                                e.jsxs("div", {
-                                  className: "nexulesuite_em-html-copy",
-                                  children: [
-                                    e.jsx("h4", {
-                                      children: "HTML Source Controller",
-                                    }),
-                                    e.jsx("p", {
-                                      children: "Manage the visual structure and dynamic content mapping here.",
-                                    }),
-                                  ],
-                                }),
-                                e.jsxs("button", {
-                                  type: "button",
-                                  onClick: () => y(!0),
-                                  className: "nexulesuite_em-html-btn",
-                                  children: [
-                                    e.jsx(Dl, {
-                                      size: 18,
-                                    }),
-                                    " Open Source Code Editor",
-                                  ],
-                                }),
-                              ],
-                            }),
-                          ],
-                        }),
-                      ],
-                    }),
-                  }),
-                ],
-              }),
-              e.jsxs("footer", {
-                className: "p-6 border-t border-slate-100 bg-white flex justify-between items-center px-12 shrink-0",
-                children: [
-                  e.jsxs("div", {
-                    className: "flex items-center gap-2",
-                    children: [
-                      e.jsx("div", {
-                        className: "w-2 h-2 bg-green-500 rounded-full",
-                      }),
-                      e.jsx("span", {
-                        className: "text-[10px] font-bold text-slate-400 uppercase tracking-widest",
-                        children: "Workflow Ready",
-                      }),
-                    ],
-                  }),
-                  e.jsxs("div", {
-                    className: "flex gap-4",
-                    children: [
-                      e.jsx("button", {
-                        type: "button",
-                        onClick: j,
-                        disabled: !H || T.saving,
-                        className:
-                          "px-6 py-2.5 text-slate-400 hover:text-slate-600 font-bold text-sm transition-colors disabled:opacity-50",
-                        children: "Discard",
-                      }),
-                      e.jsxs("button", {
-                        type: "button",
-                        onClick: le,
-                        disabled: T.saving || !H,
-                        className:
-                          "flex items-center gap-2 px-10 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl text-sm shadow-xl shadow-indigo-100 transition-all active:scale-95 disabled:opacity-60",
-                        children: [
-                          e.jsx(bn, {
-                            size: 18,
+                              e.jsx("button", {
+                                type: "button",
+                                onClick: () => C(O.id),
+                                className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--danger",
+                                "aria-label": "Delete",
+                                children: e.jsx(yt, { size: 14 }),
+                              }),
+                            ],
                           }),
-                          " ",
-                          T.saving ? "Saving…" : "Save & Deploy Template",
                         ],
-                      }),
-                    ],
+                      },
+                      O.id,
+                    );
                   }),
                 ],
               }),
             ],
           }),
-          S &&
-            e.jsx("div", {
-              className:
-                "fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 bg-slate-900/90 backdrop-blur-xl animate-in fade-in duration-200",
-              children: e.jsxs("div", {
-                className:
-                  "bg-[#0f172a] rounded-[2.5rem] shadow-2xl w-full max-w-6xl h-full flex flex-col overflow-hidden border border-slate-800/50 animate-in zoom-in-95",
-                children: [
-                  e.jsxs("div", {
-                    className: "px-8 py-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50",
-                    children: [
-                      e.jsxs("div", {
-                        className: "flex items-center gap-4",
-                        children: [
-                          e.jsx("div", {
-                            className: "bg-indigo-500/10 p-2 rounded-xl text-indigo-400",
-                            children: e.jsx(Dl, {
-                              size: 20,
-                            }),
-                          }),
-                          e.jsxs("div", {
-                            children: [
-                              e.jsx("h4", {
-                                className: "text-white font-bold",
-                                children: "HTML Code Editor",
-                              }),
-                              e.jsx("p", {
-                                className: "text-[10px] text-slate-500 font-bold uppercase tracking-widest",
-                                children: N == null ? void 0 : N.name,
-                              }),
-                            ],
-                          }),
-                        ],
-                      }),
-                      e.jsx("button", {
-                        type: "button",
-                        onClick: () => y(!1),
-                        className: "p-3 bg-white/5 text-slate-400 hover:text-white rounded-full transition-all",
-                        "aria-label": "Close",
-                        children: e.jsx(_t, {
-                          size: 24,
-                        }),
-                      }),
-                    ],
-                  }),
-                  e.jsx("textarea", {
-                    value: (N == null ? void 0 : N.content) || "",
-                    onChange: (O) =>
-                      W({
-                        content: O.target.value,
-                      }),
-                    className:
-                      "flex-1 bg-transparent p-10 text-indigo-300 font-mono text-sm leading-relaxed outline-none resize-none",
-                    spellCheck: "false",
-                  }),
-                  e.jsxs("div", {
-                    className: "p-6 border-t border-slate-800 flex justify-end gap-3 bg-slate-900/50",
-                    children: [
-                      e.jsx("button", {
-                        type: "button",
-                        onClick: () => y(!1),
-                        className: "px-8 py-3 text-slate-400 font-bold text-sm",
-                        children: "Cancel",
-                      }),
-                      e.jsx("button", {
-                        type: "button",
-                        onClick: () => y(!1),
-                        className:
-                          "px-10 py-3 bg-indigo-600 text-white rounded-2xl font-bold text-sm shadow-xl active:scale-95",
-                        children: "Apply Changes",
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-            }),
-          P &&
-            e.jsx("div", {
-              className:
-                "fixed inset-0 z-[101] flex items-center justify-center p-4 md:p-10 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200",
-              children: e.jsxs("div", {
-                className:
-                  "bg-white rounded-[2.5rem] shadow-2xl w-full max-w-4xl h-full flex flex-col overflow-hidden animate-in zoom-in-95",
-                children: [
-                  e.jsxs("div", {
-                    className: "px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50",
-                    children: [
-                      e.jsxs("div", {
-                        className: "flex items-center gap-3",
-                        children: [
-                          e.jsx(Rt, {
-                            className: "text-indigo-600",
-                            size: 20,
-                          }),
-                          e.jsx("h4", {
-                            className: "font-bold text-slate-800 text-lg",
-                            children: "Render Preview",
-                          }),
-                        ],
-                      }),
-                      e.jsx("button", {
-                        type: "button",
-                        onClick: () => M(null),
-                        className: "p-2 hover:bg-slate-200 rounded-full transition-all text-slate-400",
-                        "aria-label": "Close",
-                        children: e.jsx(_t, {
-                          size: 24,
-                        }),
-                      }),
-                    ],
-                  }),
-                  e.jsx("div", {
-                    className: "flex-1 bg-slate-100 p-8 overflow-y-auto",
-                    children: e.jsxs("div", {
-                      className: "max-w-[600px] mx-auto bg-white shadow-2xl rounded-2xl min-h-full overflow-hidden",
+          e.jsxs("div", {
+            className: "nls-split__main nls-stack nls-stack--tight",
+            children: [
+              T.error
+                ? e.jsx("div", { className: "nls-notice nls-notice--danger", role: "alert", children: T.error })
+                : null,
+              e.jsx("div", {
+                className: "nls-card",
+                children: e.jsxs("div", {
+                  className: "nls-card__body nls-stack nls-stack--tight",
+                  children: [
+                    e.jsxs("div", {
+                      className: "nls-em-name-row",
                       children: [
                         e.jsxs("div", {
-                          className:
-                            "p-4 bg-slate-50 border-b border-slate-100 text-[10px] text-slate-400 font-mono flex justify-between",
+                          className: "nls-field",
                           children: [
-                            e.jsxs("span", {
-                              children: ["Subject: ", (P.subject || "").substring(0, 50), "..."],
+                            e.jsx("label", {
+                              className: "nls-field__label",
+                              htmlFor: "nexulesuite_em-name",
+                              children: "Template Name",
                             }),
-                            e.jsxs("div", {
-                              className: "flex gap-2",
-                              children: [
-                                e.jsx(Bl, {
-                                  size: 10,
+                            e.jsx("input", {
+                              id: "nexulesuite_em-name",
+                              type: "text",
+                              value: (N == null ? void 0 : N.name) || "",
+                              onChange: (O) =>
+                                W({
+                                  name: O.target.value,
                                 }),
-                                " ",
-                                e.jsx(od, {
-                                  size: 10,
-                                }),
-                              ],
+                              placeholder: "Template Name...",
                             }),
                           ],
                         }),
-                        e.jsx("div", {
-                          className: "p-1",
-                          dangerouslySetInnerHTML: {
-                            __html: ie(P),
-                          },
+                        e.jsxs("div", {
+                          className: "nls-em-uuid",
+                          children: [
+                            e.jsx(Ul, { size: 14, "aria-hidden": "true" }),
+                            e.jsxs("span", {
+                              className: "nls-em-uuid__text",
+                              children: ["# ", ((N == null ? void 0 : N.uuid) || "").substring(0, 18), "..."],
+                            }),
+                            e.jsx("button", {
+                              type: "button",
+                              onClick: () => {
+                                (jx((N == null ? void 0 : N.uuid) || ""), f(!0), setTimeout(() => f(!1), 1800));
+                              },
+                              className: ["nls-icon-btn nls-icon-btn--sm nls-em-uuid__copy", x ? "is-success" : ""]
+                                .filter(Boolean)
+                                .join(" "),
+                              "aria-label": "Copy UUID",
+                              children: x
+                                ? e.jsx(Lt, { size: 14, className: "nls-em-uuid__copied" })
+                                : e.jsx($s, { size: 14 }),
+                            }),
+                          ],
                         }),
+                      ],
+                    }),
+                    e.jsxs("div", {
+                      className: "nls-section",
+                      children: [
+                        e.jsxs("div", {
+                          className: "nls-section__head nls-em-sec-head",
+                          children: [
+                            e.jsx("span", {
+                              className: "nls-section__ico",
+                              "aria-hidden": "true",
+                              children: e.jsx(hd, { size: 16 }),
+                            }),
+                            e.jsx("label", {
+                              className: "nls-section__title",
+                              htmlFor: "nexulesuite_em-recipient-input",
+                              children: "Recipients Management",
+                            }),
+                          ],
+                        }),
+                        e.jsxs("div", {
+                          className: "nls-em-recipients",
+                          children: [
+                            e.jsxs("div", {
+                              className: "nls-em-recipients__inner",
+                              children: [
+                                ((N == null ? void 0 : N.recipients) || []).map((O, te) =>
+                                  e.jsxs(
+                                    "span",
+                                    {
+                                      className: "nls-em-chip",
+                                      children: [
+                                        e.jsx("span", { className: "nls-em-chip__text", children: O }),
+                                        e.jsx("button", {
+                                          type: "button",
+                                          onClick: () =>
+                                            W({
+                                              recipients: N.recipients.filter((pe, me) => me !== te),
+                                            }),
+                                          className: "nls-em-chip__remove",
+                                          "aria-label": "Remove recipient",
+                                          children: e.jsx(_t, { size: 12 }),
+                                        }),
+                                      ],
+                                    },
+                                    `${O}-${te}`,
+                                  ),
+                                ),
+                                e.jsx("input", {
+                                  id: "nexulesuite_em-recipient-input",
+                                  type: "text",
+                                  value: p,
+                                  onChange: (O) => h(O.target.value),
+                                  onKeyDown: J,
+                                  placeholder: "Enter email address...",
+                                  className: "nls-em-recipients__input",
+                                }),
+                              ],
+                            }),
+                            e.jsx("span", {
+                              className: "nls-em-recipients__mail",
+                              "aria-hidden": "true",
+                              children: e.jsx(qt, { size: 16 }),
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                    e.jsxs("div", {
+                      className: "nls-section",
+                      children: [
+                        e.jsxs("div", {
+                          className: "nls-section__head nls-em-sec-head",
+                          children: [
+                            e.jsx("span", {
+                              className: "nls-section__ico",
+                              "aria-hidden": "true",
+                              children: e.jsx(ud, { size: 16 }),
+                            }),
+                            e.jsx("label", {
+                              className: "nls-section__title",
+                              htmlFor: "nexulesuite_em-subject",
+                              children: "Email Subject Line",
+                            }),
+                          ],
+                        }),
+                        e.jsx("input", {
+                          id: "nexulesuite_em-subject",
+                          type: "text",
+                          value: (N == null ? void 0 : N.subject) || "",
+                          onChange: (O) =>
+                            W({
+                              subject: O.target.value,
+                            }),
+                          placeholder: "Enter Subject...",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              }),
+              e.jsxs("div", {
+                className: "nls-card",
+                children: [
+                  e.jsx("div", {
+                    className: "nls-card__header",
+                    children: e.jsxs("div", {
+                      className: "min-w-0",
+                      children: [
+                        e.jsxs("h3", {
+                          className: "nls-card__title",
+                          children: [e.jsx(Gn, { size: 18, "aria-hidden": "true" }), "Data Injection Library"],
+                        }),
+                        e.jsx("p", { className: "nls-card__desc", children: "Click tag to auto-insert into subject" }),
                       ],
                     }),
                   }),
                   e.jsx("div", {
-                    className: "p-6 border-t border-slate-100 flex justify-center",
-                    children: e.jsx("button", {
-                      type: "button",
-                      onClick: () => M(null),
-                      className: "px-10 py-3 bg-slate-900 text-white rounded-2xl font-bold text-sm",
-                      children: "Close Preview",
+                    className: "nls-card__body",
+                    children: e.jsx("div", {
+                      className: "nls-em-tags",
+                      children: kx.map((O) =>
+                        e.jsxs(
+                          "button",
+                          {
+                            type: "button",
+                            onClick: () =>
+                              W({
+                                subject: ((N == null ? void 0 : N.subject) || "") + O.val,
+                              }),
+                            className: "nls-btn nls-btn--secondary nls-btn--sm",
+                            children: [
+                              e.jsx(O.Icon, { size: 14, "aria-hidden": "true" }),
+                              e.jsx("span", { children: O.label }),
+                              e.jsx("code", { className: "nls-code", children: O.val }),
+                            ],
+                          },
+                          O.val,
+                        ),
+                      ),
                     }),
                   }),
                 ],
               }),
-            }),
+              e.jsxs("div", {
+                className: "nls-card nls-card--soft nls-em-html",
+                children: [
+                  e.jsx("div", {
+                    className: "nls-em-html__ico",
+                    "aria-hidden": "true",
+                    children: e.jsx(Dl, { size: 24 }),
+                  }),
+                  e.jsxs("div", {
+                    className: "nls-em-html__copy",
+                    children: [
+                      e.jsx("h3", { className: "nls-section__title", children: "HTML Source Controller" }),
+                      e.jsx("p", {
+                        className: "nls-section__desc",
+                        children: "Manage the visual structure and dynamic content mapping here.",
+                      }),
+                    ],
+                  }),
+                  e.jsxs("button", {
+                    type: "button",
+                    onClick: () => y(!0),
+                    className: "nls-btn nls-btn--secondary",
+                    children: [e.jsx(Dl, { size: 16, "aria-hidden": "true" }), " Open Source Code Editor"],
+                  }),
+                ],
+              }),
+            ],
+          }),
         ],
+      }),
+      e.jsxs(ModalShell, {
+        open: S,
+        onClose: () => y(!1),
+        size: "xl",
+        labelledBy: "nexulesuite_em-code-title",
+        className: "nls-em-code-panel",
+        children: [
+          e.jsxs("div", {
+            className: "nls-modal__header",
+            children: [
+              e.jsxs("div", {
+                className: "min-w-0",
+                children: [
+                  e.jsx("h2", {
+                    id: "nexulesuite_em-code-title",
+                    className: "nls-modal__title",
+                    children: "HTML Code Editor",
+                  }),
+                  e.jsx("p", { className: "nls-modal__desc truncate", children: N == null ? void 0 : N.name }),
+                ],
+              }),
+              e.jsx("button", {
+                type: "button",
+                onClick: () => y(!1),
+                className: "nls-icon-btn",
+                "aria-label": "Close",
+                children: e.jsx(_t, { size: 18 }),
+              }),
+            ],
+          }),
+          e.jsxs("div", {
+            className: "nls-modal__body nls-em-code-body",
+            children: [
+              e.jsx("label", { htmlFor: "nexulesuite_em-code", className: "sr-only", children: "HTML source" }),
+              e.jsx("textarea", {
+                id: "nexulesuite_em-code",
+                value: (N == null ? void 0 : N.content) || "",
+                onChange: (O) =>
+                  W({
+                    content: O.target.value,
+                  }),
+                className: "nls-mono nls-em-code",
+                spellCheck: "false",
+              }),
+            ],
+          }),
+          e.jsxs("div", {
+            className: "nls-modal__footer",
+            children: [
+              e.jsx("button", {
+                type: "button",
+                onClick: () => y(!1),
+                className: "nls-btn nls-btn--ghost",
+                children: "Cancel",
+              }),
+              e.jsx("button", {
+                type: "button",
+                onClick: () => y(!1),
+                className: "nls-btn nls-btn--primary",
+                children: "Apply Changes",
+              }),
+            ],
+          }),
+        ],
+      }),
+      e.jsx(ModalShell, {
+        open: !!P,
+        onClose: () => M(null),
+        size: "lg",
+        labelledBy: "nexulesuite_em-preview-title",
+        className: "nls-em-preview-panel",
+        children: P
+          ? e.jsxs(e.Fragment, {
+              children: [
+                e.jsxs("div", {
+                  className: "nls-modal__header",
+                  children: [
+                    e.jsxs("h2", {
+                      id: "nexulesuite_em-preview-title",
+                      className: "nls-modal__title nls-row",
+                      children: [
+                        e.jsx(Rt, { size: 18, "aria-hidden": "true", className: "nls-em-title-ico" }),
+                        "Render Preview",
+                      ],
+                    }),
+                    e.jsx("button", {
+                      type: "button",
+                      onClick: () => M(null),
+                      className: "nls-icon-btn",
+                      "aria-label": "Close",
+                      children: e.jsx(_t, { size: 18 }),
+                    }),
+                  ],
+                }),
+                e.jsx("div", {
+                  className: "nls-modal__body nls-em-preview-body",
+                  children: e.jsxs("div", {
+                    className: "nls-card nls-card--soft nls-em-preview",
+                    children: [
+                      e.jsxs("div", {
+                        className: "nls-em-preview__meta",
+                        children: [
+                          e.jsxs("span", {
+                            className: "nls-mono truncate",
+                            children: ["Subject: ", (P.subject || "").substring(0, 50), "..."],
+                          }),
+                          e.jsxs("span", {
+                            className: "nls-em-preview__devices",
+                            "aria-hidden": "true",
+                            children: [e.jsx(Bl, { size: 14 }), " ", e.jsx(od, { size: 14 })],
+                          }),
+                        ],
+                      }),
+                      e.jsx("div", {
+                        className: "nls-em-preview__frame",
+                        dangerouslySetInnerHTML: {
+                          __html: ie(P),
+                        },
+                      }),
+                    ],
+                  }),
+                }),
+                e.jsx("div", {
+                  className: "nls-modal__footer",
+                  children: e.jsx("button", {
+                    type: "button",
+                    onClick: () => M(null),
+                    className: "nls-btn nls-btn--secondary",
+                    children: "Close Preview",
+                  }),
+                }),
+              ],
+            })
+          : null,
       }),
     ],
   });
