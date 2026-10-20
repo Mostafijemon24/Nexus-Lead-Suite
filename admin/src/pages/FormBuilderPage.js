@@ -35,6 +35,7 @@ import {
   Li,
   Lx,
   Md,
+  ModalShell,
   Mx,
   Oi,
   PageFrame,
@@ -43,7 +44,6 @@ import {
   Qe,
   StickyFooter,
   SuccessModal,
-  TemplateCard,
   Tx,
   Ui,
   cf,
@@ -72,31 +72,6 @@ function nlsAccPlus(a) {
   });
 }
 function nlsAccIcon(a) {
-  const o =
-    {
-      presets: "#eab308",
-      style: "#8b5cf6",
-      colors: "#3b82f6",
-      fonts: "#f59e0b",
-      layout: "#10b981",
-      css: "#64748b",
-      email: "#3b82f6",
-      integrations: "#22c55e",
-      visibility: "#eab308",
-      markup: "#a855f7",
-      legal: "#3b82f6",
-      container: "#64748b",
-      indicator: "#64748b",
-      success: "#22c55e",
-      error: "#ef4444",
-      fields: "#eab308",
-      input: "#3b82f6",
-      button: "#8b5cf6",
-      appearance: "#8b5cf6",
-      behavior: "#3b82f6",
-      notify: "#22c55e",
-      settings: "#64748b",
-    }[a] || "#2271b1";
   const i =
     {
       presets: e.jsx("path", {
@@ -344,9 +319,6 @@ function nlsAccIcon(a) {
     });
   return e.jsx("span", {
     className: "nexulesuite_fui-acc__ico",
-    style: {
-      color: o,
-    },
     children: e.jsxs("svg", {
       width: "18",
       height: "18",
@@ -396,92 +368,118 @@ function FieldPickerModal({ isOpen: a, onClose: o, onSelect: i }) {
           x.name.toLowerCase().includes(h) ||
           (x.description && x.description.toLowerCase().includes(h)),
       );
-    }, [d]);
+    }, [d]),
+    nlsTitleId = Qe.useId();
   return a
-    ? v.jsxs(v.Fragment, {
+    ? v.jsxs(ModalShell, {
+        open: a,
+        onClose: o,
+        labelledBy: nlsTitleId,
+        size: "lg",
+        className: "nls-fb-picker-modal",
         children: [
-          v.jsx("div", {
-            className: "fixed inset-0 bg-black/50 z-40 transition-opacity",
-            onClick: o,
-          }),
           v.jsxs("div", {
-            className:
-              "nexulesuite_field-picker-modal fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-xl shadow-2xl w-[90vw] max-w-4xl max-h-[85vh] flex flex-col",
+            className: "nls-modal__header",
             children: [
               v.jsxs("div", {
-                className: "flex items-center justify-between px-6 py-5 border-b border-gray-200 bg-white",
+                className: "min-w-0",
                 children: [
-                  v.jsxs("div", {
-                    children: [
-                      v.jsx("h2", {
-                        className: "text-xl font-bold text-gray-900",
-                        children: "Insert Form Fields",
-                      }),
-                      v.jsx("p", {
-                        className: "text-xs text-gray-500 mt-0.5",
-                        children: "Select a field type to add to your form",
-                      }),
-                    ],
+                  v.jsx("h2", {
+                    id: nlsTitleId,
+                    className: "nls-modal__title",
+                    children: "Insert Form Fields",
                   }),
-                  v.jsx("button", {
-                    onClick: o,
-                    className: "p-1.5 hover:bg-gray-100 rounded-lg transition-colors",
-                    "aria-label": "Close modal",
-                    children: v.jsx(qa, {
-                      size: 20,
-                      className: "text-gray-600",
-                    }),
+                  v.jsx("p", {
+                    className: "nls-modal__desc",
+                    children: "Select a field type to add to your form",
                   }),
                 ],
               }),
-              v.jsx("div", {
-                className: "px-6 py-4 border-b border-gray-200 bg-white",
-                children: v.jsxs("div", {
-                  className: "relative",
-                  children: [
-                    v.jsx(Px, {
-                      className:
-                        "nexulesuite_field-picker-search-icon absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10",
-                      size: 18,
-                    }),
-                    v.jsx("input", {
-                      type: "text",
-                      placeholder: "Search fields by name...",
-                      value: d,
-                      onChange: (h) => u(h.target.value),
-                      autoFocus: !0,
-                      className:
-                        "nexulesuite_field-picker-search-input w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm",
-                    }),
-                  ],
+              v.jsx("button", {
+                type: "button",
+                onClick: o,
+                className: "nls-icon-btn",
+                "aria-label": "Close modal",
+                children: v.jsx(qa, {
+                  size: 18,
+                  "aria-hidden": "true",
                 }),
               }),
-              v.jsx("div", {
-                className: "flex-1 overflow-auto p-6",
-                children:
-                  p.length === 0
-                    ? v.jsxs("div", {
-                        className: "flex flex-col items-center justify-center h-full text-center",
-                        children: [
-                          v.jsx("p", {
-                            className: "text-gray-500 text-lg",
-                            children: "No fields found",
-                          }),
-                          v.jsx("p", {
-                            className: "text-gray-400 text-sm mt-2",
-                            children: "Try adjusting your search",
-                          }),
-                        ],
-                      })
-                    : (() => {
-                        const fields = p.filter((h) => (h.row || 0) !== 0);
-                        const layouts = p.filter((h) => (h.row || 0) === 0);
-                        return v.jsxs("div", {
-                          className: "nexulesuite_fui-picker space-y-5",
-                          children: [
-                            v.jsx("div", {
-                              className: "grid grid-cols-3 gap-3",
-                              children: fields.map((h) =>
+            ],
+          }),
+          v.jsx("div", {
+            className: "nls-fb-picker__search",
+            children: v.jsxs("div", {
+              className: "nls-input-icon",
+              children: [
+                v.jsx(Px, {
+                  "aria-hidden": "true",
+                }),
+                v.jsx("input", {
+                  type: "text",
+                  placeholder: "Search fields by name...",
+                  value: d,
+                  onChange: (h) => u(h.target.value),
+                  autoFocus: !0,
+                  "data-autofocus": "",
+                  "aria-label": "Search fields",
+                }),
+              ],
+            }),
+          }),
+          v.jsx("div", {
+            className: "nls-modal__body nls-fb-picker__body",
+            children:
+              p.length === 0
+                ? v.jsxs("div", {
+                    className: "nls-empty-inline",
+                    children: [
+                      v.jsx("p", {
+                        className: "nls-fb-empty-title",
+                        children: "No fields found",
+                      }),
+                      v.jsx("p", {
+                        children: "Try adjusting your search",
+                      }),
+                    ],
+                  })
+                : (() => {
+                    const fields = p.filter((h) => (h.row || 0) !== 0);
+                    const layouts = p.filter((h) => (h.row || 0) === 0);
+                    return v.jsxs("div", {
+                      className: "nexulesuite_fui-picker nls-fb-picker",
+                      children: [
+                        v.jsx("div", {
+                          className: "nls-fb-picker__grid",
+                          children: fields.map((h) =>
+                            v.jsxs(
+                              "button",
+                              {
+                                type: "button",
+                                onClick: () => {
+                                  (i(h), o());
+                                },
+                                className: "nexulesuite_fui-picker__item nls-fb-picker__item",
+                                children: [
+                                  v.jsx("span", {
+                                    className: "nls-fb-picker__icon",
+                                    "aria-hidden": "true",
+                                    children: h.icon,
+                                  }),
+                                  v.jsx("h3", {
+                                    className: "nls-fb-picker__name",
+                                    children: h.name,
+                                  }),
+                                ],
+                              },
+                              h.id,
+                            ),
+                          ),
+                        }),
+                        layouts.length
+                          ? v.jsx("div", {
+                              className: "nls-fb-picker__grid",
+                              children: layouts.map((h) =>
                                 v.jsxs(
                                   "button",
                                   {
@@ -489,16 +487,15 @@ function FieldPickerModal({ isOpen: a, onClose: o, onSelect: i }) {
                                     onClick: () => {
                                       (i(h), o());
                                     },
-                                    className:
-                                      "nexulesuite_fui-picker__item p-3 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all group flex flex-col items-center text-center min-h-[96px]",
+                                    className: "nexulesuite_fui-picker__item nls-fb-picker__item is-layout",
                                     children: [
-                                      v.jsx("div", {
-                                        className:
-                                          "nexulesuite_field-picker-icon mb-2 text-slate-600 group-hover:scale-110 transition-transform",
+                                      v.jsx("span", {
+                                        className: "nls-fb-picker__icon",
+                                        "aria-hidden": "true",
                                         children: h.icon,
                                       }),
                                       v.jsx("h3", {
-                                        className: "font-semibold text-gray-900 text-xs leading-tight",
+                                        className: "nls-fb-picker__name",
                                         children: h.name,
                                       }),
                                     ],
@@ -506,41 +503,11 @@ function FieldPickerModal({ isOpen: a, onClose: o, onSelect: i }) {
                                   h.id,
                                 ),
                               ),
-                            }),
-                            layouts.length
-                              ? v.jsx("div", {
-                                  className: "grid grid-cols-3 gap-3",
-                                  children: layouts.map((h) =>
-                                    v.jsxs(
-                                      "button",
-                                      {
-                                        type: "button",
-                                        onClick: () => {
-                                          (i(h), o());
-                                        },
-                                        className:
-                                          "nexulesuite_fui-picker__item p-3 border border-dashed border-gray-200 rounded-lg hover:border-blue-400 hover:bg-slate-50 flex flex-col items-center text-center min-h-[96px]",
-                                        children: [
-                                          v.jsx("div", {
-                                            className: "mb-2 text-slate-500",
-                                            children: h.icon,
-                                          }),
-                                          v.jsx("h3", {
-                                            className: "font-semibold text-gray-800 text-xs",
-                                            children: h.name,
-                                          }),
-                                        ],
-                                      },
-                                      h.id,
-                                    ),
-                                  ),
-                                })
-                              : null,
-                          ],
-                        });
-                      })(),
-              }),
-            ],
+                            })
+                          : null,
+                      ],
+                    });
+                  })(),
           }),
         ],
       })
@@ -571,21 +538,20 @@ function FieldCard({
   var y, P, M, T, F, V, z;
   const U = d === (a == null ? void 0 : a.id) && !!i,
     w = Qe.useMemo(
-      () =>
-        U && (i === "top" || i === "bottom" || i === "left" || i === "right") ? "ring-2 ring-blue-400 ring-inset" : "",
+      () => (U && (i === "top" || i === "bottom" || i === "left" || i === "right") ? "is-drop-target" : ""),
       [U, i],
     );
   return v.jsxs("div", {
-    className: "relative group",
+    className: "nls-fb-field-wrap group",
     children: [
       v.jsx("button", {
         type: "button",
         onClick: u,
-        className:
-          "absolute -top-2.5 -right-2.5 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md hover:bg-red-600 z-10",
+        className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--danger nls-fb-field__remove",
         "aria-label": "Remove field",
         children: v.jsx(qa, {
-          size: 18,
+          size: 14,
+          "aria-hidden": "true",
         }),
       }),
       v.jsxs("div", {
@@ -608,10 +574,7 @@ function FieldCard({
           (f == null || f(null, null),
             W && W !== (a == null ? void 0 : a.id) && (S == null || S(W, a == null ? void 0 : a.id, I)));
         },
-        className: [
-          "flex items-start gap-3 p-4 border border-gray-200 rounded-lg bg-white hover:border-blue-400 hover:shadow-lg transition-all group-hover:bg-blue-50 cursor-pointer",
-          w,
-        ].join(" "),
+        className: ["nls-fb-field", w].join(" "),
         children: [
           v.jsx("div", {
             draggable: !0,
@@ -627,11 +590,11 @@ function FieldCard({
                 h == null || h(a == null ? void 0 : a.id));
             },
             onDragEnd: () => (x == null ? void 0 : x()),
-            className: "text-gray-400 mt-0.5 flex-shrink-0 cursor-grab active:cursor-grabbing",
+            className: "nls-fb-field__handle",
             "aria-label": "Drag to move",
             title: "Drag to move",
             children: v.jsx(Tx, {
-              size: 20,
+              size: 18,
             }),
           }),
           v.jsx("div", {
@@ -640,7 +603,7 @@ function FieldCard({
               className: "flex items-start gap-3",
               children: [
                 v.jsx("div", {
-                  className: "p-2 rounded-lg flex-shrink-0 mt-0.5",
+                  className: "nls-fb-field__ico",
                   style: {
                     backgroundColor:
                       ((y = a == null ? void 0 : a.settings) == null ? void 0 : y.backgroundColor) || "#ffffff",
@@ -656,10 +619,10 @@ function FieldCard({
                   }),
                 }),
                 v.jsxs("div", {
-                  className: "flex-1",
+                  className: "flex-1 min-w-0",
                   children: [
                     v.jsx("h3", {
-                      className: "font-semibold text-sm",
+                      className: "nls-fb-field__title",
                       style: {
                         color: ((M = a == null ? void 0 : a.settings) == null ? void 0 : M.textColor) || "#000000",
                       },
@@ -669,18 +632,18 @@ function FieldCard({
                     }),
                     ((V = a == null ? void 0 : a.settings) == null ? void 0 : V.helpText) &&
                       v.jsx("p", {
-                        className: "text-xs text-gray-600 mt-1",
+                        className: "nls-fb-field__hint",
                         children: a.settings.helpText,
                       }),
                     v.jsxs("div", {
-                      className: "flex items-center gap-2 mt-2 text-xs text-gray-500",
+                      className: "nls-fb-field__meta",
                       children: [
                         v.jsxs("span", {
                           children: ["Width: ", (a == null ? void 0 : a.columnSpan) || 1, "/4"],
                         }),
                         ((z = a == null ? void 0 : a.settings) == null ? void 0 : z.required) &&
                           v.jsx("span", {
-                            className: "text-red-600 font-semibold",
+                            className: "nls-badge nls-badge--danger",
                             children: "Required",
                           }),
                         (a == null ? void 0 : a.settings) != null &&
@@ -689,11 +652,12 @@ function FieldCard({
                         Array.isArray(a.settings.conditional.rules) &&
                         a.settings.conditional.rules.length
                           ? v.jsxs("span", {
-                              className: "inline-flex items-center gap-1 font-semibold text-violet-600",
+                              className: "nls-badge nls-badge--primary",
                               children: [
                                 v.jsx(Ex, {
                                   size: 12,
                                   className: "rotate-90",
+                                  "aria-hidden": "true",
                                 }),
                                 "Conditional",
                               ],
@@ -720,7 +684,7 @@ function $x({ block: a, dnd: o, onSelectField: i, onRemoveField: d }) {
     x = Array.isArray((p = a == null ? void 0 : a.layout) == null ? void 0 : p.items) ? a.layout.items : [],
     f = h === 1 ? "grid-cols-1" : h === 2 ? "grid-cols-2" : h === 3 ? "grid-cols-3" : "grid-cols-4";
   return v.jsx("div", {
-    className: "rounded-xl border border-slate-200 bg-white p-4",
+    className: "nls-fb-layout",
     children: v.jsx("div", {
       className: ["grid gap-3", f].join(" "),
       children: Array.from({
@@ -781,52 +745,46 @@ function FieldList({ blocks: a, onSelectField: o, onRemoveField: i, onInsertFiel
       }),
       [h, f, y, u],
     );
-  return v.jsx("div", {
-    className: "bg-white rounded-lg border border-gray-200 shadow-sm",
-    children: v.jsxs("div", {
-      className: "p-6 sm:p-8",
-      children: [
-        v.jsx("h2", {
-          className: "text-lg font-semibold text-gray-900 mb-6",
-          children: "Form Fields",
-        }),
-        p.length === 0
-          ? v.jsxs("div", {
-              className: "py-10",
-              children: [
-                v.jsxs("div", {
-                  className: "text-center",
-                  children: [
-                    v.jsx("div", {
-                      className:
-                        "mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500",
-                      children: v.jsx("svg", {
-                        className: "h-5 w-5",
-                        fill: "none",
-                        stroke: "currentColor",
-                        viewBox: "0 0 24 24",
-                        children: v.jsx("path", {
-                          strokeLinecap: "round",
-                          strokeLinejoin: "round",
-                          strokeWidth: 2,
-                          d: "M7 7h10M7 12h10M7 17h10",
-                        }),
-                      }),
-                    }),
-                    v.jsx("p", {
-                      className: "text-xs text-slate-500",
-                      children: "You haven't added any fields yet. Add form fields to get started.",
-                    }),
-                  ],
+  return v.jsxs("div", {
+    className: "nls-fb-canvas",
+    children: [
+      v.jsx("h2", {
+        className: "nls-fb-canvas__title",
+        children: "Form Fields",
+      }),
+      p.length === 0
+        ? v.jsxs("div", {
+            className: "nls-empty nls-fb-canvas__empty",
+            children: [
+              v.jsx("div", {
+                className: "nls-empty__icon",
+                "aria-hidden": "true",
+                children: v.jsx("svg", {
+                  className: "h-5 w-5",
+                  fill: "none",
+                  stroke: "currentColor",
+                  viewBox: "0 0 24 24",
+                  children: v.jsx("path", {
+                    strokeLinecap: "round",
+                    strokeLinejoin: "round",
+                    strokeWidth: 2,
+                    d: "M7 7h10M7 12h10M7 17h10",
+                  }),
                 }),
-                v.jsxs("button", {
+              }),
+              v.jsx("p", {
+                className: "nls-empty__desc",
+                children: "You haven't added any fields yet. Add form fields to get started.",
+              }),
+              v.jsx("div", {
+                className: "nls-empty__actions nls-fb-canvas__empty-actions",
+                children: v.jsxs("button", {
                   type: "button",
                   onClick: () => d(null),
-                  className:
-                    "mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white py-4 text-xs font-semibold uppercase tracking-wide text-slate-600 hover:bg-slate-50",
+                  className: "nls-btn nls-btn--dashed nls-btn--block",
                   children: [
                     v.jsx("span", {
-                      className: "text-slate-500",
+                      "aria-hidden": "true",
                       children: "+",
                     }),
                     v.jsx("span", {
@@ -834,59 +792,58 @@ function FieldList({ blocks: a, onSelectField: o, onRemoveField: i, onInsertFiel
                     }),
                   ],
                 }),
-              ],
-            })
-          : v.jsxs("div", {
-              className: "space-y-4",
-              children: [
-                p.map((T) =>
-                  (T == null ? void 0 : T.kind) === "layout"
-                    ? v.jsx(
-                        $x,
-                        {
-                          block: T,
-                          dnd: M,
-                          onSelectField: o,
-                          onRemoveField: i,
-                        },
-                        T.id,
-                      )
-                    : v.jsx(
-                        FieldCard,
-                        {
-                          field: T,
-                          draggingId: M.draggingId,
-                          hoverEdge: M.hoverEdge,
-                          hoverTargetId: M.hoverTargetId,
-                          onDragStart: M.onDragStart,
-                          onDragEnd: M.onDragEnd,
-                          onHoverEdge: M.onHoverEdge,
-                          onDropEdge: M.onDropEdge,
-                          onRemove: () => i(T.id),
-                          onEdit: () => o(T.id),
-                        },
-                        T.id,
-                      ),
-                ),
-                v.jsxs("button", {
-                  type: "button",
-                  onClick: () => d(null),
-                  className:
-                    "mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white py-3 text-xs font-semibold uppercase tracking-wide text-slate-600 hover:bg-slate-50",
-                  children: [
-                    v.jsx("span", {
-                      className: "text-slate-500",
-                      children: "+",
-                    }),
-                    v.jsx("span", {
-                      children: "Insert Form Fields",
-                    }),
-                  ],
-                }),
-              ],
-            }),
-      ],
-    }),
+              }),
+            ],
+          })
+        : v.jsxs("div", {
+            className: "nls-stack nls-stack--tight nls-fb-canvas__list",
+            children: [
+              p.map((T) =>
+                (T == null ? void 0 : T.kind) === "layout"
+                  ? v.jsx(
+                      $x,
+                      {
+                        block: T,
+                        dnd: M,
+                        onSelectField: o,
+                        onRemoveField: i,
+                      },
+                      T.id,
+                    )
+                  : v.jsx(
+                      FieldCard,
+                      {
+                        field: T,
+                        draggingId: M.draggingId,
+                        hoverEdge: M.hoverEdge,
+                        hoverTargetId: M.hoverTargetId,
+                        onDragStart: M.onDragStart,
+                        onDragEnd: M.onDragEnd,
+                        onHoverEdge: M.onHoverEdge,
+                        onDropEdge: M.onDropEdge,
+                        onRemove: () => i(T.id),
+                        onEdit: () => o(T.id),
+                      },
+                      T.id,
+                    ),
+              ),
+              v.jsxs("button", {
+                type: "button",
+                onClick: () => d(null),
+                className: "nls-btn nls-btn--dashed nls-btn--block",
+                children: [
+                  v.jsx("span", {
+                    "aria-hidden": "true",
+                    children: "+",
+                  }),
+                  v.jsx("span", {
+                    children: "Insert Form Fields",
+                  }),
+                ],
+              }),
+            ],
+          }),
+    ],
   });
 }
 function Zn(a, o = null) {
@@ -1251,22 +1208,20 @@ function FormCanvas({ form: a, onPatchForm: o, onSelectionChange: i }) {
     children: [
       (a == null ? void 0 : a.formType) === "multi" &&
         v.jsxs("div", {
-          className: "flex flex-wrap items-center gap-2 mb-4",
+          className: "nls-fb-steps",
           children: [
             v.jsx("div", {
-              className: "flex flex-wrap items-center gap-2",
+              className: "nls-pills",
+              role: "group",
+              "aria-label": "Steps",
               children: T.map((I, C) =>
                 v.jsx(
                   "button",
                   {
                     type: "button",
                     onClick: () => M(I.id),
-                    className: [
-                      "rounded-lg px-3 py-2 text-xs font-semibold border transition-colors",
-                      P === I.id
-                        ? "bg-blue-50 border-blue-200 text-blue-700"
-                        : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50",
-                    ].join(" "),
+                    className: ["nls-pill", P === I.id ? "is-active" : ""].join(" "),
+                    "aria-pressed": P === I.id,
                     title: I.title || `Step ${C + 1}`,
                     children: I.title || `Step ${C + 1}`,
                   },
@@ -1292,11 +1247,11 @@ function FormCanvas({ form: a, onPatchForm: o, onSelectionChange: i }) {
                 }),
                   M(I));
               },
-              className:
-                "ml-auto inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700",
+              className: "nls-btn nls-btn--primary nls-btn--sm nls-fb-steps__add",
               children: [
                 v.jsx(Ax, {
                   size: 16,
+                  "aria-hidden": "true",
                 }),
                 "Add Step",
               ],
@@ -1449,20 +1404,20 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
     },
     me = j.addressParts || {};
   return v.jsxs("div", {
-    className: "space-y-6",
+    className: "nls-fb-fs",
     children: [
       v.jsxs("div", {
-        className: "flex items-center justify-between",
+        className: "nls-fb-fs__head",
         children: [
           v.jsxs("div", {
             className: "min-w-0",
             children: [
               v.jsx("p", {
-                className: "text-sm font-semibold text-slate-800",
+                className: "nls-fb-fs__title",
                 children: "Field Settings",
               }),
               v.jsx("p", {
-                className: "mt-0.5 text-xs text-slate-400 truncate",
+                className: "nls-fb-fs__sub truncate",
                 children: ((d = a == null ? void 0 : a.module) == null ? void 0 : d.name) || "Field",
               }),
             ],
@@ -1470,96 +1425,94 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
           v.jsx("button", {
             type: "button",
             onClick: i,
-            className:
-              "inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-700",
+            className: "nls-icon-btn",
             "aria-label": "Close field settings",
             children: v.jsx(qa, {
-              className: "h-4 w-4",
+              size: 16,
+              "aria-hidden": "true",
             }),
           }),
         ],
       }),
-      v.jsxs("div", {
-        className: "rounded-xl border border-slate-200 bg-white",
+      v.jsxs("section", {
+        className: "nls-fb-fs__group",
         children: [
-          v.jsx("div", {
-            className: "border-b border-slate-200 px-4 py-3",
-            children: v.jsx("p", {
-              className: "text-sm font-semibold text-slate-800",
-              children: "Field Labels",
-            }),
+          v.jsx("p", {
+            className: "nls-fb-fs__group-title",
+            children: "Field Labels",
           }),
           v.jsxs("div", {
-            className: "p-4 space-y-4",
+            className: "nls-stack nls-stack--tight",
             children: [
               v.jsxs("div", {
+                className: "nls-field",
                 children: [
-                  v.jsx("label", {
-                    className: "mb-1.5 block text-sm font-semibold text-slate-700",
-                    children: "Field Label",
-                  }),
-                  v.jsx("input", {
-                    type: "text",
-                    value: j.label || "",
-                    onChange: (B) => C("label", B.target.value),
-                    className:
-                      "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
-                    placeholder: "Field label",
+                  v.jsxs("label", {
+                    className: "nls-field",
+                    children: [
+                      v.jsx("span", {
+                        className: "nls-field__label",
+                        children: "Field Label",
+                      }),
+                      v.jsx("input", {
+                        type: "text",
+                        value: j.label || "",
+                        onChange: (B) => C("label", B.target.value),
+                        placeholder: "Field label",
+                      }),
+                    ],
                   }),
                   v.jsxs("label", {
-                    className: "mt-3 flex items-center gap-2 text-sm text-slate-700",
+                    className: "nls-check",
                     children: [
                       v.jsx("input", {
                         type: "checkbox",
                         checked: j.showLabel !== !1,
                         onChange: (B) => C("showLabel", B.target.checked),
-                        className: "h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-200",
                       }),
                       "Show label",
                     ],
                   }),
                 ],
               }),
-              v.jsxs("div", {
+              v.jsxs("label", {
+                className: "nls-field",
                 children: [
-                  v.jsx("label", {
-                    className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                  v.jsx("span", {
+                    className: "nls-field__label",
                     children: "Placeholder",
                   }),
                   v.jsx("input", {
                     type: "text",
                     value: j.placeholder || "",
                     onChange: (B) => C("placeholder", B.target.value),
-                    className:
-                      "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                     placeholder: "Placeholder text",
                   }),
                 ],
               }),
-              v.jsxs("div", {
+              v.jsxs("label", {
+                className: "nls-field",
                 children: [
-                  v.jsx("label", {
-                    className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                  v.jsx("span", {
+                    className: "nls-field__label",
                     children: "Help Text",
                   }),
                   v.jsx("textarea", {
                     value: j.helpText || "",
                     onChange: (B) => C("helpText", B.target.value),
-                    className:
-                      "w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none ring-violet-200 focus:ring-2",
+                    className: "nls-fb-ta-sm",
                     rows: 2,
                     placeholder: "Help text for users",
                   }),
                 ],
               }),
               v.jsxs("label", {
-                className: "flex items-center gap-2 text-sm text-slate-700",
+                className: "nls-check",
                 children: [
                   v.jsx("input", {
                     type: "checkbox",
                     checked: !!j.required,
                     onChange: (B) => C("required", B.target.checked),
-                    className: "h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-200",
                   }),
                   "Required",
                 ],
@@ -1569,28 +1522,27 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
         ],
       }),
       (u === "radio" || u === "checkbox" || u === "dropdown") &&
-        v.jsxs("div", {
-          className: "space-y-4 rounded-xl border border-slate-200 bg-white p-4",
+        v.jsxs("section", {
+          className: "nls-fb-fs__group",
           children: [
             v.jsxs("div", {
-              className: "flex items-center justify-between gap-3",
+              className: "nls-between",
               children: [
                 v.jsx("p", {
-                  className: "text-sm font-semibold text-slate-800",
+                  className: "nls-fb-fs__group-title",
                   children: "Options",
                 }),
                 (u === "radio" || u === "checkbox") &&
-                  v.jsxs("div", {
-                    className: "flex items-center gap-2",
+                  v.jsxs("label", {
+                    className: "nls-inline-field",
                     children: [
                       v.jsx("span", {
-                        className: "text-xs font-semibold text-slate-400",
                         children: "Layout",
                       }),
                       v.jsxs("select", {
                         value: j.optionLayout || "vertical",
                         onChange: (B) => C("optionLayout", B.target.value),
-                        className: "h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm outline-none",
+                        className: "nls-fb-sel-auto",
                         children: [
                           v.jsx("option", {
                             value: "vertical",
@@ -1607,20 +1559,21 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
               ],
             }),
             v.jsx("div", {
-              className: "space-y-3",
+              className: "nls-stack nls-stack--tight",
               children: te.map((B, ee) =>
                 v.jsxs(
                   "div",
                   {
-                    className: "flex items-end gap-2",
+                    className: "nls-input-group nls-fb-option-row",
                     children: [
                       v.jsxs("div", {
-                        className: "grid grid-cols-2 gap-3 min-w-0 flex-1",
+                        className: "nls-grid-2 nls-fb-option-row__fields",
                         children: [
-                          v.jsxs("div", {
+                          v.jsxs("label", {
+                            className: "nls-field",
                             children: [
-                              v.jsx("label", {
-                                className: "mb-1 block text-xs font-semibold text-slate-400",
+                              v.jsx("span", {
+                                className: "nls-field__label",
                                 children: "Label",
                               }),
                               v.jsx("input", {
@@ -1637,15 +1590,14 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                                   );
                                   C("options", X);
                                 },
-                                className:
-                                  "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none",
                               }),
                             ],
                           }),
-                          v.jsxs("div", {
+                          v.jsxs("label", {
+                            className: "nls-field",
                             children: [
-                              v.jsx("label", {
-                                className: "mb-1 block text-xs font-semibold text-slate-400",
+                              v.jsx("span", {
+                                className: "nls-field__label",
                                 children: "Value",
                               }),
                               v.jsx("input", {
@@ -1662,8 +1614,7 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                                   );
                                   C("options", X);
                                 },
-                                className:
-                                  "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none font-mono",
+                                className: "nls-mono",
                               }),
                             ],
                           }),
@@ -1679,10 +1630,10 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                         },
                         "aria-label": "Remove option",
                         title: te.length <= 1 ? "At least one option is required" : "Remove option",
-                        className:
-                          "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500 disabled:pointer-events-none disabled:opacity-40",
+                        className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--danger nls-fb-option-row__remove",
                         children: v.jsx(yt, {
-                          size: 16,
+                          size: 14,
+                          "aria-hidden": "true",
                         }),
                       }),
                     ],
@@ -1703,25 +1654,21 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                 ];
                 C("options", B);
               },
-              className:
-                "mt-1 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-200 bg-white py-2.5 text-sm font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-700",
+              className: "nls-btn nls-btn--dashed nls-btn--sm nls-btn--block",
               children: "+ Add Option",
             }),
           ],
         }),
       u === "address" &&
-        v.jsxs("div", {
-          className: "rounded-xl border border-slate-200 bg-white",
+        v.jsxs("section", {
+          className: "nls-fb-fs__group",
           children: [
-            v.jsx("div", {
-              className: "border-b border-slate-200 px-4 py-3",
-              children: v.jsx("p", {
-                className: "text-sm font-semibold text-slate-800",
-                children: "Customize Address Field",
-              }),
+            v.jsx("p", {
+              className: "nls-fb-fs__group-title",
+              children: "Customize Address Field",
             }),
             v.jsx("div", {
-              className: "divide-y divide-slate-200",
+              className: "nls-fb-fs__rows",
               children: [
                 ["address1", "Address"],
                 ["address2", "Apartment, suite, etc."],
@@ -1737,13 +1684,13 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                 return v.jsxs(
                   "div",
                   {
-                    className: "px-4 py-3",
+                    className: "nls-fb-fs__row",
                     children: [
                       v.jsxs("div", {
-                        className: "flex items-center justify-between gap-3",
+                        className: "nls-between",
                         children: [
                           v.jsxs("label", {
-                            className: "flex items-center gap-3 text-sm font-semibold text-slate-700",
+                            className: "nls-check nls-fb-fs__row-check",
                             children: [
                               v.jsx("input", {
                                 type: "checkbox",
@@ -1757,7 +1704,6 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                                     },
                                   });
                                 },
-                                className: "h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-200",
                               }),
                               v.jsx("span", {
                                 children: ee,
@@ -1765,13 +1711,14 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                             ],
                           }),
                           v.jsx("span", {
-                            className: "text-slate-400",
+                            className: "nls-muted",
+                            "aria-hidden": "true",
                             children: "▾",
                           }),
                         ],
                       }),
                       v.jsx("div", {
-                        className: "mt-3",
+                        className: "nls-fb-fs__row-input",
                         children: v.jsx("input", {
                           type: "text",
                           disabled: !_.enabled,
@@ -1785,13 +1732,8 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                               },
                             });
                           },
-                          className: [
-                            "h-10 w-full rounded-lg border px-3 text-sm outline-none",
-                            _.enabled
-                              ? "border-slate-200 bg-white ring-violet-200 focus:ring-2"
-                              : "border-slate-100 bg-slate-50 text-slate-400",
-                          ].join(" "),
                           placeholder: ee,
+                          "aria-label": ee + " label",
                         }),
                       }),
                     ],
@@ -1803,23 +1745,21 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
           ],
         }),
       u === "terms-conditions" &&
-        v.jsxs("div", {
-          className: "rounded-xl border border-slate-200 bg-white",
+        v.jsxs("section", {
+          className: "nls-fb-fs__group",
           children: [
-            v.jsx("div", {
-              className: "border-b border-slate-200 px-4 py-3",
-              children: v.jsx("p", {
-                className: "text-sm font-semibold text-slate-800",
-                children: "Customize Consent Field",
-              }),
+            v.jsx("p", {
+              className: "nls-fb-fs__group-title",
+              children: "Customize Consent Field",
             }),
             v.jsxs("div", {
-              className: "p-4 space-y-4",
+              className: "nls-stack nls-stack--tight",
               children: [
-                v.jsxs("div", {
+                v.jsxs("label", {
+                  className: "nls-field",
                   children: [
-                    v.jsx("label", {
-                      className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                    v.jsx("span", {
+                      className: "nls-field__label",
                       children: "Label",
                     }),
                     v.jsx("input", {
@@ -1830,20 +1770,20 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                           ...le,
                           label: B.target.value,
                         }),
-                      className:
-                        "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                       placeholder: "Terms & Condition",
                     }),
                   ],
                 }),
                 v.jsxs("div", {
-                  className: "rounded-xl border border-slate-200 overflow-hidden",
+                  className: "nls-fb-editor",
                   children: [
                     v.jsxs("div", {
-                      className: "flex items-center justify-between border-b border-slate-200 bg-white",
+                      className: "nls-fb-editor__bar",
                       children: [
                         v.jsx("div", {
-                          className: "flex",
+                          className: "nls-seg",
+                          role: "group",
+                          "aria-label": "Editor mode",
                           children: [
                             ["visual", "Visual"],
                             ["code", "Code"],
@@ -1857,12 +1797,8 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                                     ...le,
                                     mode: B,
                                   }),
-                                className: [
-                                  "px-4 py-2 text-sm font-semibold",
-                                  (le.mode || "visual") === B
-                                    ? "text-slate-800 bg-slate-50"
-                                    : "text-slate-400 hover:text-slate-700",
-                                ].join(" "),
+                                className: ["nls-seg__btn", (le.mode || "visual") === B ? "is-active" : ""].join(" "),
+                                "aria-pressed": (le.mode || "visual") === B,
                                 children: ee,
                               },
                               B,
@@ -1877,7 +1813,7 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                               html: (le.html || "") + " {field}",
                             });
                           },
-                          className: "px-4 py-2 text-sm font-semibold text-sky-600 hover:text-sky-700",
+                          className: "nls-btn nls-btn--ghost nls-btn--sm",
                           children: "+ Insert form fields",
                         }),
                       ],
@@ -1890,15 +1826,14 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                               ...le,
                               html: B.target.value,
                             }),
-                          className: "w-full min-h-40 resize-none bg-white px-4 py-3 font-mono text-sm outline-none",
+                          className: "nls-fb-editor__ta nls-mono",
                           placeholder: "Yes, I agree with the privacy policy...",
                         })
                       : v.jsxs("div", {
-                          className: "border-t border-slate-200 bg-white",
+                          className: "nls-fb-editor__visual",
                           children: [
                             v.jsxs("div", {
-                              className:
-                                "flex items-center gap-2 px-4 py-2 border-b border-slate-200 text-slate-500 text-sm",
+                              className: "nls-fb-editor__tools",
                               children: [
                                 v.jsx("button", {
                                   type: "button",
@@ -1907,7 +1842,9 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                                       ...le,
                                       html: `<strong>${le.html || ""}</strong>`,
                                     }),
-                                  className: "px-2 py-1 rounded hover:bg-slate-50 font-semibold",
+                                  className: "nls-icon-btn nls-icon-btn--sm nls-fb-editor__tool is-bold",
+                                  "aria-label": "Bold",
+                                  title: "Bold",
                                   children: "B",
                                 }),
                                 v.jsx("button", {
@@ -1917,7 +1854,9 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                                       ...le,
                                       html: `<em>${le.html || ""}</em>`,
                                     }),
-                                  className: "px-2 py-1 rounded hover:bg-slate-50 italic",
+                                  className: "nls-icon-btn nls-icon-btn--sm nls-fb-editor__tool is-italic",
+                                  "aria-label": "Italic",
+                                  title: "Italic",
                                   children: "I",
                                 }),
                                 v.jsx("button", {
@@ -1927,7 +1866,9 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                                       ...le,
                                       html: `<a href="#" target="_blank" rel="noopener noreferrer">${le.html || "link"}</a>`,
                                     }),
-                                  className: "px-2 py-1 rounded hover:bg-slate-50",
+                                  className: "nls-icon-btn nls-icon-btn--sm nls-fb-editor__tool",
+                                  "aria-label": "Insert link",
+                                  title: "Insert link",
                                   children: "🔗",
                                 }),
                               ],
@@ -1939,7 +1880,7 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                                   ...le,
                                   html: B.target.value,
                                 }),
-                              className: "w-full min-h-40 resize-none bg-white px-4 py-3 text-sm outline-none",
+                              className: "nls-fb-editor__ta",
                               placeholder: "Yes, I agree with the privacy policy...",
                             }),
                           ],
@@ -1947,7 +1888,7 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                   ],
                 }),
                 v.jsx("p", {
-                  className: "text-xs text-slate-400",
+                  className: "nls-field__hint",
                   children: "Describe what your users should consent to.",
                 }),
               ],
@@ -1956,32 +1897,31 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
         }),
       ,
       u === "recaptcha" &&
-        v.jsxs("div", {
-          className: "rounded-xl border border-slate-200 bg-white p-4",
+        v.jsxs("section", {
+          className: "nls-fb-fs__group",
           children: [
             v.jsx("p", {
-              className: "text-sm font-semibold text-slate-800",
+              className: "nls-fb-fs__group-title",
               children: "Google reCAPTCHA",
             }),
             v.jsx("p", {
-              className: "mt-1 text-xs text-slate-400",
+              className: "nls-field__hint",
               children:
                 "Use reCAPTCHA v2 (checkbox) or v3 (invisible score). Keys must match the type you select in Google Admin.",
             }),
             v.jsxs("div", {
-              className: "mt-4 space-y-4",
+              className: "nls-stack nls-stack--tight nls-fb-fs__stack",
               children: [
-                v.jsxs("div", {
+                v.jsxs("label", {
+                  className: "nls-field",
                   children: [
-                    v.jsx("label", {
-                      className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                    v.jsx("span", {
+                      className: "nls-field__label",
                       children: "API version",
                     }),
                     v.jsxs("select", {
                       value: N,
                       onChange: (B) => H(B.target.value),
-                      className:
-                        "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                       children: [
                         v.jsx("option", {
                           value: "v2",
@@ -1996,10 +1936,11 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                   ],
                 }),
                 N === "v3"
-                  ? v.jsxs("div", {
+                  ? v.jsxs("label", {
+                      className: "nls-field",
                       children: [
-                        v.jsx("label", {
-                          className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                        v.jsx("span", {
+                          className: "nls-field__label",
                           children: "Minimum score (0–1)",
                         }),
                         v.jsx("input", {
@@ -2009,104 +1950,110 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                           step: "0.05",
                           value: W,
                           onChange: (B) => I(B.target.value),
-                          className:
-                            "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                         }),
-                        v.jsx("p", {
-                          className: "mt-1 text-xs text-slate-400",
+                        v.jsx("span", {
+                          className: "nls-field__hint",
                           children: "Higher = stricter (typical: 0.5; try 0.7 to block more bots).",
                         }),
                       ],
                     })
                   : null,
-                v.jsxs("div", {
+                v.jsxs("label", {
+                  className: "nls-field",
                   children: [
-                    v.jsx("label", {
-                      className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                    v.jsx("span", {
+                      className: "nls-field__label",
                       children: "Site Key",
                     }),
                     v.jsx("input", {
                       type: "text",
                       value: T,
                       onChange: (B) => F(B.target.value),
-                      className:
-                        "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                       placeholder: "Enter your site key here",
                     }),
                   ],
                 }),
-                v.jsxs("div", {
+                v.jsxs("label", {
+                  className: "nls-field",
                   children: [
-                    v.jsx("label", {
-                      className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                    v.jsx("span", {
+                      className: "nls-field__label",
                       children: "Secret Key",
                     }),
                     v.jsx("input", {
                       type: "password",
                       value: V,
                       onChange: (B) => z(B.target.value),
-                      className:
-                        "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                       placeholder: "Enter your secret key here",
                     }),
                     U
-                      ? v.jsxs("p", {
-                          className: "mt-1 text-xs text-slate-400",
+                      ? v.jsxs("span", {
+                          className: "nls-field__hint",
                           children: ["Saved secret: ", U],
                         })
                       : null,
                   ],
                 }),
-                v.jsx("button", {
-                  type: "button",
-                  disabled: x,
-                  onClick: async () => {
-                    (f(!0), y(""), M(""));
-                    try {
-                      const B = await J("/nexulesuite_/v1/captcha/recaptcha", {
-                          method: "POST",
-                          body: JSON.stringify({
-                            siteKey: T,
-                            secretKey: V,
-                            apiVersion: N,
-                            scoreThreshold: parseFloat(W) || 0.5,
-                          }),
-                        }),
-                        ee = (B == null ? void 0 : B.data) || {};
-                      (z(""), w(ee.secretMasked || ""), M("Saved."), window.setTimeout(() => M(""), 1500));
-                    } catch (B) {
-                      y((B == null ? void 0 : B.message) || "Save failed.");
-                    } finally {
-                      f(!1);
-                    }
-                  },
-                  className:
-                    "nexulesuite_fp-save-btn rounded-lg px-4 py-2 text-sm font-semibold" + (x ? " is-loading" : ""),
-                  children: x ? "Saving…" : "Save Keys",
+                v.jsxs("div", {
+                  className: "nls-row",
+                  children: [
+                    v.jsx("button", {
+                      type: "button",
+                      disabled: x,
+                      onClick: async () => {
+                        (f(!0), y(""), M(""));
+                        try {
+                          const B = await J("/nexulesuite_/v1/captcha/recaptcha", {
+                              method: "POST",
+                              body: JSON.stringify({
+                                siteKey: T,
+                                secretKey: V,
+                                apiVersion: N,
+                                scoreThreshold: parseFloat(W) || 0.5,
+                              }),
+                            }),
+                            ee = (B == null ? void 0 : B.data) || {};
+                          (z(""), w(ee.secretMasked || ""), M("Saved."), window.setTimeout(() => M(""), 1500));
+                        } catch (B) {
+                          y((B == null ? void 0 : B.message) || "Save failed.");
+                        } finally {
+                          f(!1);
+                        }
+                      },
+                      className: "nls-btn nls-btn--primary nls-btn--sm" + (x ? " is-loading" : ""),
+                      children: x ? "Saving…" : "Save Keys",
+                    }),
+                    v.jsxs("span", {
+                      className: "nls-fb-fs__status",
+                      "aria-live": "polite",
+                      children: [
+                        S
+                          ? v.jsx("span", {
+                              className: "nls-field__error",
+                              children: S,
+                            })
+                          : null,
+                        P
+                          ? v.jsx("span", {
+                              className: "nls-fb-fs__ok",
+                              children: P,
+                            })
+                          : null,
+                      ],
+                    }),
+                  ],
                 }),
-                S
-                  ? v.jsx("p", {
-                      className: "text-xs font-semibold text-rose-600",
-                      children: S,
-                    })
-                  : null,
-                P
-                  ? v.jsx("p", {
-                      className: "text-xs font-semibold text-emerald-600",
-                      children: P,
-                    })
-                  : null,
               ],
             }),
             v.jsxs("div", {
-              className: "mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-4",
+              className: "nls-fb-fs__preview",
               children: [
                 v.jsx("p", {
-                  className: "text-xs font-semibold text-slate-500",
+                  className: "nls-fb-fs__preview-title",
                   children: "reCAPTCHA Preview",
                 }),
                 v.jsx("p", {
-                  className: "mt-1 text-xs text-slate-400",
+                  className: "nls-field__hint",
                   children: "Preview is shown on the frontend using your saved Site Key (v2 Checkbox).",
                 }),
               ],
@@ -2114,107 +2061,115 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
           ],
         }),
       u === "cloudflare" &&
-        v.jsxs("div", {
-          className: "rounded-xl border border-slate-200 bg-white p-4",
+        v.jsxs("section", {
+          className: "nls-fb-fs__group",
           children: [
             v.jsx("p", {
-              className: "text-sm font-semibold text-slate-800",
+              className: "nls-fb-fs__group-title",
               children: "Turnstile API Keys",
             }),
             v.jsx("p", {
-              className: "mt-1 text-xs text-slate-400",
+              className: "nls-field__hint",
               children:
                 "Enter your Turnstile API keys below to enable Cloudflare Turnstile option in your form’s CAPTCHA field.",
             }),
             v.jsxs("div", {
-              className: "mt-4 space-y-4",
+              className: "nls-stack nls-stack--tight nls-fb-fs__stack",
               children: [
-                v.jsxs("div", {
+                v.jsxs("label", {
+                  className: "nls-field",
                   children: [
-                    v.jsx("label", {
-                      className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                    v.jsx("span", {
+                      className: "nls-field__label",
                       children: "Site Key",
                     }),
                     v.jsx("input", {
                       type: "text",
                       value: T,
                       onChange: (B) => F(B.target.value),
-                      className:
-                        "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                       placeholder: "Enter your site key here",
                     }),
                   ],
                 }),
-                v.jsxs("div", {
+                v.jsxs("label", {
+                  className: "nls-field",
                   children: [
-                    v.jsx("label", {
-                      className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                    v.jsx("span", {
+                      className: "nls-field__label",
                       children: "Secret Key",
                     }),
                     v.jsx("input", {
                       type: "password",
                       value: V,
                       onChange: (B) => z(B.target.value),
-                      className:
-                        "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                       placeholder: "Enter your secret key here",
                     }),
                     U
-                      ? v.jsxs("p", {
-                          className: "mt-1 text-xs text-slate-400",
+                      ? v.jsxs("span", {
+                          className: "nls-field__hint",
                           children: ["Saved secret: ", U],
                         })
                       : null,
                   ],
                 }),
-                v.jsx("button", {
-                  type: "button",
-                  disabled: x,
-                  onClick: async () => {
-                    (f(!0), y(""), M(""));
-                    try {
-                      const B = await J("/nexulesuite_/v1/captcha/turnstile", {
-                          method: "POST",
-                          body: JSON.stringify({
-                            siteKey: T,
-                            secretKey: V,
-                          }),
-                        }),
-                        ee = (B == null ? void 0 : B.data) || {};
-                      (z(""), w(ee.secretMasked || ""), M("Saved."), window.setTimeout(() => M(""), 1500));
-                    } catch (B) {
-                      y((B == null ? void 0 : B.message) || "Save failed.");
-                    } finally {
-                      f(!1);
-                    }
-                  },
-                  className:
-                    "nexulesuite_fp-save-btn rounded-lg px-4 py-2 text-sm font-semibold" + (x ? " is-loading" : ""),
-                  children: x ? "Saving…" : "Save Keys",
+                v.jsxs("div", {
+                  className: "nls-row",
+                  children: [
+                    v.jsx("button", {
+                      type: "button",
+                      disabled: x,
+                      onClick: async () => {
+                        (f(!0), y(""), M(""));
+                        try {
+                          const B = await J("/nexulesuite_/v1/captcha/turnstile", {
+                              method: "POST",
+                              body: JSON.stringify({
+                                siteKey: T,
+                                secretKey: V,
+                              }),
+                            }),
+                            ee = (B == null ? void 0 : B.data) || {};
+                          (z(""), w(ee.secretMasked || ""), M("Saved."), window.setTimeout(() => M(""), 1500));
+                        } catch (B) {
+                          y((B == null ? void 0 : B.message) || "Save failed.");
+                        } finally {
+                          f(!1);
+                        }
+                      },
+                      className: "nls-btn nls-btn--primary nls-btn--sm" + (x ? " is-loading" : ""),
+                      children: x ? "Saving…" : "Save Keys",
+                    }),
+                    v.jsxs("span", {
+                      className: "nls-fb-fs__status",
+                      "aria-live": "polite",
+                      children: [
+                        S
+                          ? v.jsx("span", {
+                              className: "nls-field__error",
+                              children: S,
+                            })
+                          : null,
+                        P
+                          ? v.jsx("span", {
+                              className: "nls-fb-fs__ok",
+                              children: P,
+                            })
+                          : null,
+                      ],
+                    }),
+                  ],
                 }),
-                S
-                  ? v.jsx("p", {
-                      className: "text-xs font-semibold text-rose-600",
-                      children: S,
-                    })
-                  : null,
-                P
-                  ? v.jsx("p", {
-                      className: "text-xs font-semibold text-emerald-600",
-                      children: P,
-                    })
-                  : null,
               ],
             }),
             v.jsxs("div", {
-              className: "mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-4",
+              className: "nls-fb-fs__preview",
               children: [
                 v.jsx("p", {
-                  className: "text-xs font-semibold text-slate-500",
+                  className: "nls-fb-fs__preview-title",
                   children: "Turnstile widget preview",
                 }),
                 v.jsx("p", {
-                  className: "mt-1 text-xs text-slate-400",
+                  className: "nls-field__hint",
                   children: "Widget renders on the frontend using your saved Site Key.",
                 }),
               ],
@@ -2222,24 +2177,23 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
           ],
         }),
       u === "name" &&
-        v.jsxs("div", {
-          className: "rounded-xl border border-slate-200 bg-slate-50/40",
+        v.jsxs("section", {
+          className: "nls-fb-fs__group",
           children: [
             v.jsxs("div", {
-              className: "border-b border-slate-200 bg-white px-4 py-3",
               children: [
                 v.jsx("p", {
-                  className: "text-sm font-semibold text-slate-800",
+                  className: "nls-fb-fs__group-title",
                   children: "Customize Name Field",
                 }),
                 v.jsx("p", {
-                  className: "mt-0.5 text-xs text-slate-400",
+                  className: "nls-field__hint",
                   children: "Field Labels",
                 }),
               ],
             }),
             v.jsx("div", {
-              className: "space-y-4 p-4",
+              className: "nls-stack nls-stack--tight nls-fb-fs__stack",
               children: [
                 ["prefix", "Prefix"],
                 ["first", "First Name"],
@@ -2254,17 +2208,17 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                 return v.jsxs(
                   "div",
                   {
-                    className: "grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-3",
+                    className: "nls-fb-part",
                     children: [
                       v.jsxs("div", {
-                        className: "flex items-center justify-between",
+                        className: "nls-between",
                         children: [
                           v.jsx("p", {
-                            className: "text-sm font-semibold text-slate-700",
+                            className: "nls-fb-part__title",
                             children: ee,
                           }),
                           v.jsxs("label", {
-                            className: "flex items-center gap-2 text-sm text-slate-700",
+                            className: "nls-check",
                             children: [
                               v.jsx("input", {
                                 type: "checkbox",
@@ -2273,7 +2227,6 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                                   O(B, {
                                     enabled: L.target.checked,
                                   }),
-                                className: "h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-200",
                               }),
                               "Enabled",
                             ],
@@ -2288,13 +2241,8 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                           O(B, {
                             label: L.target.value,
                           }),
-                        className: [
-                          "h-10 w-full rounded-lg border px-3 text-sm outline-none",
-                          X.enabled
-                            ? "border-slate-200 bg-white ring-violet-200 focus:ring-2"
-                            : "border-slate-100 bg-slate-50 text-slate-400",
-                        ].join(" "),
                         placeholder: ee,
+                        "aria-label": ee + " label",
                       }),
                     ],
                   },
@@ -2305,27 +2253,29 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
           ],
         }),
       u === "phone" &&
-        v.jsxs("div", {
-          className: "rounded-xl border border-slate-200 bg-white p-4",
+        v.jsxs("section", {
+          className: "nls-fb-fs__group",
           children: [
             v.jsx("p", {
-              className: "text-sm font-semibold text-slate-800",
+              className: "nls-fb-fs__group-title",
               children: "Validation",
             }),
             v.jsx("p", {
-              className: "mt-1 text-xs text-slate-400",
+              className: "nls-field__hint",
               children:
                 "Make sure the users fill this field as per the selected validation and warn them when they haven't",
             }),
             v.jsxs("div", {
-              className: "mt-4",
+              className: "nls-field nls-fb-fs__stack",
               children: [
                 v.jsx("p", {
-                  className: "mb-2 text-xs font-semibold text-slate-400",
+                  className: "nls-field__label",
                   children: "Type",
                 }),
                 v.jsx("div", {
-                  className: "inline-flex overflow-hidden rounded-lg border border-slate-200 bg-slate-50",
+                  className: "nls-seg nls-fb-seg-wrap",
+                  role: "group",
+                  "aria-label": "Validation type",
                   children: [
                     ["none", "None"],
                     ["national", "National"],
@@ -2342,10 +2292,8 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                             ...pe,
                             type: B,
                           }),
-                        className: [
-                          "px-4 py-2 text-xs font-semibold transition-colors",
-                          _ ? "bg-sky-100 text-sky-700" : "bg-white text-slate-500 hover:bg-slate-50",
-                        ].join(" "),
+                        className: ["nls-seg__btn", _ ? "is-active" : ""].join(" "),
+                        "aria-pressed": _,
                         children: ee,
                       },
                       B,
@@ -2355,11 +2303,11 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
               ],
             }),
             pe.type === "character_limit" &&
-              v.jsxs("div", {
-                className: "mt-4",
+              v.jsxs("label", {
+                className: "nls-field nls-fb-fs__stack",
                 children: [
-                  v.jsx("label", {
-                    className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                  v.jsx("span", {
+                    className: "nls-field__label",
                     children: "Character Limit",
                   }),
                   v.jsx("input", {
@@ -2372,12 +2320,10 @@ function FieldSettingsPanel({ field: a, onUpdate: o, onClose: i }) {
                         ...pe,
                         characterLimit: B.target.value ? parseInt(B.target.value, 10) : 0,
                       }),
-                    className:
-                      "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                     placeholder: "e.g. 11",
                   }),
-                  v.jsx("p", {
-                    className: "mt-1 text-xs text-slate-400",
+                  v.jsx("span", {
+                    className: "nls-field__hint",
                     children: "When enabled, the value should be exactly this length (digits-only recommended).",
                   }),
                 ],
@@ -2499,33 +2445,33 @@ function ConditionalLogicEditor({ field: a, fields: o = [], onChange: i }) {
           });
     };
   return e.jsxs("div", {
-    className: "overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm",
+    className: "nls-card nls-fb-cl",
     children: [
       e.jsxs("button", {
         type: "button",
         onClick: () => S(!d.enabled),
         "aria-pressed": d.enabled,
-        className:
-          "flex w-full items-center justify-between gap-3 border-b border-slate-200 px-4 py-3 text-left transition-colors hover:bg-slate-50",
+        className: "nls-fb-cl__head",
         children: [
           e.jsxs("span", {
-            className: "flex items-center gap-2",
+            className: "nls-section__head",
             children: [
               e.jsx("span", {
-                className: "flex h-7 w-7 flex-none items-center justify-center rounded-lg bg-violet-50 text-violet-600",
+                className: "nls-section__ico",
+                "aria-hidden": "true",
                 children: e.jsx(ji, {
                   size: 15,
                 }),
               }),
               e.jsxs("span", {
-                className: "block",
+                className: "min-w-0",
                 children: [
                   e.jsx("span", {
-                    className: "block text-sm font-semibold text-slate-800",
+                    className: "nls-fb-cl__title",
                     children: "Conditional Logic",
                   }),
                   e.jsx("span", {
-                    className: "block text-xs text-slate-400",
+                    className: "nls-fb-cl__desc",
                     children: "Show or hide this field based on other answers.",
                   }),
                 ],
@@ -2535,27 +2481,23 @@ function ConditionalLogicEditor({ field: a, fields: o = [], onChange: i }) {
           e.jsx("span", {
             role: "switch",
             "aria-checked": d.enabled,
-            className: `relative inline-flex h-6 w-11 flex-none items-center rounded-full transition-colors ${d.enabled ? "bg-violet-600" : "bg-slate-300"}`,
-            children: e.jsx("span", {
-              className: `inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${d.enabled ? "translate-x-[22px]" : "translate-x-0.5"}`,
-            }),
+            className: "nls-switch" + (d.enabled ? " is-on" : ""),
           }),
         ],
       }),
       d.enabled &&
         e.jsx("div", {
-          className: "space-y-4 p-4",
+          className: "nls-card__body nls-fb-cl__body",
           children:
             u.length === 0
               ? e.jsx("p", {
-                  className:
-                    "rounded-lg border border-dashed border-slate-200 bg-slate-50/60 px-3 py-4 text-center text-xs text-slate-500",
+                  className: "nls-empty-inline nls-fb-cl__empty",
                   children: "Add at least one more field to this step to build a condition.",
                 })
               : e.jsxs(e.Fragment, {
                   children: [
                     e.jsxs("div", {
-                      className: "flex flex-wrap items-center gap-2 text-sm text-slate-700",
+                      className: "nls-row nls-fb-cl__sentence",
                       children: [
                         e.jsxs("select", {
                           value: d.action,
@@ -2563,8 +2505,8 @@ function ConditionalLogicEditor({ field: a, fields: o = [], onChange: i }) {
                             p({
                               action: P.target.value,
                             }),
-                          className:
-                            "h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm font-semibold outline-none ring-violet-200 focus:ring-2",
+                          className: "nls-fb-sel-auto",
+                          "aria-label": "Action",
                           children: [
                             e.jsx("option", {
                               value: "show",
@@ -2585,8 +2527,8 @@ function ConditionalLogicEditor({ field: a, fields: o = [], onChange: i }) {
                             p({
                               match: P.target.value,
                             }),
-                          className:
-                            "h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm font-semibold outline-none ring-violet-200 focus:ring-2",
+                          className: "nls-fb-sel-auto",
+                          "aria-label": "Match",
                           children: [
                             e.jsx("option", {
                               value: "all",
@@ -2604,7 +2546,7 @@ function ConditionalLogicEditor({ field: a, fields: o = [], onChange: i }) {
                       ],
                     }),
                     e.jsx("div", {
-                      className: "space-y-2",
+                      className: "nls-stack nls-stack--tight nls-fb-rules",
                       children: d.rules.map((P, M) => {
                         const T = u.find((z) => z.id === P.field),
                           F = T && T.options && T.options.length > 0,
@@ -2612,11 +2554,10 @@ function ConditionalLogicEditor({ field: a, fields: o = [], onChange: i }) {
                         return e.jsxs(
                           "div",
                           {
-                            className:
-                              "grid grid-cols-1 gap-2 rounded-xl border border-slate-200 bg-slate-50/50 p-2 sm:grid-cols-[1fr_auto]",
+                            className: "nls-fb-rule",
                             children: [
                               e.jsxs("div", {
-                                className: "grid grid-cols-1 gap-2 sm:grid-cols-3",
+                                className: "nls-row nls-fb-rule__fields",
                                 children: [
                                   e.jsxs("select", {
                                     value: P.field,
@@ -2624,8 +2565,7 @@ function ConditionalLogicEditor({ field: a, fields: o = [], onChange: i }) {
                                       h(M, {
                                         field: z.target.value,
                                       }),
-                                    className:
-                                      "h-9 min-w-0 rounded-lg border border-slate-200 bg-white px-2 text-sm outline-none ring-violet-200 focus:ring-2",
+                                    "aria-label": "Field",
                                     children: [
                                       e.jsx("option", {
                                         value: "",
@@ -2650,8 +2590,7 @@ function ConditionalLogicEditor({ field: a, fields: o = [], onChange: i }) {
                                       h(M, {
                                         operator: z.target.value,
                                       }),
-                                    className:
-                                      "h-9 min-w-0 rounded-lg border border-slate-200 bg-white px-2 text-sm outline-none ring-violet-200 focus:ring-2",
+                                    "aria-label": "Operator",
                                     children: Yx.map((z) =>
                                       e.jsx(
                                         "option",
@@ -2671,8 +2610,7 @@ function ConditionalLogicEditor({ field: a, fields: o = [], onChange: i }) {
                                             h(M, {
                                               value: z.target.value,
                                             }),
-                                          className:
-                                            "h-9 min-w-0 rounded-lg border border-slate-200 bg-white px-2 text-sm outline-none ring-violet-200 focus:ring-2",
+                                          "aria-label": "Value",
                                           children: [
                                             e.jsx("option", {
                                               value: "",
@@ -2699,11 +2637,10 @@ function ConditionalLogicEditor({ field: a, fields: o = [], onChange: i }) {
                                               value: z.target.value,
                                             }),
                                           placeholder: "Value",
-                                          className:
-                                            "h-9 min-w-0 rounded-lg border border-slate-200 bg-white px-2 text-sm outline-none ring-violet-200 focus:ring-2",
+                                          "aria-label": "Value",
                                         })
                                     : e.jsx("span", {
-                                        className: "flex h-9 items-center px-2 text-xs italic text-slate-400",
+                                        className: "nls-fb-rule__novalue",
                                         children: "no value needed",
                                       }),
                                 ],
@@ -2711,12 +2648,12 @@ function ConditionalLogicEditor({ field: a, fields: o = [], onChange: i }) {
                               e.jsx("button", {
                                 type: "button",
                                 onClick: () => f(M),
-                                className:
-                                  "inline-flex h-9 w-9 items-center justify-center justify-self-end rounded-lg text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600",
+                                className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--danger",
                                 title: "Remove condition",
                                 "aria-label": "Remove condition",
                                 children: e.jsx(yt, {
                                   size: 15,
+                                  "aria-hidden": "true",
                                 }),
                               }),
                             ],
@@ -2728,11 +2665,11 @@ function ConditionalLogicEditor({ field: a, fields: o = [], onChange: i }) {
                     e.jsxs("button", {
                       type: "button",
                       onClick: x,
-                      className:
-                        "inline-flex items-center gap-1.5 rounded-lg border border-dashed border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-600 transition-colors hover:border-violet-300 hover:text-violet-700",
+                      className: "nls-btn nls-btn--dashed nls-btn--sm",
                       children: [
                         e.jsx(dt, {
                           size: 14,
+                          "aria-hidden": "true",
                         }),
                         "Add condition",
                       ],
@@ -2840,15 +2777,14 @@ function ConditionRulesEditor({ cond: a, fields: o, onChange: i }) {
     };
   return o.length === 0
     ? e.jsx("p", {
-        className:
-          "rounded-lg border border-dashed border-slate-200 bg-white px-3 py-3 text-center text-xs text-slate-500",
+        className: "nls-empty-inline nls-fb-cl__empty",
         children: "Add fields to the form to build conditions.",
       })
     : e.jsxs("div", {
-        className: "space-y-2",
+        className: "nls-stack nls-stack--tight nls-fb-rules",
         children: [
           e.jsxs("div", {
-            className: "flex flex-wrap items-center gap-2 text-xs text-slate-600",
+            className: "nls-row nls-fb-cl__sentence nls-text-sm",
             children: [
               e.jsx("span", {
                 children: "Use this when",
@@ -2859,7 +2795,8 @@ function ConditionRulesEditor({ cond: a, fields: o, onChange: i }) {
                   u({
                     match: f.target.value,
                   }),
-                className: "h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-semibold",
+                className: "nls-fb-sel-auto",
+                "aria-label": "Match",
                 children: [
                   e.jsx("option", {
                     value: "all",
@@ -2883,10 +2820,10 @@ function ConditionRulesEditor({ cond: a, fields: o, onChange: i }) {
             return e.jsxs(
               "div",
               {
-                className: "grid grid-cols-[1fr_auto] gap-2 rounded-xl border border-slate-200 bg-white p-2",
+                className: "nls-fb-rule",
                 children: [
                   e.jsxs("div", {
-                    className: "grid grid-cols-1 gap-2 sm:grid-cols-3",
+                    className: "nls-row nls-fb-rule__fields",
                     children: [
                       e.jsxs("select", {
                         value: f.field,
@@ -2894,7 +2831,7 @@ function ConditionRulesEditor({ cond: a, fields: o, onChange: i }) {
                           p(S, {
                             field: T.target.value,
                           }),
-                        className: "h-8 min-w-0 rounded-lg border border-slate-200 bg-white px-2 text-xs",
+                        "aria-label": "Field",
                         children: [
                           e.jsx("option", {
                             value: "",
@@ -2919,7 +2856,7 @@ function ConditionRulesEditor({ cond: a, fields: o, onChange: i }) {
                           p(S, {
                             operator: T.target.value,
                           }),
-                        className: "h-8 min-w-0 rounded-lg border border-slate-200 bg-white px-2 text-xs",
+                        "aria-label": "Operator",
                         children: tf.map((T) =>
                           e.jsx(
                             "option",
@@ -2939,7 +2876,7 @@ function ConditionRulesEditor({ cond: a, fields: o, onChange: i }) {
                                 p(S, {
                                   value: T.target.value,
                                 }),
-                              className: "h-8 min-w-0 rounded-lg border border-slate-200 bg-white px-2 text-xs",
+                              "aria-label": "Value",
                               children: [
                                 e.jsx("option", {
                                   value: "",
@@ -2966,10 +2903,10 @@ function ConditionRulesEditor({ cond: a, fields: o, onChange: i }) {
                                   value: T.target.value,
                                 }),
                               placeholder: "Value",
-                              className: "h-8 min-w-0 rounded-lg border border-slate-200 bg-white px-2 text-xs",
+                              "aria-label": "Value",
                             })
                         : e.jsx("span", {
-                            className: "flex h-8 items-center px-2 text-[11px] italic text-slate-400",
+                            className: "nls-fb-rule__novalue",
                             children: "no value",
                           }),
                     ],
@@ -2977,12 +2914,12 @@ function ConditionRulesEditor({ cond: a, fields: o, onChange: i }) {
                   e.jsx("button", {
                     type: "button",
                     onClick: () => x(S),
-                    className:
-                      "inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600",
+                    className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--danger",
                     title: "Remove condition",
                     "aria-label": "Remove condition",
                     children: e.jsx(yt, {
                       size: 14,
+                      "aria-hidden": "true",
                     }),
                   }),
                 ],
@@ -2993,11 +2930,11 @@ function ConditionRulesEditor({ cond: a, fields: o, onChange: i }) {
           e.jsxs("button", {
             type: "button",
             onClick: h,
-            className:
-              "inline-flex items-center gap-1.5 rounded-lg border border-dashed border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-violet-300 hover:text-violet-700",
+            className: "nls-btn nls-btn--dashed nls-btn--sm",
             children: [
               e.jsx(dt, {
                 size: 14,
+                "aria-hidden": "true",
               }),
               "Add condition",
             ],
@@ -3094,49 +3031,45 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
       ]);
     };
   return e.jsxs("div", {
-    className: "space-y-6",
+    className: "nls-stack nls-fb-behavior",
     children: [
       e.jsxs("section", {
-        className: "nexulesuite_fb-section is-first",
+        className: "nls-section",
         children: [
           e.jsxs("div", {
-            className: "nexulesuite_fb-sec-head",
+            className: "nls-section__head",
             children: [
               e.jsx("span", {
-                className: "nexulesuite_fb-sec-ico",
+                className: "nls-section__ico",
+                "aria-hidden": "true",
                 children: e.jsx(Xn, {
                   size: 16,
                 }),
               }),
-              e.jsx("span", {
-                className: "nexulesuite_fb-sec-title",
-                children: "Submission Behavior",
+              e.jsx("div", {
+                children: e.jsx("p", {
+                  className: "nls-section__title",
+                  children: "Submission Behavior",
+                }),
               }),
             ],
           }),
           e.jsxs("div", {
-            className: "nexulesuite_fui-method",
-            style: {
-              marginBottom: "8px",
-            },
+            className: "nls-field nexulesuite_fui-method",
             children: [
               e.jsx("p", {
-                className: "lbl",
-                style: {
-                  fontWeight: 500,
-                  marginBottom: "4px",
-                },
+                className: "nls-field__label",
                 children: "Method",
               }),
               e.jsxs("div", {
-                style: {
-                  display: "flex",
-                  gap: "8px",
-                },
+                className: "nls-seg nls-fb-seg-wrap",
+                role: "group",
+                "aria-label": "Submission method",
                 children: [
                   e.jsx("button", {
                     type: "button",
-                    className: "button" + (a.submissionMethod !== "reload" ? " button-primary" : ""),
+                    className: "nls-seg__btn" + (a.submissionMethod !== "reload" ? " is-active" : ""),
+                    "aria-pressed": a.submissionMethod !== "reload",
                     onClick: () =>
                       o({
                         submissionMethod: "ajax",
@@ -3145,7 +3078,8 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
                   }),
                   e.jsx("button", {
                     type: "button",
-                    className: "button" + (a.submissionMethod === "reload" ? " button-primary" : ""),
+                    className: "nls-seg__btn" + (a.submissionMethod === "reload" ? " is-active" : ""),
+                    "aria-pressed": a.submissionMethod === "reload",
                     onClick: () =>
                       o({
                         submissionMethod: "reload",
@@ -3155,55 +3089,48 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
                 ],
               }),
               e.jsx("p", {
-                className: "hint",
-                style: {
-                  marginTop: "6px",
-                },
+                className: "nls-field__hint",
                 children: "Ajax submits without reloading the page (recommended).",
               }),
             ],
           }),
-          e.jsx("p", {
-            className: "lbl",
-            style: {
-              fontWeight: 500,
-              marginBottom: "4px",
-            },
-            children: "After submission",
-          }),
-          e.jsx("p", {
-            className: "hint",
-            style: {
-              marginTop: "-2px",
-              marginBottom: "12px",
-            },
-            children:
-              "After a submit, the first confirmation whose conditions match (top to bottom) is used. If none match, the default is shown.",
+          e.jsxs("div", {
+            className: "nls-field",
+            children: [
+              e.jsx("p", {
+                className: "nls-field__label",
+                children: "After submission",
+              }),
+              e.jsx("p", {
+                className: "nls-field__hint",
+                children:
+                  "After a submit, the first confirmation whose conditions match (top to bottom) is used. If none match, the default is shown.",
+              }),
+            ],
           }),
           e.jsx("div", {
-            className: "space-y-3",
+            className: "nls-stack nls-stack--tight",
             children: d.map((F) =>
               e.jsxs(
                 "div",
                 {
-                  className: "overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/60 shadow-sm",
+                  className: "nls-fb-rule-card",
                   children: [
                     e.jsxs("div", {
-                      className: "flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-2",
+                      className: "nls-fb-rule-card__head",
                       children: [
                         F.isDefault
                           ? e.jsx("span", {
-                              className:
-                                "rounded-md bg-violet-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-violet-700",
+                              className: "nls-badge nls-badge--primary",
                               children: "Default",
                             })
                           : e.jsxs("span", {
-                              className: "flex flex-col leading-none text-slate-400",
+                              className: "nls-fb-reorder",
                               children: [
                                 e.jsx("button", {
                                   type: "button",
                                   onClick: () => S(F.id, -1),
-                                  className: "px-1 hover:text-slate-700",
+                                  className: "nls-icon-btn nls-icon-btn--sm nls-fb-reorder__btn",
                                   title: "Move up",
                                   "aria-label": "Move up",
                                   children: "▲",
@@ -3211,7 +3138,7 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
                                 e.jsx("button", {
                                   type: "button",
                                   onClick: () => S(F.id, 1),
-                                  className: "px-1 hover:text-slate-700",
+                                  className: "nls-icon-btn nls-icon-btn--sm nls-fb-reorder__btn",
                                   title: "Move down",
                                   "aria-label": "Move down",
                                   children: "▼",
@@ -3225,8 +3152,8 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
                             h(F.id, {
                               name: V.target.value,
                             }),
-                          className:
-                            "min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-1.5 py-1 text-sm font-semibold text-slate-800 hover:border-slate-200 focus:border-slate-300 focus:bg-white focus:outline-none",
+                          className: "nls-fb-rule-card__name",
+                          "aria-label": "Confirmation name",
                         }),
                         e.jsxs("select", {
                           value: F.type,
@@ -3234,8 +3161,8 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
                             h(F.id, {
                               type: V.target.value,
                             }),
-                          className:
-                            "h-8 flex-none rounded-lg border border-slate-200 bg-white px-2 text-xs font-semibold",
+                          className: "nls-fb-sel-auto",
+                          "aria-label": "Confirmation type",
                           children: [
                             e.jsx("option", {
                               value: "message",
@@ -3251,25 +3178,25 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
                           e.jsx("button", {
                             type: "button",
                             onClick: () => x(F.id),
-                            className:
-                              "inline-flex h-8 w-8 flex-none items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600",
+                            className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--danger",
                             title: "Delete confirmation",
                             "aria-label": "Delete confirmation",
                             children: e.jsx(yt, {
                               size: 15,
+                              "aria-hidden": "true",
                             }),
                           }),
                       ],
                     }),
                     e.jsxs("div", {
-                      className: "space-y-3 p-3",
+                      className: "nls-fb-rule-card__body nls-stack nls-stack--tight",
                       children: [
                         F.type === "redirect"
                           ? e.jsxs("label", {
-                              className: "block",
+                              className: "nls-field",
                               children: [
                                 e.jsx("span", {
-                                  className: "mb-1 block text-xs font-semibold text-slate-600",
+                                  className: "nls-field__label",
                                   children: "Redirect URL",
                                 }),
                                 e.jsx("input", {
@@ -3280,20 +3207,19 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
                                       redirectUrl: V.target.value,
                                     }),
                                   placeholder: "https://example.com/thank-you",
-                                  className: "h-9 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-sm",
                                 }),
                                 e.jsx("span", {
-                                  className: "mt-1 block text-[11px] text-slate-400",
+                                  className: "nls-field__hint",
                                   children:
                                     "Visitor is sent here after submit — a page URL on your site or any external URL.",
                                 }),
                               ],
                             })
                           : e.jsxs("div", {
-                              className: "block",
+                              className: "nls-field",
                               children: [
                                 e.jsx("span", {
-                                  className: "mb-1.5 block text-xs font-semibold text-slate-600",
+                                  className: "nls-field__label",
                                   children: "Success message",
                                 }),
                                 (function () {
@@ -3301,21 +3227,16 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
                                     isShort = msg === nlsSuccessMsgShort,
                                     isDefault = !msg || msg === nlsSuccessMsgDefault;
                                   return e.jsxs("div", {
-                                    className: "mb-2 space-y-1.5",
+                                    className: "nls-fb-presets",
                                     role: "radiogroup",
                                     "aria-label": "Success message",
                                     children: [
                                       e.jsxs("label", {
-                                        className:
-                                          "flex cursor-pointer items-start gap-2 rounded-lg border px-2.5 py-2 text-[11px] leading-snug " +
-                                          (isDefault
-                                            ? "border-violet-400 bg-violet-50 text-slate-800"
-                                            : "border-slate-200 bg-white text-slate-600"),
+                                        className: "nls-fb-preset" + (isDefault ? " is-active" : ""),
                                         children: [
                                           e.jsx("input", {
                                             type: "radio",
                                             name: "nls-success-msg-" + F.id,
-                                            className: "mt-0.5",
                                             checked: !!isDefault,
                                             onChange: () =>
                                               h(F.id, {
@@ -3328,16 +3249,11 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
                                         ],
                                       }),
                                       e.jsxs("label", {
-                                        className:
-                                          "flex cursor-pointer items-start gap-2 rounded-lg border px-2.5 py-2 text-[11px] leading-snug " +
-                                          (isShort
-                                            ? "border-violet-400 bg-violet-50 text-slate-800"
-                                            : "border-slate-200 bg-white text-slate-600"),
+                                        className: "nls-fb-preset" + (isShort ? " is-active" : ""),
                                         children: [
                                           e.jsx("input", {
                                             type: "radio",
                                             name: "nls-success-msg-" + F.id,
-                                            className: "mt-0.5",
                                             checked: !!isShort,
                                             onChange: () =>
                                               h(F.id, {
@@ -3360,17 +3276,17 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
                                     }),
                                   rows: 5,
                                   placeholder: nlsSuccessMsgDefault,
-                                  className: "w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm",
+                                  "aria-label": "Success message text",
                                 }),
                                 e.jsx("span", {
-                                  className: "mt-1 block text-[11px] text-slate-400",
+                                  className: "nls-field__hint",
                                   children: "Select a preset or edit the message. Shown after submit.",
                                 }),
                               ],
                             }),
                         !F.isDefault &&
                           e.jsx("div", {
-                            className: "rounded-xl border border-slate-200 bg-white p-2.5",
+                            className: "nls-fb-rule-card__cond",
                             children: e.jsx(ConditionRulesEditor, {
                               cond: F.conditional,
                               fields: i,
@@ -3391,11 +3307,11 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
           e.jsxs("button", {
             type: "button",
             onClick: f,
-            className:
-              "mt-3 inline-flex items-center gap-1.5 rounded-lg border border-dashed border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:border-violet-300 hover:text-violet-700",
+            className: "nls-btn nls-btn--dashed nls-btn--sm nls-fb-self-start",
             children: [
               e.jsx(dt, {
                 size: 14,
+                "aria-hidden": "true",
               }),
               "+ ADD BEHAVIOR",
             ],
@@ -3403,42 +3319,43 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
         ],
       }),
       e.jsxs("section", {
-        className: "nexulesuite_fb-section",
+        className: "nls-section",
         children: [
           e.jsxs("div", {
-            className: "nexulesuite_fb-sec-head",
+            className: "nls-section__head",
             children: [
               e.jsx("span", {
-                className: "nexulesuite_fb-sec-ico is-amber",
+                className: "nls-section__ico nls-section__ico--warning",
+                "aria-hidden": "true",
                 children: e.jsx(qt, {
                   size: 16,
                 }),
               }),
-              e.jsx("span", {
-                className: "nexulesuite_fb-sec-title",
-                children: "Conditional email routing",
+              e.jsxs("div", {
+                children: [
+                  e.jsx("p", {
+                    className: "nls-section__title",
+                    children: "Conditional email routing",
+                  }),
+                  e.jsx("p", {
+                    className: "nls-section__desc",
+                    children:
+                      "Also send the submission notification to extra recipient(s) when conditions match — on top of the base notification email.",
+                  }),
+                ],
               }),
             ],
           }),
-          e.jsx("p", {
-            className: "hint",
-            style: {
-              marginTop: "-6px",
-              marginBottom: "12px",
-            },
-            children:
-              "Also send the submission notification to extra recipient(s) when conditions match — on top of the base notification email.",
-          }),
           e.jsx("div", {
-            className: "space-y-3",
+            className: "nls-stack nls-stack--tight",
             children: u.map((F) =>
               e.jsxs(
                 "div",
                 {
-                  className: "overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/60 shadow-sm",
+                  className: "nls-fb-rule-card",
                   children: [
                     e.jsxs("div", {
-                      className: "flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-2",
+                      className: "nls-fb-rule-card__head",
                       children: [
                         e.jsx("input", {
                           type: "text",
@@ -3448,23 +3365,24 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
                               recipient: V.target.value,
                             }),
                           placeholder: "sales@example.com, other@example.com",
-                          className: "min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm",
+                          className: "nls-fb-rule-card__name",
+                          "aria-label": "Recipients",
                         }),
                         e.jsx("button", {
                           type: "button",
                           onClick: () => M(F.id),
-                          className:
-                            "inline-flex h-8 w-8 flex-none items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600",
+                          className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--danger",
                           title: "Delete route",
                           "aria-label": "Delete route",
                           children: e.jsx(yt, {
                             size: 15,
+                            "aria-hidden": "true",
                           }),
                         }),
                       ],
                     }),
                     e.jsx("div", {
-                      className: "p-3",
+                      className: "nls-fb-rule-card__body",
                       children: e.jsx(ConditionRulesEditor, {
                         cond: F.conditional,
                         fields: i,
@@ -3483,11 +3401,11 @@ function FormBehaviorSettings({ form: a, onUpdate: o }) {
           e.jsxs("button", {
             type: "button",
             onClick: T,
-            className:
-              "mt-3 inline-flex items-center gap-1.5 rounded-lg border border-dashed border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:border-amber-300 hover:text-amber-700",
+            className: "nls-btn nls-btn--dashed nls-btn--sm nls-fb-self-start",
             children: [
               e.jsx(dt, {
                 size: 14,
+                "aria-hidden": "true",
               }),
               "+ ADD EMAIL NOTIFICATION",
             ],
@@ -3643,83 +3561,182 @@ function nlsApplyGlobalToAllFields(a, o) {
     },
   }));
 }
-function AddFormModal({ open: a, onClose: o, onSelect: i, onPreview: d }) {
-  if (!a) return null;
-  const u = cf;
-  return e.jsxs(e.Fragment, {
-    children: [
-      e.jsx("div", {
-        className: "fixed inset-0 z-40 bg-black/50 transition-opacity",
-        onClick: o,
-      }),
-      e.jsxs("div", {
-        className:
-          "fixed left-1/2 top-1/2 z-50 flex max-h-[85vh] w-[92vw] max-w-4xl -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl bg-white shadow-2xl",
+function nlsTemplateFields({ fields: a }) {
+  return a != null && a.length
+    ? e.jsx("div", {
+        className: "nls-fb-tpl__fields",
+        children: a.map((o, i) => {
+          const d = Zn(o.moduleId);
+          return e.jsx(
+            "span",
+            {
+              className: "nls-badge nls-badge--muted",
+              children: (d && d.name) || o.moduleId,
+            },
+            i,
+          );
+        }),
+      })
+    : e.jsxs("div", {
+        className: "nls-fb-tpl__empty",
         children: [
-          e.jsxs("div", {
-            className: "flex items-start justify-between border-b border-slate-200 px-6 py-5",
+          e.jsx("span", {
+            className: "nls-fb-tpl__empty-ico",
+            "aria-hidden": "true",
+            children: e.jsx(dt, {
+              size: 18,
+            }),
+          }),
+          e.jsx("span", {
+            className: "nls-fb-tpl__empty-title",
+            children: "Start from scratch",
+          }),
+          e.jsx("span", {
+            className: "nls-fb-tpl__empty-sub",
+            children: "Add your own fields",
+          }),
+        ],
+      });
+}
+function TemplateCard({ icon: a, name: o, tagline: i, fields: d, onClick: u, onPreview: p }) {
+  return e.jsxs("div", {
+    className: "nls-card nls-fb-tpl",
+    children: [
+      e.jsxs("button", {
+        type: "button",
+        onClick: u,
+        className: "nls-fb-tpl__main",
+        children: [
+          e.jsxs("span", {
+            className: "nls-fb-tpl__head",
             children: [
-              e.jsxs("div", {
+              e.jsx("span", {
+                className: "nls-fb-tpl__ico",
+                "aria-hidden": "true",
+                children: a.node,
+              }),
+              e.jsxs("span", {
+                className: "min-w-0",
                 children: [
-                  e.jsx("h2", {
-                    className: "text-xl font-bold text-slate-900",
-                    children: "Add a Form",
+                  e.jsx("span", {
+                    className: "nls-fb-tpl__name truncate",
+                    children: o,
                   }),
-                  e.jsx("p", {
-                    className: "mt-0.5 text-xs text-slate-500",
-                    children: "Start from a ready-made template or build one from scratch.",
+                  e.jsx("span", {
+                    className: "nls-fb-tpl__tagline truncate",
+                    children: i,
                   }),
                 ],
               }),
-              e.jsx("button", {
+            ],
+          }),
+          e.jsx(nlsTemplateFields, {
+            fields: d,
+          }),
+        ],
+      }),
+      p
+        ? e.jsxs("div", {
+            className: "nls-fb-tpl__foot",
+            children: [
+              e.jsx("span", {
+                className: "nls-fb-tpl__hint",
+                children: "Click card to use",
+              }),
+              e.jsxs("button", {
                 type: "button",
-                onClick: o,
-                className: "rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100",
-                "aria-label": "Close",
-                children: e.jsx(_t, {
-                  size: 20,
-                }),
+                onClick: p,
+                className: "nls-btn nls-btn--ghost nls-btn--sm",
+                children: [
+                  e.jsx(Rt, {
+                    size: 14,
+                    "aria-hidden": "true",
+                  }),
+                  "Preview",
+                ],
+              }),
+            ],
+          })
+        : null,
+    ],
+  });
+}
+function AddFormModal({ open: a, onClose: o, onSelect: i, onPreview: d }) {
+  const nlsTitleId = b.useId();
+  if (!a) return null;
+  const u = cf;
+  return e.jsxs(ModalShell, {
+    open: a,
+    onClose: o,
+    labelledBy: nlsTitleId,
+    size: "lg",
+    className: "nls-fb-add-modal",
+    children: [
+      e.jsxs("div", {
+        className: "nls-modal__header",
+        children: [
+          e.jsxs("div", {
+            className: "min-w-0",
+            children: [
+              e.jsx("h2", {
+                id: nlsTitleId,
+                className: "nls-modal__title",
+                children: "Add a Form",
+              }),
+              e.jsx("p", {
+                className: "nls-modal__desc",
+                children: "Start from a ready-made template or build one from scratch.",
               }),
             ],
           }),
-          e.jsxs("div", {
-            className: "grid grid-cols-1 gap-3 overflow-y-auto px-6 py-5 sm:grid-cols-2 lg:grid-cols-3",
-            children: [
-              e.jsx(TemplateCard, {
+          e.jsx("button", {
+            type: "button",
+            onClick: o,
+            className: "nls-icon-btn",
+            "aria-label": "Close",
+            children: e.jsx(_t, {
+              size: 18,
+              "aria-hidden": "true",
+            }),
+          }),
+        ],
+      }),
+      e.jsxs("div", {
+        className: "nls-modal__body nls-fb-templates",
+        children: [
+          e.jsx(TemplateCard, {
+            icon: {
+              node: e.jsx(u, {
+                size: 20,
+              }),
+              accent: Ui.slate,
+            },
+            name: "Blank Simple Form",
+            tagline: "Start from scratch",
+            fields: [],
+            onClick: () => i(null),
+          }),
+          FORM_TEMPLATES_PAGE.map((p) => {
+            const h = p.Icon;
+            return e.jsx(
+              TemplateCard,
+              {
                 icon: {
-                  node: e.jsx(u, {
+                  node: e.jsx(h, {
                     size: 20,
                   }),
-                  accent: Ui.slate,
+                  accent: Ui[p.accent] || Ui.violet,
                 },
-                name: "Blank Simple Form",
-                tagline: "Start from scratch",
-                fields: [],
-                onClick: () => i(null),
-              }),
-              FORM_TEMPLATES_PAGE.map((p) => {
-                const h = p.Icon;
-                return e.jsx(
-                  TemplateCard,
-                  {
-                    icon: {
-                      node: e.jsx(h, {
-                        size: 20,
-                      }),
-                      accent: Ui[p.accent] || Ui.violet,
-                    },
-                    name: p.name,
-                    tagline: p.tagline,
-                    fields: p.fields.map(([x]) => ({
-                      moduleId: x,
-                    })),
-                    onClick: () => i(p),
-                    onPreview: () => (d == null ? void 0 : d(p)),
-                  },
-                  p.id,
-                );
-              }),
-            ],
+                name: p.name,
+                tagline: p.tagline,
+                fields: p.fields.map(([x]) => ({
+                  moduleId: x,
+                })),
+                onClick: () => i(p),
+                onPreview: () => (d == null ? void 0 : d(p)),
+              },
+              p.id,
+            );
           }),
         ],
       }),
@@ -3763,10 +3780,10 @@ function copyShortcode(a, o) {
 function FormColorField({ label: a, value: o, onChange: i }) {
   const d = o || "#ffffff";
   return e.jsxs("div", {
-    className: "nexulesuite_fb-color-field",
+    className: "nls-field nexulesuite_fb-color-field",
     children: [
       e.jsx("span", {
-        className: "lbl",
+        className: "nls-field__label",
         children: a,
       }),
       e.jsxs("div", {
@@ -3781,6 +3798,7 @@ function FormColorField({ label: a, value: o, onChange: i }) {
               type: "color",
               value: d,
               onChange: (u) => i(u.target.value),
+              "aria-label": a,
             }),
           }),
           e.jsx("input", {
@@ -3791,6 +3809,7 @@ function FormColorField({ label: a, value: o, onChange: i }) {
               let p = u.target.value.trim();
               (p && !p.startsWith("#") && (p = `#${p}`), i(p));
             },
+            "aria-label": a + " hex value",
           }),
         ],
       }),
@@ -3885,3494 +3904,108 @@ function FormCard({
   const [nlsGlobalBusy, nlsSetGlobalBusy] = b.useState(!1);
   const [nlsGlobalMsg, nlsSetGlobalMsg] = b.useState("");
   return a.formType !== "multi"
-    ? e.jsx("li", {
-        className: "nexulesuite_form-builder-wrap",
-        children: e.jsxs("div", {
-          className: `nexulesuite_fb-card${o ? " is-expanded" : ""}`,
-          children: [
-            e.jsxs("div", {
-              className: "nexulesuite_fb-head",
-              children: [
-                e.jsxs("button", {
-                  type: "button",
-                  onClick: d,
-                  className: "nexulesuite_fb-head-main",
-                  children: [
-                    e.jsx("span", {
-                      className: "nexulesuite_fb-title",
-                      children: a.name || "Untitled Form",
-                    }),
-                    e.jsx("span", {
-                      className: "nexulesuite_fb-badge",
-                      children: "Simple",
-                    }),
-                    a.published === !1
-                      ? e.jsx("span", {
-                          className: "nexulesuite_fb-badge is-muted",
-                          children: "Hidden",
-                        })
-                      : null,
-                  ],
-                }),
-                e.jsxs("div", {
-                  className: "nexulesuite_fb-actions",
-                  onClick: (w) => w.stopPropagation(),
-                  children: [
-                    e.jsx("button", {
-                      type: "button",
-                      onClick: () => (y == null ? void 0 : y(a.id)),
-                      className: "nexulesuite_fb-icon-btn",
-                      title: "Preview",
-                      children: e.jsx(Rt, {
-                        size: 16,
-                      }),
-                    }),
-                    e.jsx("button", {
-                      type: "button",
-                      onClick: () => (P == null ? void 0 : P(a.id, a.published === !1)),
-                      className: `nexulesuite_fb-icon-btn${a.published === !1 ? " is-warn" : ""}`,
-                      title: a.published === !1 ? "Show form on website" : "Hide form on website",
-                      children:
-                        a.published === !1
-                          ? e.jsx(Rt, {
-                              size: 16,
-                            })
-                          : e.jsx(za, {
-                              size: 16,
-                            }),
-                    }),
-                    e.jsx("button", {
-                      type: "button",
-                      onClick: () => copyShortcode(a.id, S),
-                      className: `nexulesuite_fb-icon-btn${f === a.id ? " is-success" : ""}`,
-                      title: "Copy shortcode",
-                      children: e.jsx(Jc, {
-                        size: 16,
-                      }),
-                    }),
-                    e.jsx("button", {
-                      type: "button",
-                      onClick: () => p(a.id),
-                      className: "nexulesuite_fb-icon-btn",
-                      title: "Duplicate",
-                      children: e.jsx($s, {
-                        size: 16,
-                      }),
-                    }),
-                    e.jsx("button", {
-                      type: "button",
-                      onClick: () => u(a.id),
-                      className: "nexulesuite_fb-icon-btn is-danger",
-                      title: "Delete",
-                      children: e.jsx(yt, {
-                        size: 16,
-                      }),
-                    }),
-                    e.jsx("button", {
-                      type: "button",
-                      onClick: () => nlsExportFormConfig(a),
-                      className: "nexulesuite_fb-icon-btn",
-                      title: "Export form",
-                      children: e.jsx(Ol, {
-                        size: 16,
-                      }),
-                    }),
-                    e.jsx("button", {
-                      type: "button",
-                      onClick: () =>
-                        nlsPickFormImport((w) =>
-                          nlsOnImport
-                            ? nlsOnImport(a.id, w)
-                            : h(
-                                a.id,
-                                normalizeForm({
-                                  ...w,
-                                  id: a.id,
-                                }),
-                              ),
-                        ),
-                      className: "nexulesuite_fb-icon-btn",
-                      title: "Import form",
-                      children: e.jsx(Vl, {
-                        size: 16,
-                      }),
-                    }),
-                    e.jsx("button", {
-                      type: "button",
-                      onClick: d,
-                      className: "nexulesuite_fb-icon-btn nexulesuite_fb-chevron",
-                      title: o ? "Collapse" : "Expand",
-                      children: e.jsx(Qs, {
-                        size: 16,
-                        className: o ? "is-open" : "",
-                      }),
-                    }),
-                  ],
-                }),
-              ],
-            }),
-            o &&
-              e.jsxs("div", {
-                className: "nexulesuite_fui-workspace",
-                children: [
-                  e.jsxs("div", {
-                    className: "nexulesuite_fb-name-row",
-                    children: [
-                      e.jsxs("div", {
-                        className: "nexulesuite_fb-field",
-                        children: [
-                          e.jsx("span", {
-                            className: "lbl",
-                            children: "Form Name",
-                          }),
-                          e.jsx("input", {
-                            type: "text",
-                            className: "inp",
-                            value: a.name,
-                            onChange: (w) =>
-                              h(a.id, {
-                                name: w.target.value,
-                              }),
-                          }),
-                        ],
-                      }),
-                      e.jsxs("div", {
-                        className: "nexulesuite_fb-shortcode-col",
-                        children: [
-                          e.jsx("span", {
-                            className: "lbl",
-                            children: "Shortcode",
-                          }),
-                          e.jsxs("div", {
-                            className: "nexulesuite_fb-shortcode-row",
-                            children: [
-                              e.jsxs("code", {
-                                className: "nexulesuite_fb-shortcode",
-                                children: ['[nexulesuite_form id="', a.id, '"]'],
-                              }),
-                              e.jsx("button", {
-                                type: "button",
-                                onClick: () => copyShortcode(a.id, S),
-                                className: `nexulesuite_fb-copy-btn${f === a.id ? " is-copied" : ""}`,
-                                children: f === a.id ? "Copied!" : "Copy",
-                              }),
-                            ],
-                          }),
-                        ],
-                      }),
-                    ],
-                  }),
-                  e.jsxs("div", {
-                    className: "nexulesuite_fui-canvas",
-                    children: [
-                      e.jsx("div", {
-                        className: "nexulesuite_fui-canvas-card",
-                        children: e.jsx(FormCanvas, {
-                          form: a,
-                          onPatchForm: (w) => h(a.id, w),
-                          onSelectionChange: a.onSelectionChange,
-                        }),
-                      }),
-                      e.jsx("div", {
-                        className: "nexulesuite_fui-canvas-foot",
-                        children: e.jsx("button", {
-                          type: "button",
-                          className: "nexulesuite_fui-next",
-                          onClick: () => {
-                            nlsSetNavOpen("appearance");
-                            nlsSetFuiView("appearance");
-                            nlsSetAccOpen("");
-                            nlsSetColorSub("");
-                            x("customization");
-                          },
-                          children: "Appearance →",
-                        }),
-                      }),
-                    ],
-                  }),
-                  e.jsxs("aside", {
-                    className: "nexulesuite_fui-side",
-                    children: [
-                      e.jsx("p", {
-                        className: "nexulesuite_fui-side__label",
-                        children: "Customize form",
-                      }),
-                      e.jsxs("div", {
-                        className: "nexulesuite_fui-acc nexulesuite_fui-nav-acc",
-                        children: [
-                          ["fields", "Form Fields"],
-                          ["appearance", "Appearance"],
-                          ["behavior", "Behavior"],
-                          ["notify", "Notifications & Integrations"],
-                          ["settings", "Settings"],
-                        ].map(function (pair) {
-                          var mk = pair[0],
-                            lab = pair[1];
-                          var open = nlsNavOpen === mk;
-                          return e.jsxs(
-                            "div",
-                            {
-                              className: "nexulesuite_fui-acc__item" + (open ? " is-open" : ""),
-                              children: [
-                                e.jsxs("button", {
-                                  type: "button",
-                                  className: "nexulesuite_fui-acc__head nexulesuite_fui-acc__trigger",
-                                  "aria-expanded": !!open,
-                                  "aria-controls": "nls-acc-panel-" + mk,
-                                  id: "nls-acc-trigger-" + mk,
-                                  onClick: function () {
-                                    if (open) {
-                                      nlsSetNavOpen("");
-                                      return;
-                                    }
-                                    nlsSetNavOpen(mk);
-                                    nlsSetAccOpen("");
-                                    nlsSetColorSub("");
-                                    nlsSetNotifyAcc("");
-                                    nlsSetSettingsAcc("");
-                                    if (mk === "fields") {
-                                      nlsSetFuiView("menu");
-                                      x("fields");
-                                    } else if (mk === "appearance") {
-                                      nlsSetFuiView("appearance");
-                                      nlsSetAccOpen("colors");
-                                      x("styling");
-                                    } else if (mk === "behavior") {
-                                      nlsSetFuiView("behavior");
-                                      x("confirmations");
-                                    } else if (mk === "notify") {
-                                      nlsSetFuiView("notify");
-                                      nlsSetNotifyAcc("email");
-                                      x("advanced");
-                                    } else {
-                                      nlsSetFuiView("settings");
-                                      nlsSetSettingsAcc("visibility");
-                                      x("advanced");
-                                    }
-                                  },
-                                  children: [
-                                    e.jsx("span", {
-                                      className: "nexulesuite_fui-acc__label",
-                                      children: lab,
-                                    }),
-                                    e.jsx("span", {
-                                      className: "nexulesuite_fui-acc__indicator",
-                                      "aria-hidden": "true",
-                                      children: nlsAccPlus(open),
-                                    }),
-                                  ],
-                                }),
-                                open
-                                  ? e.jsx("div", {
-                                      id: "nls-acc-panel-" + mk,
-                                      role: "region",
-                                      "aria-labelledby": "nls-acc-trigger-" + mk,
-                                      className:
-                                        "nexulesuite_fui-acc__body nexulesuite_fui-acc__content nexulesuite_fui-nav-acc__panel",
-                                      children:
-                                        mk === "appearance"
-                                          ? e.jsxs("div", {
-                                              className: "nexulesuite_fui-acc",
-                                              children: [
-                                                ["presets", "Global Appearance Presets"],
-                                                ["style", "Style"],
-                                                ["colors", "Colors"],
-                                                ["fonts", "Fonts"],
-                                                ["layout", "Layout and Spacing"],
-                                              ].map(function (pair) {
-                                                var k = pair[0];
-                                                var lab = pair[1];
-                                                var open = nlsAccOpen === k;
-                                                return e.jsxs(
-                                                  "div",
-                                                  {
-                                                    className: "nexulesuite_fui-acc__item" + (open ? " is-open" : ""),
-                                                    children: [
-                                                      e.jsxs("button", {
-                                                        type: "button",
-                                                        className: "nexulesuite_fui-acc__head",
-                                                        onClick: function () {
-                                                          nlsSetAccOpen(open ? "" : k);
-                                                          nlsSetColorSub("");
-                                                          if (k === "colors" || k === "style") x("styling");
-                                                          else if (k === "css") x("advanced");
-                                                          else x("customization");
-                                                        },
-                                                        children: [
-                                                          e.jsxs("span", {
-                                                            className: "nexulesuite_fui-acc__left",
-                                                            children: [
-                                                              nlsAccIcon(k),
-                                                              e.jsx("span", {
-                                                                className: "nexulesuite_fui-acc__label",
-                                                                children: lab,
-                                                              }),
-                                                            ],
-                                                          }),
-                                                          nlsAccPlus(open),
-                                                        ],
-                                                      }),
-                                                      open
-                                                        ? e.jsx("div", {
-                                                            className: "nexulesuite_fui-acc__body",
-                                                            children:
-                                                              k === "colors"
-                                                                ? e.jsxs("div", {
-                                                                    children: [
-                                                                      e.jsxs("label", {
-                                                                        className: "nexulesuite_fui-toggle",
-                                                                        children: [
-                                                                          e.jsx("input", {
-                                                                            type: "checkbox",
-                                                                            checked: nlsColorOn,
-                                                                            onChange: function (H) {
-                                                                              nlsSetColorOn(!!H.target.checked);
-                                                                            },
-                                                                          }),
-                                                                          e.jsx("span", {
-                                                                            className: "nexulesuite_fui-toggle__track",
-                                                                          }),
-                                                                          e.jsx("span", {
-                                                                            className: "nexulesuite_fui-toggle__text",
-                                                                            children: "Customize colors",
-                                                                          }),
-                                                                        ],
-                                                                      }),
-                                                                      e.jsxs("div", {
-                                                                        className: "nexulesuite_fui-acc__toolbar",
-                                                                        children: [
-                                                                          e.jsx("span", {
-                                                                            className:
-                                                                              "nexulesuite_fui-acc__toolbar-label",
-                                                                            children: "Element",
-                                                                          }),
-                                                                          e.jsx("button", {
-                                                                            type: "button",
-                                                                            className: "nexulesuite_fui-acc__clear",
-                                                                            onClick: function () {
-                                                                              nlsSetColorSub("");
-                                                                            },
-                                                                            children: "CLEAR CUSTOMIZATION",
-                                                                          }),
-                                                                        ],
-                                                                      }),
-                                                                      nlsColorOn
-                                                                        ? e.jsx("div", {
-                                                                            className: "nexulesuite_fui-acc__nest",
-                                                                            children: [
-                                                                              ["container", "Form Container"],
-                                                                              ["indicator", "Submission Indicator"],
-                                                                              ["success", "Response Success"],
-                                                                              ["error", "Response Error"],
-                                                                              ["fields", "Fields Basics"],
-                                                                              ["input", "Input and Textarea"],
-                                                                              ["button", "Submit Button"],
-                                                                            ].map(function (sp) {
-                                                                              var sk = sp[0];
-                                                                              var sl = sp[1];
-                                                                              var so = nlsColorSub === sk;
-                                                                              return e.jsxs(
-                                                                                "div",
-                                                                                {
-                                                                                  className:
-                                                                                    "nexulesuite_fui-acc__nest-item" +
-                                                                                    (so ? " is-open" : ""),
-                                                                                  children: [
-                                                                                    e.jsxs("button", {
-                                                                                      type: "button",
-                                                                                      className:
-                                                                                        "nexulesuite_fui-acc__nest-head",
-                                                                                      onClick: function () {
-                                                                                        nlsSetColorSub(so ? "" : sk);
-                                                                                      },
-                                                                                      children: [
-                                                                                        e.jsxs("span", {
-                                                                                          className:
-                                                                                            "nexulesuite_fui-acc__left",
-                                                                                          children: [
-                                                                                            nlsAccIcon(sk),
-                                                                                            e.jsx("span", {
-                                                                                              className:
-                                                                                                "nexulesuite_fui-acc__label",
-                                                                                              children: sl,
-                                                                                            }),
-                                                                                          ],
-                                                                                        }),
-                                                                                        nlsAccPlus(so),
-                                                                                      ],
-                                                                                    }),
-                                                                                    so
-                                                                                      ? e.jsx("div", {
-                                                                                          className:
-                                                                                            "nexulesuite_fui-acc__nest-body",
-                                                                                          children:
-                                                                                            sk === "container"
-                                                                                              ? e.jsxs("div", {
-                                                                                                  className:
-                                                                                                    "nexulesuite_fb-color-grid",
-                                                                                                  children: [
-                                                                                                    e.jsx(
-                                                                                                      FormColorField,
-                                                                                                      {
-                                                                                                        label:
-                                                                                                          "Form background",
-                                                                                                        value:
-                                                                                                          M.backgroundColor ||
-                                                                                                          "#ffffff",
-                                                                                                        onChange:
-                                                                                                          function (H) {
-                                                                                                            h(a.id, {
-                                                                                                              styling:
-                                                                                                                Object.assign(
-                                                                                                                  {},
-                                                                                                                  M,
-                                                                                                                  {
-                                                                                                                    backgroundColor:
-                                                                                                                      H,
-                                                                                                                  },
-                                                                                                                ),
-                                                                                                            });
-                                                                                                          },
-                                                                                                      },
-                                                                                                      "c-bg",
-                                                                                                    ),
-                                                                                                    e.jsx(
-                                                                                                      FormColorField,
-                                                                                                      {
-                                                                                                        label:
-                                                                                                          "Form text",
-                                                                                                        value:
-                                                                                                          M.textColor ||
-                                                                                                          "#1e293b",
-                                                                                                        onChange:
-                                                                                                          function (H) {
-                                                                                                            h(a.id, {
-                                                                                                              styling:
-                                                                                                                Object.assign(
-                                                                                                                  {},
-                                                                                                                  M,
-                                                                                                                  {
-                                                                                                                    textColor:
-                                                                                                                      H,
-                                                                                                                  },
-                                                                                                                ),
-                                                                                                            });
-                                                                                                          },
-                                                                                                      },
-                                                                                                      "c-tx",
-                                                                                                    ),
-                                                                                                  ],
-                                                                                                })
-                                                                                              : sk === "button"
-                                                                                                ? e.jsxs(
-                                                                                                    "div",
-                                                                                                    {
-                                                                                                      className:
-                                                                                                        "nexulesuite_fb-color-grid",
-                                                                                                      children: [
-                                                                                                        e.jsxs("div", {
-                                                                                                          className:
-                                                                                                            "nexulesuite_fb-field",
-                                                                                                          style: {
-                                                                                                            gridColumn:
-                                                                                                              "1 / -1",
-                                                                                                            marginBottom:
-                                                                                                              "4px",
-                                                                                                          },
-                                                                                                          children: [
-                                                                                                            e.jsx(
-                                                                                                              "span",
-                                                                                                              {
-                                                                                                                className:
-                                                                                                                  "lbl",
-                                                                                                                children:
-                                                                                                                  "Button text",
-                                                                                                              },
-                                                                                                            ),
-                                                                                                            e.jsx(
-                                                                                                              "input",
-                                                                                                              {
-                                                                                                                type: "text",
-                                                                                                                className:
-                                                                                                                  "inp",
-                                                                                                                value:
-                                                                                                                  a.submitBtnText ||
-                                                                                                                  "",
-                                                                                                                placeholder:
-                                                                                                                  "Submit",
-                                                                                                                onChange:
-                                                                                                                  function (
-                                                                                                                    w,
-                                                                                                                  ) {
-                                                                                                                    h(
-                                                                                                                      a.id,
-                                                                                                                      {
-                                                                                                                        submitBtnText:
-                                                                                                                          w
-                                                                                                                            .target
-                                                                                                                            .value,
-                                                                                                                      },
-                                                                                                                    );
-                                                                                                                  },
-                                                                                                              },
-                                                                                                            ),
-                                                                                                          ],
-                                                                                                        }),
-                                                                                                        e.jsx(
-                                                                                                          FormColorField,
-                                                                                                          {
-                                                                                                            label:
-                                                                                                              "Button color",
-                                                                                                            value:
-                                                                                                              M.primaryColor ||
-                                                                                                              M.buttonColor ||
-                                                                                                              "#7c3aed",
-                                                                                                            onChange:
-                                                                                                              function (
-                                                                                                                H,
-                                                                                                              ) {
-                                                                                                                nlsCommitDesign(
-                                                                                                                  h,
-                                                                                                                  a,
-                                                                                                                  M,
-                                                                                                                  {
-                                                                                                                    primaryColor:
-                                                                                                                      H,
-                                                                                                                    buttonColor:
-                                                                                                                      H,
-                                                                                                                  },
-                                                                                                                );
-                                                                                                              },
-                                                                                                          },
-                                                                                                          "c-btn",
-                                                                                                        ),
-                                                                                                      ],
-                                                                                                    },
-                                                                                                    "c-btn-wrap",
-                                                                                                  )
-                                                                                                : sk === "success"
-                                                                                                  ? e.jsx(
-                                                                                                      FormColorField,
-                                                                                                      {
-                                                                                                        label:
-                                                                                                          "Success",
-                                                                                                        value:
-                                                                                                          M.successColor ||
-                                                                                                          "#16a34a",
-                                                                                                        onChange:
-                                                                                                          function (H) {
-                                                                                                            nlsCommitDesign(
-                                                                                                              h,
-                                                                                                              a,
-                                                                                                              M,
-                                                                                                              {
-                                                                                                                successColor:
-                                                                                                                  H,
-                                                                                                              },
-                                                                                                            );
-                                                                                                          },
-                                                                                                      },
-                                                                                                      "c-ok",
-                                                                                                    )
-                                                                                                  : sk === "error"
-                                                                                                    ? e.jsxs("div", {
-                                                                                                        className:
-                                                                                                          "nexulesuite_fb-color-grid",
-                                                                                                        children: [
-                                                                                                          e.jsx(
-                                                                                                            FormColorField,
-                                                                                                            {
-                                                                                                              label:
-                                                                                                                "Error text",
-                                                                                                              value:
-                                                                                                                M.errorColor ||
-                                                                                                                "#dc2626",
-                                                                                                              onChange:
-                                                                                                                function (
-                                                                                                                  H,
-                                                                                                                ) {
-                                                                                                                  nlsCommitDesign(
-                                                                                                                    h,
-                                                                                                                    a,
-                                                                                                                    M,
-                                                                                                                    {
-                                                                                                                      errorColor:
-                                                                                                                        H,
-                                                                                                                    },
-                                                                                                                  );
-                                                                                                                },
-                                                                                                            },
-                                                                                                            "c-er",
-                                                                                                          ),
-                                                                                                          e.jsx(
-                                                                                                            FormColorField,
-                                                                                                            {
-                                                                                                              label:
-                                                                                                                "Error border",
-                                                                                                              value:
-                                                                                                                M.errorBorderColor ||
-                                                                                                                "#dc2626",
-                                                                                                              onChange:
-                                                                                                                function (
-                                                                                                                  H,
-                                                                                                                ) {
-                                                                                                                  nlsCommitDesign(
-                                                                                                                    h,
-                                                                                                                    a,
-                                                                                                                    M,
-                                                                                                                    {
-                                                                                                                      errorBorderColor:
-                                                                                                                        H,
-                                                                                                                    },
-                                                                                                                  );
-                                                                                                                },
-                                                                                                            },
-                                                                                                            "c-erb",
-                                                                                                          ),
-                                                                                                        ],
-                                                                                                      })
-                                                                                                    : sk === "indicator"
-                                                                                                      ? e.jsx(
-                                                                                                          FormColorField,
-                                                                                                          {
-                                                                                                            label:
-                                                                                                              "Submission indicator",
-                                                                                                            value:
-                                                                                                              M.stepperColor ||
-                                                                                                              M.primaryColor ||
-                                                                                                              M.buttonColor ||
-                                                                                                              "#7c3aed",
-                                                                                                            onChange:
-                                                                                                              function (
-                                                                                                                H,
-                                                                                                              ) {
-                                                                                                                nlsCommitDesign(
-                                                                                                                  h,
-                                                                                                                  a,
-                                                                                                                  M,
-                                                                                                                  {
-                                                                                                                    stepperColor:
-                                                                                                                      H,
-                                                                                                                  },
-                                                                                                                );
-                                                                                                              },
-                                                                                                          },
-                                                                                                          "c-ind",
-                                                                                                        )
-                                                                                                      : sk ===
-                                                                                                            "fields" ||
-                                                                                                          sk === "input"
-                                                                                                        ? e.jsxs(
-                                                                                                            "div",
-                                                                                                            {
-                                                                                                              className:
-                                                                                                                "nexulesuite_fb-color-grid",
-                                                                                                              children:
-                                                                                                                [
-                                                                                                                  e.jsx(
-                                                                                                                    FormColorField,
-                                                                                                                    {
-                                                                                                                      label:
-                                                                                                                        "Input background",
-                                                                                                                      value:
-                                                                                                                        M.fieldBackgroundColor ||
-                                                                                                                        "#ffffff",
-                                                                                                                      onChange:
-                                                                                                                        function (
-                                                                                                                          H,
-                                                                                                                        ) {
-                                                                                                                          nlsCommitDesign(
-                                                                                                                            h,
-                                                                                                                            a,
-                                                                                                                            M,
-                                                                                                                            {
-                                                                                                                              fieldBackgroundColor:
-                                                                                                                                H,
-                                                                                                                            },
-                                                                                                                          );
-                                                                                                                        },
-                                                                                                                    },
-                                                                                                                    "c-ib",
-                                                                                                                  ),
-                                                                                                                  e.jsx(
-                                                                                                                    FormColorField,
-                                                                                                                    {
-                                                                                                                      label:
-                                                                                                                        "Input text",
-                                                                                                                      value:
-                                                                                                                        M.inputColor ||
-                                                                                                                        M.fieldTextColor ||
-                                                                                                                        "#000000",
-                                                                                                                      onChange:
-                                                                                                                        function (
-                                                                                                                          H,
-                                                                                                                        ) {
-                                                                                                                          nlsCommitDesign(
-                                                                                                                            h,
-                                                                                                                            a,
-                                                                                                                            M,
-                                                                                                                            {
-                                                                                                                              inputColor:
-                                                                                                                                H,
-                                                                                                                            },
-                                                                                                                          );
-                                                                                                                        },
-                                                                                                                    },
-                                                                                                                    "c-it",
-                                                                                                                  ),
-                                                                                                                  e.jsx(
-                                                                                                                    FormColorField,
-                                                                                                                    {
-                                                                                                                      label:
-                                                                                                                        "Border",
-                                                                                                                      value:
-                                                                                                                        M.fieldBorderColor ||
-                                                                                                                        "#cbd5e1",
-                                                                                                                      onChange:
-                                                                                                                        function (
-                                                                                                                          H,
-                                                                                                                        ) {
-                                                                                                                          nlsCommitDesign(
-                                                                                                                            h,
-                                                                                                                            a,
-                                                                                                                            M,
-                                                                                                                            {
-                                                                                                                              fieldBorderColor:
-                                                                                                                                H,
-                                                                                                                            },
-                                                                                                                          );
-                                                                                                                        },
-                                                                                                                    },
-                                                                                                                    "c-bd",
-                                                                                                                  ),
-                                                                                                                  e.jsx(
-                                                                                                                    FormColorField,
-                                                                                                                    {
-                                                                                                                      label:
-                                                                                                                        "Focus",
-                                                                                                                      value:
-                                                                                                                        M.focusBorderColor ||
-                                                                                                                        "#7c3aed",
-                                                                                                                      onChange:
-                                                                                                                        function (
-                                                                                                                          H,
-                                                                                                                        ) {
-                                                                                                                          nlsCommitDesign(
-                                                                                                                            h,
-                                                                                                                            a,
-                                                                                                                            M,
-                                                                                                                            {
-                                                                                                                              focusBorderColor:
-                                                                                                                                H,
-                                                                                                                            },
-                                                                                                                          );
-                                                                                                                        },
-                                                                                                                    },
-                                                                                                                    "c-fc",
-                                                                                                                  ),
-                                                                                                                ],
-                                                                                                            },
-                                                                                                          )
-                                                                                                        : e.jsx("p", {
-                                                                                                            className:
-                                                                                                              "nexulesuite_fui-hint",
-                                                                                                            children:
-                                                                                                              "No color options for this element.",
-                                                                                                          }),
-                                                                                        })
-                                                                                      : null,
-                                                                                  ],
-                                                                                },
-                                                                                sk,
-                                                                              );
-                                                                            }),
-                                                                          })
-                                                                        : e.jsx("p", {
-                                                                            className: "nexulesuite_fui-hint",
-                                                                            children:
-                                                                              "Enable Customize colors to edit elements.",
-                                                                          }),
-                                                                    ],
-                                                                  })
-                                                                : k === "presets"
-                                                                  ? e.jsxs("div", {
-                                                                      className: "nexulesuite_fui-acc__stack",
-                                                                      children: [
-                                                                        e.jsxs("label", {
-                                                                          className: "nexulesuite_cust-field",
-                                                                          children: [
-                                                                            e.jsx("span", {
-                                                                              className: "lbl",
-                                                                              children: "Design",
-                                                                            }),
-                                                                            e.jsxs("select", {
-                                                                              className: "inp",
-                                                                              value: M.forminatorDesign || "default",
-                                                                              onChange: function (H) {
-                                                                                nlsCommitDesign(h, a, M, {
-                                                                                  forminatorDesign: H.target.value,
-                                                                                });
-                                                                              },
-                                                                              children: [
-                                                                                e.jsx("option", {
-                                                                                  value: "default",
-                                                                                  children: "Default",
-                                                                                }),
-                                                                                e.jsx("option", {
-                                                                                  value: "flat",
-                                                                                  children: "Flat",
-                                                                                }),
-                                                                                e.jsx("option", {
-                                                                                  value: "bold",
-                                                                                  children: "Bold",
-                                                                                }),
-                                                                                e.jsx("option", {
-                                                                                  value: "material",
-                                                                                  children: "Material",
-                                                                                }),
-                                                                              ],
-                                                                            }),
-                                                                          ],
-                                                                        }),
-                                                                        e.jsxs("label", {
-                                                                          className: "nexulesuite_cust-field",
-                                                                          children: [
-                                                                            e.jsx("span", {
-                                                                              className: "lbl",
-                                                                              children: "Theme",
-                                                                            }),
-                                                                            e.jsxs("select", {
-                                                                              className: "inp",
-                                                                              value: M.forminatorTheme || "default",
-                                                                              onChange: function (H) {
-                                                                                nlsCommitDesign(h, a, M, {
-                                                                                  forminatorTheme: H.target.value,
-                                                                                });
-                                                                              },
-                                                                              children: [
-                                                                                e.jsx("option", {
-                                                                                  value: "default",
-                                                                                  children: "Default",
-                                                                                }),
-                                                                                e.jsx("option", {
-                                                                                  value: "light",
-                                                                                  children: "Light",
-                                                                                }),
-                                                                                e.jsx("option", {
-                                                                                  value: "dark",
-                                                                                  children: "Dark",
-                                                                                }),
-                                                                              ],
-                                                                            }),
-                                                                          ],
-                                                                        }),
-                                                                        e.jsx("div", {
-                                                                          className: "nexulesuite_fui-global-style",
-                                                                          children: e.jsxs("div", {
-                                                                            className:
-                                                                              "nexulesuite_fui-global-style__box",
-                                                                            children: [
-                                                                              e.jsx("p", {
-                                                                                className: "nexulesuite_fui-hint",
-                                                                                children:
-                                                                                  "Save this form’s colors, style, fonts and layout as the site-wide global style. All fields on this form — and every other form — can use the same look.",
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className:
-                                                                                  "nexulesuite_fui-global-style__actions",
-                                                                                children: [
-                                                                                  e.jsx("button", {
-                                                                                    type: "button",
-                                                                                    className:
-                                                                                      "nexulesuite_fui-global-style__btn nexulesuite_fui-global-style__btn--primary",
-                                                                                    disabled: nlsGlobalBusy,
-                                                                                    onClick: async function () {
-                                                                                      nlsSetGlobalBusy(!0);
-                                                                                      nlsSetGlobalMsg("");
-                                                                                      try {
-                                                                                        var styling = nlsDesignPatch(
-                                                                                          M,
-                                                                                          {},
-                                                                                        );
-                                                                                        h(a.id, {
-                                                                                          styling: styling,
-                                                                                          steps:
-                                                                                            nlsApplyGlobalToAllFields(
-                                                                                              a.steps,
-                                                                                              styling,
-                                                                                            ),
-                                                                                        });
-                                                                                        await nlsSaveGlobalAppearance(
-                                                                                          styling,
-                                                                                        );
-                                                                                        if (
-                                                                                          typeof nlsOnApplyAll ===
-                                                                                          "function"
-                                                                                        ) {
-                                                                                          nlsOnApplyAll(styling);
-                                                                                        }
-                                                                                        nlsSetGlobalMsg(
-                                                                                          "Global style saved and applied to all forms.",
-                                                                                        );
-                                                                                      } catch (err) {
-                                                                                        nlsSetGlobalMsg(
-                                                                                          (err && err.message) ||
-                                                                                            "Could not save global style.",
-                                                                                        );
-                                                                                      } finally {
-                                                                                        nlsSetGlobalBusy(!1);
-                                                                                      }
-                                                                                    },
-                                                                                    children: nlsGlobalBusy
-                                                                                      ? "Saving…"
-                                                                                      : "Save global style",
-                                                                                  }),
-                                                                                  e.jsx("button", {
-                                                                                    type: "button",
-                                                                                    className:
-                                                                                      "nexulesuite_fui-global-style__btn",
-                                                                                    disabled: nlsGlobalBusy,
-                                                                                    onClick: async function () {
-                                                                                      nlsSetGlobalBusy(!0);
-                                                                                      nlsSetGlobalMsg("");
-                                                                                      try {
-                                                                                        var g =
-                                                                                          await nlsFetchGlobalAppearance();
-                                                                                        if (!g) {
-                                                                                          nlsSetGlobalMsg(
-                                                                                            "No global style saved yet.",
-                                                                                          );
-                                                                                          return;
-                                                                                        }
-                                                                                        nlsCommitDesign(h, a, M, g);
-                                                                                        nlsSetGlobalMsg(
-                                                                                          "Global style applied to this form’s fields.",
-                                                                                        );
-                                                                                      } catch (err) {
-                                                                                        nlsSetGlobalMsg(
-                                                                                          (err && err.message) ||
-                                                                                            "Could not load global style.",
-                                                                                        );
-                                                                                      } finally {
-                                                                                        nlsSetGlobalBusy(!1);
-                                                                                      }
-                                                                                    },
-                                                                                    children: "Apply to this form",
-                                                                                  }),
-                                                                                  e.jsx("button", {
-                                                                                    type: "button",
-                                                                                    className:
-                                                                                      "nexulesuite_fui-global-style__btn",
-                                                                                    disabled: nlsGlobalBusy,
-                                                                                    onClick: async function () {
-                                                                                      nlsSetGlobalBusy(!0);
-                                                                                      nlsSetGlobalMsg("");
-                                                                                      try {
-                                                                                        var g =
-                                                                                          await nlsFetchGlobalAppearance();
-                                                                                        if (!g) {
-                                                                                          nlsSetGlobalMsg(
-                                                                                            "No global style saved yet.",
-                                                                                          );
-                                                                                          return;
-                                                                                        }
-                                                                                        if (
-                                                                                          typeof nlsOnApplyAll ===
-                                                                                          "function"
-                                                                                        ) {
-                                                                                          nlsOnApplyAll(g);
-                                                                                          nlsSetGlobalMsg(
-                                                                                            "Global style applied to all forms.",
-                                                                                          );
-                                                                                        } else {
-                                                                                          nlsCommitDesign(h, a, M, g);
-                                                                                          nlsSetGlobalMsg(
-                                                                                            "Global style applied to this form’s fields.",
-                                                                                          );
-                                                                                        }
-                                                                                      } catch (err) {
-                                                                                        nlsSetGlobalMsg(
-                                                                                          (err && err.message) ||
-                                                                                            "Could not apply global style.",
-                                                                                        );
-                                                                                      } finally {
-                                                                                        nlsSetGlobalBusy(!1);
-                                                                                      }
-                                                                                    },
-                                                                                    children: "Apply to all forms",
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              nlsGlobalMsg
-                                                                                ? e.jsx("p", {
-                                                                                    className:
-                                                                                      "nexulesuite_fui-global-style__msg",
-                                                                                    children: nlsGlobalMsg,
-                                                                                  })
-                                                                                : null,
-                                                                            ],
-                                                                          }),
-                                                                        }),
-                                                                      ],
-                                                                    })
-                                                                  : k === "style"
-                                                                    ? e.jsxs("div", {
-                                                                        className: "nexulesuite_fui-acc__stack",
-                                                                        children: [
-                                                                          e.jsx("h4", {
-                                                                            style: {
-                                                                              margin: "0 0 10px",
-                                                                              fontSize: "12px",
-                                                                              fontWeight: 700,
-                                                                            },
-                                                                            children: "Borders & shadows",
-                                                                          }),
-                                                                          (() => {
-                                                                            const base = "fieldBorderRadius";
-                                                                            const val = nlsDevNum(
-                                                                              M,
-                                                                              base,
-                                                                              nlsDevice,
-                                                                              6,
-                                                                            );
-                                                                            return e.jsxs("div", {
-                                                                              className: "nexulesuite_fb-field",
-                                                                              style: {
-                                                                                marginBottom: "6px",
-                                                                              },
-                                                                              children: [
-                                                                                e.jsxs("span", {
-                                                                                  className: "lbl",
-                                                                                  style: {
-                                                                                    display: "flex",
-                                                                                    justifyContent: "space-between",
-                                                                                    alignItems: "center",
-                                                                                    gap: "8px",
-                                                                                  },
-                                                                                  children: [
-                                                                                    "Border radius",
-                                                                                    e.jsxs("span", {
-                                                                                      children: [val, "px"],
-                                                                                    }),
-                                                                                  ],
-                                                                                }),
-                                                                                e.jsx(nlsRange, {
-                                                                                  min: 0,
-                                                                                  max: 100,
-                                                                                  step: 1,
-                                                                                  value: val,
-                                                                                  onChange: (H) => {
-                                                                                    const v = Number(H.target.value);
-                                                                                    if (nlsDevice === "desktop") {
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        [base]: v,
-                                                                                      });
-                                                                                    } else {
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        [nlsDevKey(base, nlsDevice)]: v,
-                                                                                      });
-                                                                                    }
-                                                                                  },
-                                                                                }),
-                                                                              ],
-                                                                            });
-                                                                          })(),
-                                                                          (() => {
-                                                                            const base = "fieldBorderWidth";
-                                                                            const val = nlsDevNum(
-                                                                              M,
-                                                                              base,
-                                                                              nlsDevice,
-                                                                              1,
-                                                                            );
-                                                                            return e.jsxs("div", {
-                                                                              className: "nexulesuite_fb-field",
-                                                                              style: {
-                                                                                marginBottom: "6px",
-                                                                              },
-                                                                              children: [
-                                                                                e.jsxs("span", {
-                                                                                  className: "lbl",
-                                                                                  style: {
-                                                                                    display: "flex",
-                                                                                    justifyContent: "space-between",
-                                                                                    alignItems: "center",
-                                                                                    gap: "8px",
-                                                                                  },
-                                                                                  children: [
-                                                                                    "Border width",
-                                                                                    e.jsxs("span", {
-                                                                                      children: [val, "px"],
-                                                                                    }),
-                                                                                  ],
-                                                                                }),
-                                                                                e.jsx(nlsRange, {
-                                                                                  min: 0,
-                                                                                  max: 100,
-                                                                                  step: 1,
-                                                                                  value: val,
-                                                                                  onChange: (H) => {
-                                                                                    const v = Number(H.target.value);
-                                                                                    if (nlsDevice === "desktop") {
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        [base]: v,
-                                                                                      });
-                                                                                    } else {
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        [nlsDevKey(base, nlsDevice)]: v,
-                                                                                      });
-                                                                                    }
-                                                                                  },
-                                                                                }),
-                                                                              ],
-                                                                            });
-                                                                          })(),
-                                                                          e.jsxs("div", {
-                                                                            className: "nexulesuite_fb-field",
-                                                                            style: {
-                                                                              marginBottom: "6px",
-                                                                            },
-                                                                            children: [
-                                                                              e.jsxs("span", {
-                                                                                className: "lbl",
-                                                                                style: {
-                                                                                  display: "flex",
-                                                                                  justifyContent: "space-between",
-                                                                                  alignItems: "center",
-                                                                                  gap: "8px",
-                                                                                },
-                                                                                children: ["Border style"],
-                                                                              }),
-                                                                              e.jsx("select", {
-                                                                                className: "inp",
-                                                                                value: M["fieldBorderStyle"] || "solid",
-                                                                                onChange: (H) =>
-                                                                                  nlsCommitDesign(h, a, M, {
-                                                                                    ["fieldBorderStyle"]:
-                                                                                      H.target.value,
-                                                                                  }),
-                                                                                children: [
-                                                                                  e.jsx("option", {
-                                                                                    value: "solid",
-                                                                                    children: "Solid",
-                                                                                  }),
-                                                                                  e.jsx("option", {
-                                                                                    value: "dashed",
-                                                                                    children: "Dashed",
-                                                                                  }),
-                                                                                  e.jsx("option", {
-                                                                                    value: "dotted",
-                                                                                    children: "Dotted",
-                                                                                  }),
-                                                                                  e.jsx("option", {
-                                                                                    value: "double",
-                                                                                    children: "Double",
-                                                                                  }),
-                                                                                  e.jsx("option", {
-                                                                                    value: "none",
-                                                                                    children: "None",
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                            ],
-                                                                          }),
-                                                                          e.jsx("div", {
-                                                                            className: "nexulesuite_fb-color-grid",
-                                                                            style: {
-                                                                              marginBottom: "6px",
-                                                                            },
-                                                                            children: [
-                                                                              e.jsx(
-                                                                                FormColorField,
-                                                                                {
-                                                                                  label: "Border color",
-                                                                                  value:
-                                                                                    M["fieldBorderColor"] || "#cbd5e1",
-                                                                                  onChange: (H) =>
-                                                                                    nlsCommitDesign(h, a, M, {
-                                                                                      ["fieldBorderColor"]: H,
-                                                                                    }),
-                                                                                },
-                                                                                "fieldBorderColor",
-                                                                              ),
-                                                                            ],
-                                                                          }),
-                                                                          e.jsxs("div", {
-                                                                            className: "nexulesuite_fb-field",
-                                                                            style: {
-                                                                              marginBottom: "6px",
-                                                                            },
-                                                                            children: [
-                                                                              e.jsxs("span", {
-                                                                                className: "lbl",
-                                                                                style: {
-                                                                                  display: "flex",
-                                                                                  justifyContent: "space-between",
-                                                                                  alignItems: "center",
-                                                                                  gap: "8px",
-                                                                                },
-                                                                                children: ["Input box shadow"],
-                                                                              }),
-                                                                              e.jsx("input", {
-                                                                                type: "text",
-                                                                                className: "inp",
-                                                                                value: M["fieldShadow"] ?? "",
-                                                                                placeholder:
-                                                                                  "none or 0 2px 8px rgba(0,0,0,.08)",
-                                                                                onChange: (H) =>
-                                                                                  nlsCommitDesign(h, a, M, {
-                                                                                    ["fieldShadow"]: H.target.value,
-                                                                                  }),
-                                                                              }),
-                                                                            ],
-                                                                          }),
-                                                                          e.jsxs("div", {
-                                                                            className: "nexulesuite_fb-field",
-                                                                            style: {
-                                                                              marginBottom: "6px",
-                                                                            },
-                                                                            children: [
-                                                                              e.jsxs("span", {
-                                                                                className: "lbl",
-                                                                                style: {
-                                                                                  display: "flex",
-                                                                                  justifyContent: "space-between",
-                                                                                  alignItems: "center",
-                                                                                  gap: "8px",
-                                                                                },
-                                                                                children: ["Form container shadow"],
-                                                                              }),
-                                                                              e.jsx("input", {
-                                                                                type: "text",
-                                                                                className: "inp",
-                                                                                value: M["formShadow"] ?? "",
-                                                                                placeholder:
-                                                                                  "0 2px 8px rgba(15,23,42,.07)",
-                                                                                onChange: (H) =>
-                                                                                  nlsCommitDesign(h, a, M, {
-                                                                                    ["formShadow"]: H.target.value,
-                                                                                  }),
-                                                                              }),
-                                                                            ],
-                                                                          }),
-                                                                          e.jsx("h4", {
-                                                                            style: {
-                                                                              margin: "14px 0 10px",
-                                                                              fontSize: "12px",
-                                                                              fontWeight: 700,
-                                                                            },
-                                                                            children: "Interactive states",
-                                                                          }),
-                                                                          e.jsx("div", {
-                                                                            className: "nexulesuite_fb-color-grid",
-                                                                            style: {
-                                                                              marginBottom: "6px",
-                                                                            },
-                                                                            children: [
-                                                                              e.jsx(
-                                                                                FormColorField,
-                                                                                {
-                                                                                  label: "Focus border",
-                                                                                  value:
-                                                                                    M["focusBorderColor"] || "#7c3aed",
-                                                                                  onChange: (H) =>
-                                                                                    nlsCommitDesign(h, a, M, {
-                                                                                      ["focusBorderColor"]: H,
-                                                                                    }),
-                                                                                },
-                                                                                "focusBorderColor",
-                                                                              ),
-                                                                              e.jsx(
-                                                                                FormColorField,
-                                                                                {
-                                                                                  label: "Error border",
-                                                                                  value:
-                                                                                    M["errorBorderColor"] || "#dc2626",
-                                                                                  onChange: (H) =>
-                                                                                    nlsCommitDesign(h, a, M, {
-                                                                                      ["errorBorderColor"]: H,
-                                                                                    }),
-                                                                                },
-                                                                                "errorBorderColor",
-                                                                              ),
-                                                                            ],
-                                                                          }),
-                                                                          e.jsxs("div", {
-                                                                            className: "nexulesuite_fb-field",
-                                                                            style: {
-                                                                              marginBottom: "6px",
-                                                                            },
-                                                                            children: [
-                                                                              e.jsxs("span", {
-                                                                                className: "lbl",
-                                                                                style: {
-                                                                                  display: "flex",
-                                                                                  justifyContent: "space-between",
-                                                                                  alignItems: "center",
-                                                                                  gap: "8px",
-                                                                                },
-                                                                                children: ["Focus shadow"],
-                                                                              }),
-                                                                              e.jsx("input", {
-                                                                                type: "text",
-                                                                                className: "inp",
-                                                                                value: M["focusShadow"] ?? "",
-                                                                                placeholder:
-                                                                                  "0 0 0 3px rgba(124,58,237,.25)",
-                                                                                onChange: (H) =>
-                                                                                  nlsCommitDesign(h, a, M, {
-                                                                                    ["focusShadow"]: H.target.value,
-                                                                                  }),
-                                                                              }),
-                                                                            ],
-                                                                          }),
-                                                                        ],
-                                                                      })
-                                                                    : k === "css"
-                                                                      ? null
-                                                                      : k === "fonts"
-                                                                        ? e.jsxs("div", {
-                                                                            className: "nexulesuite_fui-acc__stack",
-                                                                            children: [
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_cust__devices",
-                                                                                style: {
-                                                                                  display: "flex",
-                                                                                  gap: "6px",
-                                                                                  marginBottom: "6px",
-                                                                                  flexWrap: "wrap",
-                                                                                },
-                                                                                children: [
-                                                                                  ["desktop", "Desktop"],
-                                                                                  ["tablet", "Tablet"],
-                                                                                  ["mobile", "Mobile"],
-                                                                                ].map(([k, l]) =>
-                                                                                  e.jsx(
-                                                                                    "button",
-                                                                                    {
-                                                                                      type: "button",
-                                                                                      className:
-                                                                                        "nexulesuite_cust__device" +
-                                                                                        (nlsDevice === k
-                                                                                          ? " is-active"
-                                                                                          : ""),
-                                                                                      style: {
-                                                                                        fontSize: "12px",
-                                                                                        padding: "4px 10px",
-                                                                                      },
-                                                                                      onClick: () => nlsSetDevice(k),
-                                                                                      children: l,
-                                                                                    },
-                                                                                    k,
-                                                                                  ),
-                                                                                ),
-                                                                              }),
-                                                                              e.jsx("button", {
-                                                                                type: "button",
-                                                                                className: "nexulesuite_cust__apply",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                onClick: () => {
-                                                                                  const styling =
-                                                                                    nlsApplyTypoToAllModules(M, {});
-                                                                                  h(a.id, {
-                                                                                    styling,
-                                                                                    steps: nlsApplyGlobalToAllFields(
-                                                                                      a.steps,
-                                                                                      styling,
-                                                                                    ),
-                                                                                  });
-                                                                                },
-                                                                                children:
-                                                                                  "Apply global typography to all modules",
-                                                                              }),
-                                                                              e.jsx("h4", {
-                                                                                style: {
-                                                                                  margin: "16px 0 10px",
-                                                                                  fontSize: "13px",
-                                                                                  fontWeight: 700,
-                                                                                },
-                                                                                children: "2. Field labels",
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Font family"],
-                                                                                  }),
-                                                                                  e.jsx("select", {
-                                                                                    className: "inp",
-                                                                                    value:
-                                                                                      M["labelFontFamily"] || "inherit",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["labelFontFamily"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                    children: [
-                                                                                      e.jsx("option", {
-                                                                                        value: "inherit",
-                                                                                        children: "Inherit",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          "system-ui, -apple-system, sans-serif",
-                                                                                        children: "System UI",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          "Arial, Helvetica, sans-serif",
-                                                                                        children: "Arial",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "Georgia, serif",
-                                                                                        children: "Georgia",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          '"Times New Roman", Times, serif',
-                                                                                        children: "Times",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          '"Courier New", monospace',
-                                                                                        children: "Courier",
-                                                                                      }),
-                                                                                    ],
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              (() => {
-                                                                                const base = "labelFontSize";
-                                                                                const val = nlsDevNum(
-                                                                                  M,
-                                                                                  base,
-                                                                                  nlsDevice,
-                                                                                  13,
-                                                                                );
-                                                                                return e.jsxs("div", {
-                                                                                  className: "nexulesuite_fb-field",
-                                                                                  style: {
-                                                                                    marginBottom: "6px",
-                                                                                  },
-                                                                                  children: [
-                                                                                    e.jsxs("span", {
-                                                                                      className: "lbl",
-                                                                                      style: {
-                                                                                        display: "flex",
-                                                                                        justifyContent: "space-between",
-                                                                                        alignItems: "center",
-                                                                                        gap: "8px",
-                                                                                      },
-                                                                                      children: [
-                                                                                        "Font size",
-                                                                                        e.jsxs("span", {
-                                                                                          children: [val, "px"],
-                                                                                        }),
-                                                                                      ],
-                                                                                    }),
-                                                                                    e.jsx(nlsRange, {
-                                                                                      min: 10,
-                                                                                      max: 28,
-                                                                                      value: val,
-                                                                                      onChange: (H) => {
-                                                                                        const v = Number(
-                                                                                          H.target.value,
-                                                                                        );
-                                                                                        if (nlsDevice === "desktop") {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [base]: v,
-                                                                                          });
-                                                                                        } else {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [nlsDevKey(
-                                                                                              base,
-                                                                                              nlsDevice,
-                                                                                            )]: v,
-                                                                                          });
-                                                                                        }
-                                                                                      },
-                                                                                    }),
-                                                                                  ],
-                                                                                });
-                                                                              })(),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Font weight"],
-                                                                                  }),
-                                                                                  e.jsx("select", {
-                                                                                    className: "inp",
-                                                                                    value:
-                                                                                      M["labelFontWeight"] || "400",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["labelFontWeight"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                    children: [
-                                                                                      e.jsx("option", {
-                                                                                        value: "400",
-                                                                                        children: "Normal",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "500",
-                                                                                        children: "Medium",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "600",
-                                                                                        children: "Semi Bold",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "700",
-                                                                                        children: "Bold",
-                                                                                      }),
-                                                                                    ],
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Line height"],
-                                                                                  }),
-                                                                                  e.jsx("input", {
-                                                                                    type: "text",
-                                                                                    className: "inp",
-                                                                                    value: M["labelLineHeight"] ?? "",
-                                                                                    placeholder: "1.4",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["labelLineHeight"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsx("div", {
-                                                                                className: "nexulesuite_fb-color-grid",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsx(
-                                                                                    FormColorField,
-                                                                                    {
-                                                                                      label: "Text color",
-                                                                                      value:
-                                                                                        M["labelColor"] || "#334155",
-                                                                                      onChange: (H) =>
-                                                                                        nlsCommitDesign(h, a, M, {
-                                                                                          ["labelColor"]: H,
-                                                                                        }),
-                                                                                    },
-                                                                                    "labelColor",
-                                                                                  ),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsx("h4", {
-                                                                                style: {
-                                                                                  margin: "16px 0 10px",
-                                                                                  fontSize: "13px",
-                                                                                  fontWeight: 700,
-                                                                                },
-                                                                                children: "3. Placeholder text",
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Font family"],
-                                                                                  }),
-                                                                                  e.jsx("select", {
-                                                                                    className: "inp",
-                                                                                    value:
-                                                                                      M["placeholderFontFamily"] ||
-                                                                                      "inherit",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["placeholderFontFamily"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                    children: [
-                                                                                      e.jsx("option", {
-                                                                                        value: "inherit",
-                                                                                        children: "Inherit",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          "system-ui, -apple-system, sans-serif",
-                                                                                        children: "System UI",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          "Arial, Helvetica, sans-serif",
-                                                                                        children: "Arial",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "Georgia, serif",
-                                                                                        children: "Georgia",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          '"Times New Roman", Times, serif',
-                                                                                        children: "Times",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          '"Courier New", monospace',
-                                                                                        children: "Courier",
-                                                                                      }),
-                                                                                    ],
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              (() => {
-                                                                                const base = "placeholderFontSize";
-                                                                                const val = nlsDevNum(
-                                                                                  M,
-                                                                                  base,
-                                                                                  nlsDevice,
-                                                                                  14,
-                                                                                );
-                                                                                return e.jsxs("div", {
-                                                                                  className: "nexulesuite_fb-field",
-                                                                                  style: {
-                                                                                    marginBottom: "6px",
-                                                                                  },
-                                                                                  children: [
-                                                                                    e.jsxs("span", {
-                                                                                      className: "lbl",
-                                                                                      style: {
-                                                                                        display: "flex",
-                                                                                        justifyContent: "space-between",
-                                                                                        alignItems: "center",
-                                                                                        gap: "8px",
-                                                                                      },
-                                                                                      children: [
-                                                                                        "Font size",
-                                                                                        e.jsxs("span", {
-                                                                                          children: [val, "px"],
-                                                                                        }),
-                                                                                      ],
-                                                                                    }),
-                                                                                    e.jsx(nlsRange, {
-                                                                                      min: 10,
-                                                                                      max: 28,
-                                                                                      value: val,
-                                                                                      onChange: (H) => {
-                                                                                        const v = Number(
-                                                                                          H.target.value,
-                                                                                        );
-                                                                                        if (nlsDevice === "desktop") {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [base]: v,
-                                                                                          });
-                                                                                        } else {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [nlsDevKey(
-                                                                                              base,
-                                                                                              nlsDevice,
-                                                                                            )]: v,
-                                                                                          });
-                                                                                        }
-                                                                                      },
-                                                                                    }),
-                                                                                  ],
-                                                                                });
-                                                                              })(),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Font weight"],
-                                                                                  }),
-                                                                                  e.jsx("select", {
-                                                                                    className: "inp",
-                                                                                    value:
-                                                                                      M["placeholderFontWeight"] ||
-                                                                                      "400",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["placeholderFontWeight"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                    children: [
-                                                                                      e.jsx("option", {
-                                                                                        value: "400",
-                                                                                        children: "Normal",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "500",
-                                                                                        children: "Medium",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "600",
-                                                                                        children: "Semi Bold",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "700",
-                                                                                        children: "Bold",
-                                                                                      }),
-                                                                                    ],
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Line height"],
-                                                                                  }),
-                                                                                  e.jsx("input", {
-                                                                                    type: "text",
-                                                                                    className: "inp",
-                                                                                    value:
-                                                                                      M["placeholderLineHeight"] ?? "",
-                                                                                    placeholder: "1.4",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["placeholderLineHeight"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsx("div", {
-                                                                                className: "nexulesuite_fb-color-grid",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsx(
-                                                                                    FormColorField,
-                                                                                    {
-                                                                                      label: "Text color",
-                                                                                      value:
-                                                                                        M["placeholderColor"] ||
-                                                                                        "#94a3b8",
-                                                                                      onChange: (H) =>
-                                                                                        nlsCommitDesign(h, a, M, {
-                                                                                          ["placeholderColor"]: H,
-                                                                                        }),
-                                                                                    },
-                                                                                    "placeholderColor",
-                                                                                  ),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsx("h4", {
-                                                                                style: {
-                                                                                  margin: "16px 0 10px",
-                                                                                  fontSize: "13px",
-                                                                                  fontWeight: 700,
-                                                                                },
-                                                                                children: "4. Input text",
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Font family"],
-                                                                                  }),
-                                                                                  e.jsx("select", {
-                                                                                    className: "inp",
-                                                                                    value:
-                                                                                      M["inputFontFamily"] || "inherit",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["inputFontFamily"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                    children: [
-                                                                                      e.jsx("option", {
-                                                                                        value: "inherit",
-                                                                                        children: "Inherit",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          "system-ui, -apple-system, sans-serif",
-                                                                                        children: "System UI",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          "Arial, Helvetica, sans-serif",
-                                                                                        children: "Arial",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "Georgia, serif",
-                                                                                        children: "Georgia",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          '"Times New Roman", Times, serif',
-                                                                                        children: "Times",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          '"Courier New", monospace',
-                                                                                        children: "Courier",
-                                                                                      }),
-                                                                                    ],
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              (() => {
-                                                                                const base = "inputFontSize";
-                                                                                const val = nlsDevNum(
-                                                                                  M,
-                                                                                  base,
-                                                                                  nlsDevice,
-                                                                                  14,
-                                                                                );
-                                                                                return e.jsxs("div", {
-                                                                                  className: "nexulesuite_fb-field",
-                                                                                  style: {
-                                                                                    marginBottom: "6px",
-                                                                                  },
-                                                                                  children: [
-                                                                                    e.jsxs("span", {
-                                                                                      className: "lbl",
-                                                                                      style: {
-                                                                                        display: "flex",
-                                                                                        justifyContent: "space-between",
-                                                                                        alignItems: "center",
-                                                                                        gap: "8px",
-                                                                                      },
-                                                                                      children: [
-                                                                                        "Font size",
-                                                                                        e.jsxs("span", {
-                                                                                          children: [val, "px"],
-                                                                                        }),
-                                                                                      ],
-                                                                                    }),
-                                                                                    e.jsx(nlsRange, {
-                                                                                      min: 10,
-                                                                                      max: 28,
-                                                                                      value: val,
-                                                                                      onChange: (H) => {
-                                                                                        const v = Number(
-                                                                                          H.target.value,
-                                                                                        );
-                                                                                        if (nlsDevice === "desktop") {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [base]: v,
-                                                                                          });
-                                                                                        } else {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [nlsDevKey(
-                                                                                              base,
-                                                                                              nlsDevice,
-                                                                                            )]: v,
-                                                                                          });
-                                                                                        }
-                                                                                      },
-                                                                                    }),
-                                                                                  ],
-                                                                                });
-                                                                              })(),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Font weight"],
-                                                                                  }),
-                                                                                  e.jsx("select", {
-                                                                                    className: "inp",
-                                                                                    value:
-                                                                                      M["inputFontWeight"] || "400",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["inputFontWeight"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                    children: [
-                                                                                      e.jsx("option", {
-                                                                                        value: "400",
-                                                                                        children: "Normal",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "500",
-                                                                                        children: "Medium",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "600",
-                                                                                        children: "Semi Bold",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "700",
-                                                                                        children: "Bold",
-                                                                                      }),
-                                                                                    ],
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Line height"],
-                                                                                  }),
-                                                                                  e.jsx("input", {
-                                                                                    type: "text",
-                                                                                    className: "inp",
-                                                                                    value: M["inputLineHeight"] ?? "",
-                                                                                    placeholder: "1.4",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["inputLineHeight"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsx("div", {
-                                                                                className: "nexulesuite_fb-color-grid",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsx(
-                                                                                    FormColorField,
-                                                                                    {
-                                                                                      label: "Text color",
-                                                                                      value:
-                                                                                        M["inputColor"] || "#000000",
-                                                                                      onChange: (H) =>
-                                                                                        nlsCommitDesign(h, a, M, {
-                                                                                          ["inputColor"]: H,
-                                                                                        }),
-                                                                                    },
-                                                                                    "inputColor",
-                                                                                  ),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsx("h4", {
-                                                                                style: {
-                                                                                  margin: "16px 0 10px",
-                                                                                  fontSize: "13px",
-                                                                                  fontWeight: 700,
-                                                                                },
-                                                                                children: "5. Description / sub-label",
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Font family"],
-                                                                                  }),
-                                                                                  e.jsx("select", {
-                                                                                    className: "inp",
-                                                                                    value:
-                                                                                      M["descFontFamily"] || "inherit",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["descFontFamily"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                    children: [
-                                                                                      e.jsx("option", {
-                                                                                        value: "inherit",
-                                                                                        children: "Inherit",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          "system-ui, -apple-system, sans-serif",
-                                                                                        children: "System UI",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          "Arial, Helvetica, sans-serif",
-                                                                                        children: "Arial",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "Georgia, serif",
-                                                                                        children: "Georgia",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          '"Times New Roman", Times, serif',
-                                                                                        children: "Times",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          '"Courier New", monospace',
-                                                                                        children: "Courier",
-                                                                                      }),
-                                                                                    ],
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              (() => {
-                                                                                const base = "descFontSize";
-                                                                                const val = nlsDevNum(
-                                                                                  M,
-                                                                                  base,
-                                                                                  nlsDevice,
-                                                                                  12,
-                                                                                );
-                                                                                return e.jsxs("div", {
-                                                                                  className: "nexulesuite_fb-field",
-                                                                                  style: {
-                                                                                    marginBottom: "6px",
-                                                                                  },
-                                                                                  children: [
-                                                                                    e.jsxs("span", {
-                                                                                      className: "lbl",
-                                                                                      style: {
-                                                                                        display: "flex",
-                                                                                        justifyContent: "space-between",
-                                                                                        alignItems: "center",
-                                                                                        gap: "8px",
-                                                                                      },
-                                                                                      children: [
-                                                                                        "Font size",
-                                                                                        e.jsxs("span", {
-                                                                                          children: [val, "px"],
-                                                                                        }),
-                                                                                      ],
-                                                                                    }),
-                                                                                    e.jsx(nlsRange, {
-                                                                                      min: 10,
-                                                                                      max: 28,
-                                                                                      value: val,
-                                                                                      onChange: (H) => {
-                                                                                        const v = Number(
-                                                                                          H.target.value,
-                                                                                        );
-                                                                                        if (nlsDevice === "desktop") {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [base]: v,
-                                                                                          });
-                                                                                        } else {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [nlsDevKey(
-                                                                                              base,
-                                                                                              nlsDevice,
-                                                                                            )]: v,
-                                                                                          });
-                                                                                        }
-                                                                                      },
-                                                                                    }),
-                                                                                  ],
-                                                                                });
-                                                                              })(),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Font weight"],
-                                                                                  }),
-                                                                                  e.jsx("select", {
-                                                                                    className: "inp",
-                                                                                    value: M["descFontWeight"] || "400",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["descFontWeight"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                    children: [
-                                                                                      e.jsx("option", {
-                                                                                        value: "400",
-                                                                                        children: "Normal",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "500",
-                                                                                        children: "Medium",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "600",
-                                                                                        children: "Semi Bold",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "700",
-                                                                                        children: "Bold",
-                                                                                      }),
-                                                                                    ],
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Line height"],
-                                                                                  }),
-                                                                                  e.jsx("input", {
-                                                                                    type: "text",
-                                                                                    className: "inp",
-                                                                                    value: M["descLineHeight"] ?? "",
-                                                                                    placeholder: "1.4",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["descLineHeight"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsx("div", {
-                                                                                className: "nexulesuite_fb-color-grid",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsx(
-                                                                                    FormColorField,
-                                                                                    {
-                                                                                      label: "Text color",
-                                                                                      value:
-                                                                                        M["descColor"] || "#64748b",
-                                                                                      onChange: (H) =>
-                                                                                        nlsCommitDesign(h, a, M, {
-                                                                                          ["descColor"]: H,
-                                                                                        }),
-                                                                                    },
-                                                                                    "descColor",
-                                                                                  ),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsx("h4", {
-                                                                                style: {
-                                                                                  margin: "16px 0 10px",
-                                                                                  fontSize: "13px",
-                                                                                  fontWeight: 700,
-                                                                                },
-                                                                                children: "6. Error messages",
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Font family"],
-                                                                                  }),
-                                                                                  e.jsx("select", {
-                                                                                    className: "inp",
-                                                                                    value:
-                                                                                      M["errorFontFamily"] || "inherit",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["errorFontFamily"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                    children: [
-                                                                                      e.jsx("option", {
-                                                                                        value: "inherit",
-                                                                                        children: "Inherit",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          "system-ui, -apple-system, sans-serif",
-                                                                                        children: "System UI",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          "Arial, Helvetica, sans-serif",
-                                                                                        children: "Arial",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "Georgia, serif",
-                                                                                        children: "Georgia",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          '"Times New Roman", Times, serif',
-                                                                                        children: "Times",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          '"Courier New", monospace',
-                                                                                        children: "Courier",
-                                                                                      }),
-                                                                                    ],
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              (() => {
-                                                                                const base = "errorFontSize";
-                                                                                const val = nlsDevNum(
-                                                                                  M,
-                                                                                  base,
-                                                                                  nlsDevice,
-                                                                                  12,
-                                                                                );
-                                                                                return e.jsxs("div", {
-                                                                                  className: "nexulesuite_fb-field",
-                                                                                  style: {
-                                                                                    marginBottom: "6px",
-                                                                                  },
-                                                                                  children: [
-                                                                                    e.jsxs("span", {
-                                                                                      className: "lbl",
-                                                                                      style: {
-                                                                                        display: "flex",
-                                                                                        justifyContent: "space-between",
-                                                                                        alignItems: "center",
-                                                                                        gap: "8px",
-                                                                                      },
-                                                                                      children: [
-                                                                                        "Font size",
-                                                                                        e.jsxs("span", {
-                                                                                          children: [val, "px"],
-                                                                                        }),
-                                                                                      ],
-                                                                                    }),
-                                                                                    e.jsx(nlsRange, {
-                                                                                      min: 10,
-                                                                                      max: 24,
-                                                                                      value: val,
-                                                                                      onChange: (H) => {
-                                                                                        const v = Number(
-                                                                                          H.target.value,
-                                                                                        );
-                                                                                        if (nlsDevice === "desktop") {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [base]: v,
-                                                                                          });
-                                                                                        } else {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [nlsDevKey(
-                                                                                              base,
-                                                                                              nlsDevice,
-                                                                                            )]: v,
-                                                                                          });
-                                                                                        }
-                                                                                      },
-                                                                                    }),
-                                                                                  ],
-                                                                                });
-                                                                              })(),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Font weight"],
-                                                                                  }),
-                                                                                  e.jsx("select", {
-                                                                                    className: "inp",
-                                                                                    value:
-                                                                                      M["errorFontWeight"] || "400",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["errorFontWeight"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                    children: [
-                                                                                      e.jsx("option", {
-                                                                                        value: "400",
-                                                                                        children: "Normal",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "500",
-                                                                                        children: "Medium",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "600",
-                                                                                        children: "Semi Bold",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "700",
-                                                                                        children: "Bold",
-                                                                                      }),
-                                                                                    ],
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Line height"],
-                                                                                  }),
-                                                                                  e.jsx("input", {
-                                                                                    type: "text",
-                                                                                    className: "inp",
-                                                                                    value: M["errorLineHeight"] ?? "",
-                                                                                    placeholder: "1.4",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["errorLineHeight"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsx("div", {
-                                                                                className: "nexulesuite_fb-color-grid",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsx(
-                                                                                    FormColorField,
-                                                                                    {
-                                                                                      label: "Error text",
-                                                                                      value:
-                                                                                        M["errorColor"] || "#dc2626",
-                                                                                      onChange: (H) =>
-                                                                                        nlsCommitDesign(h, a, M, {
-                                                                                          ["errorColor"]: H,
-                                                                                        }),
-                                                                                    },
-                                                                                    "errorColor",
-                                                                                  ),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsx("h4", {
-                                                                                style: {
-                                                                                  margin: "16px 0 10px",
-                                                                                  fontSize: "13px",
-                                                                                  fontWeight: 700,
-                                                                                },
-                                                                                children: "7. Success messages",
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Font family"],
-                                                                                  }),
-                                                                                  e.jsx("select", {
-                                                                                    className: "inp",
-                                                                                    value:
-                                                                                      M["successFontFamily"] ||
-                                                                                      "inherit",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["successFontFamily"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                    children: [
-                                                                                      e.jsx("option", {
-                                                                                        value: "inherit",
-                                                                                        children: "Inherit",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          "system-ui, -apple-system, sans-serif",
-                                                                                        children: "System UI",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          "Arial, Helvetica, sans-serif",
-                                                                                        children: "Arial",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "Georgia, serif",
-                                                                                        children: "Georgia",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          '"Times New Roman", Times, serif',
-                                                                                        children: "Times",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value:
-                                                                                          '"Courier New", monospace',
-                                                                                        children: "Courier",
-                                                                                      }),
-                                                                                    ],
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              (() => {
-                                                                                const base = "successFontSize";
-                                                                                const val = nlsDevNum(
-                                                                                  M,
-                                                                                  base,
-                                                                                  nlsDevice,
-                                                                                  14,
-                                                                                );
-                                                                                return e.jsxs("div", {
-                                                                                  className: "nexulesuite_fb-field",
-                                                                                  style: {
-                                                                                    marginBottom: "6px",
-                                                                                  },
-                                                                                  children: [
-                                                                                    e.jsxs("span", {
-                                                                                      className: "lbl",
-                                                                                      style: {
-                                                                                        display: "flex",
-                                                                                        justifyContent: "space-between",
-                                                                                        alignItems: "center",
-                                                                                        gap: "8px",
-                                                                                      },
-                                                                                      children: [
-                                                                                        "Font size",
-                                                                                        e.jsxs("span", {
-                                                                                          children: [val, "px"],
-                                                                                        }),
-                                                                                      ],
-                                                                                    }),
-                                                                                    e.jsx(nlsRange, {
-                                                                                      min: 10,
-                                                                                      max: 28,
-                                                                                      value: val,
-                                                                                      onChange: (H) => {
-                                                                                        const v = Number(
-                                                                                          H.target.value,
-                                                                                        );
-                                                                                        if (nlsDevice === "desktop") {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [base]: v,
-                                                                                          });
-                                                                                        } else {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [nlsDevKey(
-                                                                                              base,
-                                                                                              nlsDevice,
-                                                                                            )]: v,
-                                                                                          });
-                                                                                        }
-                                                                                      },
-                                                                                    }),
-                                                                                  ],
-                                                                                });
-                                                                              })(),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Font weight"],
-                                                                                  }),
-                                                                                  e.jsx("select", {
-                                                                                    className: "inp",
-                                                                                    value:
-                                                                                      M["successFontWeight"] || "400",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["successFontWeight"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                    children: [
-                                                                                      e.jsx("option", {
-                                                                                        value: "400",
-                                                                                        children: "Normal",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "500",
-                                                                                        children: "Medium",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "600",
-                                                                                        children: "Semi Bold",
-                                                                                      }),
-                                                                                      e.jsx("option", {
-                                                                                        value: "700",
-                                                                                        children: "Bold",
-                                                                                      }),
-                                                                                    ],
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_fb-field",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsxs("span", {
-                                                                                    className: "lbl",
-                                                                                    style: {
-                                                                                      display: "flex",
-                                                                                      justifyContent: "space-between",
-                                                                                      alignItems: "center",
-                                                                                      gap: "8px",
-                                                                                    },
-                                                                                    children: ["Line height"],
-                                                                                  }),
-                                                                                  e.jsx("input", {
-                                                                                    type: "text",
-                                                                                    className: "inp",
-                                                                                    value: M["successLineHeight"] ?? "",
-                                                                                    placeholder: "1.45",
-                                                                                    onChange: (H) =>
-                                                                                      nlsCommitDesign(h, a, M, {
-                                                                                        ["successLineHeight"]:
-                                                                                          H.target.value,
-                                                                                      }),
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsx("div", {
-                                                                                className: "nexulesuite_fb-color-grid",
-                                                                                style: {
-                                                                                  marginBottom: "6px",
-                                                                                },
-                                                                                children: [
-                                                                                  e.jsx(
-                                                                                    FormColorField,
-                                                                                    {
-                                                                                      label: "Success text",
-                                                                                      value:
-                                                                                        M["successColor"] || "#16a34a",
-                                                                                      onChange: (H) =>
-                                                                                        nlsCommitDesign(h, a, M, {
-                                                                                          ["successColor"]: H,
-                                                                                        }),
-                                                                                    },
-                                                                                    "successColor",
-                                                                                  ),
-                                                                                ],
-                                                                              }),
-                                                                            ],
-                                                                          })
-                                                                        : e.jsxs("div", {
-                                                                            className: "nexulesuite_fui-acc__stack",
-                                                                            children: [
-                                                                              e.jsxs("div", {
-                                                                                className: "nexulesuite_cust__devices",
-                                                                                style: {
-                                                                                  display: "flex",
-                                                                                  gap: "6px",
-                                                                                  marginBottom: "10px",
-                                                                                  flexWrap: "wrap",
-                                                                                },
-                                                                                children: [
-                                                                                  ["desktop", "Desktop"],
-                                                                                  ["tablet", "Tablet"],
-                                                                                  ["mobile", "Mobile"],
-                                                                                ].map(([dk, dl]) =>
-                                                                                  e.jsx(
-                                                                                    "button",
-                                                                                    {
-                                                                                      type: "button",
-                                                                                      className:
-                                                                                        "nexulesuite_cust__device" +
-                                                                                        (nlsDevice === dk
-                                                                                          ? " is-active"
-                                                                                          : ""),
-                                                                                      onClick: () => nlsSetDevice(dk),
-                                                                                      children: dl,
-                                                                                    },
-                                                                                    dk,
-                                                                                  ),
-                                                                                ),
-                                                                              }),
-                                                                              (() => {
-                                                                                const base = "rowGap";
-                                                                                const val = nlsDevNum(
-                                                                                  M,
-                                                                                  base,
-                                                                                  nlsDevice,
-                                                                                  16,
-                                                                                );
-                                                                                return e.jsxs("div", {
-                                                                                  className: "nexulesuite_fb-field",
-                                                                                  style: {
-                                                                                    marginBottom: "6px",
-                                                                                  },
-                                                                                  children: [
-                                                                                    e.jsxs("span", {
-                                                                                      className: "lbl",
-                                                                                      style: {
-                                                                                        display: "flex",
-                                                                                        justifyContent: "space-between",
-                                                                                        alignItems: "center",
-                                                                                        gap: "8px",
-                                                                                      },
-                                                                                      children: [
-                                                                                        "Row gap (vertical)",
-                                                                                        e.jsxs("span", {
-                                                                                          children: [val, "px"],
-                                                                                        }),
-                                                                                      ],
-                                                                                    }),
-                                                                                    e.jsx(nlsRange, {
-                                                                                      min: 0,
-                                                                                      max: 100,
-                                                                                      step: 1,
-                                                                                      value: val,
-                                                                                      onChange: (H) => {
-                                                                                        const v = Number(
-                                                                                          H.target.value,
-                                                                                        );
-                                                                                        if (nlsDevice === "desktop") {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [base]: v,
-                                                                                            fieldGap: Number(
-                                                                                              H.target.value,
-                                                                                            ),
-                                                                                          });
-                                                                                        } else {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [nlsDevKey(
-                                                                                              base,
-                                                                                              nlsDevice,
-                                                                                            )]: v,
-                                                                                          });
-                                                                                        }
-                                                                                      },
-                                                                                    }),
-                                                                                  ],
-                                                                                });
-                                                                              })(),
-                                                                              (() => {
-                                                                                const base = "columnGap";
-                                                                                const val = nlsDevNum(
-                                                                                  M,
-                                                                                  base,
-                                                                                  nlsDevice,
-                                                                                  16,
-                                                                                );
-                                                                                return e.jsxs("div", {
-                                                                                  className: "nexulesuite_fb-field",
-                                                                                  style: {
-                                                                                    marginBottom: "6px",
-                                                                                  },
-                                                                                  children: [
-                                                                                    e.jsxs("span", {
-                                                                                      className: "lbl",
-                                                                                      style: {
-                                                                                        display: "flex",
-                                                                                        justifyContent: "space-between",
-                                                                                        alignItems: "center",
-                                                                                        gap: "8px",
-                                                                                      },
-                                                                                      children: [
-                                                                                        "Column gap (horizontal)",
-                                                                                        e.jsxs("span", {
-                                                                                          children: [val, "px"],
-                                                                                        }),
-                                                                                      ],
-                                                                                    }),
-                                                                                    e.jsx(nlsRange, {
-                                                                                      min: 0,
-                                                                                      max: 100,
-                                                                                      step: 1,
-                                                                                      value: val,
-                                                                                      onChange: (H) => {
-                                                                                        const v = Number(
-                                                                                          H.target.value,
-                                                                                        );
-                                                                                        if (nlsDevice === "desktop") {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [base]: v,
-                                                                                          });
-                                                                                        } else {
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [nlsDevKey(
-                                                                                              base,
-                                                                                              nlsDevice,
-                                                                                            )]: v,
-                                                                                          });
-                                                                                        }
-                                                                                      },
-                                                                                    }),
-                                                                                  ],
-                                                                                });
-                                                                              })(),
-                                                                              (() => {
-                                                                                const base =
-                                                                                  nlsDevice === "desktop"
-                                                                                    ? "fieldPadding"
-                                                                                    : nlsDevice === "tablet"
-                                                                                      ? "inputPaddingTablet"
-                                                                                      : "inputPaddingMobile";
-                                                                                const _fp = parseInt(
-                                                                                  M.fieldPadding,
-                                                                                  10,
-                                                                                );
-                                                                                const desktop =
-                                                                                  !isNaN(_fp) && _fp >= 0 ? _fp : 12;
-                                                                                const raw = parseInt(M[base], 10);
-                                                                                const val =
-                                                                                  nlsDevice === "desktop"
-                                                                                    ? desktop
-                                                                                    : M[base] != null &&
-                                                                                        M[base] !== "" &&
-                                                                                        !isNaN(raw) &&
-                                                                                        raw >= 0
-                                                                                      ? raw
-                                                                                      : desktop;
-                                                                                return e.jsxs("div", {
-                                                                                  className: "nexulesuite_fb-field",
-                                                                                  style: {
-                                                                                    marginBottom: "6px",
-                                                                                  },
-                                                                                  children: [
-                                                                                    e.jsxs("span", {
-                                                                                      className: "lbl",
-                                                                                      style: {
-                                                                                        display: "flex",
-                                                                                        justifyContent: "space-between",
-                                                                                        alignItems: "center",
-                                                                                        gap: "8px",
-                                                                                      },
-                                                                                      children: [
-                                                                                        "Input padding",
-                                                                                        e.jsxs("span", {
-                                                                                          children: [val, "px"],
-                                                                                        }),
-                                                                                      ],
-                                                                                    }),
-                                                                                    e.jsx(nlsRange, {
-                                                                                      min: 0,
-                                                                                      max: 100,
-                                                                                      step: 1,
-                                                                                      value: val,
-                                                                                      onChange: (H) => {
-                                                                                        const v = Number(
-                                                                                          H.target.value,
-                                                                                        );
-                                                                                        if (nlsDevice === "desktop")
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            fieldPadding: v,
-                                                                                          });
-                                                                                        else
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [base]: v,
-                                                                                          });
-                                                                                      },
-                                                                                    }),
-                                                                                  ],
-                                                                                });
-                                                                              })(),
-                                                                              (() => {
-                                                                                const baseKey = "labelSpacing";
-                                                                                const val = nlsDevNum(
-                                                                                  M,
-                                                                                  baseKey,
-                                                                                  nlsDevice,
-                                                                                  6,
-                                                                                );
-                                                                                return e.jsxs("div", {
-                                                                                  className: "nexulesuite_fb-field",
-                                                                                  style: {
-                                                                                    marginBottom: "6px",
-                                                                                  },
-                                                                                  children: [
-                                                                                    e.jsxs("span", {
-                                                                                      className: "lbl",
-                                                                                      style: {
-                                                                                        display: "flex",
-                                                                                        justifyContent: "space-between",
-                                                                                        alignItems: "center",
-                                                                                        gap: "8px",
-                                                                                      },
-                                                                                      children: [
-                                                                                        "Label spacing",
-                                                                                        e.jsxs("span", {
-                                                                                          children: [val, "px"],
-                                                                                        }),
-                                                                                      ],
-                                                                                    }),
-                                                                                    e.jsx(nlsRange, {
-                                                                                      min: 0,
-                                                                                      max: 100,
-                                                                                      step: 1,
-                                                                                      value: val,
-                                                                                      onChange: (H) => {
-                                                                                        const v = Number(
-                                                                                          H.target.value,
-                                                                                        );
-                                                                                        if (nlsDevice === "desktop")
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            labelSpacing: v,
-                                                                                          });
-                                                                                        else
-                                                                                          nlsCommitDesign(h, a, M, {
-                                                                                            [nlsDevKey(
-                                                                                              baseKey,
-                                                                                              nlsDevice,
-                                                                                            )]: v,
-                                                                                          });
-                                                                                      },
-                                                                                    }),
-                                                                                    e.jsx("h4", {
-                                                                                      style: {
-                                                                                        margin: "16px 0 10px",
-                                                                                        fontSize: "13px",
-                                                                                        fontWeight: 700,
-                                                                                      },
-                                                                                      children: "11. Responsive",
-                                                                                    }),
-                                                                                    e.jsxs("div", {
-                                                                                      className: "nexulesuite_fb-field",
-                                                                                      style: {
-                                                                                        marginBottom: "6px",
-                                                                                      },
-                                                                                      children: [
-                                                                                        e.jsxs("span", {
-                                                                                          className: "lbl",
-                                                                                          style: {
-                                                                                            display: "flex",
-                                                                                            justifyContent:
-                                                                                              "space-between",
-                                                                                            alignItems: "center",
-                                                                                            gap: "8px",
-                                                                                          },
-                                                                                          children: [
-                                                                                            "Auto-stack columns on small screens",
-                                                                                          ],
-                                                                                        }),
-                                                                                        e.jsx("label", {
-                                                                                          style: {
-                                                                                            display: "flex",
-                                                                                            alignItems: "center",
-                                                                                            gap: "8px",
-                                                                                          },
-                                                                                          children: [
-                                                                                            e.jsx("input", {
-                                                                                              type: "checkbox",
-                                                                                              checked:
-                                                                                                M.autoStack !== false,
-                                                                                              onChange: (H) =>
-                                                                                                nlsCommitDesign(
-                                                                                                  h,
-                                                                                                  a,
-                                                                                                  M,
-                                                                                                  {
-                                                                                                    autoStack:
-                                                                                                      !!H.target
-                                                                                                        .checked,
-                                                                                                  },
-                                                                                                ),
-                                                                                            }),
-                                                                                            " Stack multi-column layouts to 1 column",
-                                                                                          ],
-                                                                                        }),
-                                                                                      ],
-                                                                                    }),
-                                                                                    (() => {
-                                                                                      const base = "stackBreakpoint";
-                                                                                      const val = nlsDevNum(
-                                                                                        M,
-                                                                                        base,
-                                                                                        nlsDevice,
-                                                                                        640,
-                                                                                      );
-                                                                                      return e.jsxs("div", {
-                                                                                        className:
-                                                                                          "nexulesuite_fb-field",
-                                                                                        style: {
-                                                                                          marginBottom: "6px",
-                                                                                        },
-                                                                                        children: [
-                                                                                          e.jsxs("span", {
-                                                                                            className: "lbl",
-                                                                                            style: {
-                                                                                              display: "flex",
-                                                                                              justifyContent:
-                                                                                                "space-between",
-                                                                                              alignItems: "center",
-                                                                                              gap: "8px",
-                                                                                            },
-                                                                                            children: [
-                                                                                              "Stack breakpoint",
-                                                                                              e.jsxs("span", {
-                                                                                                children: [val, "px"],
-                                                                                              }),
-                                                                                            ],
-                                                                                          }),
-                                                                                          e.jsx(nlsRange, {
-                                                                                            min: 220,
-                                                                                            max: 1200,
-                                                                                            step: 1,
-                                                                                            value: val,
-                                                                                            onChange: (H) => {
-                                                                                              const v = Number(
-                                                                                                H.target.value,
-                                                                                              );
-                                                                                              if (
-                                                                                                nlsDevice === "desktop"
-                                                                                              ) {
-                                                                                                nlsCommitDesign(
-                                                                                                  h,
-                                                                                                  a,
-                                                                                                  M,
-                                                                                                  {
-                                                                                                    [base]: v,
-                                                                                                  },
-                                                                                                );
-                                                                                              } else {
-                                                                                                nlsCommitDesign(
-                                                                                                  h,
-                                                                                                  a,
-                                                                                                  M,
-                                                                                                  {
-                                                                                                    [nlsDevKey(
-                                                                                                      base,
-                                                                                                      nlsDevice,
-                                                                                                    )]: v,
-                                                                                                  },
-                                                                                                );
-                                                                                              }
-                                                                                            },
-                                                                                          }),
-                                                                                        ],
-                                                                                      });
-                                                                                    })(),
-                                                                                    e.jsx("h4", {
-                                                                                      style: {
-                                                                                        margin: "0 0 10px",
-                                                                                        fontSize: "13px",
-                                                                                        fontWeight: 700,
-                                                                                      },
-                                                                                      children: "Per-field design",
-                                                                                    }),
-                                                                                  ],
-                                                                                });
-                                                                              })(),
-                                                                            ],
-                                                                          }),
-                                                          })
-                                                        : null,
-                                                    ],
-                                                  },
-                                                  k,
-                                                );
-                                              }),
-                                            })
-                                          : mk === "notify"
-                                            ? e.jsxs("div", {
-                                                className: "nexulesuite_fui-acc",
-                                                children: [
-                                                  ["email", "Email Notifications"],
-                                                  ["integrations", "Integrations"],
-                                                ].map(function (pair) {
-                                                  var nk = pair[0],
-                                                    lab = pair[1];
-                                                  var open = nlsNotifyAcc === nk;
-                                                  return e.jsxs(
-                                                    "div",
-                                                    {
-                                                      className: "nexulesuite_fui-acc__item" + (open ? " is-open" : ""),
-                                                      children: [
-                                                        e.jsxs("button", {
-                                                          type: "button",
-                                                          className: "nexulesuite_fui-acc__head",
-                                                          onClick: function () {
-                                                            nlsSetNotifyAcc(open ? "" : nk);
-                                                            x("advanced");
-                                                          },
-                                                          children: [
-                                                            e.jsxs("span", {
-                                                              className: "nexulesuite_fui-acc__left",
-                                                              children: [
-                                                                nlsAccIcon(nk),
-                                                                e.jsx("span", {
-                                                                  className: "nexulesuite_fui-acc__label",
-                                                                  children: lab,
-                                                                }),
-                                                              ],
-                                                            }),
-                                                            nlsAccPlus(open),
-                                                          ],
-                                                        }),
-                                                        open
-                                                          ? e.jsx("div", {
-                                                              className: "nexulesuite_fui-acc__body",
-                                                              children:
-                                                                nk === "email"
-                                                                  ? e.jsxs("div", {
-                                                                      className: "nexulesuite_fui-acc__stack",
-                                                                      children: [
-                                                                        e.jsx("p", {
-                                                                          className: "nexulesuite_fui-hint",
-                                                                          children:
-                                                                            "Send customized email notifications to the site admin and visitors after a successful submission. For reliable delivery, set up SMTP on your site.",
-                                                                        }),
-                                                                        e.jsxs("div", {
-                                                                          className: "nexulesuite_fb-field",
-                                                                          children: [
-                                                                            e.jsx("span", {
-                                                                              className: "lbl",
-                                                                              children: "Admin Email",
-                                                                            }),
-                                                                            e.jsx("input", {
-                                                                              className: "inp",
-                                                                              type: "text",
-                                                                              value: a.notificationEmail || "",
-                                                                              placeholder:
-                                                                                "Leave blank to use site admin email",
-                                                                              onChange: function (w) {
-                                                                                return h(a.id, {
-                                                                                  notificationEmail: w.target.value,
-                                                                                });
-                                                                              },
-                                                                            }),
-                                                                          ],
-                                                                        }),
-                                                                        e.jsx("p", {
-                                                                          className: "nexulesuite_fui-hint",
-                                                                          children:
-                                                                            "Add conditional email routes in the panel below for visitor thank-you emails and extra recipients.",
-                                                                        }),
-                                                                      ],
-                                                                    })
-                                                                  : e.jsxs("div", {
-                                                                      className: "nexulesuite_fui-acc__stack",
-                                                                      children: [
-                                                                        e.jsxs("div", {
-                                                                          className: "nexulesuite_fb-field",
-                                                                          children: [
-                                                                            e.jsx("span", {
-                                                                              className: "lbl",
-                                                                              children: "CRM / Webhook URL (this form)",
-                                                                            }),
-                                                                            e.jsx("input", {
-                                                                              type: "url",
-                                                                              className: "inp",
-                                                                              value: a.crmWebhookUrl || "",
-                                                                              onChange: function (w) {
-                                                                                return h(a.id, {
-                                                                                  crmWebhookUrl: w.target.value,
-                                                                                });
-                                                                              },
-                                                                              placeholder:
-                                                                                "https://hooks.zapier.com/...",
-                                                                            }),
-                                                                          ],
-                                                                        }),
-                                                                        e.jsx("p", {
-                                                                          className: "nexulesuite_fui-hint",
-                                                                          children:
-                                                                            "Optional. Per-form JSON webhook; set a global URL in Settings for all forms too.",
-                                                                        }),
-                                                                      ],
-                                                                    }),
-                                                            })
-                                                          : null,
-                                                      ],
-                                                    },
-                                                    nk,
-                                                  );
-                                                }),
-                                              })
-                                            : mk === "settings"
-                                              ? e.jsxs("div", {
-                                                  className: "nexulesuite_fui-acc",
-                                                  children: [
-                                                    ["visibility", "Visibility"],
-                                                    ["legal", "Legal"],
-                                                  ].map(function (pair) {
-                                                    var sk = pair[0],
-                                                      lab = pair[1];
-                                                    var open = nlsSettingsAcc === sk;
-                                                    return e.jsxs(
-                                                      "div",
-                                                      {
-                                                        className:
-                                                          "nexulesuite_fui-acc__item" + (open ? " is-open" : ""),
-                                                        children: [
-                                                          e.jsxs("button", {
-                                                            type: "button",
-                                                            className: "nexulesuite_fui-acc__head",
-                                                            onClick: function () {
-                                                              nlsSetSettingsAcc(open ? "" : sk);
-                                                              x("advanced");
-                                                            },
-                                                            children: [
-                                                              e.jsxs("span", {
-                                                                className: "nexulesuite_fui-acc__left",
-                                                                children: [
-                                                                  nlsAccIcon(sk),
-                                                                  e.jsx("span", {
-                                                                    className: "nexulesuite_fui-acc__label",
-                                                                    children: lab,
-                                                                  }),
-                                                                ],
-                                                              }),
-                                                              nlsAccPlus(open),
-                                                            ],
-                                                          }),
-                                                          open
-                                                            ? e.jsx("div", {
-                                                                className: "nexulesuite_fui-acc__body",
-                                                                children:
-                                                                  sk === "visibility"
-                                                                    ? e.jsxs("div", {
-                                                                        className: "nexulesuite_fui-acc__stack",
-                                                                        children: [
-                                                                          e.jsxs("div", {
-                                                                            className: "nexulesuite_fb-toggle-card",
-                                                                            children: [
-                                                                              e.jsxs("div", {
-                                                                                className:
-                                                                                  "nexulesuite_fb-toggle-card-body",
-                                                                                children: [
-                                                                                  e.jsx("span", {
-                                                                                    className:
-                                                                                      "nexulesuite_fb-toggle-card-title",
-                                                                                    children: "Show form on website",
-                                                                                  }),
-                                                                                  e.jsx("p", {
-                                                                                    className: "hint",
-                                                                                    children:
-                                                                                      "Turn off to hide everywhere on the front (shortcodes, popups, widgets). The form stays in the builder for editing.",
-                                                                                  }),
-                                                                                ],
-                                                                              }),
-                                                                              e.jsx("div", {
-                                                                                className: `nexulesuite_fb-toggle${a.published !== !1 ? " on" : ""}`,
-                                                                                role: "switch",
-                                                                                "aria-checked": a.published !== !1,
-                                                                                tabIndex: 0,
-                                                                                onClick: () =>
-                                                                                  h(a.id, {
-                                                                                    published: a.published === !1,
-                                                                                  }),
-                                                                                onKeyDown: (w) => {
-                                                                                  (w.key === " " ||
-                                                                                    w.key === "Enter") &&
-                                                                                    (w.preventDefault(),
-                                                                                    h(a.id, {
-                                                                                      published: a.published === !1,
-                                                                                    }));
-                                                                                },
-                                                                                children: e.jsx("span", {
-                                                                                  className: "track",
-                                                                                  children: e.jsx("span", {
-                                                                                    className: "knob",
-                                                                                  }),
-                                                                                }),
-                                                                              }),
-                                                                            ],
-                                                                          }),
-                                                                        ],
-                                                                      })
-                                                                    : sk === "markup"
-                                                                      ? null
-                                                                      : e.jsxs("div", {
-                                                                          className: "nexulesuite_fui-acc__stack",
-                                                                          children: [
-                                                                            e.jsxs("div", {
-                                                                              className: "nexulesuite_fb-field",
-                                                                              children: [
-                                                                                e.jsx("span", {
-                                                                                  className: "lbl",
-                                                                                  children: "Terms & Conditions Text",
-                                                                                }),
-                                                                                e.jsx("textarea", {
-                                                                                  className: "ta",
-                                                                                  value: a.termsConditionText || "",
-                                                                                  onChange: (w) =>
-                                                                                    h(a.id, {
-                                                                                      termsConditionText:
-                                                                                        w.target.value,
-                                                                                    }),
-                                                                                  rows: 2,
-                                                                                  placeholder:
-                                                                                    "I agree to the terms and conditions",
-                                                                                }),
-                                                                              ],
-                                                                            }),
-                                                                          ],
-                                                                        }),
-                                                              })
-                                                            : null,
-                                                        ],
-                                                      },
-                                                      sk,
-                                                    );
-                                                  }),
-                                                })
-                                              : mk === "behavior"
-                                                ? e.jsx("div", {
-                                                    className:
-                                                      "nexulesuite_fui-acc__content-inner nexulesuite_fb-tab-panel nexulesuite_fb-advanced",
-                                                    children: e.jsx(FormBehaviorSettings, {
-                                                      form: a,
-                                                      onUpdate: (w) => h(a.id, w),
-                                                    }),
-                                                  })
-                                                : e.jsx("div", {
-                                                    className: "nexulesuite_fui-acc__content-inner",
-                                                    children: e.jsx("p", {
-                                                      className: "nexulesuite_fui-hint",
-                                                      children: "Add and arrange fields on the canvas.",
-                                                    }),
-                                                  }),
-                                    })
-                                  : null,
-                              ],
-                            },
-                            mk,
-                          );
-                        }),
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-          ],
-        }),
-      })
-    : e.jsxs("li", {
-        className: "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm",
+    ? e.jsxs("li", {
+        className: `nls-card nls-fb-card${o ? " is-expanded" : ""}`,
         children: [
-          e.jsxs("button", {
-            type: "button",
-            onClick: d,
-            className: "flex w-full items-center justify-between border-b border-slate-200 px-3 py-3 text-left sm:px-4",
+          e.jsxs("div", {
+            className: "nls-fb-head",
             children: [
-              e.jsxs("div", {
-                className: "flex min-w-0 items-center gap-2",
+              e.jsxs("button", {
+                type: "button",
+                onClick: d,
+                className: "nls-fb-head__main",
+                "aria-expanded": !!o,
                 children: [
                   e.jsx("span", {
-                    className: "truncate text-sm font-semibold text-slate-800",
+                    className: "nls-fb-head__title",
                     children: a.name || "Untitled Form",
                   }),
                   e.jsx("span", {
-                    className: "rounded-full bg-violet-50 px-2 py-0.5 text-xs font-semibold text-violet-700",
-                    children: a.formType === "multi" ? "Multi-Step" : "Simple",
+                    className: "nls-badge nls-badge--primary",
+                    children: "Simple",
                   }),
                   a.published === !1
                     ? e.jsx("span", {
-                        className: "rounded-full bg-slate-200 px-2 py-0.5 text-xs font-semibold text-slate-600",
+                        className: "nls-badge nls-badge--muted",
                         children: "Hidden",
                       })
                     : null,
                 ],
               }),
               e.jsxs("div", {
-                className: "flex items-center gap-1",
+                className: "nls-fb-head__actions",
                 onClick: (w) => w.stopPropagation(),
                 children: [
                   e.jsx("button", {
                     type: "button",
                     onClick: () => (y == null ? void 0 : y(a.id)),
-                    className:
-                      "inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-700",
+                    className: "nls-icon-btn",
                     title: "Preview",
+                    "aria-label": "Preview",
                     children: e.jsx(Rt, {
-                      className: "h-4 w-4",
+                      size: 16,
+                      "aria-hidden": "true",
                     }),
                   }),
                   e.jsx("button", {
                     type: "button",
                     onClick: () => (P == null ? void 0 : P(a.id, a.published === !1)),
-                    className: [
-                      "inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
-                      a.published === !1
-                        ? "text-amber-600 hover:bg-amber-50 hover:text-amber-700"
-                        : "text-slate-400 hover:bg-slate-50 hover:text-slate-700",
-                    ].join(" "),
+                    className: `nls-icon-btn${a.published === !1 ? " is-warn" : ""}`,
                     title: a.published === !1 ? "Show form on website" : "Hide form on website",
+                    "aria-label": a.published === !1 ? "Show form on website" : "Hide form on website",
                     children:
                       a.published === !1
                         ? e.jsx(Rt, {
-                            className: "h-4 w-4",
+                            size: 16,
+                            "aria-hidden": "true",
                           })
                         : e.jsx(za, {
-                            className: "h-4 w-4",
+                            size: 16,
+                            "aria-hidden": "true",
                           }),
                   }),
                   e.jsx("button", {
                     type: "button",
                     onClick: () => copyShortcode(a.id, S),
-                    className: [
-                      "inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
-                      f === a.id
-                        ? "bg-emerald-50 text-emerald-600"
-                        : "text-slate-400 hover:bg-slate-50 hover:text-slate-700",
-                    ].join(" "),
+                    className: `nls-icon-btn${f === a.id ? " is-success" : ""}`,
                     title: "Copy shortcode",
+                    "aria-label": "Copy shortcode",
                     children: e.jsx(Jc, {
-                      className: "h-4 w-4",
+                      size: 16,
+                      "aria-hidden": "true",
                     }),
                   }),
                   e.jsx("button", {
                     type: "button",
                     onClick: () => p(a.id),
-                    className:
-                      "inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-700",
+                    className: "nls-icon-btn",
                     title: "Duplicate",
+                    "aria-label": "Duplicate",
                     children: e.jsx($s, {
-                      className: "h-4 w-4",
+                      size: 16,
+                      "aria-hidden": "true",
                     }),
                   }),
                   e.jsx("button", {
                     type: "button",
                     onClick: () => u(a.id),
-                    className:
-                      "inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-700",
+                    className: "nls-icon-btn nls-icon-btn--danger",
                     title: "Delete",
+                    "aria-label": "Delete",
                     children: e.jsx(yt, {
-                      className: "h-4 w-4",
+                      size: 16,
+                      "aria-hidden": "true",
                     }),
                   }),
                   e.jsx("button", {
                     type: "button",
                     onClick: () => nlsExportFormConfig(a),
-                    className:
-                      "inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-700",
+                    className: "nls-icon-btn",
                     title: "Export form",
+                    "aria-label": "Export form",
                     children: e.jsx(Ol, {
-                      className: "h-4 w-4",
+                      size: 16,
+                      "aria-hidden": "true",
                     }),
                   }),
                   e.jsx("button", {
@@ -7389,15 +4022,26 @@ function FormCard({
                               }),
                             ),
                       ),
-                    className:
-                      "inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-700",
+                    className: "nls-icon-btn",
                     title: "Import form",
+                    "aria-label": "Import form",
                     children: e.jsx(Vl, {
-                      className: "h-4 w-4",
+                      size: 16,
+                      "aria-hidden": "true",
                     }),
                   }),
-                  e.jsx(Qs, {
-                    className: ["h-4 w-4 text-slate-400 transition-transform", o ? "rotate-180" : ""].join(" "),
+                  e.jsx("button", {
+                    type: "button",
+                    onClick: d,
+                    className: "nls-icon-btn nls-fb-chevron",
+                    title: o ? "Collapse" : "Expand",
+                    "aria-label": o ? "Collapse" : "Expand",
+                    "aria-expanded": !!o,
+                    children: e.jsx(Qs, {
+                      size: 16,
+                      className: o ? "is-open" : "",
+                      "aria-hidden": "true",
+                    }),
                   }),
                 ],
               }),
@@ -7405,15 +4049,16 @@ function FormCard({
           }),
           o &&
             e.jsxs("div", {
-              className: "space-y-4 px-3 py-4 sm:space-y-6 sm:px-4",
+              className: "nexulesuite_fui-workspace",
               children: [
                 e.jsxs("div", {
-                  className: "grid grid-cols-1 gap-4 sm:grid-cols-2",
+                  className: "nls-fb-name-row nls-grid-2",
                   children: [
-                    e.jsxs("div", {
+                    e.jsxs("label", {
+                      className: "nls-field",
                       children: [
-                        e.jsx("label", {
-                          className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                        e.jsx("span", {
+                          className: "nls-field__label",
                           children: "Form Name",
                         }),
                         e.jsx("input", {
@@ -7423,34 +4068,2927 @@ function FormCard({
                             h(a.id, {
                               name: w.target.value,
                             }),
-                          className:
-                            "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                         }),
                       ],
                     }),
                     e.jsxs("div", {
+                      className: "nls-field",
                       children: [
-                        e.jsx("label", {
-                          className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                        e.jsx("span", {
+                          className: "nls-field__label",
                           children: "Shortcode",
                         }),
                         e.jsxs("div", {
-                          className: "flex items-center gap-2",
+                          className: "nls-row nls-fb-shortcode",
                           children: [
                             e.jsxs("code", {
-                              className:
-                                "flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-700",
+                              className: "nls-code",
                               children: ['[nexulesuite_form id="', a.id, '"]'],
                             }),
                             e.jsx("button", {
                               type: "button",
                               onClick: () => copyShortcode(a.id, S),
-                              className: [
-                                "rounded-lg px-3 py-2 text-xs font-semibold transition-colors",
-                                f === a.id
-                                  ? "bg-emerald-100 text-emerald-700"
-                                  : "bg-violet-600 text-white hover:bg-violet-700",
-                              ].join(" "),
+                              className: "nls-btn nls-btn--secondary nls-btn--sm",
+                              "aria-live": "polite",
+                              children: f === a.id ? "Copied!" : "Copy",
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                e.jsxs("div", {
+                  className: "nexulesuite_fui-canvas",
+                  children: [
+                    e.jsx("div", {
+                      className: "nexulesuite_fui-canvas-card nls-card",
+                      children: e.jsx(FormCanvas, {
+                        form: a,
+                        onPatchForm: (w) => h(a.id, w),
+                        onSelectionChange: a.onSelectionChange,
+                      }),
+                    }),
+                    e.jsx("div", {
+                      className: "nexulesuite_fui-canvas-foot",
+                      children: e.jsx("button", {
+                        type: "button",
+                        className: "nls-btn nls-btn--secondary",
+                        onClick: () => {
+                          nlsSetNavOpen("appearance");
+                          nlsSetFuiView("appearance");
+                          nlsSetAccOpen("");
+                          nlsSetColorSub("");
+                          x("customization");
+                        },
+                        children: "Appearance →",
+                      }),
+                    }),
+                  ],
+                }),
+                e.jsxs("aside", {
+                  className: "nexulesuite_fui-side",
+                  children: [
+                    e.jsx("p", {
+                      className: "nls-eyebrow nexulesuite_fui-side__label",
+                      children: "Customize form",
+                    }),
+                    e.jsxs("div", {
+                      className: "nexulesuite_fui-acc nexulesuite_fui-nav-acc",
+                      children: [
+                        ["fields", "Form Fields"],
+                        ["appearance", "Appearance"],
+                        ["behavior", "Behavior"],
+                        ["notify", "Notifications & Integrations"],
+                        ["settings", "Settings"],
+                      ].map(function (pair) {
+                        var mk = pair[0],
+                          lab = pair[1];
+                        var open = nlsNavOpen === mk;
+                        return e.jsxs(
+                          "div",
+                          {
+                            className: "nexulesuite_fui-acc__item" + (open ? " is-open" : ""),
+                            children: [
+                              e.jsxs("button", {
+                                type: "button",
+                                className: "nexulesuite_fui-acc__head nexulesuite_fui-acc__trigger",
+                                "aria-expanded": !!open,
+                                "aria-controls": "nls-acc-panel-" + mk,
+                                id: "nls-acc-trigger-" + mk,
+                                onClick: function () {
+                                  if (open) {
+                                    nlsSetNavOpen("");
+                                    return;
+                                  }
+                                  nlsSetNavOpen(mk);
+                                  nlsSetAccOpen("");
+                                  nlsSetColorSub("");
+                                  nlsSetNotifyAcc("");
+                                  nlsSetSettingsAcc("");
+                                  if (mk === "fields") {
+                                    nlsSetFuiView("menu");
+                                    x("fields");
+                                  } else if (mk === "appearance") {
+                                    nlsSetFuiView("appearance");
+                                    nlsSetAccOpen("colors");
+                                    x("styling");
+                                  } else if (mk === "behavior") {
+                                    nlsSetFuiView("behavior");
+                                    x("confirmations");
+                                  } else if (mk === "notify") {
+                                    nlsSetFuiView("notify");
+                                    nlsSetNotifyAcc("email");
+                                    x("advanced");
+                                  } else {
+                                    nlsSetFuiView("settings");
+                                    nlsSetSettingsAcc("visibility");
+                                    x("advanced");
+                                  }
+                                },
+                                children: [
+                                  e.jsx("span", {
+                                    className: "nexulesuite_fui-acc__label",
+                                    children: lab,
+                                  }),
+                                  e.jsx("span", {
+                                    className: "nexulesuite_fui-acc__indicator",
+                                    "aria-hidden": "true",
+                                    children: nlsAccPlus(open),
+                                  }),
+                                ],
+                              }),
+                              open
+                                ? e.jsx("div", {
+                                    id: "nls-acc-panel-" + mk,
+                                    role: "region",
+                                    "aria-labelledby": "nls-acc-trigger-" + mk,
+                                    className:
+                                      "nexulesuite_fui-acc__body nexulesuite_fui-acc__content nexulesuite_fui-nav-acc__panel",
+                                    children:
+                                      mk === "appearance"
+                                        ? e.jsxs("div", {
+                                            className: "nexulesuite_fui-acc",
+                                            children: [
+                                              ["presets", "Global Appearance Presets"],
+                                              ["style", "Style"],
+                                              ["colors", "Colors"],
+                                              ["fonts", "Fonts"],
+                                              ["layout", "Layout and Spacing"],
+                                            ].map(function (pair) {
+                                              var k = pair[0];
+                                              var lab = pair[1];
+                                              var open = nlsAccOpen === k;
+                                              return e.jsxs(
+                                                "div",
+                                                {
+                                                  className: "nexulesuite_fui-acc__item" + (open ? " is-open" : ""),
+                                                  children: [
+                                                    e.jsxs("button", {
+                                                      type: "button",
+                                                      className: "nexulesuite_fui-acc__head",
+                                                      onClick: function () {
+                                                        nlsSetAccOpen(open ? "" : k);
+                                                        nlsSetColorSub("");
+                                                        if (k === "colors" || k === "style") x("styling");
+                                                        else if (k === "css") x("advanced");
+                                                        else x("customization");
+                                                      },
+                                                      children: [
+                                                        e.jsxs("span", {
+                                                          className: "nexulesuite_fui-acc__left",
+                                                          children: [
+                                                            nlsAccIcon(k),
+                                                            e.jsx("span", {
+                                                              className: "nexulesuite_fui-acc__label",
+                                                              children: lab,
+                                                            }),
+                                                          ],
+                                                        }),
+                                                        nlsAccPlus(open),
+                                                      ],
+                                                    }),
+                                                    open
+                                                      ? e.jsx("div", {
+                                                          className: "nexulesuite_fui-acc__body",
+                                                          children:
+                                                            k === "colors"
+                                                              ? e.jsxs("div", {
+                                                                  children: [
+                                                                    e.jsxs("label", {
+                                                                      className: "nexulesuite_fui-toggle",
+                                                                      children: [
+                                                                        e.jsx("input", {
+                                                                          type: "checkbox",
+                                                                          checked: nlsColorOn,
+                                                                          onChange: function (H) {
+                                                                            nlsSetColorOn(!!H.target.checked);
+                                                                          },
+                                                                        }),
+                                                                        e.jsx("span", {
+                                                                          className: "nexulesuite_fui-toggle__track",
+                                                                        }),
+                                                                        e.jsx("span", {
+                                                                          className: "nexulesuite_fui-toggle__text",
+                                                                          children: "Customize colors",
+                                                                        }),
+                                                                      ],
+                                                                    }),
+                                                                    e.jsxs("div", {
+                                                                      className: "nexulesuite_fui-acc__toolbar",
+                                                                      children: [
+                                                                        e.jsx("span", {
+                                                                          className:
+                                                                            "nexulesuite_fui-acc__toolbar-label",
+                                                                          children: "Element",
+                                                                        }),
+                                                                        e.jsx("button", {
+                                                                          type: "button",
+                                                                          className:
+                                                                            "nls-btn nls-btn--ghost nls-btn--sm nexulesuite_fui-acc__clear",
+                                                                          onClick: function () {
+                                                                            nlsSetColorSub("");
+                                                                          },
+                                                                          children: "CLEAR CUSTOMIZATION",
+                                                                        }),
+                                                                      ],
+                                                                    }),
+                                                                    nlsColorOn
+                                                                      ? e.jsx("div", {
+                                                                          className: "nexulesuite_fui-acc__nest",
+                                                                          children: [
+                                                                            ["container", "Form Container"],
+                                                                            ["indicator", "Submission Indicator"],
+                                                                            ["success", "Response Success"],
+                                                                            ["error", "Response Error"],
+                                                                            ["fields", "Fields Basics"],
+                                                                            ["input", "Input and Textarea"],
+                                                                            ["button", "Submit Button"],
+                                                                          ].map(function (sp) {
+                                                                            var sk = sp[0];
+                                                                            var sl = sp[1];
+                                                                            var so = nlsColorSub === sk;
+                                                                            return e.jsxs(
+                                                                              "div",
+                                                                              {
+                                                                                className:
+                                                                                  "nexulesuite_fui-acc__nest-item" +
+                                                                                  (so ? " is-open" : ""),
+                                                                                children: [
+                                                                                  e.jsxs("button", {
+                                                                                    type: "button",
+                                                                                    className:
+                                                                                      "nexulesuite_fui-acc__nest-head",
+                                                                                    onClick: function () {
+                                                                                      nlsSetColorSub(so ? "" : sk);
+                                                                                    },
+                                                                                    children: [
+                                                                                      e.jsxs("span", {
+                                                                                        className:
+                                                                                          "nexulesuite_fui-acc__left",
+                                                                                        children: [
+                                                                                          nlsAccIcon(sk),
+                                                                                          e.jsx("span", {
+                                                                                            className:
+                                                                                              "nexulesuite_fui-acc__label",
+                                                                                            children: sl,
+                                                                                          }),
+                                                                                        ],
+                                                                                      }),
+                                                                                      nlsAccPlus(so),
+                                                                                    ],
+                                                                                  }),
+                                                                                  so
+                                                                                    ? e.jsx("div", {
+                                                                                        className:
+                                                                                          "nexulesuite_fui-acc__nest-body",
+                                                                                        children:
+                                                                                          sk === "container"
+                                                                                            ? e.jsxs("div", {
+                                                                                                className:
+                                                                                                  "nls-fb-color-grid",
+                                                                                                children: [
+                                                                                                  e.jsx(
+                                                                                                    FormColorField,
+                                                                                                    {
+                                                                                                      label:
+                                                                                                        "Form background",
+                                                                                                      value:
+                                                                                                        M.backgroundColor ||
+                                                                                                        "#ffffff",
+                                                                                                      onChange:
+                                                                                                        function (H) {
+                                                                                                          h(a.id, {
+                                                                                                            styling:
+                                                                                                              Object.assign(
+                                                                                                                {},
+                                                                                                                M,
+                                                                                                                {
+                                                                                                                  backgroundColor:
+                                                                                                                    H,
+                                                                                                                },
+                                                                                                              ),
+                                                                                                          });
+                                                                                                        },
+                                                                                                    },
+                                                                                                    "c-bg",
+                                                                                                  ),
+                                                                                                  e.jsx(
+                                                                                                    FormColorField,
+                                                                                                    {
+                                                                                                      label:
+                                                                                                        "Form text",
+                                                                                                      value:
+                                                                                                        M.textColor ||
+                                                                                                        "#1e293b",
+                                                                                                      onChange:
+                                                                                                        function (H) {
+                                                                                                          h(a.id, {
+                                                                                                            styling:
+                                                                                                              Object.assign(
+                                                                                                                {},
+                                                                                                                M,
+                                                                                                                {
+                                                                                                                  textColor:
+                                                                                                                    H,
+                                                                                                                },
+                                                                                                              ),
+                                                                                                          });
+                                                                                                        },
+                                                                                                    },
+                                                                                                    "c-tx",
+                                                                                                  ),
+                                                                                                ],
+                                                                                              })
+                                                                                            : sk === "button"
+                                                                                              ? e.jsxs(
+                                                                                                  "div",
+                                                                                                  {
+                                                                                                    className:
+                                                                                                      "nls-fb-color-grid",
+                                                                                                    children: [
+                                                                                                      e.jsxs("div", {
+                                                                                                        className:
+                                                                                                          "nls-field nls-fb-span-all",
+                                                                                                        children: [
+                                                                                                          e.jsx(
+                                                                                                            "span",
+                                                                                                            {
+                                                                                                              className:
+                                                                                                                "nls-field__label",
+                                                                                                              children:
+                                                                                                                "Button text",
+                                                                                                            },
+                                                                                                          ),
+                                                                                                          e.jsx(
+                                                                                                            "input",
+                                                                                                            {
+                                                                                                              type: "text",
+                                                                                                              value:
+                                                                                                                a.submitBtnText ||
+                                                                                                                "",
+                                                                                                              placeholder:
+                                                                                                                "Submit",
+                                                                                                              onChange:
+                                                                                                                function (
+                                                                                                                  w,
+                                                                                                                ) {
+                                                                                                                  h(
+                                                                                                                    a.id,
+                                                                                                                    {
+                                                                                                                      submitBtnText:
+                                                                                                                        w
+                                                                                                                          .target
+                                                                                                                          .value,
+                                                                                                                    },
+                                                                                                                  );
+                                                                                                                },
+                                                                                                            },
+                                                                                                          ),
+                                                                                                        ],
+                                                                                                      }),
+                                                                                                      e.jsx(
+                                                                                                        FormColorField,
+                                                                                                        {
+                                                                                                          label:
+                                                                                                            "Button color",
+                                                                                                          value:
+                                                                                                            M.primaryColor ||
+                                                                                                            M.buttonColor ||
+                                                                                                            "#7c3aed",
+                                                                                                          onChange:
+                                                                                                            function (
+                                                                                                              H,
+                                                                                                            ) {
+                                                                                                              nlsCommitDesign(
+                                                                                                                h,
+                                                                                                                a,
+                                                                                                                M,
+                                                                                                                {
+                                                                                                                  primaryColor:
+                                                                                                                    H,
+                                                                                                                  buttonColor:
+                                                                                                                    H,
+                                                                                                                },
+                                                                                                              );
+                                                                                                            },
+                                                                                                        },
+                                                                                                        "c-btn",
+                                                                                                      ),
+                                                                                                    ],
+                                                                                                  },
+                                                                                                  "c-btn-wrap",
+                                                                                                )
+                                                                                              : sk === "success"
+                                                                                                ? e.jsx(
+                                                                                                    FormColorField,
+                                                                                                    {
+                                                                                                      label: "Success",
+                                                                                                      value:
+                                                                                                        M.successColor ||
+                                                                                                        "#16a34a",
+                                                                                                      onChange:
+                                                                                                        function (H) {
+                                                                                                          nlsCommitDesign(
+                                                                                                            h,
+                                                                                                            a,
+                                                                                                            M,
+                                                                                                            {
+                                                                                                              successColor:
+                                                                                                                H,
+                                                                                                            },
+                                                                                                          );
+                                                                                                        },
+                                                                                                    },
+                                                                                                    "c-ok",
+                                                                                                  )
+                                                                                                : sk === "error"
+                                                                                                  ? e.jsxs("div", {
+                                                                                                      className:
+                                                                                                        "nls-fb-color-grid",
+                                                                                                      children: [
+                                                                                                        e.jsx(
+                                                                                                          FormColorField,
+                                                                                                          {
+                                                                                                            label:
+                                                                                                              "Error text",
+                                                                                                            value:
+                                                                                                              M.errorColor ||
+                                                                                                              "#dc2626",
+                                                                                                            onChange:
+                                                                                                              function (
+                                                                                                                H,
+                                                                                                              ) {
+                                                                                                                nlsCommitDesign(
+                                                                                                                  h,
+                                                                                                                  a,
+                                                                                                                  M,
+                                                                                                                  {
+                                                                                                                    errorColor:
+                                                                                                                      H,
+                                                                                                                  },
+                                                                                                                );
+                                                                                                              },
+                                                                                                          },
+                                                                                                          "c-er",
+                                                                                                        ),
+                                                                                                        e.jsx(
+                                                                                                          FormColorField,
+                                                                                                          {
+                                                                                                            label:
+                                                                                                              "Error border",
+                                                                                                            value:
+                                                                                                              M.errorBorderColor ||
+                                                                                                              "#dc2626",
+                                                                                                            onChange:
+                                                                                                              function (
+                                                                                                                H,
+                                                                                                              ) {
+                                                                                                                nlsCommitDesign(
+                                                                                                                  h,
+                                                                                                                  a,
+                                                                                                                  M,
+                                                                                                                  {
+                                                                                                                    errorBorderColor:
+                                                                                                                      H,
+                                                                                                                  },
+                                                                                                                );
+                                                                                                              },
+                                                                                                          },
+                                                                                                          "c-erb",
+                                                                                                        ),
+                                                                                                      ],
+                                                                                                    })
+                                                                                                  : sk === "indicator"
+                                                                                                    ? e.jsx(
+                                                                                                        FormColorField,
+                                                                                                        {
+                                                                                                          label:
+                                                                                                            "Submission indicator",
+                                                                                                          value:
+                                                                                                            M.stepperColor ||
+                                                                                                            M.primaryColor ||
+                                                                                                            M.buttonColor ||
+                                                                                                            "#7c3aed",
+                                                                                                          onChange:
+                                                                                                            function (
+                                                                                                              H,
+                                                                                                            ) {
+                                                                                                              nlsCommitDesign(
+                                                                                                                h,
+                                                                                                                a,
+                                                                                                                M,
+                                                                                                                {
+                                                                                                                  stepperColor:
+                                                                                                                    H,
+                                                                                                                },
+                                                                                                              );
+                                                                                                            },
+                                                                                                        },
+                                                                                                        "c-ind",
+                                                                                                      )
+                                                                                                    : sk === "fields" ||
+                                                                                                        sk === "input"
+                                                                                                      ? e.jsxs("div", {
+                                                                                                          className:
+                                                                                                            "nls-fb-color-grid",
+                                                                                                          children: [
+                                                                                                            e.jsx(
+                                                                                                              FormColorField,
+                                                                                                              {
+                                                                                                                label:
+                                                                                                                  "Input background",
+                                                                                                                value:
+                                                                                                                  M.fieldBackgroundColor ||
+                                                                                                                  "#ffffff",
+                                                                                                                onChange:
+                                                                                                                  function (
+                                                                                                                    H,
+                                                                                                                  ) {
+                                                                                                                    nlsCommitDesign(
+                                                                                                                      h,
+                                                                                                                      a,
+                                                                                                                      M,
+                                                                                                                      {
+                                                                                                                        fieldBackgroundColor:
+                                                                                                                          H,
+                                                                                                                      },
+                                                                                                                    );
+                                                                                                                  },
+                                                                                                              },
+                                                                                                              "c-ib",
+                                                                                                            ),
+                                                                                                            e.jsx(
+                                                                                                              FormColorField,
+                                                                                                              {
+                                                                                                                label:
+                                                                                                                  "Input text",
+                                                                                                                value:
+                                                                                                                  M.inputColor ||
+                                                                                                                  M.fieldTextColor ||
+                                                                                                                  "#000000",
+                                                                                                                onChange:
+                                                                                                                  function (
+                                                                                                                    H,
+                                                                                                                  ) {
+                                                                                                                    nlsCommitDesign(
+                                                                                                                      h,
+                                                                                                                      a,
+                                                                                                                      M,
+                                                                                                                      {
+                                                                                                                        inputColor:
+                                                                                                                          H,
+                                                                                                                      },
+                                                                                                                    );
+                                                                                                                  },
+                                                                                                              },
+                                                                                                              "c-it",
+                                                                                                            ),
+                                                                                                            e.jsx(
+                                                                                                              FormColorField,
+                                                                                                              {
+                                                                                                                label:
+                                                                                                                  "Border",
+                                                                                                                value:
+                                                                                                                  M.fieldBorderColor ||
+                                                                                                                  "#cbd5e1",
+                                                                                                                onChange:
+                                                                                                                  function (
+                                                                                                                    H,
+                                                                                                                  ) {
+                                                                                                                    nlsCommitDesign(
+                                                                                                                      h,
+                                                                                                                      a,
+                                                                                                                      M,
+                                                                                                                      {
+                                                                                                                        fieldBorderColor:
+                                                                                                                          H,
+                                                                                                                      },
+                                                                                                                    );
+                                                                                                                  },
+                                                                                                              },
+                                                                                                              "c-bd",
+                                                                                                            ),
+                                                                                                            e.jsx(
+                                                                                                              FormColorField,
+                                                                                                              {
+                                                                                                                label:
+                                                                                                                  "Focus",
+                                                                                                                value:
+                                                                                                                  M.focusBorderColor ||
+                                                                                                                  "#7c3aed",
+                                                                                                                onChange:
+                                                                                                                  function (
+                                                                                                                    H,
+                                                                                                                  ) {
+                                                                                                                    nlsCommitDesign(
+                                                                                                                      h,
+                                                                                                                      a,
+                                                                                                                      M,
+                                                                                                                      {
+                                                                                                                        focusBorderColor:
+                                                                                                                          H,
+                                                                                                                      },
+                                                                                                                    );
+                                                                                                                  },
+                                                                                                              },
+                                                                                                              "c-fc",
+                                                                                                            ),
+                                                                                                          ],
+                                                                                                        })
+                                                                                                      : e.jsx("p", {
+                                                                                                          className:
+                                                                                                            "nexulesuite_fui-hint",
+                                                                                                          children:
+                                                                                                            "No color options for this element.",
+                                                                                                        }),
+                                                                                      })
+                                                                                    : null,
+                                                                                ],
+                                                                              },
+                                                                              sk,
+                                                                            );
+                                                                          }),
+                                                                        })
+                                                                      : e.jsx("p", {
+                                                                          className: "nexulesuite_fui-hint",
+                                                                          children:
+                                                                            "Enable Customize colors to edit elements.",
+                                                                        }),
+                                                                  ],
+                                                                })
+                                                              : k === "presets"
+                                                                ? e.jsxs("div", {
+                                                                    className: "nexulesuite_fui-acc__stack",
+                                                                    children: [
+                                                                      e.jsxs("label", {
+                                                                        className: "nls-field",
+                                                                        children: [
+                                                                          e.jsx("span", {
+                                                                            className: "nls-field__label",
+                                                                            children: "Design",
+                                                                          }),
+                                                                          e.jsxs("select", {
+                                                                            value: M.forminatorDesign || "default",
+                                                                            onChange: function (H) {
+                                                                              nlsCommitDesign(h, a, M, {
+                                                                                forminatorDesign: H.target.value,
+                                                                              });
+                                                                            },
+                                                                            children: [
+                                                                              e.jsx("option", {
+                                                                                value: "default",
+                                                                                children: "Default",
+                                                                              }),
+                                                                              e.jsx("option", {
+                                                                                value: "flat",
+                                                                                children: "Flat",
+                                                                              }),
+                                                                              e.jsx("option", {
+                                                                                value: "bold",
+                                                                                children: "Bold",
+                                                                              }),
+                                                                              e.jsx("option", {
+                                                                                value: "material",
+                                                                                children: "Material",
+                                                                              }),
+                                                                            ],
+                                                                          }),
+                                                                        ],
+                                                                      }),
+                                                                      e.jsxs("label", {
+                                                                        className: "nls-field",
+                                                                        children: [
+                                                                          e.jsx("span", {
+                                                                            className: "nls-field__label",
+                                                                            children: "Theme",
+                                                                          }),
+                                                                          e.jsxs("select", {
+                                                                            value: M.forminatorTheme || "default",
+                                                                            onChange: function (H) {
+                                                                              nlsCommitDesign(h, a, M, {
+                                                                                forminatorTheme: H.target.value,
+                                                                              });
+                                                                            },
+                                                                            children: [
+                                                                              e.jsx("option", {
+                                                                                value: "default",
+                                                                                children: "Default",
+                                                                              }),
+                                                                              e.jsx("option", {
+                                                                                value: "light",
+                                                                                children: "Light",
+                                                                              }),
+                                                                              e.jsx("option", {
+                                                                                value: "dark",
+                                                                                children: "Dark",
+                                                                              }),
+                                                                            ],
+                                                                          }),
+                                                                        ],
+                                                                      }),
+                                                                      e.jsx("div", {
+                                                                        className: "nexulesuite_fui-global-style",
+                                                                        children: e.jsxs("div", {
+                                                                          className:
+                                                                            "nexulesuite_fui-global-style__box",
+                                                                          children: [
+                                                                            e.jsx("p", {
+                                                                              className: "nexulesuite_fui-hint",
+                                                                              children:
+                                                                                "Save this form’s colors, style, fonts and layout as the site-wide global style. All fields on this form — and every other form — can use the same look.",
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className:
+                                                                                "nexulesuite_fui-global-style__actions",
+                                                                              children: [
+                                                                                e.jsx("button", {
+                                                                                  type: "button",
+                                                                                  className:
+                                                                                    "nls-btn nls-btn--primary nls-btn--sm nls-btn--block",
+                                                                                  disabled: nlsGlobalBusy,
+                                                                                  onClick: async function () {
+                                                                                    nlsSetGlobalBusy(!0);
+                                                                                    nlsSetGlobalMsg("");
+                                                                                    try {
+                                                                                      var styling = nlsDesignPatch(
+                                                                                        M,
+                                                                                        {},
+                                                                                      );
+                                                                                      h(a.id, {
+                                                                                        styling: styling,
+                                                                                        steps:
+                                                                                          nlsApplyGlobalToAllFields(
+                                                                                            a.steps,
+                                                                                            styling,
+                                                                                          ),
+                                                                                      });
+                                                                                      await nlsSaveGlobalAppearance(
+                                                                                        styling,
+                                                                                      );
+                                                                                      if (
+                                                                                        typeof nlsOnApplyAll ===
+                                                                                        "function"
+                                                                                      ) {
+                                                                                        nlsOnApplyAll(styling);
+                                                                                      }
+                                                                                      nlsSetGlobalMsg(
+                                                                                        "Global style saved and applied to all forms.",
+                                                                                      );
+                                                                                    } catch (err) {
+                                                                                      nlsSetGlobalMsg(
+                                                                                        (err && err.message) ||
+                                                                                          "Could not save global style.",
+                                                                                      );
+                                                                                    } finally {
+                                                                                      nlsSetGlobalBusy(!1);
+                                                                                    }
+                                                                                  },
+                                                                                  children: nlsGlobalBusy
+                                                                                    ? "Saving…"
+                                                                                    : "Save global style",
+                                                                                }),
+                                                                                e.jsx("button", {
+                                                                                  type: "button",
+                                                                                  className:
+                                                                                    "nls-btn nls-btn--secondary nls-btn--sm nls-btn--block",
+                                                                                  disabled: nlsGlobalBusy,
+                                                                                  onClick: async function () {
+                                                                                    nlsSetGlobalBusy(!0);
+                                                                                    nlsSetGlobalMsg("");
+                                                                                    try {
+                                                                                      var g =
+                                                                                        await nlsFetchGlobalAppearance();
+                                                                                      if (!g) {
+                                                                                        nlsSetGlobalMsg(
+                                                                                          "No global style saved yet.",
+                                                                                        );
+                                                                                        return;
+                                                                                      }
+                                                                                      nlsCommitDesign(h, a, M, g);
+                                                                                      nlsSetGlobalMsg(
+                                                                                        "Global style applied to this form’s fields.",
+                                                                                      );
+                                                                                    } catch (err) {
+                                                                                      nlsSetGlobalMsg(
+                                                                                        (err && err.message) ||
+                                                                                          "Could not load global style.",
+                                                                                      );
+                                                                                    } finally {
+                                                                                      nlsSetGlobalBusy(!1);
+                                                                                    }
+                                                                                  },
+                                                                                  children: "Apply to this form",
+                                                                                }),
+                                                                                e.jsx("button", {
+                                                                                  type: "button",
+                                                                                  className:
+                                                                                    "nls-btn nls-btn--secondary nls-btn--sm nls-btn--block",
+                                                                                  disabled: nlsGlobalBusy,
+                                                                                  onClick: async function () {
+                                                                                    nlsSetGlobalBusy(!0);
+                                                                                    nlsSetGlobalMsg("");
+                                                                                    try {
+                                                                                      var g =
+                                                                                        await nlsFetchGlobalAppearance();
+                                                                                      if (!g) {
+                                                                                        nlsSetGlobalMsg(
+                                                                                          "No global style saved yet.",
+                                                                                        );
+                                                                                        return;
+                                                                                      }
+                                                                                      if (
+                                                                                        typeof nlsOnApplyAll ===
+                                                                                        "function"
+                                                                                      ) {
+                                                                                        nlsOnApplyAll(g);
+                                                                                        nlsSetGlobalMsg(
+                                                                                          "Global style applied to all forms.",
+                                                                                        );
+                                                                                      } else {
+                                                                                        nlsCommitDesign(h, a, M, g);
+                                                                                        nlsSetGlobalMsg(
+                                                                                          "Global style applied to this form’s fields.",
+                                                                                        );
+                                                                                      }
+                                                                                    } catch (err) {
+                                                                                      nlsSetGlobalMsg(
+                                                                                        (err && err.message) ||
+                                                                                          "Could not apply global style.",
+                                                                                      );
+                                                                                    } finally {
+                                                                                      nlsSetGlobalBusy(!1);
+                                                                                    }
+                                                                                  },
+                                                                                  children: "Apply to all forms",
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            nlsGlobalMsg
+                                                                              ? e.jsx("p", {
+                                                                                  className:
+                                                                                    "nls-field__hint nls-fb-global__msg",
+                                                                                  role: "status",
+                                                                                  children: nlsGlobalMsg,
+                                                                                })
+                                                                              : null,
+                                                                          ],
+                                                                        }),
+                                                                      }),
+                                                                    ],
+                                                                  })
+                                                                : k === "style"
+                                                                  ? e.jsxs("div", {
+                                                                      className: "nexulesuite_fui-acc__stack",
+                                                                      children: [
+                                                                        e.jsx("h4", {
+                                                                          className: "nls-fb-h4",
+                                                                          children: "Borders & shadows",
+                                                                        }),
+                                                                        (() => {
+                                                                          const base = "fieldBorderRadius";
+                                                                          const val = nlsDevNum(M, base, nlsDevice, 6);
+                                                                          return e.jsxs("div", {
+                                                                            className: "nls-field",
+                                                                            children: [
+                                                                              e.jsxs("span", {
+                                                                                className:
+                                                                                  "nls-field__label nls-fb-range-label",
+                                                                                children: [
+                                                                                  "Border radius",
+                                                                                  e.jsxs("span", {
+                                                                                    children: [val, "px"],
+                                                                                  }),
+                                                                                ],
+                                                                              }),
+                                                                              e.jsx(nlsRange, {
+                                                                                min: 0,
+                                                                                max: 100,
+                                                                                step: 1,
+                                                                                value: val,
+                                                                                onChange: (H) => {
+                                                                                  const v = Number(H.target.value);
+                                                                                  if (nlsDevice === "desktop") {
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      [base]: v,
+                                                                                    });
+                                                                                  } else {
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      [nlsDevKey(base, nlsDevice)]: v,
+                                                                                    });
+                                                                                  }
+                                                                                },
+                                                                              }),
+                                                                            ],
+                                                                          });
+                                                                        })(),
+                                                                        (() => {
+                                                                          const base = "fieldBorderWidth";
+                                                                          const val = nlsDevNum(M, base, nlsDevice, 1);
+                                                                          return e.jsxs("div", {
+                                                                            className: "nls-field",
+                                                                            children: [
+                                                                              e.jsxs("span", {
+                                                                                className:
+                                                                                  "nls-field__label nls-fb-range-label",
+                                                                                children: [
+                                                                                  "Border width",
+                                                                                  e.jsxs("span", {
+                                                                                    children: [val, "px"],
+                                                                                  }),
+                                                                                ],
+                                                                              }),
+                                                                              e.jsx(nlsRange, {
+                                                                                min: 0,
+                                                                                max: 100,
+                                                                                step: 1,
+                                                                                value: val,
+                                                                                onChange: (H) => {
+                                                                                  const v = Number(H.target.value);
+                                                                                  if (nlsDevice === "desktop") {
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      [base]: v,
+                                                                                    });
+                                                                                  } else {
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      [nlsDevKey(base, nlsDevice)]: v,
+                                                                                    });
+                                                                                  }
+                                                                                },
+                                                                              }),
+                                                                            ],
+                                                                          });
+                                                                        })(),
+                                                                        e.jsxs("div", {
+                                                                          className: "nls-field",
+                                                                          children: [
+                                                                            e.jsxs("span", {
+                                                                              className:
+                                                                                "nls-field__label nls-fb-range-label",
+                                                                              children: ["Border style"],
+                                                                            }),
+                                                                            e.jsx("select", {
+                                                                              value: M["fieldBorderStyle"] || "solid",
+                                                                              onChange: (H) =>
+                                                                                nlsCommitDesign(h, a, M, {
+                                                                                  ["fieldBorderStyle"]: H.target.value,
+                                                                                }),
+                                                                              children: [
+                                                                                e.jsx("option", {
+                                                                                  value: "solid",
+                                                                                  children: "Solid",
+                                                                                }),
+                                                                                e.jsx("option", {
+                                                                                  value: "dashed",
+                                                                                  children: "Dashed",
+                                                                                }),
+                                                                                e.jsx("option", {
+                                                                                  value: "dotted",
+                                                                                  children: "Dotted",
+                                                                                }),
+                                                                                e.jsx("option", {
+                                                                                  value: "double",
+                                                                                  children: "Double",
+                                                                                }),
+                                                                                e.jsx("option", {
+                                                                                  value: "none",
+                                                                                  children: "None",
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                          ],
+                                                                        }),
+                                                                        e.jsx("div", {
+                                                                          className: "nls-fb-color-grid",
+                                                                          children: [
+                                                                            e.jsx(
+                                                                              FormColorField,
+                                                                              {
+                                                                                label: "Border color",
+                                                                                value:
+                                                                                  M["fieldBorderColor"] || "#cbd5e1",
+                                                                                onChange: (H) =>
+                                                                                  nlsCommitDesign(h, a, M, {
+                                                                                    ["fieldBorderColor"]: H,
+                                                                                  }),
+                                                                              },
+                                                                              "fieldBorderColor",
+                                                                            ),
+                                                                          ],
+                                                                        }),
+                                                                        e.jsxs("div", {
+                                                                          className: "nls-field",
+                                                                          children: [
+                                                                            e.jsxs("span", {
+                                                                              className:
+                                                                                "nls-field__label nls-fb-range-label",
+                                                                              children: ["Input box shadow"],
+                                                                            }),
+                                                                            e.jsx("input", {
+                                                                              type: "text",
+                                                                              value: M["fieldShadow"] ?? "",
+                                                                              placeholder:
+                                                                                "none or 0 2px 8px rgba(0,0,0,.08)",
+                                                                              onChange: (H) =>
+                                                                                nlsCommitDesign(h, a, M, {
+                                                                                  ["fieldShadow"]: H.target.value,
+                                                                                }),
+                                                                            }),
+                                                                          ],
+                                                                        }),
+                                                                        e.jsxs("div", {
+                                                                          className: "nls-field",
+                                                                          children: [
+                                                                            e.jsxs("span", {
+                                                                              className:
+                                                                                "nls-field__label nls-fb-range-label",
+                                                                              children: ["Form container shadow"],
+                                                                            }),
+                                                                            e.jsx("input", {
+                                                                              type: "text",
+                                                                              value: M["formShadow"] ?? "",
+                                                                              placeholder:
+                                                                                "0 2px 8px rgba(15,23,42,.07)",
+                                                                              onChange: (H) =>
+                                                                                nlsCommitDesign(h, a, M, {
+                                                                                  ["formShadow"]: H.target.value,
+                                                                                }),
+                                                                            }),
+                                                                          ],
+                                                                        }),
+                                                                        e.jsx("h4", {
+                                                                          className: "nls-fb-h4",
+                                                                          children: "Interactive states",
+                                                                        }),
+                                                                        e.jsx("div", {
+                                                                          className: "nls-fb-color-grid",
+                                                                          children: [
+                                                                            e.jsx(
+                                                                              FormColorField,
+                                                                              {
+                                                                                label: "Focus border",
+                                                                                value:
+                                                                                  M["focusBorderColor"] || "#7c3aed",
+                                                                                onChange: (H) =>
+                                                                                  nlsCommitDesign(h, a, M, {
+                                                                                    ["focusBorderColor"]: H,
+                                                                                  }),
+                                                                              },
+                                                                              "focusBorderColor",
+                                                                            ),
+                                                                            e.jsx(
+                                                                              FormColorField,
+                                                                              {
+                                                                                label: "Error border",
+                                                                                value:
+                                                                                  M["errorBorderColor"] || "#dc2626",
+                                                                                onChange: (H) =>
+                                                                                  nlsCommitDesign(h, a, M, {
+                                                                                    ["errorBorderColor"]: H,
+                                                                                  }),
+                                                                              },
+                                                                              "errorBorderColor",
+                                                                            ),
+                                                                          ],
+                                                                        }),
+                                                                        e.jsxs("div", {
+                                                                          className: "nls-field",
+                                                                          children: [
+                                                                            e.jsxs("span", {
+                                                                              className:
+                                                                                "nls-field__label nls-fb-range-label",
+                                                                              children: ["Focus shadow"],
+                                                                            }),
+                                                                            e.jsx("input", {
+                                                                              type: "text",
+                                                                              value: M["focusShadow"] ?? "",
+                                                                              placeholder:
+                                                                                "0 0 0 3px rgba(124,58,237,.25)",
+                                                                              onChange: (H) =>
+                                                                                nlsCommitDesign(h, a, M, {
+                                                                                  ["focusShadow"]: H.target.value,
+                                                                                }),
+                                                                            }),
+                                                                          ],
+                                                                        }),
+                                                                      ],
+                                                                    })
+                                                                  : k === "css"
+                                                                    ? null
+                                                                    : k === "fonts"
+                                                                      ? e.jsxs("div", {
+                                                                          className: "nexulesuite_fui-acc__stack",
+                                                                          children: [
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-seg nls-fb-devices",
+                                                                              role: "group",
+                                                                              "aria-label": "Device",
+                                                                              children: [
+                                                                                ["desktop", "Desktop"],
+                                                                                ["tablet", "Tablet"],
+                                                                                ["mobile", "Mobile"],
+                                                                              ].map(([k, l]) =>
+                                                                                e.jsx(
+                                                                                  "button",
+                                                                                  {
+                                                                                    type: "button",
+                                                                                    className:
+                                                                                      "nls-seg__btn" +
+                                                                                      (nlsDevice === k
+                                                                                        ? " is-active"
+                                                                                        : ""),
+                                                                                    "aria-pressed": nlsDevice === k,
+                                                                                    onClick: () => nlsSetDevice(k),
+                                                                                    children: l,
+                                                                                  },
+                                                                                  k,
+                                                                                ),
+                                                                              ),
+                                                                            }),
+                                                                            e.jsx("button", {
+                                                                              type: "button",
+                                                                              className:
+                                                                                "nls-btn nls-btn--secondary nls-btn--block",
+                                                                              onClick: () => {
+                                                                                const styling =
+                                                                                  nlsApplyTypoToAllModules(M, {});
+                                                                                h(a.id, {
+                                                                                  styling,
+                                                                                  steps: nlsApplyGlobalToAllFields(
+                                                                                    a.steps,
+                                                                                    styling,
+                                                                                  ),
+                                                                                });
+                                                                              },
+                                                                              children:
+                                                                                "Apply global typography to all modules",
+                                                                            }),
+                                                                            e.jsx("h4", {
+                                                                              className: "nls-fb-h4",
+                                                                              children: "2. Field labels",
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Font family"],
+                                                                                }),
+                                                                                e.jsx("select", {
+                                                                                  value:
+                                                                                    M["labelFontFamily"] || "inherit",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["labelFontFamily"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                  children: [
+                                                                                    e.jsx("option", {
+                                                                                      value: "inherit",
+                                                                                      children: "Inherit",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        "system-ui, -apple-system, sans-serif",
+                                                                                      children: "System UI",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        "Arial, Helvetica, sans-serif",
+                                                                                      children: "Arial",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "Georgia, serif",
+                                                                                      children: "Georgia",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        '"Times New Roman", Times, serif',
+                                                                                      children: "Times",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: '"Courier New", monospace',
+                                                                                      children: "Courier",
+                                                                                    }),
+                                                                                  ],
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            (() => {
+                                                                              const base = "labelFontSize";
+                                                                              const val = nlsDevNum(
+                                                                                M,
+                                                                                base,
+                                                                                nlsDevice,
+                                                                                13,
+                                                                              );
+                                                                              return e.jsxs("div", {
+                                                                                className: "nls-field",
+                                                                                children: [
+                                                                                  e.jsxs("span", {
+                                                                                    className:
+                                                                                      "nls-field__label nls-fb-range-label",
+                                                                                    children: [
+                                                                                      "Font size",
+                                                                                      e.jsxs("span", {
+                                                                                        children: [val, "px"],
+                                                                                      }),
+                                                                                    ],
+                                                                                  }),
+                                                                                  e.jsx(nlsRange, {
+                                                                                    min: 10,
+                                                                                    max: 28,
+                                                                                    value: val,
+                                                                                    onChange: (H) => {
+                                                                                      const v = Number(H.target.value);
+                                                                                      if (nlsDevice === "desktop") {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [base]: v,
+                                                                                        });
+                                                                                      } else {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [nlsDevKey(base, nlsDevice)]:
+                                                                                            v,
+                                                                                        });
+                                                                                      }
+                                                                                    },
+                                                                                  }),
+                                                                                ],
+                                                                              });
+                                                                            })(),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Font weight"],
+                                                                                }),
+                                                                                e.jsx("select", {
+                                                                                  value: M["labelFontWeight"] || "400",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["labelFontWeight"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                  children: [
+                                                                                    e.jsx("option", {
+                                                                                      value: "400",
+                                                                                      children: "Normal",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "500",
+                                                                                      children: "Medium",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "600",
+                                                                                      children: "Semi Bold",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "700",
+                                                                                      children: "Bold",
+                                                                                    }),
+                                                                                  ],
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Line height"],
+                                                                                }),
+                                                                                e.jsx("input", {
+                                                                                  type: "text",
+                                                                                  value: M["labelLineHeight"] ?? "",
+                                                                                  placeholder: "1.4",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["labelLineHeight"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsx("div", {
+                                                                              className: "nls-fb-color-grid",
+                                                                              children: [
+                                                                                e.jsx(
+                                                                                  FormColorField,
+                                                                                  {
+                                                                                    label: "Text color",
+                                                                                    value: M["labelColor"] || "#334155",
+                                                                                    onChange: (H) =>
+                                                                                      nlsCommitDesign(h, a, M, {
+                                                                                        ["labelColor"]: H,
+                                                                                      }),
+                                                                                  },
+                                                                                  "labelColor",
+                                                                                ),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsx("h4", {
+                                                                              className: "nls-fb-h4",
+                                                                              children: "3. Placeholder text",
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Font family"],
+                                                                                }),
+                                                                                e.jsx("select", {
+                                                                                  value:
+                                                                                    M["placeholderFontFamily"] ||
+                                                                                    "inherit",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["placeholderFontFamily"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                  children: [
+                                                                                    e.jsx("option", {
+                                                                                      value: "inherit",
+                                                                                      children: "Inherit",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        "system-ui, -apple-system, sans-serif",
+                                                                                      children: "System UI",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        "Arial, Helvetica, sans-serif",
+                                                                                      children: "Arial",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "Georgia, serif",
+                                                                                      children: "Georgia",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        '"Times New Roman", Times, serif',
+                                                                                      children: "Times",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: '"Courier New", monospace',
+                                                                                      children: "Courier",
+                                                                                    }),
+                                                                                  ],
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            (() => {
+                                                                              const base = "placeholderFontSize";
+                                                                              const val = nlsDevNum(
+                                                                                M,
+                                                                                base,
+                                                                                nlsDevice,
+                                                                                14,
+                                                                              );
+                                                                              return e.jsxs("div", {
+                                                                                className: "nls-field",
+                                                                                children: [
+                                                                                  e.jsxs("span", {
+                                                                                    className:
+                                                                                      "nls-field__label nls-fb-range-label",
+                                                                                    children: [
+                                                                                      "Font size",
+                                                                                      e.jsxs("span", {
+                                                                                        children: [val, "px"],
+                                                                                      }),
+                                                                                    ],
+                                                                                  }),
+                                                                                  e.jsx(nlsRange, {
+                                                                                    min: 10,
+                                                                                    max: 28,
+                                                                                    value: val,
+                                                                                    onChange: (H) => {
+                                                                                      const v = Number(H.target.value);
+                                                                                      if (nlsDevice === "desktop") {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [base]: v,
+                                                                                        });
+                                                                                      } else {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [nlsDevKey(base, nlsDevice)]:
+                                                                                            v,
+                                                                                        });
+                                                                                      }
+                                                                                    },
+                                                                                  }),
+                                                                                ],
+                                                                              });
+                                                                            })(),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Font weight"],
+                                                                                }),
+                                                                                e.jsx("select", {
+                                                                                  value:
+                                                                                    M["placeholderFontWeight"] || "400",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["placeholderFontWeight"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                  children: [
+                                                                                    e.jsx("option", {
+                                                                                      value: "400",
+                                                                                      children: "Normal",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "500",
+                                                                                      children: "Medium",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "600",
+                                                                                      children: "Semi Bold",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "700",
+                                                                                      children: "Bold",
+                                                                                    }),
+                                                                                  ],
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Line height"],
+                                                                                }),
+                                                                                e.jsx("input", {
+                                                                                  type: "text",
+                                                                                  value:
+                                                                                    M["placeholderLineHeight"] ?? "",
+                                                                                  placeholder: "1.4",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["placeholderLineHeight"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsx("div", {
+                                                                              className: "nls-fb-color-grid",
+                                                                              children: [
+                                                                                e.jsx(
+                                                                                  FormColorField,
+                                                                                  {
+                                                                                    label: "Text color",
+                                                                                    value:
+                                                                                      M["placeholderColor"] ||
+                                                                                      "#94a3b8",
+                                                                                    onChange: (H) =>
+                                                                                      nlsCommitDesign(h, a, M, {
+                                                                                        ["placeholderColor"]: H,
+                                                                                      }),
+                                                                                  },
+                                                                                  "placeholderColor",
+                                                                                ),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsx("h4", {
+                                                                              className: "nls-fb-h4",
+                                                                              children: "4. Input text",
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Font family"],
+                                                                                }),
+                                                                                e.jsx("select", {
+                                                                                  value:
+                                                                                    M["inputFontFamily"] || "inherit",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["inputFontFamily"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                  children: [
+                                                                                    e.jsx("option", {
+                                                                                      value: "inherit",
+                                                                                      children: "Inherit",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        "system-ui, -apple-system, sans-serif",
+                                                                                      children: "System UI",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        "Arial, Helvetica, sans-serif",
+                                                                                      children: "Arial",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "Georgia, serif",
+                                                                                      children: "Georgia",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        '"Times New Roman", Times, serif',
+                                                                                      children: "Times",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: '"Courier New", monospace',
+                                                                                      children: "Courier",
+                                                                                    }),
+                                                                                  ],
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            (() => {
+                                                                              const base = "inputFontSize";
+                                                                              const val = nlsDevNum(
+                                                                                M,
+                                                                                base,
+                                                                                nlsDevice,
+                                                                                14,
+                                                                              );
+                                                                              return e.jsxs("div", {
+                                                                                className: "nls-field",
+                                                                                children: [
+                                                                                  e.jsxs("span", {
+                                                                                    className:
+                                                                                      "nls-field__label nls-fb-range-label",
+                                                                                    children: [
+                                                                                      "Font size",
+                                                                                      e.jsxs("span", {
+                                                                                        children: [val, "px"],
+                                                                                      }),
+                                                                                    ],
+                                                                                  }),
+                                                                                  e.jsx(nlsRange, {
+                                                                                    min: 10,
+                                                                                    max: 28,
+                                                                                    value: val,
+                                                                                    onChange: (H) => {
+                                                                                      const v = Number(H.target.value);
+                                                                                      if (nlsDevice === "desktop") {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [base]: v,
+                                                                                        });
+                                                                                      } else {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [nlsDevKey(base, nlsDevice)]:
+                                                                                            v,
+                                                                                        });
+                                                                                      }
+                                                                                    },
+                                                                                  }),
+                                                                                ],
+                                                                              });
+                                                                            })(),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Font weight"],
+                                                                                }),
+                                                                                e.jsx("select", {
+                                                                                  value: M["inputFontWeight"] || "400",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["inputFontWeight"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                  children: [
+                                                                                    e.jsx("option", {
+                                                                                      value: "400",
+                                                                                      children: "Normal",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "500",
+                                                                                      children: "Medium",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "600",
+                                                                                      children: "Semi Bold",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "700",
+                                                                                      children: "Bold",
+                                                                                    }),
+                                                                                  ],
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Line height"],
+                                                                                }),
+                                                                                e.jsx("input", {
+                                                                                  type: "text",
+                                                                                  value: M["inputLineHeight"] ?? "",
+                                                                                  placeholder: "1.4",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["inputLineHeight"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsx("div", {
+                                                                              className: "nls-fb-color-grid",
+                                                                              children: [
+                                                                                e.jsx(
+                                                                                  FormColorField,
+                                                                                  {
+                                                                                    label: "Text color",
+                                                                                    value: M["inputColor"] || "#000000",
+                                                                                    onChange: (H) =>
+                                                                                      nlsCommitDesign(h, a, M, {
+                                                                                        ["inputColor"]: H,
+                                                                                      }),
+                                                                                  },
+                                                                                  "inputColor",
+                                                                                ),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsx("h4", {
+                                                                              className: "nls-fb-h4",
+                                                                              children: "5. Description / sub-label",
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Font family"],
+                                                                                }),
+                                                                                e.jsx("select", {
+                                                                                  value:
+                                                                                    M["descFontFamily"] || "inherit",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["descFontFamily"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                  children: [
+                                                                                    e.jsx("option", {
+                                                                                      value: "inherit",
+                                                                                      children: "Inherit",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        "system-ui, -apple-system, sans-serif",
+                                                                                      children: "System UI",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        "Arial, Helvetica, sans-serif",
+                                                                                      children: "Arial",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "Georgia, serif",
+                                                                                      children: "Georgia",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        '"Times New Roman", Times, serif',
+                                                                                      children: "Times",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: '"Courier New", monospace',
+                                                                                      children: "Courier",
+                                                                                    }),
+                                                                                  ],
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            (() => {
+                                                                              const base = "descFontSize";
+                                                                              const val = nlsDevNum(
+                                                                                M,
+                                                                                base,
+                                                                                nlsDevice,
+                                                                                12,
+                                                                              );
+                                                                              return e.jsxs("div", {
+                                                                                className: "nls-field",
+                                                                                children: [
+                                                                                  e.jsxs("span", {
+                                                                                    className:
+                                                                                      "nls-field__label nls-fb-range-label",
+                                                                                    children: [
+                                                                                      "Font size",
+                                                                                      e.jsxs("span", {
+                                                                                        children: [val, "px"],
+                                                                                      }),
+                                                                                    ],
+                                                                                  }),
+                                                                                  e.jsx(nlsRange, {
+                                                                                    min: 10,
+                                                                                    max: 28,
+                                                                                    value: val,
+                                                                                    onChange: (H) => {
+                                                                                      const v = Number(H.target.value);
+                                                                                      if (nlsDevice === "desktop") {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [base]: v,
+                                                                                        });
+                                                                                      } else {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [nlsDevKey(base, nlsDevice)]:
+                                                                                            v,
+                                                                                        });
+                                                                                      }
+                                                                                    },
+                                                                                  }),
+                                                                                ],
+                                                                              });
+                                                                            })(),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Font weight"],
+                                                                                }),
+                                                                                e.jsx("select", {
+                                                                                  value: M["descFontWeight"] || "400",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["descFontWeight"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                  children: [
+                                                                                    e.jsx("option", {
+                                                                                      value: "400",
+                                                                                      children: "Normal",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "500",
+                                                                                      children: "Medium",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "600",
+                                                                                      children: "Semi Bold",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "700",
+                                                                                      children: "Bold",
+                                                                                    }),
+                                                                                  ],
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Line height"],
+                                                                                }),
+                                                                                e.jsx("input", {
+                                                                                  type: "text",
+                                                                                  value: M["descLineHeight"] ?? "",
+                                                                                  placeholder: "1.4",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["descLineHeight"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsx("div", {
+                                                                              className: "nls-fb-color-grid",
+                                                                              children: [
+                                                                                e.jsx(
+                                                                                  FormColorField,
+                                                                                  {
+                                                                                    label: "Text color",
+                                                                                    value: M["descColor"] || "#64748b",
+                                                                                    onChange: (H) =>
+                                                                                      nlsCommitDesign(h, a, M, {
+                                                                                        ["descColor"]: H,
+                                                                                      }),
+                                                                                  },
+                                                                                  "descColor",
+                                                                                ),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsx("h4", {
+                                                                              className: "nls-fb-h4",
+                                                                              children: "6. Error messages",
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Font family"],
+                                                                                }),
+                                                                                e.jsx("select", {
+                                                                                  value:
+                                                                                    M["errorFontFamily"] || "inherit",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["errorFontFamily"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                  children: [
+                                                                                    e.jsx("option", {
+                                                                                      value: "inherit",
+                                                                                      children: "Inherit",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        "system-ui, -apple-system, sans-serif",
+                                                                                      children: "System UI",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        "Arial, Helvetica, sans-serif",
+                                                                                      children: "Arial",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "Georgia, serif",
+                                                                                      children: "Georgia",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        '"Times New Roman", Times, serif',
+                                                                                      children: "Times",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: '"Courier New", monospace',
+                                                                                      children: "Courier",
+                                                                                    }),
+                                                                                  ],
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            (() => {
+                                                                              const base = "errorFontSize";
+                                                                              const val = nlsDevNum(
+                                                                                M,
+                                                                                base,
+                                                                                nlsDevice,
+                                                                                12,
+                                                                              );
+                                                                              return e.jsxs("div", {
+                                                                                className: "nls-field",
+                                                                                children: [
+                                                                                  e.jsxs("span", {
+                                                                                    className:
+                                                                                      "nls-field__label nls-fb-range-label",
+                                                                                    children: [
+                                                                                      "Font size",
+                                                                                      e.jsxs("span", {
+                                                                                        children: [val, "px"],
+                                                                                      }),
+                                                                                    ],
+                                                                                  }),
+                                                                                  e.jsx(nlsRange, {
+                                                                                    min: 10,
+                                                                                    max: 24,
+                                                                                    value: val,
+                                                                                    onChange: (H) => {
+                                                                                      const v = Number(H.target.value);
+                                                                                      if (nlsDevice === "desktop") {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [base]: v,
+                                                                                        });
+                                                                                      } else {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [nlsDevKey(base, nlsDevice)]:
+                                                                                            v,
+                                                                                        });
+                                                                                      }
+                                                                                    },
+                                                                                  }),
+                                                                                ],
+                                                                              });
+                                                                            })(),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Font weight"],
+                                                                                }),
+                                                                                e.jsx("select", {
+                                                                                  value: M["errorFontWeight"] || "400",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["errorFontWeight"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                  children: [
+                                                                                    e.jsx("option", {
+                                                                                      value: "400",
+                                                                                      children: "Normal",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "500",
+                                                                                      children: "Medium",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "600",
+                                                                                      children: "Semi Bold",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "700",
+                                                                                      children: "Bold",
+                                                                                    }),
+                                                                                  ],
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Line height"],
+                                                                                }),
+                                                                                e.jsx("input", {
+                                                                                  type: "text",
+                                                                                  value: M["errorLineHeight"] ?? "",
+                                                                                  placeholder: "1.4",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["errorLineHeight"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsx("div", {
+                                                                              className: "nls-fb-color-grid",
+                                                                              children: [
+                                                                                e.jsx(
+                                                                                  FormColorField,
+                                                                                  {
+                                                                                    label: "Error text",
+                                                                                    value: M["errorColor"] || "#dc2626",
+                                                                                    onChange: (H) =>
+                                                                                      nlsCommitDesign(h, a, M, {
+                                                                                        ["errorColor"]: H,
+                                                                                      }),
+                                                                                  },
+                                                                                  "errorColor",
+                                                                                ),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsx("h4", {
+                                                                              className: "nls-fb-h4",
+                                                                              children: "7. Success messages",
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Font family"],
+                                                                                }),
+                                                                                e.jsx("select", {
+                                                                                  value:
+                                                                                    M["successFontFamily"] || "inherit",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["successFontFamily"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                  children: [
+                                                                                    e.jsx("option", {
+                                                                                      value: "inherit",
+                                                                                      children: "Inherit",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        "system-ui, -apple-system, sans-serif",
+                                                                                      children: "System UI",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        "Arial, Helvetica, sans-serif",
+                                                                                      children: "Arial",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "Georgia, serif",
+                                                                                      children: "Georgia",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value:
+                                                                                        '"Times New Roman", Times, serif',
+                                                                                      children: "Times",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: '"Courier New", monospace',
+                                                                                      children: "Courier",
+                                                                                    }),
+                                                                                  ],
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            (() => {
+                                                                              const base = "successFontSize";
+                                                                              const val = nlsDevNum(
+                                                                                M,
+                                                                                base,
+                                                                                nlsDevice,
+                                                                                14,
+                                                                              );
+                                                                              return e.jsxs("div", {
+                                                                                className: "nls-field",
+                                                                                children: [
+                                                                                  e.jsxs("span", {
+                                                                                    className:
+                                                                                      "nls-field__label nls-fb-range-label",
+                                                                                    children: [
+                                                                                      "Font size",
+                                                                                      e.jsxs("span", {
+                                                                                        children: [val, "px"],
+                                                                                      }),
+                                                                                    ],
+                                                                                  }),
+                                                                                  e.jsx(nlsRange, {
+                                                                                    min: 10,
+                                                                                    max: 28,
+                                                                                    value: val,
+                                                                                    onChange: (H) => {
+                                                                                      const v = Number(H.target.value);
+                                                                                      if (nlsDevice === "desktop") {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [base]: v,
+                                                                                        });
+                                                                                      } else {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [nlsDevKey(base, nlsDevice)]:
+                                                                                            v,
+                                                                                        });
+                                                                                      }
+                                                                                    },
+                                                                                  }),
+                                                                                ],
+                                                                              });
+                                                                            })(),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Font weight"],
+                                                                                }),
+                                                                                e.jsx("select", {
+                                                                                  value:
+                                                                                    M["successFontWeight"] || "400",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["successFontWeight"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                  children: [
+                                                                                    e.jsx("option", {
+                                                                                      value: "400",
+                                                                                      children: "Normal",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "500",
+                                                                                      children: "Medium",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "600",
+                                                                                      children: "Semi Bold",
+                                                                                    }),
+                                                                                    e.jsx("option", {
+                                                                                      value: "700",
+                                                                                      children: "Bold",
+                                                                                    }),
+                                                                                  ],
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-field",
+                                                                              children: [
+                                                                                e.jsxs("span", {
+                                                                                  className:
+                                                                                    "nls-field__label nls-fb-range-label",
+                                                                                  children: ["Line height"],
+                                                                                }),
+                                                                                e.jsx("input", {
+                                                                                  type: "text",
+                                                                                  value: M["successLineHeight"] ?? "",
+                                                                                  placeholder: "1.45",
+                                                                                  onChange: (H) =>
+                                                                                    nlsCommitDesign(h, a, M, {
+                                                                                      ["successLineHeight"]:
+                                                                                        H.target.value,
+                                                                                    }),
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsx("div", {
+                                                                              className: "nls-fb-color-grid",
+                                                                              children: [
+                                                                                e.jsx(
+                                                                                  FormColorField,
+                                                                                  {
+                                                                                    label: "Success text",
+                                                                                    value:
+                                                                                      M["successColor"] || "#16a34a",
+                                                                                    onChange: (H) =>
+                                                                                      nlsCommitDesign(h, a, M, {
+                                                                                        ["successColor"]: H,
+                                                                                      }),
+                                                                                  },
+                                                                                  "successColor",
+                                                                                ),
+                                                                              ],
+                                                                            }),
+                                                                          ],
+                                                                        })
+                                                                      : e.jsxs("div", {
+                                                                          className: "nexulesuite_fui-acc__stack",
+                                                                          children: [
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-seg nls-fb-devices",
+                                                                              role: "group",
+                                                                              "aria-label": "Device",
+                                                                              children: [
+                                                                                ["desktop", "Desktop"],
+                                                                                ["tablet", "Tablet"],
+                                                                                ["mobile", "Mobile"],
+                                                                              ].map(([dk, dl]) =>
+                                                                                e.jsx(
+                                                                                  "button",
+                                                                                  {
+                                                                                    type: "button",
+                                                                                    className:
+                                                                                      "nls-seg__btn" +
+                                                                                      (nlsDevice === dk
+                                                                                        ? " is-active"
+                                                                                        : ""),
+                                                                                    "aria-pressed": nlsDevice === dk,
+                                                                                    onClick: () => nlsSetDevice(dk),
+                                                                                    children: dl,
+                                                                                  },
+                                                                                  dk,
+                                                                                ),
+                                                                              ),
+                                                                            }),
+                                                                            (() => {
+                                                                              const base = "rowGap";
+                                                                              const val = nlsDevNum(
+                                                                                M,
+                                                                                base,
+                                                                                nlsDevice,
+                                                                                16,
+                                                                              );
+                                                                              return e.jsxs("div", {
+                                                                                className: "nls-field",
+                                                                                children: [
+                                                                                  e.jsxs("span", {
+                                                                                    className:
+                                                                                      "nls-field__label nls-fb-range-label",
+                                                                                    children: [
+                                                                                      "Row gap (vertical)",
+                                                                                      e.jsxs("span", {
+                                                                                        children: [val, "px"],
+                                                                                      }),
+                                                                                    ],
+                                                                                  }),
+                                                                                  e.jsx(nlsRange, {
+                                                                                    min: 0,
+                                                                                    max: 100,
+                                                                                    step: 1,
+                                                                                    value: val,
+                                                                                    onChange: (H) => {
+                                                                                      const v = Number(H.target.value);
+                                                                                      if (nlsDevice === "desktop") {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [base]: v,
+                                                                                          fieldGap: Number(
+                                                                                            H.target.value,
+                                                                                          ),
+                                                                                        });
+                                                                                      } else {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [nlsDevKey(base, nlsDevice)]:
+                                                                                            v,
+                                                                                        });
+                                                                                      }
+                                                                                    },
+                                                                                  }),
+                                                                                ],
+                                                                              });
+                                                                            })(),
+                                                                            (() => {
+                                                                              const base = "columnGap";
+                                                                              const val = nlsDevNum(
+                                                                                M,
+                                                                                base,
+                                                                                nlsDevice,
+                                                                                16,
+                                                                              );
+                                                                              return e.jsxs("div", {
+                                                                                className: "nls-field",
+                                                                                children: [
+                                                                                  e.jsxs("span", {
+                                                                                    className:
+                                                                                      "nls-field__label nls-fb-range-label",
+                                                                                    children: [
+                                                                                      "Column gap (horizontal)",
+                                                                                      e.jsxs("span", {
+                                                                                        children: [val, "px"],
+                                                                                      }),
+                                                                                    ],
+                                                                                  }),
+                                                                                  e.jsx(nlsRange, {
+                                                                                    min: 0,
+                                                                                    max: 100,
+                                                                                    step: 1,
+                                                                                    value: val,
+                                                                                    onChange: (H) => {
+                                                                                      const v = Number(H.target.value);
+                                                                                      if (nlsDevice === "desktop") {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [base]: v,
+                                                                                        });
+                                                                                      } else {
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [nlsDevKey(base, nlsDevice)]:
+                                                                                            v,
+                                                                                        });
+                                                                                      }
+                                                                                    },
+                                                                                  }),
+                                                                                ],
+                                                                              });
+                                                                            })(),
+                                                                            (() => {
+                                                                              const base =
+                                                                                nlsDevice === "desktop"
+                                                                                  ? "fieldPadding"
+                                                                                  : nlsDevice === "tablet"
+                                                                                    ? "inputPaddingTablet"
+                                                                                    : "inputPaddingMobile";
+                                                                              const _fp = parseInt(M.fieldPadding, 10);
+                                                                              const desktop =
+                                                                                !isNaN(_fp) && _fp >= 0 ? _fp : 12;
+                                                                              const raw = parseInt(M[base], 10);
+                                                                              const val =
+                                                                                nlsDevice === "desktop"
+                                                                                  ? desktop
+                                                                                  : M[base] != null &&
+                                                                                      M[base] !== "" &&
+                                                                                      !isNaN(raw) &&
+                                                                                      raw >= 0
+                                                                                    ? raw
+                                                                                    : desktop;
+                                                                              return e.jsxs("div", {
+                                                                                className: "nls-field",
+                                                                                children: [
+                                                                                  e.jsxs("span", {
+                                                                                    className:
+                                                                                      "nls-field__label nls-fb-range-label",
+                                                                                    children: [
+                                                                                      "Input padding",
+                                                                                      e.jsxs("span", {
+                                                                                        children: [val, "px"],
+                                                                                      }),
+                                                                                    ],
+                                                                                  }),
+                                                                                  e.jsx(nlsRange, {
+                                                                                    min: 0,
+                                                                                    max: 100,
+                                                                                    step: 1,
+                                                                                    value: val,
+                                                                                    onChange: (H) => {
+                                                                                      const v = Number(H.target.value);
+                                                                                      if (nlsDevice === "desktop")
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          fieldPadding: v,
+                                                                                        });
+                                                                                      else
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [base]: v,
+                                                                                        });
+                                                                                    },
+                                                                                  }),
+                                                                                ],
+                                                                              });
+                                                                            })(),
+                                                                            (() => {
+                                                                              const baseKey = "labelSpacing";
+                                                                              const val = nlsDevNum(
+                                                                                M,
+                                                                                baseKey,
+                                                                                nlsDevice,
+                                                                                6,
+                                                                              );
+                                                                              return e.jsxs("div", {
+                                                                                className: "nls-field",
+                                                                                children: [
+                                                                                  e.jsxs("span", {
+                                                                                    className:
+                                                                                      "nls-field__label nls-fb-range-label",
+                                                                                    children: [
+                                                                                      "Label spacing",
+                                                                                      e.jsxs("span", {
+                                                                                        children: [val, "px"],
+                                                                                      }),
+                                                                                    ],
+                                                                                  }),
+                                                                                  e.jsx(nlsRange, {
+                                                                                    min: 0,
+                                                                                    max: 100,
+                                                                                    step: 1,
+                                                                                    value: val,
+                                                                                    onChange: (H) => {
+                                                                                      const v = Number(H.target.value);
+                                                                                      if (nlsDevice === "desktop")
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          labelSpacing: v,
+                                                                                        });
+                                                                                      else
+                                                                                        nlsCommitDesign(h, a, M, {
+                                                                                          [nlsDevKey(
+                                                                                            baseKey,
+                                                                                            nlsDevice,
+                                                                                          )]: v,
+                                                                                        });
+                                                                                    },
+                                                                                  }),
+                                                                                  e.jsx("h4", {
+                                                                                    className: "nls-fb-h4",
+                                                                                    children: "11. Responsive",
+                                                                                  }),
+                                                                                  e.jsxs("div", {
+                                                                                    className: "nls-field",
+                                                                                    children: [
+                                                                                      e.jsxs("span", {
+                                                                                        className:
+                                                                                          "nls-field__label nls-fb-range-label",
+                                                                                        children: [
+                                                                                          "Auto-stack columns on small screens",
+                                                                                        ],
+                                                                                      }),
+                                                                                      e.jsx("label", {
+                                                                                        className: "nls-check",
+                                                                                        children: [
+                                                                                          e.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            checked:
+                                                                                              M.autoStack !== false,
+                                                                                            onChange: (H) =>
+                                                                                              nlsCommitDesign(h, a, M, {
+                                                                                                autoStack:
+                                                                                                  !!H.target.checked,
+                                                                                              }),
+                                                                                          }),
+                                                                                          " Stack multi-column layouts to 1 column",
+                                                                                        ],
+                                                                                      }),
+                                                                                    ],
+                                                                                  }),
+                                                                                  (() => {
+                                                                                    const base = "stackBreakpoint";
+                                                                                    const val = nlsDevNum(
+                                                                                      M,
+                                                                                      base,
+                                                                                      nlsDevice,
+                                                                                      640,
+                                                                                    );
+                                                                                    return e.jsxs("div", {
+                                                                                      className: "nls-field",
+                                                                                      children: [
+                                                                                        e.jsxs("span", {
+                                                                                          className:
+                                                                                            "nls-field__label nls-fb-range-label",
+                                                                                          children: [
+                                                                                            "Stack breakpoint",
+                                                                                            e.jsxs("span", {
+                                                                                              children: [val, "px"],
+                                                                                            }),
+                                                                                          ],
+                                                                                        }),
+                                                                                        e.jsx(nlsRange, {
+                                                                                          min: 220,
+                                                                                          max: 1200,
+                                                                                          step: 1,
+                                                                                          value: val,
+                                                                                          onChange: (H) => {
+                                                                                            const v = Number(
+                                                                                              H.target.value,
+                                                                                            );
+                                                                                            if (
+                                                                                              nlsDevice === "desktop"
+                                                                                            ) {
+                                                                                              nlsCommitDesign(h, a, M, {
+                                                                                                [base]: v,
+                                                                                              });
+                                                                                            } else {
+                                                                                              nlsCommitDesign(h, a, M, {
+                                                                                                [nlsDevKey(
+                                                                                                  base,
+                                                                                                  nlsDevice,
+                                                                                                )]: v,
+                                                                                              });
+                                                                                            }
+                                                                                          },
+                                                                                        }),
+                                                                                      ],
+                                                                                    });
+                                                                                  })(),
+                                                                                  e.jsx("h4", {
+                                                                                    className: "nls-fb-h4",
+                                                                                    children: "Per-field design",
+                                                                                  }),
+                                                                                ],
+                                                                              });
+                                                                            })(),
+                                                                          ],
+                                                                        }),
+                                                        })
+                                                      : null,
+                                                  ],
+                                                },
+                                                k,
+                                              );
+                                            }),
+                                          })
+                                        : mk === "notify"
+                                          ? e.jsxs("div", {
+                                              className: "nexulesuite_fui-acc",
+                                              children: [
+                                                ["email", "Email Notifications"],
+                                                ["integrations", "Integrations"],
+                                              ].map(function (pair) {
+                                                var nk = pair[0],
+                                                  lab = pair[1];
+                                                var open = nlsNotifyAcc === nk;
+                                                return e.jsxs(
+                                                  "div",
+                                                  {
+                                                    className: "nexulesuite_fui-acc__item" + (open ? " is-open" : ""),
+                                                    children: [
+                                                      e.jsxs("button", {
+                                                        type: "button",
+                                                        className: "nexulesuite_fui-acc__head",
+                                                        onClick: function () {
+                                                          nlsSetNotifyAcc(open ? "" : nk);
+                                                          x("advanced");
+                                                        },
+                                                        children: [
+                                                          e.jsxs("span", {
+                                                            className: "nexulesuite_fui-acc__left",
+                                                            children: [
+                                                              nlsAccIcon(nk),
+                                                              e.jsx("span", {
+                                                                className: "nexulesuite_fui-acc__label",
+                                                                children: lab,
+                                                              }),
+                                                            ],
+                                                          }),
+                                                          nlsAccPlus(open),
+                                                        ],
+                                                      }),
+                                                      open
+                                                        ? e.jsx("div", {
+                                                            className: "nexulesuite_fui-acc__body",
+                                                            children:
+                                                              nk === "email"
+                                                                ? e.jsxs("div", {
+                                                                    className: "nexulesuite_fui-acc__stack",
+                                                                    children: [
+                                                                      e.jsx("p", {
+                                                                        className: "nexulesuite_fui-hint",
+                                                                        children:
+                                                                          "Send customized email notifications to the site admin and visitors after a successful submission. For reliable delivery, set up SMTP on your site.",
+                                                                      }),
+                                                                      e.jsxs("div", {
+                                                                        className: "nls-field",
+                                                                        children: [
+                                                                          e.jsx("span", {
+                                                                            className: "nls-field__label",
+                                                                            children: "Admin Email",
+                                                                          }),
+                                                                          e.jsx("input", {
+                                                                            type: "text",
+                                                                            value: a.notificationEmail || "",
+                                                                            placeholder:
+                                                                              "Leave blank to use site admin email",
+                                                                            onChange: function (w) {
+                                                                              return h(a.id, {
+                                                                                notificationEmail: w.target.value,
+                                                                              });
+                                                                            },
+                                                                          }),
+                                                                        ],
+                                                                      }),
+                                                                      e.jsx("p", {
+                                                                        className: "nexulesuite_fui-hint",
+                                                                        children:
+                                                                          "Add conditional email routes in the panel below for visitor thank-you emails and extra recipients.",
+                                                                      }),
+                                                                    ],
+                                                                  })
+                                                                : e.jsxs("div", {
+                                                                    className: "nexulesuite_fui-acc__stack",
+                                                                    children: [
+                                                                      e.jsxs("div", {
+                                                                        className: "nls-field",
+                                                                        children: [
+                                                                          e.jsx("span", {
+                                                                            className: "nls-field__label",
+                                                                            children: "CRM / Webhook URL (this form)",
+                                                                          }),
+                                                                          e.jsx("input", {
+                                                                            type: "url",
+                                                                            value: a.crmWebhookUrl || "",
+                                                                            onChange: function (w) {
+                                                                              return h(a.id, {
+                                                                                crmWebhookUrl: w.target.value,
+                                                                              });
+                                                                            },
+                                                                            placeholder: "https://hooks.zapier.com/...",
+                                                                          }),
+                                                                        ],
+                                                                      }),
+                                                                      e.jsx("p", {
+                                                                        className: "nexulesuite_fui-hint",
+                                                                        children:
+                                                                          "Optional. Per-form JSON webhook; set a global URL in Settings for all forms too.",
+                                                                      }),
+                                                                    ],
+                                                                  }),
+                                                          })
+                                                        : null,
+                                                    ],
+                                                  },
+                                                  nk,
+                                                );
+                                              }),
+                                            })
+                                          : mk === "settings"
+                                            ? e.jsxs("div", {
+                                                className: "nexulesuite_fui-acc",
+                                                children: [
+                                                  ["visibility", "Visibility"],
+                                                  ["legal", "Legal"],
+                                                ].map(function (pair) {
+                                                  var sk = pair[0],
+                                                    lab = pair[1];
+                                                  var open = nlsSettingsAcc === sk;
+                                                  return e.jsxs(
+                                                    "div",
+                                                    {
+                                                      className: "nexulesuite_fui-acc__item" + (open ? " is-open" : ""),
+                                                      children: [
+                                                        e.jsxs("button", {
+                                                          type: "button",
+                                                          className: "nexulesuite_fui-acc__head",
+                                                          onClick: function () {
+                                                            nlsSetSettingsAcc(open ? "" : sk);
+                                                            x("advanced");
+                                                          },
+                                                          children: [
+                                                            e.jsxs("span", {
+                                                              className: "nexulesuite_fui-acc__left",
+                                                              children: [
+                                                                nlsAccIcon(sk),
+                                                                e.jsx("span", {
+                                                                  className: "nexulesuite_fui-acc__label",
+                                                                  children: lab,
+                                                                }),
+                                                              ],
+                                                            }),
+                                                            nlsAccPlus(open),
+                                                          ],
+                                                        }),
+                                                        open
+                                                          ? e.jsx("div", {
+                                                              className: "nexulesuite_fui-acc__body",
+                                                              children:
+                                                                sk === "visibility"
+                                                                  ? e.jsxs("div", {
+                                                                      className: "nexulesuite_fui-acc__stack",
+                                                                      children: [
+                                                                        e.jsxs("div", {
+                                                                          className: "nls-toggle-card",
+                                                                          children: [
+                                                                            e.jsxs("div", {
+                                                                              className: "nls-toggle-card__body",
+                                                                              children: [
+                                                                                e.jsx("span", {
+                                                                                  className: "nls-toggle-card__title",
+                                                                                  children: "Show form on website",
+                                                                                }),
+                                                                                e.jsx("p", {
+                                                                                  className: "nls-toggle-card__hint",
+                                                                                  children:
+                                                                                    "Turn off to hide everywhere on the front (shortcodes, popups, widgets). The form stays in the builder for editing.",
+                                                                                }),
+                                                                              ],
+                                                                            }),
+                                                                            e.jsx("div", {
+                                                                              className: `nls-switch${a.published !== !1 ? " is-on" : ""}`,
+                                                                              "aria-label": "Show form on website",
+                                                                              role: "switch",
+                                                                              "aria-checked": a.published !== !1,
+                                                                              tabIndex: 0,
+                                                                              onClick: () =>
+                                                                                h(a.id, {
+                                                                                  published: a.published === !1,
+                                                                                }),
+                                                                              onKeyDown: (w) => {
+                                                                                (w.key === " " || w.key === "Enter") &&
+                                                                                  (w.preventDefault(),
+                                                                                  h(a.id, {
+                                                                                    published: a.published === !1,
+                                                                                  }));
+                                                                              },
+                                                                            }),
+                                                                          ],
+                                                                        }),
+                                                                      ],
+                                                                    })
+                                                                  : sk === "markup"
+                                                                    ? null
+                                                                    : e.jsxs("div", {
+                                                                        className: "nexulesuite_fui-acc__stack",
+                                                                        children: [
+                                                                          e.jsxs("div", {
+                                                                            className: "nls-field",
+                                                                            children: [
+                                                                              e.jsx("span", {
+                                                                                className: "nls-field__label",
+                                                                                children: "Terms & Conditions Text",
+                                                                              }),
+                                                                              e.jsx("textarea", {
+                                                                                value: a.termsConditionText || "",
+                                                                                onChange: (w) =>
+                                                                                  h(a.id, {
+                                                                                    termsConditionText: w.target.value,
+                                                                                  }),
+                                                                                rows: 2,
+                                                                                placeholder:
+                                                                                  "I agree to the terms and conditions",
+                                                                              }),
+                                                                            ],
+                                                                          }),
+                                                                        ],
+                                                                      }),
+                                                            })
+                                                          : null,
+                                                      ],
+                                                    },
+                                                    sk,
+                                                  );
+                                                }),
+                                              })
+                                            : mk === "behavior"
+                                              ? e.jsx("div", {
+                                                  className: "nexulesuite_fui-acc__content-inner nls-fb-panel",
+                                                  children: e.jsx(FormBehaviorSettings, {
+                                                    form: a,
+                                                    onUpdate: (w) => h(a.id, w),
+                                                  }),
+                                                })
+                                              : e.jsx("div", {
+                                                  className: "nexulesuite_fui-acc__content-inner",
+                                                  children: e.jsx("p", {
+                                                    className: "nexulesuite_fui-hint",
+                                                    children: "Add and arrange fields on the canvas.",
+                                                  }),
+                                                }),
+                                  })
+                                : null,
+                            ],
+                          },
+                          mk,
+                        );
+                      }),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+        ],
+      })
+    : e.jsxs("li", {
+        className: `nls-card nls-fb-card${o ? " is-expanded" : ""}`,
+        children: [
+          e.jsxs("div", {
+            className: "nls-fb-head",
+            children: [
+              e.jsxs("button", {
+                type: "button",
+                onClick: d,
+                className: "nls-fb-head__main",
+                "aria-expanded": !!o,
+                children: [
+                  e.jsx("span", {
+                    className: "nls-fb-head__title",
+                    children: a.name || "Untitled Form",
+                  }),
+                  e.jsx("span", {
+                    className: "nls-badge nls-badge--primary",
+                    children: a.formType === "multi" ? "Multi-Step" : "Simple",
+                  }),
+                  a.published === !1
+                    ? e.jsx("span", {
+                        className: "nls-badge nls-badge--muted",
+                        children: "Hidden",
+                      })
+                    : null,
+                ],
+              }),
+              e.jsxs("div", {
+                className: "nls-fb-head__actions",
+                onClick: (w) => w.stopPropagation(),
+                children: [
+                  e.jsx("button", {
+                    type: "button",
+                    onClick: () => (y == null ? void 0 : y(a.id)),
+                    className: "nls-icon-btn",
+                    title: "Preview",
+                    "aria-label": "Preview",
+                    children: e.jsx(Rt, {
+                      size: 16,
+                      "aria-hidden": "true",
+                    }),
+                  }),
+                  e.jsx("button", {
+                    type: "button",
+                    onClick: () => (P == null ? void 0 : P(a.id, a.published === !1)),
+                    className: `nls-icon-btn${a.published === !1 ? " is-warn" : ""}`,
+                    title: a.published === !1 ? "Show form on website" : "Hide form on website",
+                    "aria-label": a.published === !1 ? "Show form on website" : "Hide form on website",
+                    children:
+                      a.published === !1
+                        ? e.jsx(Rt, {
+                            size: 16,
+                            "aria-hidden": "true",
+                          })
+                        : e.jsx(za, {
+                            size: 16,
+                            "aria-hidden": "true",
+                          }),
+                  }),
+                  e.jsx("button", {
+                    type: "button",
+                    onClick: () => copyShortcode(a.id, S),
+                    className: `nls-icon-btn${f === a.id ? " is-success" : ""}`,
+                    title: "Copy shortcode",
+                    "aria-label": "Copy shortcode",
+                    children: e.jsx(Jc, {
+                      size: 16,
+                      "aria-hidden": "true",
+                    }),
+                  }),
+                  e.jsx("button", {
+                    type: "button",
+                    onClick: () => p(a.id),
+                    className: "nls-icon-btn",
+                    title: "Duplicate",
+                    "aria-label": "Duplicate",
+                    children: e.jsx($s, {
+                      size: 16,
+                      "aria-hidden": "true",
+                    }),
+                  }),
+                  e.jsx("button", {
+                    type: "button",
+                    onClick: () => u(a.id),
+                    className: "nls-icon-btn nls-icon-btn--danger",
+                    title: "Delete",
+                    "aria-label": "Delete",
+                    children: e.jsx(yt, {
+                      size: 16,
+                      "aria-hidden": "true",
+                    }),
+                  }),
+                  e.jsx("button", {
+                    type: "button",
+                    onClick: () => nlsExportFormConfig(a),
+                    className: "nls-icon-btn",
+                    title: "Export form",
+                    "aria-label": "Export form",
+                    children: e.jsx(Ol, {
+                      size: 16,
+                      "aria-hidden": "true",
+                    }),
+                  }),
+                  e.jsx("button", {
+                    type: "button",
+                    onClick: () =>
+                      nlsPickFormImport((w) =>
+                        nlsOnImport
+                          ? nlsOnImport(a.id, w)
+                          : h(
+                              a.id,
+                              normalizeForm({
+                                ...w,
+                                id: a.id,
+                              }),
+                            ),
+                      ),
+                    className: "nls-icon-btn",
+                    title: "Import form",
+                    "aria-label": "Import form",
+                    children: e.jsx(Vl, {
+                      size: 16,
+                      "aria-hidden": "true",
+                    }),
+                  }),
+                  e.jsx("button", {
+                    type: "button",
+                    onClick: d,
+                    className: "nls-icon-btn nls-fb-chevron",
+                    title: o ? "Collapse" : "Expand",
+                    "aria-label": o ? "Collapse" : "Expand",
+                    "aria-expanded": !!o,
+                    children: e.jsx(Qs, {
+                      size: 16,
+                      className: o ? "is-open" : "",
+                      "aria-hidden": "true",
+                    }),
+                  }),
+                ],
+              }),
+            ],
+          }),
+          o &&
+            e.jsxs("div", {
+              className: "nls-fb-body nls-stack nls-stack--tight",
+              children: [
+                e.jsxs("div", {
+                  className: "nls-fb-name-row nls-grid-2",
+                  children: [
+                    e.jsxs("label", {
+                      className: "nls-field",
+                      children: [
+                        e.jsx("span", {
+                          className: "nls-field__label",
+                          children: "Form Name",
+                        }),
+                        e.jsx("input", {
+                          type: "text",
+                          value: a.name,
+                          onChange: (w) =>
+                            h(a.id, {
+                              name: w.target.value,
+                            }),
+                        }),
+                      ],
+                    }),
+                    e.jsxs("div", {
+                      className: "nls-field",
+                      children: [
+                        e.jsx("span", {
+                          className: "nls-field__label",
+                          children: "Shortcode",
+                        }),
+                        e.jsxs("div", {
+                          className: "nls-row nls-fb-shortcode",
+                          children: [
+                            e.jsxs("code", {
+                              className: "nls-code",
+                              children: ['[nexulesuite_form id="', a.id, '"]'],
+                            }),
+                            e.jsx("button", {
+                              type: "button",
+                              onClick: () => copyShortcode(a.id, S),
+                              className: "nls-btn nls-btn--secondary nls-btn--sm",
+                              "aria-live": "polite",
                               children: f === a.id ? "Copied!" : "Copy",
                             }),
                           ],
@@ -7460,19 +6998,18 @@ function FormCard({
                   ],
                 }),
                 e.jsx("div", {
-                  className: "flex border-b border-slate-200",
+                  className: "nls-tabs",
+                  role: "tablist",
+                  "aria-label": "Form sections",
                   children: ["fields", "styling", "customization", "confirmations", "advanced"].map((w) =>
                     e.jsx(
                       "button",
                       {
                         type: "button",
+                        role: "tab",
+                        "aria-selected": i === w,
                         onClick: () => x(w),
-                        className: [
-                          "-mb-px border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors",
-                          i === w
-                            ? "border-violet-600 text-violet-700"
-                            : "border-transparent text-slate-400 hover:text-slate-700",
-                        ].join(" "),
+                        className: ["nls-tab", i === w ? "is-active" : ""].join(" "),
                         children: w.charAt(0).toUpperCase() + w.slice(1),
                       },
                       w,
@@ -7490,10 +7027,10 @@ function FormCard({
                   }),
                 i === "styling" &&
                   e.jsxs("div", {
-                    className: "space-y-4",
+                    className: "nls-stack nls-stack--tight",
                     children: [
                       e.jsx("div", {
-                        className: "grid grid-cols-1 gap-4 sm:grid-cols-2",
+                        className: "nls-grid-2",
                         children: [
                           ["Background Color", "backgroundColor"],
                           ["Text Color", "textColor"],
@@ -7503,13 +7040,14 @@ function FormCard({
                           e.jsxs(
                             "div",
                             {
+                              className: "nls-field",
                               children: [
-                                e.jsx("label", {
-                                  className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                                e.jsx("span", {
+                                  className: "nls-field__label",
                                   children: w,
                                 }),
                                 e.jsxs("div", {
-                                  className: "flex items-center gap-2",
+                                  className: "nls-input-group nls-fb-color-row",
                                   children: [
                                     e.jsx("input", {
                                       type: "color",
@@ -7521,7 +7059,7 @@ function FormCard({
                                             [N]: H.target.value,
                                           },
                                         }),
-                                      className: "h-10 w-10 cursor-pointer rounded border border-slate-200",
+                                      "aria-label": w,
                                     }),
                                     e.jsx("input", {
                                       type: "text",
@@ -7533,8 +7071,8 @@ function FormCard({
                                             [N]: H.target.value,
                                           },
                                         }),
-                                      className:
-                                        "h-10 flex-1 rounded-lg border border-slate-200 bg-white px-3 font-mono text-sm outline-none",
+                                      className: "nls-mono",
+                                      "aria-label": w + " hex value",
                                     }),
                                   ],
                                 }),
@@ -7544,10 +7082,11 @@ function FormCard({
                           ),
                         ),
                       }),
-                      e.jsxs("div", {
+                      e.jsxs("label", {
+                        className: "nls-field nls-fb-maxw",
                         children: [
-                          e.jsx("label", {
-                            className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                          e.jsx("span", {
+                            className: "nls-field__label",
                             children: "Submit Button Text",
                           }),
                           e.jsx("input", {
@@ -7557,8 +7096,6 @@ function FormCard({
                               h(a.id, {
                                 submitBtnText: w.target.value,
                               }),
-                            className:
-                              "h-10 w-full max-w-xs rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                           }),
                         ],
                       }),
@@ -7566,116 +7103,106 @@ function FormCard({
                   }),
                 i === "customization" &&
                   e.jsxs("div", {
-                    className: "space-y-4 nexulesuite_cust nexulesuite_cust--tw",
+                    className: "nls-stack nls-stack--tight nexulesuite_cust",
                     children: [
-                      e.jsxs("div", {
-                        className: "nexulesuite_cust-card nexulesuite_cust-card--wide",
-                        children: [
-                          e.jsxs("div", {
-                            className: "nexulesuite_cust-card__head",
-                            children: [
-                              e.jsxs("div", {
-                                children: [
-                                  e.jsx("h4", {
-                                    className: "nexulesuite_cust-card__title",
-                                    children: "Appearance presets",
-                                  }),
-                                  e.jsx("p", {
-                                    className: "nexulesuite_cust-card__sub",
-                                    children: "Forminator-style design & theme for the live form",
-                                  }),
-                                ],
-                              }),
-                            ],
-                          }),
-                          e.jsxs("div", {
-                            className: "nexulesuite_cust-row",
-                            children: [
-                              e.jsxs("div", {
-                                className: "nexulesuite_cust-field",
-                                children: [
-                                  e.jsx("span", {
-                                    className: "lbl",
-                                    children: "Design",
-                                  }),
-                                  e.jsx("select", {
-                                    className: "inp",
-                                    value: M.forminatorDesign || "default",
-                                    onChange: (H) =>
-                                      nlsCommitDesign(h, a, M, {
-                                        forminatorDesign: H.target.value,
-                                      }),
-                                    children: [
-                                      e.jsx("option", {
-                                        value: "default",
-                                        children: "Default",
-                                      }),
-                                      e.jsx("option", {
-                                        value: "flat",
-                                        children: "Flat",
-                                      }),
-                                      e.jsx("option", {
-                                        value: "bold",
-                                        children: "Bold",
-                                      }),
-                                      e.jsx("option", {
-                                        value: "material",
-                                        children: "Material",
-                                      }),
-                                    ],
-                                  }),
-                                ],
-                              }),
-                              e.jsxs("div", {
-                                className: "nexulesuite_cust-field",
-                                children: [
-                                  e.jsx("span", {
-                                    className: "lbl",
-                                    children: "Theme",
-                                  }),
-                                  e.jsx("select", {
-                                    className: "inp",
-                                    value: M.forminatorTheme || "default",
-                                    onChange: (H) =>
-                                      nlsCommitDesign(h, a, M, {
-                                        forminatorTheme: H.target.value,
-                                      }),
-                                    children: [
-                                      e.jsx("option", {
-                                        value: "default",
-                                        children: "Default",
-                                      }),
-                                      e.jsx("option", {
-                                        value: "light",
-                                        children: "Light",
-                                      }),
-                                      e.jsx("option", {
-                                        value: "dark",
-                                        children: "Dark",
-                                      }),
-                                    ],
-                                  }),
-                                ],
-                              }),
-                            ],
-                          }),
-                        ],
+                      e.jsx("div", {
+                        className: "nls-card nls-card--soft",
+                        children: e.jsxs("div", {
+                          className: "nls-card__body nls-stack nls-stack--tight",
+                          children: [
+                            e.jsxs("div", {
+                              children: [
+                                e.jsx("h4", {
+                                  className: "nls-fb-h4",
+                                  children: "Appearance presets",
+                                }),
+                                e.jsx("p", {
+                                  className: "nls-field__hint",
+                                  children: "Forminator-style design & theme for the live form",
+                                }),
+                              ],
+                            }),
+                            e.jsxs("div", {
+                              className: "nls-grid-2",
+                              children: [
+                                e.jsxs("label", {
+                                  className: "nls-field",
+                                  children: [
+                                    e.jsx("span", {
+                                      className: "nls-field__label",
+                                      children: "Design",
+                                    }),
+                                    e.jsx("select", {
+                                      value: M.forminatorDesign || "default",
+                                      onChange: (H) =>
+                                        nlsCommitDesign(h, a, M, {
+                                          forminatorDesign: H.target.value,
+                                        }),
+                                      children: [
+                                        e.jsx("option", {
+                                          value: "default",
+                                          children: "Default",
+                                        }),
+                                        e.jsx("option", {
+                                          value: "flat",
+                                          children: "Flat",
+                                        }),
+                                        e.jsx("option", {
+                                          value: "bold",
+                                          children: "Bold",
+                                        }),
+                                        e.jsx("option", {
+                                          value: "material",
+                                          children: "Material",
+                                        }),
+                                      ],
+                                    }),
+                                  ],
+                                }),
+                                e.jsxs("label", {
+                                  className: "nls-field",
+                                  children: [
+                                    e.jsx("span", {
+                                      className: "nls-field__label",
+                                      children: "Theme",
+                                    }),
+                                    e.jsx("select", {
+                                      value: M.forminatorTheme || "default",
+                                      onChange: (H) =>
+                                        nlsCommitDesign(h, a, M, {
+                                          forminatorTheme: H.target.value,
+                                        }),
+                                      children: [
+                                        e.jsx("option", {
+                                          value: "default",
+                                          children: "Default",
+                                        }),
+                                        e.jsx("option", {
+                                          value: "light",
+                                          children: "Light",
+                                        }),
+                                        e.jsx("option", {
+                                          value: "dark",
+                                          children: "Dark",
+                                        }),
+                                      ],
+                                    }),
+                                  ],
+                                }),
+                              ],
+                            }),
+                          ],
+                        }),
                       }),
                       e.jsx("p", {
-                        className: "nexulesuite_cust__hint text-xs text-slate-500",
-                        style: {
-                          marginBottom: "6px",
-                        },
+                        className: "nls-field__hint",
                         children:
                           "Advanced global design: typography, spacing, responsive sizes, borders, states, and colors. Use Desktop / Tablet / Mobile for device-specific sizes and gaps.",
                       }),
-                      e.jsxs("div", {
-                        style: {
-                          display: "flex",
-                          gap: "6px",
-                          marginBottom: "6px",
-                          flexWrap: "wrap",
-                        },
+                      e.jsx("div", {
+                        className: "nls-seg nls-fb-devices",
+                        role: "group",
+                        "aria-label": "Device",
                         children: [
                           ["desktop", "Desktop"],
                           ["tablet", "Tablet"],
@@ -7685,11 +7212,8 @@ function FormCard({
                             "button",
                             {
                               type: "button",
-                              className: nlsDevice === k ? "button button-primary" : "button",
-                              style: {
-                                fontSize: "12px",
-                                padding: "4px 10px",
-                              },
+                              className: "nls-seg__btn" + (nlsDevice === k ? " is-active" : ""),
+                              "aria-pressed": nlsDevice === k,
                               onClick: () => nlsSetDevice(k),
                               children: l,
                             },
@@ -7698,14 +7222,11 @@ function FormCard({
                         ),
                       }),
                       e.jsx("h4", {
-                        className: "text-sm font-semibold text-slate-800 mt-3",
+                        className: "nls-fb-h4",
                         children: "1. Color palette",
                       }),
                       e.jsx("div", {
-                        className: "grid grid-cols-2 gap-3",
-                        style: {
-                          marginBottom: "6px",
-                        },
+                        className: "nls-fb-color-grid",
                         children: [
                           e.jsx(
                             FormColorField,
@@ -7734,18 +7255,17 @@ function FormCard({
                         ],
                       }),
                       e.jsx("h4", {
-                        className: "text-sm font-semibold text-slate-800 mt-3",
+                        className: "nls-fb-h4",
                         children: "2. Field labels",
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Font family"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["labelFontFamily"] || "inherit",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -7784,10 +7304,10 @@ function FormCard({
                         const base = "labelFontSize";
                         const val = nlsDevNum(M, base, nlsDevice, 13);
                         return e.jsxs("div", {
+                          className: "nls-field",
                           children: [
                             e.jsxs("label", {
-                              className:
-                                "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                              className: "nls-field__label nls-fb-range-label",
                               children: [
                                 "Font size",
                                 e.jsxs("span", {
@@ -7799,7 +7319,6 @@ function FormCard({
                               min: 10,
                               max: 28,
                               value: val,
-                              className: "w-full",
                               onChange: (H) => {
                                 const v = Number(H.target.value);
                                 if (nlsDevice === "desktop") {
@@ -7817,14 +7336,13 @@ function FormCard({
                         });
                       })(),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Font weight"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["labelFontWeight"] || "400",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -7852,15 +7370,14 @@ function FormCard({
                         ],
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Line height"],
                           }),
                           e.jsx("input", {
                             type: "text",
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["labelLineHeight"] ?? "",
                             placeholder: "1.4",
                             onChange: (H) =>
@@ -7871,10 +7388,7 @@ function FormCard({
                         ],
                       }),
                       e.jsx("div", {
-                        className: "grid grid-cols-2 gap-3",
-                        style: {
-                          marginBottom: "6px",
-                        },
+                        className: "nls-fb-color-grid",
                         children: [
                           e.jsx(
                             FormColorField,
@@ -7891,18 +7405,17 @@ function FormCard({
                         ],
                       }),
                       e.jsx("h4", {
-                        className: "text-sm font-semibold text-slate-800 mt-3",
+                        className: "nls-fb-h4",
                         children: "3. Placeholder text",
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Font family"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["placeholderFontFamily"] || "inherit",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -7941,10 +7454,10 @@ function FormCard({
                         const base = "placeholderFontSize";
                         const val = nlsDevNum(M, base, nlsDevice, 14);
                         return e.jsxs("div", {
+                          className: "nls-field",
                           children: [
                             e.jsxs("label", {
-                              className:
-                                "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                              className: "nls-field__label nls-fb-range-label",
                               children: [
                                 "Font size",
                                 e.jsxs("span", {
@@ -7956,7 +7469,6 @@ function FormCard({
                               min: 10,
                               max: 28,
                               value: val,
-                              className: "w-full",
                               onChange: (H) => {
                                 const v = Number(H.target.value);
                                 if (nlsDevice === "desktop") {
@@ -7974,14 +7486,13 @@ function FormCard({
                         });
                       })(),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Font weight"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["placeholderFontWeight"] || "400",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -8009,15 +7520,14 @@ function FormCard({
                         ],
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Line height"],
                           }),
                           e.jsx("input", {
                             type: "text",
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["placeholderLineHeight"] ?? "",
                             placeholder: "1.4",
                             onChange: (H) =>
@@ -8028,10 +7538,7 @@ function FormCard({
                         ],
                       }),
                       e.jsx("div", {
-                        className: "grid grid-cols-2 gap-3",
-                        style: {
-                          marginBottom: "6px",
-                        },
+                        className: "nls-fb-color-grid",
                         children: [
                           e.jsx(
                             FormColorField,
@@ -8048,18 +7555,17 @@ function FormCard({
                         ],
                       }),
                       e.jsx("h4", {
-                        className: "text-sm font-semibold text-slate-800 mt-3",
+                        className: "nls-fb-h4",
                         children: "4. Input text",
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Font family"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["inputFontFamily"] || "inherit",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -8098,10 +7604,10 @@ function FormCard({
                         const base = "inputFontSize";
                         const val = nlsDevNum(M, base, nlsDevice, 14);
                         return e.jsxs("div", {
+                          className: "nls-field",
                           children: [
                             e.jsxs("label", {
-                              className:
-                                "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                              className: "nls-field__label nls-fb-range-label",
                               children: [
                                 "Font size",
                                 e.jsxs("span", {
@@ -8113,7 +7619,6 @@ function FormCard({
                               min: 10,
                               max: 28,
                               value: val,
-                              className: "w-full",
                               onChange: (H) => {
                                 const v = Number(H.target.value);
                                 if (nlsDevice === "desktop") {
@@ -8131,14 +7636,13 @@ function FormCard({
                         });
                       })(),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Font weight"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["inputFontWeight"] || "400",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -8166,15 +7670,14 @@ function FormCard({
                         ],
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Line height"],
                           }),
                           e.jsx("input", {
                             type: "text",
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["inputLineHeight"] ?? "",
                             placeholder: "1.4",
                             onChange: (H) =>
@@ -8185,10 +7688,7 @@ function FormCard({
                         ],
                       }),
                       e.jsx("div", {
-                        className: "grid grid-cols-2 gap-3",
-                        style: {
-                          marginBottom: "6px",
-                        },
+                        className: "nls-fb-color-grid",
                         children: [
                           e.jsx(
                             FormColorField,
@@ -8205,18 +7705,17 @@ function FormCard({
                         ],
                       }),
                       e.jsx("h4", {
-                        className: "text-sm font-semibold text-slate-800 mt-3",
+                        className: "nls-fb-h4",
                         children: "5. Description / sub-label",
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Font family"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["descFontFamily"] || "inherit",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -8255,10 +7754,10 @@ function FormCard({
                         const base = "descFontSize";
                         const val = nlsDevNum(M, base, nlsDevice, 12);
                         return e.jsxs("div", {
+                          className: "nls-field",
                           children: [
                             e.jsxs("label", {
-                              className:
-                                "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                              className: "nls-field__label nls-fb-range-label",
                               children: [
                                 "Font size",
                                 e.jsxs("span", {
@@ -8270,7 +7769,6 @@ function FormCard({
                               min: 10,
                               max: 28,
                               value: val,
-                              className: "w-full",
                               onChange: (H) => {
                                 const v = Number(H.target.value);
                                 if (nlsDevice === "desktop") {
@@ -8288,14 +7786,13 @@ function FormCard({
                         });
                       })(),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Font weight"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["descFontWeight"] || "400",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -8323,15 +7820,14 @@ function FormCard({
                         ],
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Line height"],
                           }),
                           e.jsx("input", {
                             type: "text",
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["descLineHeight"] ?? "",
                             placeholder: "1.4",
                             onChange: (H) =>
@@ -8342,10 +7838,7 @@ function FormCard({
                         ],
                       }),
                       e.jsx("div", {
-                        className: "grid grid-cols-2 gap-3",
-                        style: {
-                          marginBottom: "6px",
-                        },
+                        className: "nls-fb-color-grid",
                         children: [
                           e.jsx(
                             FormColorField,
@@ -8362,18 +7855,17 @@ function FormCard({
                         ],
                       }),
                       e.jsx("h4", {
-                        className: "text-sm font-semibold text-slate-800 mt-3",
+                        className: "nls-fb-h4",
                         children: "6. Error messages",
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Font family"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["errorFontFamily"] || "inherit",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -8412,10 +7904,10 @@ function FormCard({
                         const base = "errorFontSize";
                         const val = nlsDevNum(M, base, nlsDevice, 12);
                         return e.jsxs("div", {
+                          className: "nls-field",
                           children: [
                             e.jsxs("label", {
-                              className:
-                                "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                              className: "nls-field__label nls-fb-range-label",
                               children: [
                                 "Font size",
                                 e.jsxs("span", {
@@ -8427,7 +7919,6 @@ function FormCard({
                               min: 10,
                               max: 24,
                               value: val,
-                              className: "w-full",
                               onChange: (H) => {
                                 const v = Number(H.target.value);
                                 if (nlsDevice === "desktop") {
@@ -8445,14 +7936,13 @@ function FormCard({
                         });
                       })(),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Font weight"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["errorFontWeight"] || "400",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -8480,15 +7970,14 @@ function FormCard({
                         ],
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Line height"],
                           }),
                           e.jsx("input", {
                             type: "text",
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["errorLineHeight"] ?? "",
                             placeholder: "1.4",
                             onChange: (H) =>
@@ -8499,10 +7988,7 @@ function FormCard({
                         ],
                       }),
                       e.jsx("div", {
-                        className: "grid grid-cols-2 gap-3",
-                        style: {
-                          marginBottom: "6px",
-                        },
+                        className: "nls-fb-color-grid",
                         children: [
                           e.jsx(
                             FormColorField,
@@ -8519,18 +8005,17 @@ function FormCard({
                         ],
                       }),
                       e.jsx("h4", {
-                        className: "text-sm font-semibold text-slate-800 mt-3",
+                        className: "nls-fb-h4",
                         children: "7. Success messages",
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Font family"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["successFontFamily"] || "inherit",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -8569,10 +8054,10 @@ function FormCard({
                         const base = "successFontSize";
                         const val = nlsDevNum(M, base, nlsDevice, 14);
                         return e.jsxs("div", {
+                          className: "nls-field",
                           children: [
                             e.jsxs("label", {
-                              className:
-                                "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                              className: "nls-field__label nls-fb-range-label",
                               children: [
                                 "Font size",
                                 e.jsxs("span", {
@@ -8584,7 +8069,6 @@ function FormCard({
                               min: 10,
                               max: 28,
                               value: val,
-                              className: "w-full",
                               onChange: (H) => {
                                 const v = Number(H.target.value);
                                 if (nlsDevice === "desktop") {
@@ -8602,14 +8086,13 @@ function FormCard({
                         });
                       })(),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Font weight"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["successFontWeight"] || "400",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -8637,15 +8120,14 @@ function FormCard({
                         ],
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Line height"],
                           }),
                           e.jsx("input", {
                             type: "text",
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["successLineHeight"] ?? "",
                             placeholder: "1.45",
                             onChange: (H) =>
@@ -8656,10 +8138,7 @@ function FormCard({
                         ],
                       }),
                       e.jsx("div", {
-                        className: "grid grid-cols-2 gap-3",
-                        style: {
-                          marginBottom: "6px",
-                        },
+                        className: "nls-fb-color-grid",
                         children: [
                           e.jsx(
                             FormColorField,
@@ -8676,17 +8155,17 @@ function FormCard({
                         ],
                       }),
                       e.jsx("h4", {
-                        className: "text-sm font-semibold text-slate-800 mt-3",
+                        className: "nls-fb-h4",
                         children: "9. Borders & shadows",
                       }),
                       (() => {
                         const base = "fieldBorderRadius";
                         const val = nlsDevNum(M, base, nlsDevice, 6);
                         return e.jsxs("div", {
+                          className: "nls-field",
                           children: [
                             e.jsxs("label", {
-                              className:
-                                "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                              className: "nls-field__label nls-fb-range-label",
                               children: [
                                 "Border radius",
                                 e.jsxs("span", {
@@ -8699,7 +8178,6 @@ function FormCard({
                               max: 100,
                               step: 1,
                               value: val,
-                              className: "w-full",
                               onChange: (H) => {
                                 const v = Number(H.target.value);
                                 if (nlsDevice === "desktop") {
@@ -8720,10 +8198,10 @@ function FormCard({
                         const base = "fieldBorderWidth";
                         const val = nlsDevNum(M, base, nlsDevice, 1);
                         return e.jsxs("div", {
+                          className: "nls-field",
                           children: [
                             e.jsxs("label", {
-                              className:
-                                "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                              className: "nls-field__label nls-fb-range-label",
                               children: [
                                 "Border width",
                                 e.jsxs("span", {
@@ -8736,7 +8214,6 @@ function FormCard({
                               max: 100,
                               step: 1,
                               value: val,
-                              className: "w-full",
                               onChange: (H) => {
                                 const v = Number(H.target.value);
                                 if (nlsDevice === "desktop") {
@@ -8754,14 +8231,13 @@ function FormCard({
                         });
                       })(),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Border style"],
                           }),
                           e.jsx("select", {
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["fieldBorderStyle"] || "solid",
                             onChange: (H) =>
                               nlsCommitDesign(h, a, M, {
@@ -8793,10 +8269,7 @@ function FormCard({
                         ],
                       }),
                       e.jsx("div", {
-                        className: "grid grid-cols-2 gap-3",
-                        style: {
-                          marginBottom: "6px",
-                        },
+                        className: "nls-fb-color-grid",
                         children: [
                           e.jsx(
                             FormColorField,
@@ -8813,15 +8286,14 @@ function FormCard({
                         ],
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Input box shadow"],
                           }),
                           e.jsx("input", {
                             type: "text",
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["fieldShadow"] ?? "",
                             placeholder: "none or 0 2px 8px rgba(0,0,0,.08)",
                             onChange: (H) =>
@@ -8832,15 +8304,14 @@ function FormCard({
                         ],
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Form container shadow"],
                           }),
                           e.jsx("input", {
                             type: "text",
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["formShadow"] ?? "",
                             placeholder: "0 2px 8px rgba(15,23,42,.07)",
                             onChange: (H) =>
@@ -8851,14 +8322,11 @@ function FormCard({
                         ],
                       }),
                       e.jsx("h4", {
-                        className: "text-sm font-semibold text-slate-800 mt-3",
+                        className: "nls-fb-h4",
                         children: "10. Interactive states",
                       }),
                       e.jsx("div", {
-                        className: "grid grid-cols-2 gap-3",
-                        style: {
-                          marginBottom: "6px",
-                        },
+                        className: "nls-fb-color-grid",
                         children: [
                           e.jsx(
                             FormColorField,
@@ -8887,15 +8355,14 @@ function FormCard({
                         ],
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Focus shadow"],
                           }),
                           e.jsx("input", {
                             type: "text",
-                            className: "w-full rounded border border-slate-200 px-2 py-1.5 text-sm",
                             value: M["focusShadow"] ?? "",
                             placeholder: "0 0 0 3px rgba(124,58,237,.25)",
                             onChange: (H) =>
@@ -8906,22 +8373,18 @@ function FormCard({
                         ],
                       }),
                       e.jsx("h4", {
-                        className: "text-sm font-semibold text-slate-800 mt-3",
+                        className: "nls-fb-h4",
                         children: "11. Responsive",
                       }),
                       e.jsxs("div", {
+                        className: "nls-field",
                         children: [
                           e.jsxs("label", {
-                            className:
-                              "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                            className: "nls-field__label nls-fb-range-label",
                             children: ["Auto-stack columns on small screens"],
                           }),
                           e.jsx("label", {
-                            style: {
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                            },
+                            className: "nls-check",
                             children: [
                               e.jsx("input", {
                                 type: "checkbox",
@@ -8940,10 +8403,10 @@ function FormCard({
                         const base = "stackBreakpoint";
                         const val = nlsDevNum(M, base, nlsDevice, 640);
                         return e.jsxs("div", {
+                          className: "nls-field",
                           children: [
                             e.jsxs("label", {
-                              className:
-                                "mb-1.5 flex justify-between items-center gap-2 text-sm font-semibold text-slate-700",
+                              className: "nls-field__label nls-fb-range-label",
                               children: [
                                 "Stack breakpoint",
                                 e.jsxs("span", {
@@ -8956,7 +8419,6 @@ function FormCard({
                               max: 1200,
                               step: 1,
                               value: val,
-                              className: "w-full",
                               onChange: (H) => {
                                 const v = Number(H.target.value);
                                 if (nlsDevice === "desktop") {
@@ -8977,7 +8439,7 @@ function FormCard({
                   }),
                 i === "confirmations" &&
                   e.jsx("div", {
-                    className: "nexulesuite_fb-tab-panel nexulesuite_fb-advanced",
+                    className: "nls-fb-panel",
                     children: e.jsx(FormBehaviorSettings, {
                       form: a,
                       onUpdate: (w) => h(a.id, w),
@@ -8985,16 +8447,15 @@ function FormCard({
                   }),
                 i === "advanced" &&
                   e.jsxs("div", {
-                    className: "space-y-4",
+                    className: "nls-stack nls-stack--tight",
                     children: [
                       e.jsx("div", {
-                        className: "rounded-lg border border-slate-200 bg-slate-50/90 px-3 py-3",
+                        className: "nls-toggle-card",
                         children: e.jsxs("label", {
-                          className: "flex cursor-pointer items-start gap-3",
+                          className: "nls-check",
                           children: [
                             e.jsx("input", {
                               type: "checkbox",
-                              className: "mt-1 h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500",
                               checked: a.published !== !1,
                               onChange: (w) =>
                                 h(a.id, {
@@ -9005,11 +8466,11 @@ function FormCard({
                               className: "min-w-0",
                               children: [
                                 e.jsx("span", {
-                                  className: "block text-sm font-semibold text-slate-800",
+                                  className: "nls-toggle-card__title",
                                   children: "Show form on website",
                                 }),
                                 e.jsx("span", {
-                                  className: "mt-0.5 block text-xs text-slate-500",
+                                  className: "nls-toggle-card__hint",
                                   children:
                                     "Turn off to hide everywhere on the front (shortcodes, popups, widgets). The form stays in the builder for editing.",
                                 }),
@@ -9018,10 +8479,11 @@ function FormCard({
                           ],
                         }),
                       }),
-                      e.jsxs("div", {
+                      e.jsxs("label", {
+                        className: "nls-field",
                         children: [
-                          e.jsx("label", {
-                            className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                          e.jsx("span", {
+                            className: "nls-field__label",
                             children: "Submission notification email(s)",
                           }),
                           e.jsx("input", {
@@ -9032,20 +8494,18 @@ function FormCard({
                                 notificationEmail: w.target.value,
                               }),
                             placeholder: "team@example.com, other@example.com",
-                            className:
-                              "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                           }),
-                          e.jsx("p", {
-                            className: "mt-1.5 text-xs text-slate-500",
+                          e.jsx("span", {
+                            className: "nls-field__hint",
                             children: "Comma-separated. Submissions go here. If empty, the site admin email is used.",
                           }),
                         ],
                       }),
-                      e.jsxs("div", {
-                        className: "space-y-1.5",
+                      e.jsxs("label", {
+                        className: "nls-field",
                         children: [
-                          e.jsx("label", {
-                            className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                          e.jsx("span", {
+                            className: "nls-field__label",
                             children: "CRM / Webhook URL (this form)",
                           }),
                           e.jsx("input", {
@@ -9056,20 +8516,19 @@ function FormCard({
                                 crmWebhookUrl: w.target.value,
                               }),
                             placeholder: "https://hooks.zapier.com/...",
-                            className:
-                              "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none ring-violet-200 focus:ring-2",
                           }),
-                          e.jsx("p", {
-                            className: "mt-1.5 text-xs text-slate-500",
+                          e.jsx("span", {
+                            className: "nls-field__hint",
                             children:
                               "Optional. Per-form JSON webhook; set a global URL in Settings for all forms too.",
                           }),
                         ],
                       }),
-                      e.jsxs("div", {
+                      e.jsxs("label", {
+                        className: "nls-field",
                         children: [
-                          e.jsx("label", {
-                            className: "mb-1.5 block text-sm font-semibold text-slate-700",
+                          e.jsx("span", {
+                            className: "nls-field__label",
                             children: "Terms & Conditions Text",
                           }),
                           e.jsx("textarea", {
@@ -9080,8 +8539,7 @@ function FormCard({
                               }),
                             rows: 2,
                             placeholder: "I agree to the terms and conditions",
-                            className:
-                              "w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none ring-violet-200 focus:ring-2",
+                            className: "nls-fb-ta-sm",
                           }),
                         ],
                       }),
@@ -9175,26 +8633,30 @@ export function FormBuilderPage() {
     icon: e.jsx(im, {
       size: 18,
     }),
-    headerRight: e.jsx("div", {
-      className: "relative",
-      children: e.jsx("input", {
-        value: o,
-        onChange: (_) => i(_.target.value),
-        placeholder: "Search...",
-        className:
-          "h-9 w-44 rounded-xl border border-slate-200 bg-white px-3 text-xs outline-none ring-violet-200 focus:ring-2 sm:w-56 md:w-72 md:text-sm",
-      }),
+    headerRight: e.jsxs("div", {
+      className: "nls-input-icon nls-fb-search",
+      children: [
+        e.jsx(Px, {
+          "aria-hidden": "true",
+        }),
+        e.jsx("input", {
+          value: o,
+          onChange: (_) => i(_.target.value),
+          placeholder: "Search...",
+          "aria-label": "Search forms",
+        }),
+      ],
     }),
     footer: e.jsx(StickyFooter, {
       actions: e.jsxs("button", {
         type: "button",
         disabled: P,
         onClick: () => pe(),
-        className:
-          "flex items-center gap-2 rounded-xl bg-[#2563EB] px-8 py-3 text-xs font-bold text-white shadow-lg transition-all hover:bg-blue-600 active:scale-95 disabled:opacity-60",
+        className: "nls-btn nls-btn--primary",
         children: [
           e.jsx(bn, {
-            size: 18,
+            size: 16,
+            "aria-hidden": "true",
           }),
           P ? "Saving…" : "Save",
         ],
@@ -9212,145 +8674,163 @@ export function FormBuilderPage() {
         onDismiss: () => F(""),
       }),
       e.jsxs("div", {
-        className: "mt-4 space-y-4 md:space-y-6",
+        className: "nls-stack nls-fb-page",
         children: [
-          e.jsx("div", {
-            children: e.jsxs("div", {
-              className: "rounded-2xl border border-slate-200 bg-white p-4 shadow-sm",
-              children: [
-                W &&
-                  e.jsx("div", {
-                    className:
-                      "mb-3 rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3 text-xs font-semibold text-slate-500",
-                    children: "Loading saved forms…",
-                  }),
-                e.jsx("ul", {
-                  className: "space-y-3",
-                  children: O.map((_) =>
-                    e.jsx(
-                      FormCard,
-                      {
-                        form: {
-                          ..._,
-                          onSelectionChange: w,
-                        },
-                        expanded: p === _.id,
-                        activeTab: S,
-                        onToggle: () => h((X) => (X === _.id ? null : _.id)),
-                        onPreview: (X) => H(X),
-                        onDelete: (X) => {
-                          (u((L) => L.filter((A) => A.id !== X)),
-                            h((L) => (L === X ? null : L)),
-                            w(null),
-                            H((L) => (L === X ? null : L)));
-                        },
-                        onDuplicate: (X) => {
-                          const L = d.find((k) => k.id === X);
-                          if (!L) return;
-                          const A = Jd(d);
-                          (u((k) => [
-                            ...k,
-                            {
-                              ...L,
-                              id: A,
-                              name: `${L.name} (Copy)`,
-                            },
-                          ]),
-                            h(A),
-                            w(null));
-                        },
-                        onUpdate: (X, L) =>
-                          u((A) =>
-                            A.map((k) =>
-                              k.id === X
-                                ? {
-                                    ...k,
-                                    ...L,
-                                  }
-                                : k,
-                            ),
-                          ),
-                        onImportForm: (X, L) => {
-                          const A = normalizeForm({
-                              ...L,
-                              id: X,
-                            }),
-                            re = d.map((Y) => (Y.id === X ? A : Y));
-                          (u(re), h(X), w(null), pe(re));
-                        },
-                        onApplyToAllForms: (X) => {
-                          const re = d.map((Y) => nlsApplyStylingToForm(Y, X));
-                          u(re);
-                          pe(re);
-                        },
-                        onPublishPersist: me,
-                        onTabChange: y,
-                        copiedId: x,
-                        onCopiedIdChange: f,
-                      },
-                      _.id,
-                    ),
-                  ),
+          e.jsxs("div", {
+            className: "nls-stack nls-stack--tight",
+            children: [
+              W &&
+                e.jsxs("div", {
+                  className: "nls-loading",
+                  role: "status",
+                  children: [
+                    e.jsx("span", {
+                      className: "nls-spinner",
+                      "aria-hidden": "true",
+                    }),
+                    "Loading saved forms…",
+                  ],
                 }),
-                O.length === 0 &&
-                  e.jsxs("div", {
-                    className: "rounded-xl border border-dashed border-slate-200 bg-slate-50/40 p-8 text-center",
-                    children: [
-                      e.jsx("p", {
-                        className: "text-sm font-semibold text-slate-700",
-                        children: "No forms yet",
+              e.jsx("ul", {
+                className: "nls-stack nls-stack--tight nls-fb-list",
+                children: O.map((_) =>
+                  e.jsx(
+                    FormCard,
+                    {
+                      form: {
+                        ..._,
+                        onSelectionChange: w,
+                      },
+                      expanded: p === _.id,
+                      activeTab: S,
+                      onToggle: () => h((X) => (X === _.id ? null : _.id)),
+                      onPreview: (X) => H(X),
+                      onDelete: (X) => {
+                        (u((L) => L.filter((A) => A.id !== X)),
+                          h((L) => (L === X ? null : L)),
+                          w(null),
+                          H((L) => (L === X ? null : L)));
+                      },
+                      onDuplicate: (X) => {
+                        const L = d.find((k) => k.id === X);
+                        if (!L) return;
+                        const A = Jd(d);
+                        (u((k) => [
+                          ...k,
+                          {
+                            ...L,
+                            id: A,
+                            name: `${L.name} (Copy)`,
+                          },
+                        ]),
+                          h(A),
+                          w(null));
+                      },
+                      onUpdate: (X, L) =>
+                        u((A) =>
+                          A.map((k) =>
+                            k.id === X
+                              ? {
+                                  ...k,
+                                  ...L,
+                                }
+                              : k,
+                          ),
+                        ),
+                      onImportForm: (X, L) => {
+                        const A = normalizeForm({
+                            ...L,
+                            id: X,
+                          }),
+                          re = d.map((Y) => (Y.id === X ? A : Y));
+                        (u(re), h(X), w(null), pe(re));
+                      },
+                      onApplyToAllForms: (X) => {
+                        const re = d.map((Y) => nlsApplyStylingToForm(Y, X));
+                        u(re);
+                        pe(re);
+                      },
+                      onPublishPersist: me,
+                      onTabChange: y,
+                      copiedId: x,
+                      onCopiedIdChange: f,
+                    },
+                    _.id,
+                  ),
+                ),
+              }),
+              O.length === 0 &&
+                e.jsxs("div", {
+                  className: "nls-empty",
+                  children: [
+                    e.jsx("div", {
+                      className: "nls-empty__icon",
+                      "aria-hidden": "true",
+                      children: e.jsx(im, {
+                        size: 22,
                       }),
-                      e.jsx("p", {
-                        className: "mt-1 text-xs text-slate-400",
-                        children: "Create your first form and save it.",
+                    }),
+                    e.jsx("p", {
+                      className: "nls-empty__title",
+                      children: "No forms yet",
+                    }),
+                    e.jsx("p", {
+                      className: "nls-empty__desc",
+                      children: "Create your first form and save it.",
+                    }),
+                    e.jsx("div", {
+                      className: "nls-empty__actions nls-fb-empty-actions",
+                      children: e.jsxs("button", {
+                        type: "button",
+                        onClick: () => J(!0),
+                        className: "nls-btn nls-btn--dashed nls-btn--block",
+                        children: [
+                          e.jsx(mm, {
+                            size: 16,
+                            "aria-hidden": "true",
+                          }),
+                          "Add Form / Template",
+                        ],
                       }),
-                    ],
-                  }),
-                e.jsx("div", {
-                  className: "nexulesuite_form-builder-wrap nexulesuite_fb-add-wrap",
-                  children: e.jsxs("button", {
+                    }),
+                  ],
+                }),
+              O.length > 0
+                ? e.jsxs("button", {
                     type: "button",
                     onClick: () => J(!0),
-                    className: "nexulesuite_fb-add-dash",
+                    className: "nls-btn nls-btn--dashed nls-btn--block",
                     children: [
                       e.jsx(mm, {
                         size: 16,
+                        "aria-hidden": "true",
                       }),
                       "Add Form / Template",
                     ],
-                  }),
-                }),
-              ],
-            }),
+                  })
+                : null,
+            ],
           }),
           U != null && U.field
             ? e.jsxs("aside", {
-                className: "space-y-4",
+                className: "nls-stack nls-stack--tight nls-fb-aside",
+                "aria-label": "Field Settings",
                 children: [
-                  e.jsxs("div", {
-                    className: "overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm",
-                    children: [
-                      e.jsx("div", {
-                        className: "border-b border-slate-200 px-4 py-3",
-                        children: e.jsx("p", {
-                          className: "text-sm font-semibold text-slate-800",
-                          children: "Field Settings",
-                        }),
+                  e.jsx("div", {
+                    className: "nls-card",
+                    children: e.jsx("div", {
+                      className: "nls-card__body",
+                      children: e.jsx(FieldSettingsPanel, {
+                        field: U.field,
+                        onUpdate: (_, X) => {
+                          U.updateSettings(X);
+                        },
+                        onClose: () => {
+                          var _;
+                          ((_ = U.clear) == null || _.call(U), w(null));
+                        },
                       }),
-                      e.jsx("div", {
-                        className: "p-4",
-                        children: e.jsx(FieldSettingsPanel, {
-                          field: U.field,
-                          onUpdate: (_, X) => {
-                            U.updateSettings(X);
-                          },
-                          onClose: () => {
-                            var _;
-                            ((_ = U.clear) == null || _.call(U), w(null));
-                          },
-                        }),
-                      }),
-                    ],
+                    }),
                   }),
                   e.jsx(ConditionalLogicEditor, {
                     field: U.field,
@@ -9367,10 +8847,13 @@ export function FormBuilderPage() {
             : null,
         ],
       }),
-      e.jsx(FormPreviewModal, {
-        isOpen: !!N,
-        onClose: () => H(null),
-        form: te,
+      e.jsx("div", {
+        className: "nls-fb-preview-host",
+        children: e.jsx(FormPreviewModal, {
+          isOpen: !!N,
+          onClose: () => H(null),
+          form: te,
+        }),
       }),
       e.jsx(AddFormModal, {
         open: C,
@@ -9378,10 +8861,13 @@ export function FormBuilderPage() {
         onSelect: ie,
         onPreview: (_) => le(formFromTemplate(_, "template-preview")),
       }),
-      e.jsx(FormPreviewModal, {
-        isOpen: !!j,
-        onClose: () => le(null),
-        form: j,
+      e.jsx("div", {
+        className: "nls-fb-preview-host",
+        children: e.jsx(FormPreviewModal, {
+          isOpen: !!j,
+          onClose: () => le(null),
+          form: j,
+        }),
       }),
     ],
   });

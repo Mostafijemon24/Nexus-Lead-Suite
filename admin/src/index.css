@@ -14,6 +14,7 @@
 @import "./styles/pages/accessibility.css";
 @import "./styles/pages/form-templates.css";
 @import "./styles/pages/settings.css";
+@import "./styles/pages/form-builder.css";
 @import "./styles/pages/form-submissions.css";
 @import "./styles/legacy-pages.css";
 @import "./styles/overrides.css";
