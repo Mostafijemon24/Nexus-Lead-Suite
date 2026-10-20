@@ -1,0 +1,198 @@
+/*
+ * Smart Buttons (menu-items) page.
+ *
+ * The page frame, split layout, list rows, cards and fields come from
+ * components.css. This file only (a) adds the page-specific pieces (drag
+ * states, preview stage) and (b) neutralises the legacy wrapper rules that
+ * still load from legacy-pages.css for the widgets the page keeps
+ * (group toggle, match-mode segmented control, condition cards, colour
+ * fields, sliders). Selectors are prefixed with the root id so they beat the
+ * legacy rules, which load after this file.
+ */
+
+/* ---- Aside ------------------------------------------------------------- */
+#nexulesuite_admin-root .nls-menus-list {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+#nexulesuite_admin-root .nls-menus-loading {
+	padding: var(--nls-space-3) var(--nls-space-2);
+}
+
+#nexulesuite_admin-root .nls-menus-aside-head {
+	align-items: flex-end;
+}
+
+#nexulesuite_admin-root .nls-menus-back {
+	margin: 0 0 6px -8px;
+}
+
+#nexulesuite_admin-root .nls-menus-empty-action {
+	margin-top: var(--nls-space-3);
+}
+
+#nexulesuite_admin-root .nls-menus-row-ico {
+	display: inline-flex;
+	flex: 0 0 auto;
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-list-row.is-active .nls-menus-row-ico {
+	color: var(--nls-primary);
+}
+
+/* HTML5 drag-and-drop feedback on list rows. */
+#nexulesuite_admin-root .nls-list-row.is-dragging {
+	opacity: 0.5;
+}
+
+#nexulesuite_admin-root .nls-list-row.is-drop-target {
+	border-color: var(--nls-primary-border);
+	box-shadow: 0 0 0 2px var(--nls-primary-ring);
+}
+
+/* ---- Group details -------------------------------------------------------- */
+#nexulesuite_admin-root .nexulesuite_group-details-wrap,
+#nexulesuite_admin-root .nexulesuite_btn-editor-wrap {
+	margin: 0;
+	min-height: 0;
+	padding: 0;
+	background: transparent;
+	font-family: inherit;
+	line-height: inherit;
+	color: inherit;
+}
+
+@media (min-width: 783px) {
+	#nexulesuite_admin-root .nls-menus-gd-grid {
+		grid-template-columns: minmax(0, 1fr) 200px;
+	}
+}
+
+#nexulesuite_admin-root .nexulesuite_group-details-wrap .nexulesuite_gd-toggle {
+	align-self: flex-start;
+	margin-top: 0;
+}
+
+#nexulesuite_admin-root .nexulesuite_group-details-wrap .nexulesuite_gd-toggle .lbl {
+	font-size: var(--nls-fs-body);
+	color: var(--nls-ink-2);
+}
+
+/* The shared DisplayConditions component prints its description with a
+   negative margin that was designed for the old section head. */
+#nexulesuite_admin-root .nexulesuite_group-details-wrap .nexulesuite_gd-sec-sub {
+	margin: 0 0 var(--nls-space-4);
+	font-size: var(--nls-fs-secondary);
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nexulesuite_group-details-wrap .nexulesuite_gd-mode-bar .ml {
+	font-size: var(--nls-fs-caption);
+	letter-spacing: 0.04em;
+}
+
+#nexulesuite_admin-root .nexulesuite_group-details-wrap .nexulesuite_gd-seg button .tag,
+#nexulesuite_admin-root .nexulesuite_group-details-wrap .nexulesuite_gd-cond .ctag,
+#nexulesuite_admin-root .nexulesuite_group-details-wrap .nexulesuite_gd-cond-panel .phint {
+	font-size: var(--nls-fs-caption);
+}
+
+#nexulesuite_admin-root .nexulesuite_group-details-wrap .nexulesuite_gd-seg button {
+	font-size: var(--nls-fs-secondary);
+}
+
+#nexulesuite_admin-root .nexulesuite_group-details-wrap .nexulesuite_gd-summary {
+	background: var(--nls-surface-2);
+}
+
+/* ---- Button editor --------------------------------------------------------- */
+#nexulesuite_admin-root .nexulesuite_btn-editor-wrap .lbl {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 0 0 6px;
+	font-size: var(--nls-fs-secondary);
+	font-weight: var(--nls-fw-semibold);
+	letter-spacing: 0;
+	text-transform: none;
+	color: var(--nls-ink-2);
+}
+
+#nexulesuite_admin-root .nexulesuite_btn-editor-wrap .nls-field .lbl {
+	margin: 0;
+}
+
+#nexulesuite_admin-root .nexulesuite_btn-editor-wrap .nexulesuite_nls-color {
+	gap: 6px;
+}
+
+#nexulesuite_admin-root .nexulesuite_btn-editor-wrap .chex {
+	min-height: 36px;
+	padding: 6px 10px;
+	font-family: var(--nls-font-mono);
+	font-size: 12.5px;
+	border-color: var(--nls-border);
+}
+
+#nexulesuite_admin-root .nexulesuite_btn-editor-wrap .chex:focus {
+	border-color: var(--nls-primary);
+	box-shadow: var(--nls-focus-ring);
+}
+
+#nexulesuite_admin-root .nexulesuite_btn-editor-wrap .cswatch {
+	box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.12);
+}
+
+#nexulesuite_admin-root .nexulesuite_btn-editor-wrap .slide-grid {
+	margin-top: 0 !important; /* beats the legacy `!important` spacing rule */
+}
+
+/* legacy-pages.css forces 10px / 11px labels on sliders with !important;
+   the design floor is 12px. */
+#nexulesuite_admin-root .nexulesuite_btn-editor-wrap .slide-field label {
+	font-size: var(--nls-fs-secondary) !important;
+	font-weight: var(--nls-fw-semibold) !important;
+	letter-spacing: 0 !important;
+	text-transform: none;
+	color: var(--nls-ink-2);
+}
+
+#nexulesuite_admin-root .nexulesuite_btn-editor-wrap .slide-field .val {
+	font-size: var(--nls-fs-caption) !important;
+	font-family: var(--nls-font-mono);
+	color: var(--nls-primary);
+}
+
+#nexulesuite_admin-root .nexulesuite_btn-editor-wrap .slide-field label .accent {
+	color: var(--nls-muted);
+	font-weight: var(--nls-fw-normal);
+}
+
+/* ---- Quick Preview modal --------------------------------------------------- */
+#nexulesuite_admin-root .nls-menus-preview-stage {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--nls-space-5);
+	min-height: 180px;
+	padding: var(--nls-space-7) var(--nls-space-5);
+	border: 1px solid var(--nls-border);
+	border-radius: var(--nls-radius-card);
+	background-color: var(--nls-surface-2);
+	background-image: radial-gradient(var(--nls-gray-300) 1px, transparent 1px);
+	background-size: 20px 20px;
+}
+
+#nexulesuite_admin-root .nls-menus-preview-stage > a {
+	max-width: 100%;
+}
+
+#nexulesuite_admin-root .nls-menus-preview-note {
+	font-size: var(--nls-fs-caption);
+	color: var(--nls-muted);
+	text-align: center;
+}

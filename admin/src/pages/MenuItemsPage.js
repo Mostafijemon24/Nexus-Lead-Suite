@@ -20,7 +20,15 @@ import {
   X as _t,
 } from "lucide-react";
 import * as b from "react";
-import { ColorField, DisplayConditions, SuccessModal, nlsRange } from "../shared/common.js";
+import {
+  ColorField,
+  DisplayConditions,
+  ModalShell,
+  PageFrame,
+  StickyFooter,
+  SuccessModal,
+  nlsRange,
+} from "../shared/common.js";
 
 const BUTTON_ICON_MAP = {
   none: null,
@@ -548,52 +556,50 @@ export function MenuItemsPage() {
         _e = () => {
           ue(_.id, "enabled", !Y);
         };
-      return e.jsx("div", {
-        className: "nexulesuite_group-details-wrap max-w-[880px] mx-auto w-full pb-10",
-        children: e.jsx("div", {
-          className: "nexulesuite_gd-card",
-          children: e.jsxs("div", {
-            className: "nexulesuite_gd-pad",
+      return e.jsxs("div", {
+        className: "nexulesuite_group-details-wrap nls-stack",
+        children: [
+          e.jsxs("div", {
+            className: "nls-card",
             children: [
+              e.jsx("div", {
+                className: "nls-card__header",
+                children: e.jsxs("h2", {
+                  className: "nls-card__title",
+                  children: [
+                    e.jsxs("svg", {
+                      width: "16",
+                      height: "16",
+                      viewBox: "0 0 24 24",
+                      fill: "none",
+                      stroke: "currentColor",
+                      strokeWidth: "2",
+                      "aria-hidden": "true",
+                      children: [
+                        e.jsx("path", {
+                          d: "M12 3l9 5-9 5-9-5 9-5z",
+                        }),
+                        e.jsx("path", {
+                          d: "M3 13l9 5 9-5",
+                        }),
+                      ],
+                    }),
+                    "Group Details",
+                  ],
+                }),
+              }),
               e.jsxs("div", {
-                className: "nexulesuite_gd-section",
+                className: "nls-card__body nls-stack nls-stack--tight",
                 children: [
                   e.jsxs("div", {
-                    className: "nexulesuite_gd-sec-head",
-                    children: [
-                      e.jsx("span", {
-                        className: "nexulesuite_gd-sec-ico",
-                        children: e.jsxs("svg", {
-                          width: "16",
-                          height: "16",
-                          viewBox: "0 0 24 24",
-                          fill: "none",
-                          stroke: "currentColor",
-                          strokeWidth: "2",
-                          children: [
-                            e.jsx("path", {
-                              d: "M12 3l9 5-9 5-9-5 9-5z",
-                            }),
-                            e.jsx("path", {
-                              d: "M3 13l9 5 9-5",
-                            }),
-                          ],
-                        }),
-                      }),
-                      e.jsx("span", {
-                        className: "nexulesuite_gd-sec-title",
-                        children: "Group Details",
-                      }),
-                    ],
-                  }),
-                  e.jsxs("div", {
-                    className: "nexulesuite_gd-grid-2",
+                    className: "nls-grid-2 nls-menus-gd-grid",
                     children: [
                       e.jsxs("div", {
-                        className: "nexulesuite_gd-field",
+                        className: "nls-field",
                         children: [
                           e.jsx("label", {
                             htmlFor: `nexulesuite_group-name-${_.id}`,
+                            className: "nls-field__label",
                             children: "Group name",
                           }),
                           e.jsx("input", {
@@ -605,10 +611,11 @@ export function MenuItemsPage() {
                         ],
                       }),
                       e.jsxs("div", {
-                        className: "nexulesuite_gd-field",
+                        className: "nls-field",
                         children: [
                           e.jsx("label", {
                             htmlFor: `nexulesuite_group-priority-${_.id}`,
+                            className: "nls-field__label",
                             children: "Priority",
                           }),
                           e.jsx("input", {
@@ -645,174 +652,172 @@ export function MenuItemsPage() {
                       }),
                     ],
                   }),
-                  e.jsxs("div", {
-                    className: "nexulesuite_gd-actions",
-                    children: [
-                      e.jsxs("button", {
-                        type: "button",
-                        onClick: () => {
-                          var fe;
-                          (S("button"), (fe = _.buttons) != null && fe.length && !h && x(_.buttons[0].id));
-                        },
-                        className: "nexulesuite_gd-btn",
-                        children: [
-                          e.jsx("svg", {
-                            width: "15",
-                            height: "15",
-                            viewBox: "0 0 24 24",
-                            fill: "none",
-                            stroke: "currentColor",
-                            strokeWidth: "2",
-                            children: e.jsx("path", {
-                              d: "M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4",
-                            }),
-                          }),
-                          "Manage buttons",
-                          (ge = _.buttons) != null && ge.length
-                            ? e.jsx("span", {
-                                className: "cnt",
-                                children: _.buttons.length,
-                              })
-                            : null,
-                        ],
-                      }),
-                      e.jsxs("button", {
-                        type: "button",
-                        onClick: ve,
-                        className: "nexulesuite_gd-btn primary",
-                        children: [
-                          e.jsx("svg", {
-                            width: "15",
-                            height: "15",
-                            viewBox: "0 0 24 24",
-                            fill: "none",
-                            stroke: "currentColor",
-                            strokeWidth: "2.4",
-                            children: e.jsx("path", {
-                              d: "M12 5v14M5 12h14",
-                            }),
-                          }),
-                          "Add button",
-                        ],
-                      }),
-                    ],
-                  }),
                 ],
               }),
               e.jsxs("div", {
-                className: "nexulesuite_gd-section",
+                className: "nls-card__footer",
                 children: [
-                  e.jsxs("div", {
-                    className: "nexulesuite_gd-sec-head",
+                  e.jsxs("button", {
+                    type: "button",
+                    onClick: () => {
+                      var fe;
+                      (S("button"), (fe = _.buttons) != null && fe.length && !h && x(_.buttons[0].id));
+                    },
+                    className: "nls-btn nls-btn--secondary",
                     children: [
-                      e.jsx("span", {
-                        className: "nexulesuite_gd-sec-ico",
-                        children: e.jsx("svg", {
-                          width: "16",
-                          height: "16",
-                          viewBox: "0 0 24 24",
-                          fill: "none",
-                          stroke: "currentColor",
-                          strokeWidth: "2",
-                          children: e.jsx("path", {
-                            d: "M4 6h16M7 12h10M10 18h4",
-                          }),
+                      e.jsx("svg", {
+                        width: "15",
+                        height: "15",
+                        viewBox: "0 0 24 24",
+                        fill: "none",
+                        stroke: "currentColor",
+                        strokeWidth: "2",
+                        "aria-hidden": "true",
+                        children: e.jsx("path", {
+                          d: "M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4",
                         }),
                       }),
-                      e.jsx("span", {
-                        className: "nexulesuite_gd-sec-title",
-                        children: "Display Conditions",
-                      }),
+                      "Manage buttons",
+                      (ge = _.buttons) != null && ge.length
+                        ? e.jsx("span", {
+                            className: "nls-badge nls-badge--primary",
+                            children: _.buttons.length,
+                          })
+                        : null,
                     ],
                   }),
-                  e.jsx(DisplayConditions, {
-                    variant: "reference",
-                    conditions: _.conditions || {
-                      match: "any",
-                      rules: [],
-                    },
-                    onChange: (fe) =>
-                      Z(_.id, {
-                        conditions: fe,
+                  e.jsxs("button", {
+                    type: "button",
+                    onClick: ve,
+                    className: "nls-btn nls-btn--primary",
+                    children: [
+                      e.jsx("svg", {
+                        width: "15",
+                        height: "15",
+                        viewBox: "0 0 24 24",
+                        fill: "none",
+                        stroke: "currentColor",
+                        strokeWidth: "2.4",
+                        "aria-hidden": "true",
+                        children: e.jsx("path", {
+                          d: "M12 5v14M5 12h14",
+                        }),
                       }),
-                    conditionMeta: z,
-                    contentSearch: w,
-                    onSearchContent: xs,
-                    searchKeyPrefix: _.id,
-                    description:
-                      "Multiple groups can be active on the same page. Leave all rules unchecked to show on every page.",
+                      "Add button",
+                    ],
                   }),
                 ],
               }),
             ],
           }),
-        }),
+          e.jsxs("div", {
+            className: "nls-card",
+            children: [
+              e.jsx("div", {
+                className: "nls-card__header",
+                children: e.jsxs("h2", {
+                  className: "nls-card__title",
+                  children: [
+                    e.jsx("svg", {
+                      width: "16",
+                      height: "16",
+                      viewBox: "0 0 24 24",
+                      fill: "none",
+                      stroke: "currentColor",
+                      strokeWidth: "2",
+                      "aria-hidden": "true",
+                      children: e.jsx("path", {
+                        d: "M4 6h16M7 12h10M10 18h4",
+                      }),
+                    }),
+                    "Display Conditions",
+                  ],
+                }),
+              }),
+              e.jsx("div", {
+                className: "nls-card__body",
+                children: e.jsx(DisplayConditions, {
+                  variant: "reference",
+                  conditions: _.conditions || {
+                    match: "any",
+                    rules: [],
+                  },
+                  onChange: (fe) =>
+                    Z(_.id, {
+                      conditions: fe,
+                    }),
+                  conditionMeta: z,
+                  contentSearch: w,
+                  onSearchContent: xs,
+                  searchKeyPrefix: _.id,
+                  description:
+                    "Multiple groups can be active on the same page. Leave all rules unchecked to show on every page.",
+                }),
+              }),
+            ],
+          }),
+        ],
       });
     },
     Es = () => {
       var _e, ge, fe, Te, Pe, Oe;
       if (!_ || !X) return null;
       const Y = X;
-      return e.jsx("div", {
-        className: "nexulesuite_btn-editor-wrap",
-        children: e.jsx("div", {
-          className: "nexulesuite_be-inner",
-          children: e.jsxs("div", {
-            className: "nexulesuite_be-card",
+      return e.jsxs("div", {
+        className: "nexulesuite_btn-editor-wrap nls-stack",
+        children: [
+          e.jsxs("div", {
+            className: "nls-card",
             children: [
+              e.jsx("div", {
+                className: "nls-card__header",
+                children: e.jsxs("h2", {
+                  className: "nls-card__title",
+                  children: [
+                    e.jsx("svg", {
+                      width: "16",
+                      height: "16",
+                      viewBox: "0 0 24 24",
+                      fill: "none",
+                      stroke: "currentColor",
+                      strokeWidth: "2",
+                      "aria-hidden": "true",
+                      children: e.jsx("path", {
+                        d: "M4 7V4h16v3M9 20h6M12 4v16",
+                      }),
+                    }),
+                    "Content & Action",
+                  ],
+                }),
+              }),
               e.jsxs("div", {
-                className: "nexulesuite_be-section is-first",
+                className: "nls-card__body nls-stack nls-stack--tight",
                 children: [
                   e.jsxs("div", {
-                    className: "nexulesuite_be-sec-head",
-                    children: [
-                      e.jsx("span", {
-                        className: "nexulesuite_be-sec-ico",
-                        children: e.jsx("svg", {
-                          width: "16",
-                          height: "16",
-                          viewBox: "0 0 24 24",
-                          fill: "none",
-                          stroke: "currentColor",
-                          strokeWidth: "2",
-                          children: e.jsx("path", {
-                            d: "M4 7V4h16v3M9 20h6M12 4v16",
-                          }),
-                        }),
-                      }),
-                      e.jsx("span", {
-                        className: "nexulesuite_be-sec-title",
-                        children: "Content & Action",
-                      }),
-                    ],
-                  }),
-                  e.jsxs("div", {
-                    className: "nexulesuite_be-row-2",
+                    className: "nls-grid-2",
                     children: [
                       e.jsxs("div", {
-                        className: "nexulesuite_be-field",
+                        className: "nls-field",
                         children: [
                           e.jsx("span", {
-                            className: "lbl",
+                            className: "lbl nls-field__label",
                             children: "Button text",
                           }),
                           e.jsx("input", {
                             type: "text",
-                            className: "inp",
                             value: Y.label || "",
                             onChange: ($e) => Q(_.id, Y.id, "label", $e.target.value),
                           }),
                         ],
                       }),
                       e.jsxs("div", {
-                        className: "nexulesuite_be-field",
+                        className: "nls-field",
                         children: [
                           e.jsx("span", {
-                            className: "lbl",
+                            className: "lbl nls-field__label",
                             children: "Action icon",
                           }),
                           e.jsxs("select", {
-                            className: "sel",
                             value: Y.icon || "none",
                             onChange: ($e) => Q(_.id, Y.id, "icon", $e.target.value),
                             children: [
@@ -867,18 +872,17 @@ export function MenuItemsPage() {
                     ],
                   }),
                   e.jsxs("div", {
-                    className: "nexulesuite_be-row-2",
+                    className: "nls-grid-2",
                     children: [
                       e.jsxs("div", {
-                        className: "nexulesuite_be-field",
+                        className: "nls-field",
                         children: [
                           e.jsx("span", {
-                            className: "lbl",
+                            className: "lbl nls-field__label",
                             children: "Link URL",
                           }),
                           e.jsx("input", {
                             type: "text",
-                            className: "inp",
                             value: Y.url || "",
                             placeholder: "https://example.com",
                             onChange: ($e) => Q(_.id, Y.id, "url", $e.target.value),
@@ -886,15 +890,14 @@ export function MenuItemsPage() {
                         ],
                       }),
                       e.jsxs("div", {
-                        className: "nexulesuite_be-field",
+                        className: "nls-field",
                         children: [
                           e.jsx("span", {
-                            className: "lbl",
+                            className: "lbl nls-field__label",
                             children: "Popup event id (manual click)",
                           }),
                           F.length > 0
                             ? e.jsxs("select", {
-                                className: "sel",
                                 value: Y.eventName || "",
                                 onChange: ($e) => Q(_.id, Y.id, "eventName", $e.target.value),
                                 children: [
@@ -917,13 +920,13 @@ export function MenuItemsPage() {
                               })
                             : e.jsx("input", {
                                 type: "text",
-                                className: "inp mono",
+                                className: "nls-mono",
                                 value: Y.eventName || "",
                                 placeholder: "e.g. nexus-pop",
                                 onChange: ($e) => Q(_.id, Y.id, "eventName", $e.target.value),
                               }),
                           e.jsxs("div", {
-                            className: "hint",
+                            className: "nls-field__hint",
                             children: [
                               "Select a popup from the list, or go to the ",
                               e.jsx("b", {
@@ -938,51 +941,54 @@ export function MenuItemsPage() {
                   }),
                 ],
               }),
+            ],
+          }),
+          e.jsxs("div", {
+            className: "nls-card",
+            children: [
+              e.jsx("div", {
+                className: "nls-card__header",
+                children: e.jsxs("h2", {
+                  className: "nls-card__title",
+                  children: [
+                    e.jsxs("svg", {
+                      width: "16",
+                      height: "16",
+                      viewBox: "0 0 24 24",
+                      fill: "none",
+                      stroke: "currentColor",
+                      strokeWidth: "2",
+                      "aria-hidden": "true",
+                      children: [
+                        e.jsx("circle", {
+                          cx: "13.5",
+                          cy: "6.5",
+                          r: "2.5",
+                        }),
+                        e.jsx("circle", {
+                          cx: "6.5",
+                          cy: "12",
+                          r: "2.5",
+                        }),
+                        e.jsx("circle", {
+                          cx: "15",
+                          cy: "16",
+                          r: "2.5",
+                        }),
+                        e.jsx("path", {
+                          d: "M3 21c2-4 4-6 8-7",
+                        }),
+                      ],
+                    }),
+                    "Visual Styling",
+                  ],
+                }),
+              }),
               e.jsxs("div", {
-                className: "nexulesuite_be-section",
+                className: "nls-card__body nls-stack nls-stack--tight",
                 children: [
                   e.jsxs("div", {
-                    className: "nexulesuite_be-sec-head",
-                    children: [
-                      e.jsx("span", {
-                        className: "nexulesuite_be-sec-ico is-pink",
-                        children: e.jsxs("svg", {
-                          width: "16",
-                          height: "16",
-                          viewBox: "0 0 24 24",
-                          fill: "none",
-                          stroke: "currentColor",
-                          strokeWidth: "2",
-                          children: [
-                            e.jsx("circle", {
-                              cx: "13.5",
-                              cy: "6.5",
-                              r: "2.5",
-                            }),
-                            e.jsx("circle", {
-                              cx: "6.5",
-                              cy: "12",
-                              r: "2.5",
-                            }),
-                            e.jsx("circle", {
-                              cx: "15",
-                              cy: "16",
-                              r: "2.5",
-                            }),
-                            e.jsx("path", {
-                              d: "M3 21c2-4 4-6 8-7",
-                            }),
-                          ],
-                        }),
-                      }),
-                      e.jsx("span", {
-                        className: "nexulesuite_be-sec-title",
-                        children: "Visual Styling",
-                      }),
-                    ],
-                  }),
-                  e.jsxs("div", {
-                    className: "nexulesuite_be-row-2 is-triple",
+                    className: "nls-grid-3",
                     children: [
                       e.jsx(ColorField, {
                         label: "Background",
@@ -995,14 +1001,13 @@ export function MenuItemsPage() {
                         onChange: ($e) => he(_.id, Y.id, "text", $e),
                       }),
                       e.jsxs("div", {
-                        className: "nexulesuite_be-field",
+                        className: "nls-field",
                         children: [
                           e.jsx("span", {
-                            className: "lbl",
+                            className: "lbl nls-field__label",
                             children: "Hover animation",
                           }),
                           e.jsxs("select", {
-                            className: "sel",
                             value: ((fe = Y.style) == null ? void 0 : fe.hoverEffect) || "glow",
                             onChange: ($e) => he(_.id, Y.id, "hoverEffect", $e.target.value),
                             children: [
@@ -1082,10 +1087,64 @@ export function MenuItemsPage() {
               }),
             ],
           }),
-        }),
+        ],
       });
     };
-  return e.jsxs(e.Fragment, {
+  return e.jsxs(PageFrame, {
+    title: "Smart Buttons",
+    subtitle: "Configure triggers, styles and actions",
+    icon: e.jsx(wm, {
+      size: 20,
+    }),
+    headerRight: e.jsxs(e.Fragment, {
+      children: [
+        e.jsxs("button", {
+          type: "button",
+          onClick: oe,
+          className: "nls-btn nls-btn--secondary",
+          children: [
+            e.jsx(dt, {
+              size: 16,
+              "aria-hidden": "true",
+            }),
+            " Add Group",
+          ],
+        }),
+        e.jsxs("button", {
+          type: "button",
+          onClick: ve,
+          disabled: !_,
+          className: "nls-btn nls-btn--primary",
+          children: [
+            e.jsx(dt, {
+              size: 18,
+              "aria-hidden": "true",
+            }),
+            " Add New Button",
+          ],
+        }),
+      ],
+    }),
+    footer: e.jsx(StickyFooter, {
+      actions: e.jsxs(e.Fragment, {
+        children: [
+          e.jsx("button", {
+            type: "button",
+            onClick: Sn,
+            disabled: !L || H.saving,
+            className: "nls-btn nls-btn--ghost",
+            children: "Discard",
+          }),
+          e.jsx("button", {
+            type: "button",
+            onClick: _n,
+            disabled: H.saving || !L,
+            className: "nls-btn nls-btn--primary",
+            children: H.saving ? "Saving…" : "Save All Buttons",
+          }),
+        ],
+      }),
+    }),
     children: [
       e.jsx(SuccessModal, {
         open: I,
@@ -1093,518 +1152,426 @@ export function MenuItemsPage() {
         onDismiss: () => C(!1),
       }),
       e.jsxs("div", {
-        className: "min-h-screen bg-[#f6f7fb] px-8 py-6 font-sans text-slate-900",
+        className: "nls-split nls-menus-split",
         children: [
-          e.jsxs("div", {
-            className:
-              "w-full bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-3.25rem)]",
-            children: [
-              e.jsxs("div", {
-                className: "p-5 border-b border-slate-200 bg-white flex justify-between items-center shrink-0",
-                children: [
-                  e.jsxs("div", {
-                    className: "flex items-center gap-3",
+          e.jsx("aside", {
+            className: "nls-split__aside nls-card",
+            children:
+              f === "group"
+                ? e.jsxs(e.Fragment, {
                     children: [
-                      e.jsx("div", {
-                        className: "bg-blue-600 p-2 rounded-lg text-white",
-                        children: e.jsx(wm, {
-                          size: 20,
-                        }),
-                      }),
                       e.jsxs("div", {
+                        className: "nls-split__aside-head",
                         children: [
-                          e.jsx("h1", {
-                            className: "text-lg font-bold",
-                            children: "Menu Items",
-                          }),
-                          e.jsx("p", {
-                            className: "text-xs text-slate-400",
-                            children: "Configure triggers, styles and actions",
-                          }),
-                        ],
-                      }),
-                    ],
-                  }),
-                  e.jsxs("div", {
-                    className: "flex items-center gap-2",
-                    children: [
-                      e.jsxs("button", {
-                        type: "button",
-                        onClick: oe,
-                        className:
-                          "flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl transition-all text-sm font-semibold",
-                        children: [
-                          e.jsx(dt, {
-                            size: 16,
-                          }),
-                          " Add Group",
-                        ],
-                      }),
-                      e.jsxs("button", {
-                        type: "button",
-                        onClick: ve,
-                        disabled: !_,
-                        className:
-                          "flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl transition-all text-sm font-semibold shadow-lg shadow-blue-100",
-                        children: [
-                          e.jsx(dt, {
-                            size: 18,
-                          }),
-                          " Add New Button",
-                        ],
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-              e.jsxs("div", {
-                className: "flex flex-1 overflow-hidden",
-                children: [
-                  e.jsx("div", {
-                    className: "w-72 border-r border-slate-200 bg-slate-50 flex flex-col shrink-0 overflow-hidden",
-                    children:
-                      f === "group"
-                        ? e.jsxs(e.Fragment, {
+                          e.jsxs("div", {
+                            className: "min-w-0",
                             children: [
-                              e.jsxs("div", {
-                                className: "p-4 border-b border-slate-200 flex items-center justify-between shrink-0",
-                                children: [
-                                  e.jsxs("div", {
-                                    children: [
-                                      e.jsx("h2", {
-                                        className: "text-[10px] font-bold text-slate-400 uppercase tracking-widest",
-                                        children: "Button Groups",
-                                      }),
-                                      e.jsx("p", {
-                                        className: "mt-1 text-[10px] text-slate-400",
-                                        children: "Drag to reorder",
-                                      }),
-                                    ],
-                                  }),
-                                  e.jsx("button", {
-                                    type: "button",
-                                    onClick: oe,
-                                    className: "p-1.5 text-slate-400 hover:text-blue-600 rounded-lg",
-                                    title: "Add group",
-                                    children: e.jsx(dt, {
-                                      size: 14,
-                                    }),
-                                  }),
-                                ],
+                              e.jsx("h2", {
+                                className: "nls-split__aside-title",
+                                children: "Button Groups",
                               }),
-                              e.jsx("div", {
-                                className: "flex-1 overflow-y-auto p-3 space-y-2",
-                                children: H.loading
-                                  ? e.jsx("div", {
-                                      className: "text-sm text-slate-500 px-2 py-3",
-                                      children: "Loading…",
-                                    })
-                                  : a.length === 0
-                                    ? e.jsx("div", {
-                                        className: "text-xs text-slate-400 px-2 py-3",
-                                        children: "No groups yet.",
-                                      })
-                                    : a.map((Y) => {
-                                        var ge, fe;
-                                        const _e = u === Y.id;
-                                        return e.jsxs(
-                                          "div",
-                                          {
-                                            onClick: () => {
-                                              (p(Y.id), x(null), S("group"));
-                                            },
-                                            onDragOver: (Te) => {
-                                              (Te.preventDefault(), me(Y.id));
-                                            },
-                                            onDragLeave: () => me(null),
-                                            onDrop: (Te) => {
-                                              (Te.preventDefault(),
-                                                Te.stopPropagation(),
-                                                St(le, Y.id),
-                                                ie(null),
-                                                me(null));
-                                            },
-                                            className: `group p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${_e ? "bg-white border-blue-500 shadow-md ring-2 ring-blue-500/10" : "bg-transparent border-transparent hover:bg-slate-200/50"} ${pe === Y.id && le !== Y.id ? "ring-2 ring-blue-300 border-blue-200" : ""} ${le === Y.id ? "opacity-50" : ""}`,
-                                            children: [
-                                              e.jsxs("div", {
-                                                className: "flex min-w-0 flex-1 items-center gap-2 truncate",
-                                                children: [
-                                                  e.jsx("button", {
-                                                    type: "button",
-                                                    draggable: !0,
-                                                    onDragStart: (Te) => {
-                                                      (ie(Y.id), (Te.dataTransfer.effectAllowed = "move"));
-                                                    },
-                                                    onDragEnd: () => {
-                                                      (ie(null), me(null));
-                                                    },
-                                                    onClick: (Te) => Te.stopPropagation(),
-                                                    className:
-                                                      "shrink-0 rounded p-1 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing",
-                                                    title: "Drag to reorder",
-                                                    "aria-label": "Drag to reorder",
-                                                    children: e.jsx(Ni, {
-                                                      size: 16,
-                                                    }),
-                                                  }),
-                                                  e.jsxs("div", {
-                                                    className: "min-w-0",
-                                                    children: [
-                                                      e.jsx("span", {
-                                                        className: `text-sm font-semibold truncate block ${_e ? "text-slate-900" : "text-slate-500"}`,
-                                                        children: Y.name || "Untitled group",
-                                                      }),
-                                                      e.jsxs("span", {
-                                                        className: "text-[10px] text-slate-400",
-                                                        children: [
-                                                          "Priority ",
-                                                          Y.priority ?? 0,
-                                                          " · ",
-                                                          ((ge = Y.buttons) == null ? void 0 : ge.length) || 0,
-                                                          " button",
-                                                          (((fe = Y.buttons) == null ? void 0 : fe.length) || 0) === 1
-                                                            ? ""
-                                                            : "s",
-                                                        ],
-                                                      }),
-                                                    ],
-                                                  }),
-                                                ],
-                                              }),
-                                              e.jsx("button", {
-                                                type: "button",
-                                                onClick: (Te) => {
-                                                  (Te.stopPropagation(), xe(Y.id));
-                                                },
-                                                className:
-                                                  "p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100",
-                                                children: e.jsx(yt, {
-                                                  size: 14,
-                                                }),
-                                              }),
-                                            ],
-                                          },
-                                          Y.id,
-                                        );
-                                      }),
+                              e.jsx("p", {
+                                className: "nls-split__aside-sub",
+                                children: "Drag to reorder",
                               }),
                             ],
-                          })
-                        : e.jsxs(e.Fragment, {
-                            children: [
-                              e.jsxs("div", {
-                                className: "p-4 border-b border-slate-200 shrink-0 space-y-3",
-                                children: [
-                                  e.jsxs("button", {
-                                    type: "button",
+                          }),
+                          e.jsx("button", {
+                            type: "button",
+                            onClick: oe,
+                            className: "nls-icon-btn nls-icon-btn--primary",
+                            title: "Add group",
+                            "aria-label": "Add group",
+                            children: e.jsx(dt, {
+                              size: 16,
+                            }),
+                          }),
+                        ],
+                      }),
+                      e.jsx("div", {
+                        className: "nls-split__aside-body nls-menus-list",
+                        children: H.loading
+                          ? e.jsxs("div", {
+                              className: "nls-loading nls-menus-loading",
+                              children: [
+                                e.jsx("span", {
+                                  className: "nls-spinner",
+                                  "aria-hidden": "true",
+                                }),
+                                "Loading…",
+                              ],
+                            })
+                          : a.length === 0
+                            ? e.jsx("div", {
+                                className: "nls-empty-inline",
+                                children: "No groups yet.",
+                              })
+                            : a.map((Y) => {
+                                var ge, fe;
+                                const _e = u === Y.id;
+                                return e.jsxs(
+                                  "div",
+                                  {
                                     onClick: () => {
-                                      (S("group"), x(null));
+                                      (p(Y.id), x(null), S("group"));
                                     },
-                                    className:
-                                      "flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 transition-colors",
+                                    onDragOver: (Te) => {
+                                      (Te.preventDefault(), me(Y.id));
+                                    },
+                                    onDragLeave: () => me(null),
+                                    onDrop: (Te) => {
+                                      (Te.preventDefault(), Te.stopPropagation(), St(le, Y.id), ie(null), me(null));
+                                    },
+                                    className: `nls-list-row${_e ? " is-active" : ""}${pe === Y.id && le !== Y.id ? " is-drop-target" : ""}${le === Y.id ? " is-dragging" : ""}`,
                                     children: [
-                                      e.jsx(bi, {
-                                        size: 14,
-                                      }),
-                                      "Back to groups",
-                                    ],
-                                  }),
-                                  e.jsxs("div", {
-                                    className: "flex items-center justify-between gap-2",
-                                    children: [
-                                      e.jsxs("div", {
-                                        className: "min-w-0",
-                                        children: [
-                                          e.jsx("h2", {
-                                            className: "text-[10px] font-bold text-slate-400 uppercase tracking-widest",
-                                            children: "Button Layers",
-                                          }),
-                                          e.jsxs("p", {
-                                            className: "mt-1 text-[10px] text-slate-400 truncate",
-                                            title: _ == null ? void 0 : _.name,
-                                            children: [(_ == null ? void 0 : _.name) || "Group", " · Drag to reorder"],
-                                          }),
-                                        ],
-                                      }),
                                       e.jsx("button", {
                                         type: "button",
-                                        onClick: ve,
-                                        disabled: !_,
-                                        className:
-                                          "p-1.5 text-slate-400 hover:text-blue-600 rounded-lg disabled:opacity-40",
-                                        title: "Add button",
-                                        children: e.jsx(dt, {
-                                          size: 14,
+                                        draggable: !0,
+                                        onDragStart: (Te) => {
+                                          (ie(Y.id), (Te.dataTransfer.effectAllowed = "move"));
+                                        },
+                                        onDragEnd: () => {
+                                          (ie(null), me(null));
+                                        },
+                                        onClick: (Te) => Te.stopPropagation(),
+                                        className: "nls-list-row__handle",
+                                        title: "Drag to reorder",
+                                        "aria-label": "Drag to reorder",
+                                        children: e.jsx(Ni, {
+                                          size: 16,
+                                        }),
+                                      }),
+                                      e.jsx("div", {
+                                        className: "nls-list-row__main",
+                                        children: e.jsxs("div", {
+                                          className: "min-w-0",
+                                          children: [
+                                            e.jsx("div", {
+                                              className: "nls-list-row__title",
+                                              children: Y.name || "Untitled group",
+                                            }),
+                                            e.jsxs("div", {
+                                              className: "nls-list-row__meta",
+                                              children: [
+                                                "Priority ",
+                                                Y.priority ?? 0,
+                                                " · ",
+                                                ((ge = Y.buttons) == null ? void 0 : ge.length) || 0,
+                                                " button",
+                                                (((fe = Y.buttons) == null ? void 0 : fe.length) || 0) === 1 ? "" : "s",
+                                              ],
+                                            }),
+                                          ],
+                                        }),
+                                      }),
+                                      e.jsx("div", {
+                                        className: "nls-list-row__actions",
+                                        children: e.jsx("button", {
+                                          type: "button",
+                                          onClick: (Te) => {
+                                            (Te.stopPropagation(), xe(Y.id));
+                                          },
+                                          className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--danger",
+                                          title: "Delete group",
+                                          "aria-label": "Delete group",
+                                          children: e.jsx(yt, {
+                                            size: 14,
+                                          }),
                                         }),
                                       }),
                                     ],
-                                  }),
-                                ],
+                                  },
+                                  Y.id,
+                                );
                               }),
-                              e.jsx("div", {
-                                className: "flex-1 overflow-y-auto p-3 space-y-2",
-                                children: _
-                                  ? _.buttons.length === 0
-                                    ? e.jsxs("div", {
-                                        className: "px-2 py-3 text-center",
-                                        children: [
-                                          e.jsx("p", {
-                                            className: "text-xs text-slate-400",
-                                            children: "No buttons in this group.",
-                                          }),
-                                          e.jsxs("button", {
-                                            type: "button",
-                                            onClick: ve,
-                                            className:
-                                              "mt-3 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700",
-                                            children: [
-                                              e.jsx(dt, {
-                                                size: 14,
-                                              }),
-                                              " Add button",
-                                            ],
-                                          }),
-                                        ],
-                                      })
-                                    : _.buttons.map((Y) => {
-                                        const _e = h === Y.id;
-                                        return e.jsxs(
-                                          "div",
-                                          {
-                                            onClick: () => {
-                                              (x(Y.id), S("button"));
-                                            },
-                                            onDragOver: (ge) => {
-                                              (ge.preventDefault(), ee(Y.id));
-                                            },
-                                            onDragLeave: () => ee(null),
-                                            onDrop: (ge) => {
-                                              (ge.preventDefault(),
-                                                ge.stopPropagation(),
-                                                De(O, Y.id),
-                                                te(null),
-                                                ee(null));
-                                            },
-                                            className: `group p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${_e ? "bg-white border-blue-500 shadow-md ring-2 ring-blue-500/10" : "bg-transparent border-transparent hover:bg-slate-200/50"} ${B === Y.id && O !== Y.id ? "ring-2 ring-blue-300 border-blue-200" : ""} ${O === Y.id ? "opacity-50" : ""}`,
-                                            children: [
-                                              e.jsxs("div", {
-                                                className: "flex min-w-0 flex-1 items-center gap-2 truncate",
-                                                children: [
-                                                  e.jsx("button", {
-                                                    type: "button",
-                                                    draggable: !0,
-                                                    onDragStart: (ge) => {
-                                                      (te(Y.id), (ge.dataTransfer.effectAllowed = "move"));
-                                                    },
-                                                    onDragEnd: () => {
-                                                      (te(null), ee(null));
-                                                    },
-                                                    onClick: (ge) => ge.stopPropagation(),
-                                                    className:
-                                                      "shrink-0 rounded p-1 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing",
-                                                    title: "Drag to reorder",
-                                                    "aria-label": "Drag to reorder",
-                                                    children: e.jsx(Ni, {
-                                                      size: 16,
-                                                    }),
-                                                  }),
-                                                  e.jsx("div", {
-                                                    className: _e
-                                                      ? "text-blue-600 shrink-0"
-                                                      : "text-slate-400 shrink-0",
-                                                    children: BUTTON_ICON_MAP[Y.icon || "none"],
-                                                  }),
-                                                  e.jsx("span", {
-                                                    className: `text-sm font-semibold truncate ${_e ? "text-slate-900" : "text-slate-500"}`,
-                                                    children: Y.label,
-                                                  }),
-                                                ],
-                                              }),
-                                              e.jsxs("div", {
-                                                className: "flex items-center gap-1",
-                                                onClick: (ge) => ge.stopPropagation(),
-                                                children: [
-                                                  e.jsx("button", {
-                                                    type: "button",
-                                                    onClick: () => j(Y),
-                                                    className:
-                                                      "p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors",
-                                                    title: "Quick Preview",
-                                                    children: e.jsx(Rt, {
-                                                      size: 14,
-                                                    }),
-                                                  }),
-                                                  e.jsx("button", {
-                                                    type: "button",
-                                                    onClick: () => Xe(Y.id),
-                                                    className:
-                                                      "p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100",
-                                                    title: "Duplicate",
-                                                    children: e.jsx($s, {
-                                                      size: 14,
-                                                    }),
-                                                  }),
-                                                  e.jsx("button", {
-                                                    type: "button",
-                                                    onClick: () => Ke(Y.id),
-                                                    className:
-                                                      "p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100",
-                                                    children: e.jsx(yt, {
-                                                      size: 14,
-                                                    }),
-                                                  }),
-                                                ],
-                                              }),
-                                            ],
-                                          },
-                                          Y.id,
-                                        );
-                                      })
-                                  : e.jsx("div", {
-                                      className: "text-xs text-slate-400 px-2 py-3",
-                                      children: "Select a group first.",
-                                    }),
-                              }),
-                            ],
-                          }),
-                  }),
-                  e.jsxs("div", {
-                    className: "flex-1 overflow-y-auto p-8 bg-white",
+                      }),
+                    ],
+                  })
+                : e.jsxs(e.Fragment, {
                     children: [
-                      H.error
-                        ? e.jsx("div", {
-                            className:
-                              "mb-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800",
-                            children: H.error,
-                          })
-                        : null,
-                      _
-                        ? f === "group"
-                          ? Cn()
-                          : f === "button" && X
-                            ? Es()
-                            : e.jsx("p", {
-                                className: "text-sm text-slate-500",
-                                children: "Select a button from the sidebar or add a new one.",
-                              })
-                        : e.jsxs("div", {
-                            className: "flex h-full flex-col items-center justify-center text-center text-slate-500",
+                      e.jsxs("div", {
+                        className: "nls-split__aside-head nls-menus-aside-head",
+                        children: [
+                          e.jsxs("div", {
+                            className: "min-w-0",
                             children: [
-                              e.jsx("p", {
-                                className: "text-sm",
-                                children: "Create a button group to get started.",
-                              }),
                               e.jsxs("button", {
                                 type: "button",
-                                onClick: oe,
-                                className:
-                                  "mt-4 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold",
+                                onClick: () => {
+                                  (S("group"), x(null));
+                                },
+                                className: "nls-btn nls-btn--ghost nls-btn--sm nls-menus-back",
                                 children: [
-                                  e.jsx(dt, {
-                                    size: 16,
+                                  e.jsx(bi, {
+                                    size: 14,
+                                    "aria-hidden": "true",
                                   }),
-                                  " Add Group",
+                                  "Back to groups",
                                 ],
+                              }),
+                              e.jsx("h2", {
+                                className: "nls-split__aside-title",
+                                children: "Button Layers",
+                              }),
+                              e.jsxs("p", {
+                                className: "nls-split__aside-sub truncate",
+                                title: _ == null ? void 0 : _.name,
+                                children: [(_ == null ? void 0 : _.name) || "Group", " · Drag to reorder"],
                               }),
                             ],
                           }),
+                          e.jsx("button", {
+                            type: "button",
+                            onClick: ve,
+                            disabled: !_,
+                            className: "nls-icon-btn nls-icon-btn--primary",
+                            title: "Add button",
+                            "aria-label": "Add button",
+                            children: e.jsx(dt, {
+                              size: 16,
+                            }),
+                          }),
+                        ],
+                      }),
+                      e.jsx("div", {
+                        className: "nls-split__aside-body nls-menus-list",
+                        children: _
+                          ? _.buttons.length === 0
+                            ? e.jsxs("div", {
+                                className: "nls-empty-inline",
+                                children: [
+                                  e.jsx("p", {
+                                    children: "No buttons in this group.",
+                                  }),
+                                  e.jsxs("button", {
+                                    type: "button",
+                                    onClick: ve,
+                                    className: "nls-btn nls-btn--primary nls-btn--sm nls-menus-empty-action",
+                                    children: [
+                                      e.jsx(dt, {
+                                        size: 14,
+                                        "aria-hidden": "true",
+                                      }),
+                                      " Add button",
+                                    ],
+                                  }),
+                                ],
+                              })
+                            : _.buttons.map((Y) => {
+                                const _e = h === Y.id;
+                                return e.jsxs(
+                                  "div",
+                                  {
+                                    onClick: () => {
+                                      (x(Y.id), S("button"));
+                                    },
+                                    onDragOver: (ge) => {
+                                      (ge.preventDefault(), ee(Y.id));
+                                    },
+                                    onDragLeave: () => ee(null),
+                                    onDrop: (ge) => {
+                                      (ge.preventDefault(), ge.stopPropagation(), De(O, Y.id), te(null), ee(null));
+                                    },
+                                    className: `nls-list-row${_e ? " is-active" : ""}${B === Y.id && O !== Y.id ? " is-drop-target" : ""}${O === Y.id ? " is-dragging" : ""}`,
+                                    children: [
+                                      e.jsx("button", {
+                                        type: "button",
+                                        draggable: !0,
+                                        onDragStart: (ge) => {
+                                          (te(Y.id), (ge.dataTransfer.effectAllowed = "move"));
+                                        },
+                                        onDragEnd: () => {
+                                          (te(null), ee(null));
+                                        },
+                                        onClick: (ge) => ge.stopPropagation(),
+                                        className: "nls-list-row__handle",
+                                        title: "Drag to reorder",
+                                        "aria-label": "Drag to reorder",
+                                        children: e.jsx(Ni, {
+                                          size: 16,
+                                        }),
+                                      }),
+                                      e.jsxs("div", {
+                                        className: "nls-list-row__main",
+                                        children: [
+                                          BUTTON_ICON_MAP[Y.icon || "none"]
+                                            ? e.jsx("span", {
+                                                className: "nls-menus-row-ico",
+                                                "aria-hidden": "true",
+                                                children: BUTTON_ICON_MAP[Y.icon || "none"],
+                                              })
+                                            : null,
+                                          e.jsx("div", {
+                                            className: "nls-list-row__title",
+                                            children: Y.label,
+                                          }),
+                                        ],
+                                      }),
+                                      e.jsxs("div", {
+                                        className: "nls-list-row__actions",
+                                        onClick: (ge) => ge.stopPropagation(),
+                                        children: [
+                                          e.jsx("button", {
+                                            type: "button",
+                                            onClick: () => j(Y),
+                                            className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--primary",
+                                            title: "Quick Preview",
+                                            "aria-label": "Quick Preview",
+                                            children: e.jsx(Rt, {
+                                              size: 14,
+                                            }),
+                                          }),
+                                          e.jsx("button", {
+                                            type: "button",
+                                            onClick: () => Xe(Y.id),
+                                            className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--primary",
+                                            title: "Duplicate",
+                                            "aria-label": "Duplicate",
+                                            children: e.jsx($s, {
+                                              size: 14,
+                                            }),
+                                          }),
+                                          e.jsx("button", {
+                                            type: "button",
+                                            onClick: () => Ke(Y.id),
+                                            className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--danger",
+                                            title: "Delete button",
+                                            "aria-label": "Delete button",
+                                            children: e.jsx(yt, {
+                                              size: 14,
+                                            }),
+                                          }),
+                                        ],
+                                      }),
+                                    ],
+                                  },
+                                  Y.id,
+                                );
+                              })
+                          : e.jsx("div", {
+                              className: "nls-empty-inline",
+                              children: "Select a group first.",
+                            }),
+                      }),
                     ],
                   }),
-                ],
-              }),
-              e.jsxs("div", {
-                className: "p-5 border-t border-slate-200 bg-white flex justify-end gap-3 px-10 shrink-0",
-                children: [
-                  e.jsx("button", {
-                    type: "button",
-                    onClick: Sn,
-                    disabled: !L || H.saving,
-                    className:
-                      "px-6 py-2.5 text-slate-400 hover:text-slate-600 font-bold text-sm transition-colors disabled:opacity-50",
-                    children: "Discard",
-                  }),
-                  e.jsx("button", {
-                    type: "button",
-                    onClick: _n,
-                    disabled: H.saving || !L,
-                    className:
-                      "px-10 py-2.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl text-sm shadow-xl transition-all active:scale-95 disabled:opacity-60",
-                    children: H.saving ? "Saving…" : "Save All Buttons",
-                  }),
-                ],
-              }),
-            ],
           }),
-          J
-            ? e.jsx("div", {
-                className:
-                  "fixed inset-0 z-[9999] flex items-center justify-center p-6 bg-slate-900/45 backdrop-blur-md animate-in fade-in duration-200",
-                role: "presentation",
-                onClick: () => j(null),
-                children: e.jsxs("div", {
-                  className:
-                    "bg-white rounded-3xl shadow-[0_30px_80px_rgba(2,6,23,0.35)] w-full max-w-lg overflow-hidden border border-slate-100 ring-1 ring-slate-200/60 animate-in zoom-in-95 duration-200",
-                  role: "dialog",
-                  "aria-modal": "true",
-                  onClick: (Y) => Y.stopPropagation(),
-                  children: [
-                    e.jsxs("div", {
-                      className: "p-6 border-b border-slate-100 flex justify-between items-center bg-white",
-                      children: [
-                        e.jsxs("div", {
-                          className: "flex items-center gap-2",
+          e.jsxs("div", {
+            className: "nls-split__main nls-stack nls-stack--tight",
+            children: [
+              H.error
+                ? e.jsx("div", {
+                    className: "nls-notice nls-notice--danger",
+                    role: "alert",
+                    children: H.error,
+                  })
+                : null,
+              _
+                ? f === "group"
+                  ? Cn()
+                  : f === "button" && X
+                    ? Es()
+                    : e.jsx("p", {
+                        className: "nls-empty-inline",
+                        children: "Select a button from the sidebar or add a new one.",
+                      })
+                : e.jsxs("div", {
+                    className: "nls-empty",
+                    children: [
+                      e.jsx("div", {
+                        className: "nls-empty__icon",
+                        "aria-hidden": "true",
+                        children: e.jsx(wm, {
+                          size: 22,
+                        }),
+                      }),
+                      e.jsx("p", {
+                        className: "nls-empty__desc",
+                        children: "Create a button group to get started.",
+                      }),
+                      e.jsx("div", {
+                        className: "nls-empty__actions",
+                        children: e.jsxs("button", {
+                          type: "button",
+                          onClick: oe,
+                          className: "nls-btn nls-btn--primary",
                           children: [
-                            e.jsx(Rt, {
-                              className: "text-blue-600",
-                              size: 18,
+                            e.jsx(dt, {
+                              size: 16,
+                              "aria-hidden": "true",
                             }),
-                            e.jsxs("h4", {
-                              className: "font-bold text-slate-800",
-                              children: ["Quick Preview: ", J.label],
-                            }),
+                            " Add Group",
                           ],
                         }),
-                        e.jsx("button", {
-                          type: "button",
-                          onClick: () => j(null),
-                          className: "p-2 hover:bg-slate-100 rounded-full transition-colors",
-                          children: e.jsx(_t, {
-                            size: 20,
-                          }),
-                        }),
-                      ],
-                    }),
-                    e.jsxs("div", {
-                      className:
-                        "p-12 flex flex-col items-center justify-center gap-8 bg-slate-50/60 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px]",
+                      }),
+                    ],
+                  }),
+            ],
+          }),
+        ],
+      }),
+      e.jsx(ModalShell, {
+        open: !!J,
+        onClose: () => j(null),
+        size: "md",
+        labelledBy: "nexulesuite_menus-preview-title",
+        children: J
+          ? e.jsxs(e.Fragment, {
+              children: [
+                e.jsxs("div", {
+                  className: "nls-modal__header",
+                  children: [
+                    e.jsxs("h4", {
+                      id: "nexulesuite_menus-preview-title",
+                      className: "nls-modal__title nls-row",
                       children: [
-                        e.jsx(Fs, {
-                          btn: J,
-                          isPopout: !0,
+                        e.jsx(Rt, {
+                          size: 18,
+                          "aria-hidden": "true",
                         }),
-                        e.jsx("div", {
-                          className: "text-center",
-                          children: e.jsx("p", {
-                            className: "text-xs text-slate-400 italic",
-                            children: "This is how your button looks in isolation.",
-                          }),
-                        }),
+                        "Quick Preview: ",
+                        J.label,
                       ],
                     }),
-                    e.jsx("div", {
-                      className: "p-4 bg-slate-50 border-t border-slate-100 flex justify-center",
-                      children: e.jsx("button", {
-                        type: "button",
-                        onClick: () => j(null),
-                        className: "text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors",
-                        children: "Close Preview",
+                    e.jsx("button", {
+                      type: "button",
+                      onClick: () => j(null),
+                      className: "nls-icon-btn",
+                      "aria-label": "Close",
+                      children: e.jsx(_t, {
+                        size: 20,
                       }),
                     }),
                   ],
                 }),
-              })
-            : null,
-        ],
+                e.jsx("div", {
+                  className: "nls-modal__body",
+                  children: e.jsxs("div", {
+                    className: "nls-menus-preview-stage",
+                    children: [
+                      e.jsx(Fs, {
+                        btn: J,
+                        isPopout: !0,
+                      }),
+                      e.jsx("p", {
+                        className: "nls-menus-preview-note",
+                        children: "This is how your button looks in isolation.",
+                      }),
+                    ],
+                  }),
+                }),
+                e.jsx("div", {
+                  className: "nls-modal__footer",
+                  children: e.jsx("button", {
+                    type: "button",
+                    onClick: () => j(null),
+                    className: "nls-btn nls-btn--secondary",
+                    children: "Close Preview",
+                  }),
+                }),
+              ],
+            })
+          : null,
       }),
     ],
   });
