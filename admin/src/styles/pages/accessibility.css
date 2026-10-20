@@ -1,0 +1,483 @@
+/*
+ * Accessibility & Language page (AccessibilityPage.js).
+ *
+ * The page body is built from the shared nls-* primitives; this file adds
+ * the two-column controls + live-preview layout and re-tunes the legacy dock
+ * widgets (preview, nudge pad, tabs, icon picker, order list, colour fields)
+ * to the shared tokens so they match the surrounding cards. Everything is
+ * scoped to .nls-a11y-page so nothing leaks into other screens.
+ */
+
+/* ---- Layout: controls (left) + live preview (right) --------------------
+ * auto-fit keeps both columns while each can be at least 420px wide and
+ * collapses to one column below that (around a 1100px viewport inside
+ * wp-admin with both sidebars open). A lone column spans the full width.
+ */
+#nexulesuite_admin-root .nls-a11y-layout {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+	gap: var(--nls-space-6);
+	align-items: start;
+}
+
+#nexulesuite_admin-root .nls-a11y-layout__main,
+#nexulesuite_admin-root .nls-a11y-layout__side {
+	min-width: 0;
+}
+
+/* Card header: icon + title + tooltip on one line. */
+#nexulesuite_admin-root .nls-a11y-page .nls-card__title {
+	gap: 8px;
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-card__title .nexulesuite_tip,
+#nexulesuite_admin-root .nls-a11y-page .nls-field__label .nexulesuite_tip {
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_tip:hover,
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_tip:focus-visible {
+	color: var(--nls-primary);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_tip-bubble {
+	font-size: var(--nls-fs-caption);
+	border-radius: var(--nls-radius-control);
+}
+
+/* Toggle-card hints are <p>; keep them on the card's caption size. */
+#nexulesuite_admin-root .nls-a11y-page .nls-toggle-card__hint {
+	line-height: 1.45;
+}
+
+/* ---- Range fields (Button size / Icon size / Button gap) ---------------- */
+#nexulesuite_admin-root .nls-a11y-range__head {
+	flex-wrap: wrap;
+}
+
+#nexulesuite_admin-root .nls-a11y-range__val {
+	margin-left: auto;
+	font-variant-numeric: tabular-nums;
+	font-weight: var(--nls-fw-semibold);
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-slider {
+	display: flex;
+	align-items: center;
+	min-height: 24px;
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-slider__input {
+	width: 100%;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+	-webkit-appearance: none;
+	appearance: none;
+	cursor: pointer;
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-slider__input::-webkit-slider-runnable-track {
+	height: 4px;
+	border-radius: var(--nls-radius-pill);
+	background: linear-gradient(
+		to right,
+		var(--nls-primary) 0,
+		var(--nls-primary) var(--nls-pct, 0%),
+		var(--nls-gray-200) var(--nls-pct, 0%),
+		var(--nls-gray-200) 100%
+	);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-slider__input::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 16px;
+	height: 16px;
+	margin-top: -6px;
+	border: 2px solid var(--nls-primary);
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: var(--nls-shadow-card);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-slider__input::-moz-range-track {
+	height: 4px;
+	border-radius: var(--nls-radius-pill);
+	background: var(--nls-gray-200);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-slider__input::-moz-range-progress {
+	height: 4px;
+	border-radius: var(--nls-radius-pill);
+	background: var(--nls-primary);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-slider__input::-moz-range-thumb {
+	width: 16px;
+	height: 16px;
+	border: 2px solid var(--nls-primary);
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: var(--nls-shadow-card);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-slider__input:focus-visible {
+	outline: var(--nls-focus-outline);
+	outline-offset: var(--nls-focus-offset);
+	border-radius: var(--nls-radius-control);
+}
+
+/* ---- Legacy colour fields + FAB previews ------------------------------- */
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-color .lbl,
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_a11y-fab-preview-wrap .lbl {
+	display: block;
+	font-size: var(--nls-fs-caption);
+	font-weight: var(--nls-fw-semibold);
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-color .cswatch {
+	border-radius: var(--nls-radius-control);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-color .chex {
+	font-family: var(--nls-font-mono);
+	border-color: var(--nls-border);
+	border-radius: var(--nls-radius-control);
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-color .chex:focus {
+	border-color: var(--nls-primary);
+	box-shadow: var(--nls-focus-ring);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_a11y-fab-preview {
+	box-shadow: var(--nls-shadow-raised);
+}
+
+/* ---- Dock live preview (right column) ---------------------------------- */
+#nexulesuite_admin-root .nls-a11y-layout__side .nls-a11y-dock-preview-card {
+	display: flex;
+	flex-direction: column;
+	min-height: 240px;
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-dock-preview,
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-dock-preview--panel {
+	background: var(--nls-surface-2);
+	border-radius: var(--nls-radius-card);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-dock-preview .lbl {
+	font-size: var(--nls-fs-caption);
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-dock-preview__meta {
+	font-size: var(--nls-fs-caption);
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-dock-preview__btn {
+	box-shadow: var(--nls-shadow-raised);
+}
+
+/* ---- Offset / display-condition tabs: pill style ----------------------- */
+#nexulesuite_admin-root .nls-a11y-page .nls-dock-display-tabs {
+	gap: var(--nls-space-1);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-dock-display-tab {
+	min-height: 30px;
+	padding: 0 12px;
+	border: 1px solid var(--nls-border);
+	border-radius: var(--nls-radius-pill);
+	background: var(--nls-surface);
+	font-size: var(--nls-fs-caption);
+	font-weight: var(--nls-fw-semibold);
+	letter-spacing: 0;
+	color: var(--nls-ink-2);
+	box-shadow: none;
+	transition: background-color var(--nls-transition), border-color var(--nls-transition), color var(--nls-transition);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-dock-display-tab:hover {
+	background: var(--nls-surface-2);
+	border-color: var(--nls-border-strong);
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-dock-display-tab.is-active,
+#nexulesuite_admin-root .nls-a11y-page .nls-dock-display-tab[aria-selected="true"] {
+	background: var(--nls-primary-soft);
+	border-color: var(--nls-primary-border);
+	color: var(--nls-primary-hover);
+	box-shadow: none;
+}
+
+/* Offset card: vertical tab list on the left, nudge pad on the right. */
+#nexulesuite_admin-root .nls-a11y-page .nls-dock-offset-card .nls-dock-offset-layout {
+	align-items: stretch;
+	gap: var(--nls-space-4);
+	margin-top: var(--nls-space-1);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-dock-offset-card .nls-dock-offset-tabs {
+	flex-basis: 150px;
+	gap: var(--nls-space-1);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-dock-offset-card .nls-dock-offset-tabs .nls-dock-display-tab {
+	min-height: 32px;
+	padding: 0 12px;
+	border-radius: var(--nls-radius-control);
+	font-size: var(--nls-fs-secondary);
+	font-weight: var(--nls-fw-medium);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-dock-offset-card .nls-dock-offset-controls {
+	flex: 1 1 auto;
+	justify-content: center;
+	align-items: center;
+	margin-left: 0;
+	padding: var(--nls-space-3) var(--nls-space-4);
+	border: 1px solid var(--nls-border);
+	border-radius: var(--nls-radius-card);
+	background: var(--nls-surface-2);
+}
+
+@media (max-width: 640px) {
+	#nexulesuite_admin-root .nls-a11y-page .nls-dock-offset-card .nls-dock-offset-tabs {
+		flex-basis: auto;
+	}
+}
+
+/* ---- Nudge pad ---------------------------------------------------------- */
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-nudge {
+	max-width: 100%;
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-nudge__unit,
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-nudge__field,
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-nudge__readout {
+	font-size: var(--nls-fs-caption);
+	font-weight: var(--nls-fw-semibold);
+	color: var(--nls-muted);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-nudge__unit-select {
+	width: auto;
+	min-width: 80px;
+	height: auto;
+	min-height: 32px;
+	padding: 4px 30px 4px 10px;
+	border: 1px solid var(--nls-border);
+	border-radius: var(--nls-radius-control);
+	font-size: var(--nls-fs-secondary);
+	font-weight: var(--nls-fw-normal);
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-nudge__btn {
+	width: 36px;
+	height: 36px;
+	border: 1px solid var(--nls-border-strong);
+	border-radius: var(--nls-radius-control);
+	background: var(--nls-surface);
+	color: var(--nls-ink-2);
+	font-size: var(--nls-fs-secondary);
+	transition: background-color var(--nls-transition), border-color var(--nls-transition), color var(--nls-transition);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-nudge__btn:hover {
+	border-color: var(--nls-primary);
+	background: var(--nls-primary-soft);
+	color: var(--nls-primary-hover);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-nudge__input {
+	width: 72px;
+	height: auto;
+	min-height: 32px;
+	padding: 4px 6px;
+	border: 1px solid var(--nls-border);
+	border-radius: var(--nls-radius-control);
+	font-size: var(--nls-fs-secondary);
+	font-weight: var(--nls-fw-semibold);
+	text-align: center;
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-nudge__input:focus {
+	outline: none;
+	border-color: var(--nls-primary);
+	box-shadow: var(--nls-focus-ring);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-nudge__reset {
+	min-height: 30px;
+	padding: 0 10px;
+	border-radius: var(--nls-radius-control);
+	font-size: var(--nls-fs-secondary);
+	font-weight: var(--nls-fw-medium);
+	color: var(--nls-primary);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-a11y-nudge__reset:hover {
+	background: var(--nls-primary-soft);
+	text-decoration: none;
+}
+
+/* ---- Custom button card ------------------------------------------------- */
+#nexulesuite_admin-root .nls-a11y-page .nls-custom-btn-card .nls-card__body {
+	padding: var(--nls-space-4);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-custom-btn-card .nls-custom-btn-row .nls-field {
+	margin: 0;
+}
+
+/* Two colour fields side by side; the "Open in new tab" toggle spans both. */
+#nexulesuite_admin-root .nls-a11y-page .nls-custom-btn-card .nls-custom-btn-row--style {
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	align-items: start;
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-custom-btn-card .nls-custom-btn-toggle {
+	grid-column: 1 / -1;
+	height: auto;
+	min-height: 48px;
+	padding: 8px 12px;
+	background: var(--nls-surface);
+}
+
+@media (max-width: 480px) {
+	#nexulesuite_admin-root .nls-a11y-page .nls-custom-btn-card .nls-custom-btn-row--style {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+/* ---- Icon picker --------------------------------------------------------- */
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-icon-opt {
+	border: 1px solid var(--nls-border);
+	border-radius: var(--nls-radius-control);
+	background: var(--nls-surface);
+	color: var(--nls-ink-2);
+	font-size: var(--nls-fs-caption);
+	font-weight: var(--nls-fw-medium);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-icon-opt:hover {
+	border-color: var(--nls-border-strong);
+	background: var(--nls-surface-2);
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-icon-opt.is-active,
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-icon-opt[aria-selected="true"] {
+	border-color: var(--nls-primary);
+	background: var(--nls-primary-soft);
+	color: var(--nls-primary-hover);
+	box-shadow: inset 0 0 0 1px var(--nls-primary);
+}
+
+@media (max-width: 480px) {
+	#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-icon-row {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-icon-row .nexulesuite_nls-icon-grid {
+		width: 100%;
+	}
+
+	#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-icon-row .nexulesuite_a11y-fab-preview-wrap {
+		position: static;
+		flex-basis: auto;
+	}
+}
+
+/* ---- Dock button order --------------------------------------------------- */
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-order-list {
+	margin-top: var(--nls-space-1);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-order-row {
+	padding: 8px 8px 8px 12px;
+	border: 1px solid var(--nls-border);
+	border-radius: var(--nls-radius-control);
+	background: var(--nls-surface);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-order-row__label {
+	font-size: var(--nls-fs-body);
+	font-weight: var(--nls-fw-medium);
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nexulesuite_nls-order-row__num {
+	background: var(--nls-surface-3);
+	font-size: var(--nls-fs-caption);
+	color: var(--nls-muted);
+}
+
+/* ---- Display conditions -------------------------------------------------- */
+#nexulesuite_admin-root .nls-a11y-page .nls-dock-display-card {
+	gap: var(--nls-space-2);
+}
+
+#nexulesuite_admin-root .nls-a11y-page .nls-dock-display-body {
+	margin-top: var(--nls-space-1);
+}
+
+/* ---- Languages to show --------------------------------------------------- */
+#nexulesuite_admin-root .nls-a11y-langs .nls-card__body {
+	gap: var(--nls-space-3);
+}
+
+#nexulesuite_admin-root .nls-a11y-langs__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	gap: var(--nls-space-2);
+}
+
+#nexulesuite_admin-root .nls-a11y-langs__item {
+	align-items: center;
+	min-height: 40px;
+	padding: 6px 10px;
+	border: 1px solid var(--nls-border);
+	border-radius: var(--nls-radius-control);
+	background: var(--nls-surface);
+	font-size: var(--nls-fs-secondary);
+	transition: background-color var(--nls-transition), border-color var(--nls-transition);
+}
+
+#nexulesuite_admin-root .nls-a11y-langs__item input {
+	margin-top: 0;
+}
+
+#nexulesuite_admin-root .nls-a11y-langs__item:hover {
+	border-color: var(--nls-border-strong);
+}
+
+#nexulesuite_admin-root .nls-a11y-langs__item.is-on {
+	border-color: var(--nls-primary-border);
+	background: var(--nls-primary-soft);
+	color: var(--nls-ink);
+}
+
+#nexulesuite_admin-root .nls-a11y-langs__flag {
+	font-size: 16px;
+	line-height: 1;
+}
+
+#nexulesuite_admin-root .nls-a11y-langs__name {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}

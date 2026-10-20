@@ -842,23 +842,26 @@ export function AccessibilityPage() {
       }));
     }
   };
+  const nlsUid = b.useId();
+  const nlsPosId = nlsUid + "-pos";
+  const nlsLangId = nlsUid + "-lang";
+  const nlsUrlId = nlsUid + "-url";
+  const nlsLabelId = nlsUid + "-label";
+  const nlsUnitId = nlsUid + "-unit";
   const P = e.jsxs("button", {
     type: "button",
     disabled: u.saving || u.loading,
     onClick: y,
-    className:
-      "flex items-center gap-3 rounded-tile px-10 py-3 text-xs font-black text-white transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-60",
-    style: {
-      background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-      boxShadow: "0 8px 18px -8px #6366f1",
-    },
+    className: "nls-btn nls-btn--primary",
     children: [
       e.jsx(bn, {
         size: 16,
+        "aria-hidden": "true",
       }),
       u.saving ? "Saving..." : "Save Configuration",
     ],
   });
+  const nlsSwitch = (on) => "nls-switch" + (on ? " is-on" : "");
   return e.jsxs(PageFrame, {
     title: "Accessibility & Language",
     subtitle: "Site accessibility widget, live chat, and language switcher",
@@ -876,109 +879,100 @@ export function AccessibilityPage() {
       }),
       u.loading
         ? e.jsxs("div", {
-            className: "flex h-64 flex-col items-center justify-center gap-4",
+            className: "nls-loading",
+            role: "status",
             children: [
-              e.jsx("div", {
-                className: "w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin",
-              }),
               e.jsx("span", {
-                className: "text-[11px] font-bold text-slate-400 uppercase tracking-widest",
-                children: "Loading configuration...",
+                className: "nls-spinner",
+                "aria-hidden": "true",
               }),
+              "Loading configuration...",
             ],
           })
-        : e.jsx("div", {
-            className: "nexulesuite_settings-general-wrap",
-            children: e.jsxs("div", {
-              className: "nexulesuite_sg-card",
-              children: [
-                e.jsxs("section", {
-                  className: "nexulesuite_sg-section is-first",
-                  children: [
-                    e.jsxs("div", {
-                      className: "nexulesuite_sg-sec-head",
+        : e.jsxs("div", {
+            className: "nls-stack nls-a11y-page",
+            children: [
+              e.jsxs("section", {
+                className: "nls-card",
+                "aria-labelledby": nlsUid + "-a11y-title",
+                children: [
+                  e.jsx("div", {
+                    className: "nls-card__header",
+                    children: e.jsxs("h2", {
+                      className: "nls-card__title",
+                      id: nlsUid + "-a11y-title",
                       children: [
-                        e.jsx("span", {
-                          className: "nexulesuite_sg-sec-ico",
-                          children: e.jsx(id, {
-                            size: 16,
-                          }),
+                        e.jsx(id, {
+                          size: 18,
+                          "aria-hidden": "true",
                         }),
-                        e.jsx("div", {
-                          children: e.jsxs("span", {
-                            className: "nexulesuite_sg-sec-title nexulesuite_sg-title-tip",
-                            children: [
-                              "Accessibility ",
-                              e.jsx(Tooltip, {
-                                text: "Shows a floating button on the website. Visitors can adjust text size, contrast, fonts, links, animations, cursor, spacing, speech, reading mask, and focus.",
-                              }),
-                            ],
-                          }),
+                        "Accessibility ",
+                        e.jsx(Tooltip, {
+                          text: "Shows a floating button on the website. Visitors can adjust text size, contrast, fonts, links, animations, cursor, spacing, speech, reading mask, and focus.",
                         }),
                       ],
                     }),
-                    e.jsxs("div", {
-                      className: "nexulesuite_sg-grid-2 nexulesuite_sg-grid-2-stretch",
+                  }),
+                  e.jsx("div", {
+                    className: "nls-card__body",
+                    children: e.jsxs("div", {
+                      className: "nls-a11y-layout",
                       children: [
                         e.jsxs("div", {
-                          className: "nexulesuite_sg-stack",
+                          className: "nls-stack nls-stack--tight nls-a11y-layout__main",
                           children: [
                             e.jsxs("div", {
-                              className: "nexulesuite_sg-toggle-card",
+                              className: "nls-toggle-card",
                               children: [
                                 e.jsxs("div", {
-                                  className: "nexulesuite_sg-toggle-card-body",
+                                  className: "nls-toggle-card__body",
                                   children: [
                                     e.jsx("span", {
-                                      className: "nexulesuite_sg-toggle-card-title",
+                                      className: "nls-toggle-card__title",
                                       children: "Enable Accessibility",
                                     }),
                                     e.jsx("p", {
-                                      className: "hint",
+                                      className: "nls-toggle-card__hint",
                                       children: "Floating widget with full accessibility tools",
                                     }),
                                   ],
                                 }),
                                 e.jsx("div", {
-                                  className: "nexulesuite_sg-toggle" + (a.accessibilityEnabled ? " on" : ""),
+                                  className: nlsSwitch(a.accessibilityEnabled),
                                   role: "switch",
                                   "aria-checked": !!a.accessibilityEnabled,
+                                  "aria-label": "Enable Accessibility",
                                   tabIndex: 0,
                                   onClick: () => f("accessibilityEnabled", !a.accessibilityEnabled),
                                   onKeyDown: (M) => {
                                     (M.key === " " || M.key === "Enter") &&
                                       (M.preventDefault(), f("accessibilityEnabled", !a.accessibilityEnabled));
                                   },
-                                  children: e.jsx("span", {
-                                    className: "track",
-                                    children: e.jsx("span", {
-                                      className: "knob",
-                                    }),
-                                  }),
                                 }),
                               ],
                             }),
                             e.jsxs("div", {
-                              className: "nexulesuite_sg-toggle-card",
+                              className: "nls-toggle-card",
                               children: [
                                 e.jsxs("div", {
-                                  className: "nexulesuite_sg-toggle-card-body",
+                                  className: "nls-toggle-card__body",
                                   children: [
                                     e.jsx("span", {
-                                      className: "nexulesuite_sg-toggle-card-title",
+                                      className: "nls-toggle-card__title",
                                       children: "Enable Live Chat",
                                     }),
                                     e.jsx("p", {
-                                      className: "hint",
+                                      className: "nls-toggle-card__hint",
                                       children:
                                         "Adds the chat button to the Acc & Lang dock only (no separate corner bubble). Respects Display conditions.",
                                     }),
                                   ],
                                 }),
                                 e.jsx("div", {
-                                  className: "nexulesuite_sg-toggle" + (a.enableLivechat ? " on" : ""),
+                                  className: nlsSwitch(a.enableLivechat),
                                   role: "switch",
                                   "aria-checked": !!a.enableLivechat,
+                                  "aria-label": "Enable Live Chat",
                                   tabIndex: 0,
                                   onClick: () => {
                                     const n = !a.enableLivechat;
@@ -1000,21 +994,16 @@ export function AccessibilityPage() {
                                         }));
                                       })());
                                   },
-                                  children: e.jsx("span", {
-                                    className: "track",
-                                    children: e.jsx("span", {
-                                      className: "knob",
-                                    }),
-                                  }),
                                 }),
                               ],
                             }),
                             !0
                               ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-select-card nls-btn-position-card",
+                                  className: "nls-field nls-btn-position-card",
                                   children: [
-                                    e.jsxs("span", {
-                                      className: "lbl nexulesuite_lbl-tip",
+                                    e.jsxs("label", {
+                                      className: "nls-field__label",
+                                      htmlFor: nlsPosId,
                                       children: [
                                         "Button position ",
                                         e.jsx(Tooltip, {
@@ -1023,7 +1012,7 @@ export function AccessibilityPage() {
                                       ],
                                     }),
                                     e.jsx("select", {
-                                      className: "sel",
+                                      id: nlsPosId,
                                       value: a.buttonPosition || "right",
                                       onChange: (M) => f("buttonPosition", M.target.value),
                                       children: [
@@ -1046,10 +1035,10 @@ export function AccessibilityPage() {
                               : null,
                             !0
                               ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-select-card nls-dock-offset-card",
+                                  className: "nls-field nls-dock-offset-card",
                                   children: [
                                     e.jsxs("span", {
-                                      className: "lbl nexulesuite_lbl-tip",
+                                      className: "nls-field__label",
                                       children: [
                                         "Button offset ",
                                         e.jsx(Tooltip, {
@@ -1100,11 +1089,13 @@ export function AccessibilityPage() {
                                             children: [
                                               e.jsxs("label", {
                                                 className: "nls-a11y-nudge__unit",
+                                                htmlFor: nlsUnitId,
                                                 children: [
                                                   e.jsx("span", {
                                                     children: "Unit",
                                                   }),
                                                   e.jsxs("select", {
+                                                    id: nlsUnitId,
                                                     className: "nls-a11y-nudge__unit-select",
                                                     value: a.buttonOffsetUnit === "em" ? "em" : "px",
                                                     onChange: (M) =>
@@ -1236,17 +1227,17 @@ export function AccessibilityPage() {
                               : null,
                             !0
                               ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-select-card",
+                                  className: "nls-field nls-a11y-range",
                                   children: [
                                     e.jsxs("span", {
-                                      className: "lbl nexulesuite_lbl-tip",
+                                      className: "nls-field__label nls-a11y-range__head",
                                       children: [
                                         "Button size ",
+                                        e.jsx(Tooltip, {
+                                          text: "Diameter of every floating dock button (0–100px).",
+                                        }),
                                         e.jsxs("span", {
-                                          style: {
-                                            float: "right",
-                                            fontWeight: 700,
-                                          },
+                                          className: "nls-a11y-range__val",
                                           children: [
                                             ((v) => {
                                               const n = parseInt(v, 10);
@@ -1255,13 +1246,10 @@ export function AccessibilityPage() {
                                             "px",
                                           ],
                                         }),
-                                        e.jsx(Tooltip, {
-                                          text: "Diameter of every floating dock button (0–100px).",
-                                        }),
                                       ],
                                     }),
                                     e.jsx(nlsRange, {
-                                      className: "inp",
+                                      "aria-label": "Button size",
                                       min: 0,
                                       max: 100,
                                       step: 1,
@@ -1270,26 +1258,23 @@ export function AccessibilityPage() {
                                         return Math.max(0, Math.min(100, Number.isFinite(n) ? n : 52));
                                       })(a.buttonSize),
                                       onChange: (M) => f("buttonSize", Number(M.target.value)),
-                                      style: {
-                                        width: "100%",
-                                      },
                                     }),
                                   ],
                                 })
                               : null,
                             !0
                               ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-select-card",
+                                  className: "nls-field nls-a11y-range",
                                   children: [
                                     e.jsxs("span", {
-                                      className: "lbl nexulesuite_lbl-tip",
+                                      className: "nls-field__label nls-a11y-range__head",
                                       children: [
                                         "Icon size ",
+                                        e.jsx(Tooltip, {
+                                          text: "Icon size inside dock buttons (0–100px).",
+                                        }),
                                         e.jsxs("span", {
-                                          style: {
-                                            float: "right",
-                                            fontWeight: 700,
-                                          },
+                                          className: "nls-a11y-range__val",
                                           children: [
                                             ((v, b) => {
                                               const n = parseInt(v, 10);
@@ -1303,13 +1288,10 @@ export function AccessibilityPage() {
                                             "px",
                                           ],
                                         }),
-                                        e.jsx(Tooltip, {
-                                          text: "Icon size inside dock buttons (0–100px).",
-                                        }),
                                       ],
                                     }),
                                     e.jsx(nlsRange, {
-                                      className: "inp",
+                                      "aria-label": "Icon size",
                                       min: 0,
                                       max: 100,
                                       step: 1,
@@ -1323,26 +1305,23 @@ export function AccessibilityPage() {
                                         );
                                       })(a.buttonIconSize, a.buttonSize),
                                       onChange: (M) => f("buttonIconSize", Number(M.target.value)),
-                                      style: {
-                                        width: "100%",
-                                      },
                                     }),
                                   ],
                                 })
                               : null,
                             !0
                               ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-select-card",
+                                  className: "nls-field nls-a11y-range",
                                   children: [
                                     e.jsxs("span", {
-                                      className: "lbl nexulesuite_lbl-tip",
+                                      className: "nls-field__label nls-a11y-range__head",
                                       children: [
                                         "Button gap ",
+                                        e.jsx(Tooltip, {
+                                          text: "Space between each floating dock button (0–100px).",
+                                        }),
                                         e.jsxs("span", {
-                                          style: {
-                                            float: "right",
-                                            fontWeight: 700,
-                                          },
+                                          className: "nls-a11y-range__val",
                                           children: [
                                             ((v) => {
                                               const n = parseInt(v, 10);
@@ -1351,13 +1330,10 @@ export function AccessibilityPage() {
                                             "px",
                                           ],
                                         }),
-                                        e.jsx(Tooltip, {
-                                          text: "Space between each floating dock button (0–100px).",
-                                        }),
                                       ],
                                     }),
                                     e.jsx(nlsRange, {
-                                      className: "inp",
+                                      "aria-label": "Button gap",
                                       min: 0,
                                       max: 100,
                                       step: 1,
@@ -1366,19 +1342,16 @@ export function AccessibilityPage() {
                                         return Math.max(0, Math.min(100, Number.isFinite(n) ? n : 10));
                                       })(a.buttonGap),
                                       onChange: (M) => f("buttonGap", Number(M.target.value)),
-                                      style: {
-                                        width: "100%",
-                                      },
                                     }),
                                   ],
                                 })
                               : null,
                             a.accessibilityEnabled
                               ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-select-card",
+                                  className: "nls-field",
                                   children: [
                                     e.jsxs("span", {
-                                      className: "lbl nexulesuite_lbl-tip",
+                                      className: "nls-field__label",
                                       children: [
                                         "Button colors ",
                                         e.jsx(Tooltip, {
@@ -1416,144 +1389,138 @@ export function AccessibilityPage() {
                               : null,
                             !0
                               ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-toggle-card",
+                                  className: "nls-toggle-card",
                                   children: [
                                     e.jsxs("div", {
-                                      className: "nexulesuite_sg-toggle-card-body",
+                                      className: "nls-toggle-card__body",
                                       children: [
                                         e.jsx("span", {
-                                          className: "nexulesuite_sg-toggle-card-title",
+                                          className: "nls-toggle-card__title",
                                           children: "Custom button",
                                         }),
                                         e.jsx("p", {
-                                          className: "hint",
+                                          className: "nls-toggle-card__hint",
                                           children: "Extra floating button in the same dock (link/URL)",
                                         }),
                                       ],
                                     }),
                                     e.jsx("div", {
-                                      className: "nexulesuite_sg-toggle" + (a.customButtonEnabled ? " on" : ""),
+                                      className: nlsSwitch(a.customButtonEnabled),
                                       role: "switch",
                                       "aria-checked": !!a.customButtonEnabled,
+                                      "aria-label": "Custom button",
                                       tabIndex: 0,
                                       onClick: () => f("customButtonEnabled", !a.customButtonEnabled),
                                       onKeyDown: (M) => {
                                         (M.key === " " || M.key === "Enter") &&
                                           (M.preventDefault(), f("customButtonEnabled", !a.customButtonEnabled));
                                       },
-                                      children: e.jsx("span", {
-                                        className: "track",
-                                        children: e.jsx("span", {
-                                          className: "knob",
-                                        }),
-                                      }),
                                     }),
                                   ],
                                 })
                               : null,
                             a.customButtonEnabled
-                              ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-select-card nls-custom-btn-card",
-                                  children: [
-                                    e.jsxs("div", {
-                                      className: "nls-custom-btn-row nls-custom-btn-row--fields",
-                                      children: [
-                                        e.jsxs("div", {
-                                          className: "nexulesuite_sg-field",
-                                          children: [
-                                            e.jsxs("span", {
-                                              className: "lbl nexulesuite_lbl-tip",
-                                              children: [
-                                                "Custom button link ",
-                                                e.jsx(Tooltip, {
-                                                  text: "URL opened when visitors tap the custom dock button.",
-                                                }),
-                                              ],
-                                            }),
-                                            e.jsx("input", {
-                                              className: "inp",
-                                              type: "url",
-                                              placeholder: "https://example.com",
-                                              value: a.customButtonUrl || "",
-                                              onChange: (M) => f("customButtonUrl", M.target.value),
-                                            }),
-                                          ],
-                                        }),
-                                        e.jsxs("div", {
-                                          className: "nexulesuite_sg-field",
-                                          children: [
-                                            e.jsx("span", {
-                                              className: "lbl",
-                                              children: "Label",
-                                            }),
-                                            e.jsx("input", {
-                                              className: "inp",
-                                              type: "text",
-                                              value: a.customButtonLabel || "Custom",
-                                              onChange: (M) => f("customButtonLabel", M.target.value),
-                                            }),
-                                          ],
-                                        }),
-                                      ],
-                                    }),
-                                    e.jsxs("div", {
-                                      className: "nls-custom-btn-row nls-custom-btn-row--style",
-                                      children: [
-                                        e.jsx(ColorField, {
-                                          label: "Background",
-                                          value: a.customButtonBg || "#2563eb",
-                                          onChange: (M) => f("customButtonBg", M),
-                                        }),
-                                        e.jsx(ColorField, {
-                                          label: "Icon / text",
-                                          value: a.customButtonText || "#ffffff",
-                                          onChange: (M) => f("customButtonText", M),
-                                        }),
-                                        e.jsxs("div", {
-                                          className: "nexulesuite_sg-toggle-card nls-custom-btn-toggle",
-                                          children: [
-                                            e.jsxs("div", {
-                                              className: "nexulesuite_sg-toggle-card-body",
-                                              children: [
-                                                e.jsx("span", {
-                                                  className: "nexulesuite_sg-toggle-card-title",
-                                                  children: "Open in new tab",
-                                                }),
-                                                e.jsx("p", {
-                                                  className: "hint",
-                                                  children: "Recommended for external links",
-                                                }),
-                                              ],
-                                            }),
-                                            e.jsx("div", {
-                                              className:
-                                                "nexulesuite_sg-toggle" +
-                                                (a.customButtonOpenNewTab !== !1 ? " on" : ""),
-                                              role: "switch",
-                                              "aria-checked": a.customButtonOpenNewTab !== !1,
-                                              tabIndex: 0,
-                                              onClick: () =>
-                                                f("customButtonOpenNewTab", !(a.customButtonOpenNewTab !== !1)),
-                                              children: e.jsx("span", {
-                                                className: "track",
-                                                children: e.jsx("span", {
-                                                  className: "knob",
-                                                }),
+                              ? e.jsx("div", {
+                                  className: "nls-card nls-card--soft nls-custom-btn-card",
+                                  children: e.jsxs("div", {
+                                    className: "nls-card__body",
+                                    children: [
+                                      e.jsxs("div", {
+                                        className: "nls-custom-btn-row nls-custom-btn-row--fields",
+                                        children: [
+                                          e.jsxs("div", {
+                                            className: "nls-field",
+                                            children: [
+                                              e.jsxs("label", {
+                                                className: "nls-field__label",
+                                                htmlFor: nlsUrlId,
+                                                children: [
+                                                  "Custom button link ",
+                                                  e.jsx(Tooltip, {
+                                                    text: "URL opened when visitors tap the custom dock button.",
+                                                  }),
+                                                ],
                                               }),
-                                            }),
-                                          ],
-                                        }),
-                                      ],
-                                    }),
-                                  ],
+                                              e.jsx("input", {
+                                                id: nlsUrlId,
+                                                type: "url",
+                                                placeholder: "https://example.com",
+                                                value: a.customButtonUrl || "",
+                                                onChange: (M) => f("customButtonUrl", M.target.value),
+                                              }),
+                                            ],
+                                          }),
+                                          e.jsxs("div", {
+                                            className: "nls-field",
+                                            children: [
+                                              e.jsx("label", {
+                                                className: "nls-field__label",
+                                                htmlFor: nlsLabelId,
+                                                children: "Label",
+                                              }),
+                                              e.jsx("input", {
+                                                id: nlsLabelId,
+                                                type: "text",
+                                                value: a.customButtonLabel || "Custom",
+                                                onChange: (M) => f("customButtonLabel", M.target.value),
+                                              }),
+                                            ],
+                                          }),
+                                        ],
+                                      }),
+                                      e.jsxs("div", {
+                                        className: "nls-custom-btn-row nls-custom-btn-row--style",
+                                        children: [
+                                          e.jsx(ColorField, {
+                                            label: "Background",
+                                            value: a.customButtonBg || "#2563eb",
+                                            onChange: (M) => f("customButtonBg", M),
+                                          }),
+                                          e.jsx(ColorField, {
+                                            label: "Icon / text",
+                                            value: a.customButtonText || "#ffffff",
+                                            onChange: (M) => f("customButtonText", M),
+                                          }),
+                                          e.jsxs("div", {
+                                            className: "nls-toggle-card nls-custom-btn-toggle",
+                                            children: [
+                                              e.jsxs("div", {
+                                                className: "nls-toggle-card__body",
+                                                children: [
+                                                  e.jsx("span", {
+                                                    className: "nls-toggle-card__title",
+                                                    children: "Open in new tab",
+                                                  }),
+                                                  e.jsx("p", {
+                                                    className: "nls-toggle-card__hint",
+                                                    children: "Recommended for external links",
+                                                  }),
+                                                ],
+                                              }),
+                                              e.jsx("button", {
+                                                type: "button",
+                                                className: nlsSwitch(a.customButtonOpenNewTab !== !1),
+                                                role: "switch",
+                                                "aria-checked": a.customButtonOpenNewTab !== !1,
+                                                "aria-label": "Open in new tab",
+                                                tabIndex: 0,
+                                                onClick: () =>
+                                                  f("customButtonOpenNewTab", !(a.customButtonOpenNewTab !== !1)),
+                                              }),
+                                            ],
+                                          }),
+                                        ],
+                                      }),
+                                    ],
+                                  }),
                                 })
                               : null,
                             !0
                               ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-select-card",
+                                  className: "nls-field",
                                   children: [
                                     e.jsxs("span", {
-                                      className: "lbl nexulesuite_lbl-tip",
+                                      className: "nls-field__label",
                                       children: [
                                         "Dock button order ",
                                         e.jsx(Tooltip, {
@@ -1562,10 +1529,7 @@ export function AccessibilityPage() {
                                       ],
                                     }),
                                     e.jsx("p", {
-                                      className: "hint",
-                                      style: {
-                                        marginTop: "6px",
-                                      },
+                                      className: "nls-field__hint",
                                       children: "Only enabled buttons appear on the site.",
                                     }),
                                     e.jsx("div", {
@@ -1584,6 +1548,7 @@ export function AccessibilityPage() {
                                                 children: [
                                                   e.jsx("span", {
                                                     className: "nexulesuite_nls-order-row__num",
+                                                    "aria-hidden": "true",
                                                     children: String(idx + 1),
                                                   }),
                                                   nlsDockOrderLabels[key] || key,
@@ -1594,7 +1559,7 @@ export function AccessibilityPage() {
                                                 children: [
                                                   e.jsx("button", {
                                                     type: "button",
-                                                    className: "nexulesuite_nls-order-btn",
+                                                    className: "nls-icon-btn nls-icon-btn--sm",
                                                     disabled: idx === 0,
                                                     "aria-label": "Move up",
                                                     onClick: function () {
@@ -1602,11 +1567,12 @@ export function AccessibilityPage() {
                                                     },
                                                     children: e.jsx(nm, {
                                                       size: 16,
+                                                      "aria-hidden": "true",
                                                     }),
                                                   }),
                                                   e.jsx("button", {
                                                     type: "button",
-                                                    className: "nexulesuite_nls-order-btn",
+                                                    className: "nls-icon-btn nls-icon-btn--sm",
                                                     disabled: idx === arr.length - 1,
                                                     "aria-label": "Move down",
                                                     onClick: function () {
@@ -1614,6 +1580,7 @@ export function AccessibilityPage() {
                                                     },
                                                     children: e.jsx(Qs, {
                                                       size: 16,
+                                                      "aria-hidden": "true",
                                                     }),
                                                   }),
                                                 ],
@@ -1630,11 +1597,11 @@ export function AccessibilityPage() {
                           ],
                         }),
                         e.jsxs("div", {
-                          className: "nexulesuite_sg-stack",
+                          className: "nls-stack nls-stack--tight nls-a11y-layout__side",
                           children: [
                             !0
                               ? e.jsx("div", {
-                                  className: "nexulesuite_sg-select-card nls-a11y-dock-preview-card",
+                                  className: "nls-card nls-card--soft nls-a11y-dock-preview-card",
                                   children: e.jsx(nlsDockPreview, {
                                     variant: "panel",
                                     label: "Button live preview",
@@ -1661,10 +1628,10 @@ export function AccessibilityPage() {
                               : null,
                             a.customButtonEnabled
                               ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-select-card",
+                                  className: "nls-field",
                                   children: [
                                     e.jsxs("span", {
-                                      className: "lbl nexulesuite_lbl-tip",
+                                      className: "nls-field__label",
                                       children: [
                                         "Button icon ",
                                         e.jsx(Tooltip, {
@@ -1737,10 +1704,10 @@ export function AccessibilityPage() {
                               : null,
                             !0
                               ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-select-card nls-dock-display-card",
+                                  className: "nls-field nls-dock-display-card",
                                   children: [
                                     e.jsxs("span", {
-                                      className: "lbl nexulesuite_lbl-tip",
+                                      className: "nls-field__label",
                                       children: [
                                         "Display conditions ",
                                         e.jsx(Tooltip, {
@@ -1801,92 +1768,91 @@ export function AccessibilityPage() {
                                   ],
                                 })
                               : null,
-                            e.jsx("p", {
-                              className: "hint",
-                              style: {
-                                marginTop: "12px",
-                              },
-                              children:
-                                "Includes Text Size, Color Contrast, Dyslexia Font, Highlight Links, Pause Animations, Bigger Cursor, Spacing, Text to Speech, Reading Mask, Focus Indicator, and Reset All.",
+                            e.jsxs("div", {
+                              className: "nls-notice nls-notice--info",
+                              children: [
+                                e.jsx(nlsIcoInfo, {
+                                  size: 16,
+                                }),
+                                e.jsx("span", {
+                                  children:
+                                    "Includes Text Size, Color Contrast, Dyslexia Font, Highlight Links, Pause Animations, Bigger Cursor, Spacing, Text to Speech, Reading Mask, Focus Indicator, and Reset All.",
+                                }),
+                              ],
                             }),
                           ],
                         }),
                       ],
                     }),
-                  ],
-                }),
-                e.jsxs("section", {
-                  className: "nexulesuite_sg-section",
-                  children: [
-                    e.jsxs("div", {
-                      className: "nexulesuite_sg-sec-head",
+                  }),
+                ],
+              }),
+              e.jsxs("section", {
+                className: "nls-card",
+                "aria-labelledby": nlsUid + "-lang-title",
+                children: [
+                  e.jsx("div", {
+                    className: "nls-card__header",
+                    children: e.jsxs("h2", {
+                      className: "nls-card__title",
+                      id: nlsUid + "-lang-title",
                       children: [
-                        e.jsx("span", {
-                          className: "nexulesuite_sg-sec-ico",
-                          children: e.jsx(Si, {
-                            size: 16,
-                          }),
+                        e.jsx(Si, {
+                          size: 18,
+                          "aria-hidden": "true",
                         }),
-                        e.jsx("div", {
-                          children: e.jsxs("span", {
-                            className: "nexulesuite_sg-sec-title nexulesuite_sg-title-tip",
-                            children: [
-                              "Language ",
-                              e.jsx(Tooltip, {
-                                text: "GTranslate-style switcher with country flags. Uses Google Translate to convert the full page.",
-                              }),
-                            ],
-                          }),
+                        "Language ",
+                        e.jsx(Tooltip, {
+                          text: "GTranslate-style switcher with country flags. Uses Google Translate to convert the full page.",
                         }),
                       ],
                     }),
-                    e.jsxs("div", {
-                      className: "nexulesuite_sg-grid-2 nexulesuite_sg-grid-2-stretch",
+                  }),
+                  e.jsx("div", {
+                    className: "nls-card__body",
+                    children: e.jsxs("div", {
+                      className: "nls-a11y-layout",
                       children: [
                         e.jsxs("div", {
-                          className: "nexulesuite_sg-stack",
+                          className: "nls-stack nls-stack--tight nls-a11y-layout__main",
                           children: [
                             e.jsxs("div", {
-                              className: "nexulesuite_sg-toggle-card",
+                              className: "nls-toggle-card",
                               children: [
                                 e.jsxs("div", {
-                                  className: "nexulesuite_sg-toggle-card-body",
+                                  className: "nls-toggle-card__body",
                                   children: [
                                     e.jsx("span", {
-                                      className: "nexulesuite_sg-toggle-card-title",
+                                      className: "nls-toggle-card__title",
                                       children: "Enable Language Switcher",
                                     }),
                                     e.jsx("p", {
-                                      className: "hint",
+                                      className: "nls-toggle-card__hint",
                                       children: "Flag chips powered by Google Translate",
                                     }),
                                   ],
                                 }),
                                 e.jsx("div", {
-                                  className: "nexulesuite_sg-toggle" + (a.languageEnabled ? " on" : ""),
+                                  className: nlsSwitch(a.languageEnabled),
                                   role: "switch",
                                   "aria-checked": !!a.languageEnabled,
+                                  "aria-label": "Enable Language Switcher",
                                   tabIndex: 0,
                                   onClick: () => f("languageEnabled", !a.languageEnabled),
                                   onKeyDown: (M) => {
                                     (M.key === " " || M.key === "Enter") &&
                                       (M.preventDefault(), f("languageEnabled", !a.languageEnabled));
                                   },
-                                  children: e.jsx("span", {
-                                    className: "track",
-                                    children: e.jsx("span", {
-                                      className: "knob",
-                                    }),
-                                  }),
                                 }),
                               ],
                             }),
                             a.languageEnabled
                               ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-select-card nls-btn-position-card",
+                                  className: "nls-field nls-btn-position-card",
                                   children: [
-                                    e.jsxs("span", {
-                                      className: "lbl nexulesuite_lbl-tip",
+                                    e.jsxs("label", {
+                                      className: "nls-field__label",
+                                      htmlFor: nlsLangId,
                                       children: [
                                         "Default language ",
                                         e.jsx(Tooltip, {
@@ -1895,7 +1861,7 @@ export function AccessibilityPage() {
                                       ],
                                     }),
                                     e.jsx("select", {
-                                      className: "sel",
+                                      id: nlsLangId,
                                       value: a.defaultLanguage || "en",
                                       onChange: (M) => f("defaultLanguage", M.target.value),
                                       children: (i.length
@@ -1922,10 +1888,10 @@ export function AccessibilityPage() {
                               : null,
                             a.languageEnabled
                               ? e.jsxs("div", {
-                                  className: "nexulesuite_sg-select-card",
+                                  className: "nls-field",
                                   children: [
                                     e.jsxs("span", {
-                                      className: "lbl nexulesuite_lbl-tip",
+                                      className: "nls-field__label",
                                       children: [
                                         "Button colors ",
                                         e.jsx(Tooltip, {
@@ -1964,95 +1930,75 @@ export function AccessibilityPage() {
                           ],
                         }),
                         a.languageEnabled
-                          ? e.jsxs("div", {
-                              className: "nexulesuite_sg-stack",
-                              children: [
-                                e.jsxs("span", {
-                                  className: "lbl nexulesuite_lbl-tip",
-                                  children: [
-                                    "Languages to show ",
-                                    e.jsx(Tooltip, {
-                                      text: "Selected languages appear as flag buttons on the website.",
-                                    }),
-                                  ],
-                                }),
-                                e.jsx("div", {
-                                  style: {
-                                    display: "grid",
-                                    gridTemplateColumns: "repeat(auto-fill,minmax(148px,1fr))",
-                                    gap: "8px",
-                                  },
-                                  children: i.map((M) => {
-                                    const T = (a.languages || []).includes(M.code);
-                                    return e.jsxs(
-                                      "label",
-                                      {
-                                        className: "nexulesuite_sg-toggle-card",
-                                        style: {
-                                          cursor: "pointer",
-                                          margin: 0,
-                                          padding: "10px 12px",
-                                          display: "flex",
-                                          alignItems: "center",
-                                          gap: "8px",
-                                          border: T ? "1px solid #7c3aed" : void 0,
-                                          background: T ? "#f5f3ff" : void 0,
-                                        },
-                                        children: [
-                                          e.jsx("input", {
-                                            type: "checkbox",
-                                            checked: T,
-                                            onChange: () => S(M.code),
-                                            style: {
-                                              accentColor: "#7c3aed",
-                                            },
-                                          }),
-                                          e.jsx("span", {
-                                            "aria-hidden": "true",
-                                            style: {
-                                              fontSize: "14px",
-                                              lineHeight: "1",
-                                            },
-                                            children: (function (c) {
-                                              c = String(c || "").toLowerCase();
-                                              return 2 === c.length
-                                                ? String.fromCodePoint(127397 + c.charCodeAt(0)) +
-                                                    String.fromCodePoint(127397 + c.charCodeAt(1))
-                                                : String(c || "").toUpperCase();
-                                            })(M.flag),
-                                          }),
-                                          e.jsx("span", {
-                                            className: "nexulesuite_sg-toggle-card-title",
-                                            style: {
-                                              fontSize: "12px",
-                                            },
-                                            children: M.label,
-                                          }),
-                                        ],
-                                      },
-                                      M.code,
-                                    );
+                          ? e.jsx("div", {
+                              className: "nls-card nls-card--soft nls-a11y-layout__side nls-a11y-langs",
+                              children: e.jsxs("div", {
+                                className: "nls-card__body nls-field",
+                                children: [
+                                  e.jsxs("span", {
+                                    className: "nls-field__label",
+                                    id: nlsUid + "-langs-label",
+                                    children: [
+                                      "Languages to show ",
+                                      e.jsx(Tooltip, {
+                                        text: "Selected languages appear as flag buttons on the website.",
+                                      }),
+                                    ],
                                   }),
-                                }),
-                              ],
+                                  e.jsx("div", {
+                                    className: "nls-a11y-langs__grid",
+                                    role: "group",
+                                    "aria-labelledby": nlsUid + "-langs-label",
+                                    children: i.map((M) => {
+                                      const T = (a.languages || []).includes(M.code);
+                                      return e.jsxs(
+                                        "label",
+                                        {
+                                          className: "nls-check nls-a11y-langs__item" + (T ? " is-on" : ""),
+                                          children: [
+                                            e.jsx("input", {
+                                              type: "checkbox",
+                                              checked: T,
+                                              onChange: () => S(M.code),
+                                            }),
+                                            e.jsx("span", {
+                                              "aria-hidden": "true",
+                                              className: "nls-a11y-langs__flag",
+                                              children: (function (c) {
+                                                c = String(c || "").toLowerCase();
+                                                return 2 === c.length
+                                                  ? String.fromCodePoint(127397 + c.charCodeAt(0)) +
+                                                      String.fromCodePoint(127397 + c.charCodeAt(1))
+                                                  : String(c || "").toUpperCase();
+                                              })(M.flag),
+                                            }),
+                                            e.jsx("span", {
+                                              className: "nls-a11y-langs__name",
+                                              children: M.label,
+                                            }),
+                                          ],
+                                        },
+                                        M.code,
+                                      );
+                                    }),
+                                  }),
+                                ],
+                              }),
                             })
                           : null,
                       ],
                     }),
-                  ],
-                }),
-                u.error
-                  ? e.jsx("p", {
-                      className: "hint",
-                      style: {
-                        color: "#d63638",
-                        marginTop: "12px",
-                      },
-                      children: u.error,
-                    })
-                  : null,
-              ],
-            }),
+                  }),
+                ],
+              }),
+              u.error
+                ? e.jsx("div", {
+                    className: "nls-notice nls-notice--danger",
+                    role: "alert",
+                    children: u.error,
+                  })
+                : null,
+            ],
           }),
     ],
   });

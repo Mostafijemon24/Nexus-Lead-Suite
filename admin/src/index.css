@@ -11,5 +11,6 @@
 @import "./styles/pages/emails.css";
 @import "./styles/pages/popups.css";
 @import "./styles/pages/menu-items.css";
+@import "./styles/pages/accessibility.css";
 @import "./styles/legacy-pages.css";
 @import "./styles/overrides.css";
