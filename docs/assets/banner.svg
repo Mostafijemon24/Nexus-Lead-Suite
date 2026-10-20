@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-label="Nexus Lead Suite — lead capture, engagement and analytics for WordPress">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e1b4b"/>
+      <stop offset="1" stop-color="#312e81"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#a5b4fc"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity="0.06"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="300" rx="20" fill="url(#bg)"/>
+  <rect width="1200" height="300" rx="20" fill="url(#grid)"/>
+  <circle cx="1040" cy="60" r="190" fill="#6366f1" fill-opacity="0.18"/>
+  <circle cx="1120" cy="250" r="120" fill="#a5b4fc" fill-opacity="0.12"/>
+  <g transform="translate(70 86)">
+    <rect width="128" height="128" rx="28" fill="url(#accent)"/>
+    <rect x="30" y="30" width="30" height="30" rx="7" fill="#ffffff"/>
+    <rect x="68" y="30" width="30" height="30" rx="7" fill="#ffffff" fill-opacity="0.85"/>
+    <rect x="30" y="68" width="30" height="30" rx="7" fill="#ffffff" fill-opacity="0.85"/>
+    <rect x="68" y="68" width="30" height="30" rx="7" fill="#ffffff" fill-opacity="0.6"/>
+  </g>
+  <g font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" fill="#ffffff">
+    <text x="236" y="128" font-size="56" font-weight="700" letter-spacing="-1">Nexus Lead Suite</text>
+    <text x="238" y="172" font-size="22" fill="#c7d2fe">Lead capture, on-site engagement and analytics for WordPress</text>
+    <g font-size="15" font-weight="600" fill="#e0e7ff">
+      <rect x="238" y="200" width="112" height="34" rx="17" fill="#ffffff" fill-opacity="0.1"/><text x="294" y="222" text-anchor="middle">Forms</text>
+      <rect x="360" y="200" width="112" height="34" rx="17" fill="#ffffff" fill-opacity="0.1"/><text x="416" y="222" text-anchor="middle">Popups</text>
+      <rect x="482" y="200" width="150" height="34" rx="17" fill="#ffffff" fill-opacity="0.1"/><text x="557" y="222" text-anchor="middle">Smart Buttons</text>
+      <rect x="642" y="200" width="150" height="34" rx="17" fill="#ffffff" fill-opacity="0.1"/><text x="717" y="222" text-anchor="middle">Email automation</text>
+      <rect x="802" y="200" width="120" height="34" rx="17" fill="#ffffff" fill-opacity="0.1"/><text x="862" y="222" text-anchor="middle">AI chatbot</text>
+      <rect x="932" y="200" width="112" height="34" rx="17" fill="#ffffff" fill-opacity="0.1"/><text x="988" y="222" text-anchor="middle">Analytics</text>
+    </g>
+  </g>
+</svg>
