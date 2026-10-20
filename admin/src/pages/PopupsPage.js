@@ -14,9 +14,30 @@ import {
   Trash2 as yt,
   X as _t,
 } from "lucide-react";
-import { DisplayConditions, SuccessModal, nlsRange } from "../shared/common.js";
+import { DisplayConditions, ModalShell, PageFrame, StickyFooter, SuccessModal, nlsRange } from "../shared/common.js";
 
 const Is = "nexus-heading-mce";
+function PopSectionHead({ icon: a, title: o, desc: i = null, pill: d = null }) {
+  return e.jsxs("div", {
+    className: "nls-card__header",
+    children: [
+      e.jsxs("div", {
+        className: "nls-section__head",
+        children: [
+          e.jsx("span", { className: "nls-section__ico", "aria-hidden": "true", children: a }),
+          e.jsxs("div", {
+            className: "min-w-0",
+            children: [
+              e.jsx("h2", { className: "nls-section__title", children: o }),
+              i ? e.jsx("p", { className: "nls-section__desc", children: i }) : null,
+            ],
+          }),
+        ],
+      }),
+      d,
+    ],
+  });
+}
 function HeadingEditor({ heading: a, onChange: o, disabled: i }) {
   const [d, u] = b.useState("visual"),
     [p, h] = b.useState(!1),
@@ -438,6 +459,9 @@ export function PopupsPage() {
       tags: [],
     }),
     [U, w] = b.useState({}),
+    nlsNameId = b.useId(),
+    nlsEventId = b.useId(),
+    nlsContentHintId = b.useId(),
     N = b.useMemo(() => o.find((L) => L.id === d) || o[0], [o, d]),
     H = b.useMemo(() => JSON.stringify(o) !== JSON.stringify(T), [o, T]);
   b.useEffect(() => {
@@ -688,7 +712,37 @@ export function PopupsPage() {
             /\[forminator_form.*?\]/g,
             '<div style="background:#f8fafc; border:2px dashed #cbd5e1; height:100px; display:flex; align-items:center; justify-content:center; border-radius:12px; color:#94a3b8; font-weight:600; font-size:11px;">FORM INTEGRATION PREVIEW</div>',
           );
-  return e.jsxs(e.Fragment, {
+  return e.jsxs(PageFrame, {
+    title: "Popups",
+    subtitle: "Advanced automation logic",
+    icon: e.jsx(Ra, { size: 20 }),
+    headerRight: e.jsxs("button", {
+      type: "button",
+      onClick: le,
+      className: "nls-btn nls-btn--primary",
+      children: [e.jsx(dt, { "aria-hidden": "true" }), "Add New PopUp"],
+    }),
+    footer: e.jsx(StickyFooter, {
+      status: "Ready",
+      actions: e.jsxs(e.Fragment, {
+        children: [
+          e.jsx("button", {
+            type: "button",
+            onClick: te,
+            disabled: !H || S.saving,
+            className: "nls-btn nls-btn--ghost",
+            children: "Discard",
+          }),
+          e.jsxs("button", {
+            type: "button",
+            onClick: pe,
+            disabled: S.saving || !H,
+            className: "nls-btn nls-btn--primary",
+            children: [e.jsx(bn, { "aria-hidden": "true" }), S.saving ? "Saving…" : "Save Popup Configuration"],
+          }),
+        ],
+      }),
+    }),
     children: [
       e.jsx(SuccessModal, {
         open: P,
@@ -696,918 +750,650 @@ export function PopupsPage() {
         onDismiss: () => M(!1),
       }),
       e.jsxs("div", {
-        className: "min-h-screen bg-page px-4 py-4 md:px-8 md:py-8 font-sans font-medium text-ink leading-relaxed",
-        style: {
-          backgroundImage:
-            "radial-gradient(900px 420px at 12% -8%, rgba(139, 92, 246, 0.10), transparent 60%), radial-gradient(800px 380px at 92% -6%, rgba(99, 102, 241, 0.09), transparent 55%), radial-gradient(700px 420px at 55% 115%, rgba(6, 182, 212, 0.07), transparent 55%)",
-        },
+        className: "nls-split nexulesuite_pop-split",
         children: [
-          e.jsxs("div", {
-            className:
-              "w-full bg-white rounded-card shadow-card border border-line overflow-hidden flex flex-col h-[92vh]",
+          e.jsxs("aside", {
+            className: "nls-split__aside nls-card",
+            "aria-label": "PopUp Layers",
             children: [
-              e.jsxs("header", {
-                className: "px-6 py-6 border-b border-line-soft bg-white flex justify-between items-center shrink-0",
+              e.jsxs("div", {
+                className: "nls-split__aside-head",
                 children: [
-                  e.jsxs("div", {
-                    className: "flex items-center gap-4",
-                    children: [
-                      e.jsx("div", {
-                        className: "p-3 rounded-tile text-white",
-                        style: {
-                          background: "linear-gradient(135deg, #8b5cf6, #7c3aed)",
-                          boxShadow: "0 8px 18px -8px #8b5cf6",
-                        },
-                        children: e.jsx(Ra, {
-                          size: 24,
-                        }),
-                      }),
-                      e.jsxs("div", {
-                        children: [
-                          e.jsx("h1", {
-                            className: "font-display text-xl font-bold tracking-tight",
-                            children: "Popups",
-                          }),
-                          e.jsx("p", {
-                            className: "text-[10px] font-bold text-faint uppercase tracking-widest",
-                            children: "Advanced Automation Logic",
-                          }),
-                        ],
-                      }),
-                    ],
-                  }),
-                  e.jsxs("button", {
-                    type: "button",
-                    onClick: le,
-                    className:
-                      "flex items-center gap-2 text-white px-6 py-3 rounded-tile transition-all text-sm font-bold hover:brightness-110 active:scale-95",
-                    style: {
-                      background: "linear-gradient(135deg, #8b5cf6, #a78bfa)",
-                      boxShadow: "0 8px 18px -8px #8b5cf6",
-                    },
-                    children: [
-                      e.jsx(dt, {
-                        size: 18,
-                      }),
-                      " Add New PopUp",
-                    ],
-                  }),
+                  e.jsx("h2", { className: "nls-split__aside-title", children: "PopUp Layers" }),
+                  e.jsx(Wl, { size: 16, "aria-hidden": "true", className: "nls-muted" }),
                 ],
               }),
               e.jsxs("div", {
-                className: "flex flex-1 overflow-hidden",
+                className: "nls-split__aside-body",
                 children: [
-                  e.jsxs("aside", {
-                    className: "w-72 border-r border-line-soft bg-[#fbfcfe] flex flex-col shrink-0",
-                    children: [
-                      e.jsxs("div", {
-                        className: "p-4 border-b border-line-soft flex items-center justify-between",
-                        children: [
-                          e.jsx("h2", {
-                            className: "text-[10px] font-bold text-faint uppercase tracking-widest",
-                            children: "PopUp Layers",
-                          }),
-                          e.jsx(Wl, {
-                            size: 14,
-                            className: "text-faint",
-                          }),
-                        ],
-                      }),
-                      e.jsxs("div", {
-                        className: "flex-1 overflow-y-auto p-3 space-y-2",
-                        children: [
-                          S.loading
-                            ? e.jsx("div", {
-                                className: "px-2 py-3 text-sm text-muted",
-                                children: "Loading…",
-                              })
-                            : null,
-                          o.map((L) => {
-                            const A = L.id === d;
-                            return e.jsxs(
-                              "div",
-                              {
-                                onClick: () => u(L.id),
-                                className: [
-                                  "group relative px-4 py-4 rounded-tile border transition-all cursor-pointer flex items-center justify-between",
-                                  A
-                                    ? "bg-white border-pop shadow-card ring-2 ring-pop/5"
-                                    : "bg-transparent border-transparent hover:bg-line-soft",
-                                ].join(" "),
-                                children: [
-                                  e.jsxs("div", {
-                                    className: "flex items-center gap-3 truncate",
-                                    children: [
-                                      e.jsx(dd, {
-                                        size: 16,
-                                        className: A ? "text-pop" : "text-faint",
-                                      }),
-                                      e.jsx("span", {
-                                        className: "text-sm font-semibold truncate",
-                                        children: L.name || "Popup",
-                                      }),
-                                    ],
-                                  }),
-                                  e.jsxs("div", {
-                                    className:
-                                      "flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity",
-                                    onClick: (k) => k.stopPropagation(),
-                                    children: [
-                                      e.jsx("button", {
-                                        type: "button",
-                                        onClick: () => h(L),
-                                        className: "p-1 text-faint hover:text-pop",
-                                        "aria-label": "Preview",
-                                        children: e.jsx(Rt, {
-                                          size: 14,
-                                        }),
-                                      }),
-                                      e.jsx("button", {
-                                        type: "button",
-                                        onClick: () => ie(L.id),
-                                        className: "p-1 text-faint hover:text-mail",
-                                        "aria-label": "Delete",
-                                        children: e.jsx(yt, {
-                                          size: 14,
-                                        }),
-                                      }),
-                                    ],
-                                  }),
-                                ],
-                              },
-                              L.id,
-                            );
-                          }),
-                        ],
-                      }),
-                    ],
-                  }),
-                  e.jsx("main", {
-                    className: "flex-1 overflow-y-auto p-8",
-                    style: {
-                      background: "#f3f5fa",
-                    },
-                    children: e.jsxs("div", {
-                      className: "nexulesuite_popups-editor-wrap max-w-[1080px] mx-auto pb-20",
-                      children: [
-                        S.error
-                          ? e.jsx("div", {
-                              className:
-                                "mb-6 rounded-card border border-[#fbd0da] bg-mail-soft px-4 py-3 text-sm text-[#e11d48]",
-                              children: S.error,
-                            })
-                          : null,
-                        !S.loading && !N
-                          ? e.jsxs("div", {
-                              className:
-                                "nexulesuite_pop-card flex flex-col items-center justify-center gap-4 py-20 text-center",
-                              children: [
-                                e.jsx("span", {
-                                  className:
-                                    "flex h-14 w-14 items-center justify-center rounded-tile bg-pop-soft text-pop",
-                                  children: e.jsx(Ra, {
-                                    size: 26,
-                                  }),
-                                }),
-                                e.jsxs("div", {
-                                  children: [
-                                    e.jsx("h3", {
-                                      className: "font-display text-base font-bold text-ink",
-                                      children: "No popups yet",
-                                    }),
-                                    e.jsx("p", {
-                                      className: "mt-1 max-w-sm text-sm text-muted",
-                                      children:
-                                        "Create your first popup, then wire its triggers in Advanced Automation Logic below.",
-                                    }),
-                                  ],
-                                }),
-                                e.jsxs("button", {
-                                  type: "button",
-                                  onClick: le,
-                                  className:
-                                    "mt-2 flex items-center gap-2 rounded-tile px-6 py-3 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95",
-                                  style: {
-                                    background: "linear-gradient(135deg, #8b5cf6, #a78bfa)",
-                                    boxShadow: "0 8px 18px -8px #8b5cf6",
-                                  },
-                                  children: [
-                                    e.jsx(dt, {
-                                      size: 16,
-                                    }),
-                                    " Create first popup",
-                                  ],
-                                }),
-                              ],
-                            })
-                          : null,
-                        N
-                          ? e.jsxs("div", {
-                              className: "nexulesuite_pop-card",
-                              children: [
-                                e.jsxs("section", {
-                                  className: "nexulesuite_pop-section is-first",
-                                  children: [
-                                    e.jsxs("div", {
-                                      className: "nexulesuite_pop-sec-head",
-                                      children: [
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-ico",
-                                          children: e.jsxs("svg", {
-                                            width: "16",
-                                            height: "16",
-                                            viewBox: "0 0 24 24",
-                                            fill: "none",
-                                            stroke: "currentColor",
-                                            strokeWidth: "2",
-                                            children: [
-                                              e.jsx("rect", {
-                                                x: "3",
-                                                y: "4",
-                                                width: "18",
-                                                height: "16",
-                                                rx: "2",
-                                              }),
-                                              e.jsx("path", {
-                                                d: "M3 9h18M9 9v11",
-                                              }),
-                                            ],
-                                          }),
-                                        }),
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-title",
-                                          children: "Identity & Core Structure",
-                                        }),
-                                      ],
-                                    }),
-                                    e.jsxs("div", {
-                                      className: "id-row",
-                                      children: [
-                                        e.jsxs("div", {
-                                          children: [
-                                            e.jsx("span", {
-                                              className: "lbl",
-                                              children: "Internal name",
-                                            }),
-                                            e.jsx("input", {
-                                              type: "text",
-                                              className: "inp",
-                                              value: (N == null ? void 0 : N.name) || "",
-                                              onChange: (L) =>
-                                                W({
-                                                  name: L.target.value,
-                                                }),
-                                            }),
-                                          ],
-                                        }),
-                                        e.jsxs("div", {
-                                          children: [
-                                            e.jsx("span", {
-                                              className: "lbl",
-                                              children: "Event name (unique id)",
-                                            }),
-                                            e.jsx("input", {
-                                              type: "text",
-                                              className: "inp mono",
-                                              value: (N == null ? void 0 : N.eventName) || "",
-                                              onChange: (L) =>
-                                                W({
-                                                  eventName: L.target.value,
-                                                }),
-                                              placeholder: "e.g. nexus-pop-contact",
-                                            }),
-                                            e.jsxs("div", {
-                                              className: "hint",
-                                              children: [
-                                                "This ID is used to link a ",
-                                                e.jsx("b", {
-                                                  children: "Menu Item button",
-                                                }),
-                                                " to this popup (Manual Click trigger).",
-                                              ],
-                                            }),
-                                          ],
-                                        }),
-                                        e.jsxs("div", {
-                                          children: [
-                                            e.jsx("span", {
-                                              className: "lbl",
-                                              children: "Text alignment",
-                                            }),
-                                            e.jsx(SegmentedControl, {
-                                              value: (N == null ? void 0 : N.textAlign) || "left",
-                                              onChange: (L) =>
-                                                W({
-                                                  textAlign: L,
-                                                }),
-                                            }),
-                                          ],
-                                        }),
-                                      ],
-                                    }),
-                                  ],
-                                }),
-                                e.jsxs("section", {
-                                  className: "nexulesuite_pop-section",
-                                  children: [
-                                    e.jsxs("div", {
-                                      className: "nexulesuite_pop-sec-head",
-                                      children: [
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-ico pink",
-                                          children: e.jsx("svg", {
-                                            width: "16",
-                                            height: "16",
-                                            viewBox: "0 0 24 24",
-                                            fill: "none",
-                                            stroke: "currentColor",
-                                            strokeWidth: "2",
-                                            children: e.jsx("path", {
-                                              d: "M6 4v16M18 4v16M6 12h12M4 4h4M16 4h4M4 20h4M16 20h4",
-                                            }),
-                                          }),
-                                        }),
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-title",
-                                          children: "Main Heading Editor",
-                                        }),
-                                      ],
-                                    }),
-                                    e.jsx(HeadingEditor, {
-                                      heading: (N == null ? void 0 : N.heading) || "",
-                                      onChange: (L) =>
-                                        W({
-                                          heading: L,
-                                        }),
-                                      disabled: !N,
-                                    }),
-                                  ],
-                                }),
-                                e.jsxs("section", {
-                                  className: "nexulesuite_pop-section",
-                                  children: [
-                                    e.jsxs("div", {
-                                      className: "nexulesuite_pop-sec-head",
-                                      children: [
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-ico",
-                                          children: e.jsx("svg", {
-                                            width: "16",
-                                            height: "16",
-                                            viewBox: "0 0 24 24",
-                                            fill: "none",
-                                            stroke: "currentColor",
-                                            strokeWidth: "2",
-                                            children: e.jsx("path", {
-                                              d: "M4 7h16M4 12h12M4 17h8",
-                                            }),
-                                          }),
-                                        }),
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-title",
-                                          children: "Sub Heading Text",
-                                        }),
-                                      ],
-                                    }),
-                                    e.jsx("input", {
-                                      type: "text",
-                                      className: "inp",
-                                      value: (N == null ? void 0 : N.subHeading) || "",
-                                      onChange: (L) =>
-                                        W({
-                                          subHeading: L.target.value,
-                                        }),
-                                      style: {
-                                        textAlign: (N == null ? void 0 : N.textAlign) || "left",
-                                      },
-                                    }),
-                                  ],
-                                }),
-                                e.jsxs("section", {
-                                  className: "nexulesuite_pop-section",
-                                  children: [
-                                    e.jsxs("div", {
-                                      className: "nexulesuite_pop-sec-head",
-                                      children: [
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-ico",
-                                          children: e.jsxs("svg", {
-                                            width: "16",
-                                            height: "16",
-                                            viewBox: "0 0 24 24",
-                                            fill: "none",
-                                            stroke: "currentColor",
-                                            strokeWidth: "2",
-                                            children: [
-                                              e.jsx("circle", {
-                                                cx: "13.5",
-                                                cy: "6.5",
-                                                r: "2.5",
-                                              }),
-                                              e.jsx("circle", {
-                                                cx: "6.5",
-                                                cy: "12",
-                                                r: "2.5",
-                                              }),
-                                              e.jsx("circle", {
-                                                cx: "15",
-                                                cy: "16",
-                                                r: "2.5",
-                                              }),
-                                              e.jsx("path", {
-                                                d: "M3 21c2-4 4-6 8-7",
-                                              }),
-                                            ],
-                                          }),
-                                        }),
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-title",
-                                          children: "Visual Styling & Area Controls",
-                                        }),
-                                      ],
-                                    }),
-                                    e.jsx("div", {
-                                      className: "color-row5",
-                                      children: gx.map((L) => {
-                                        var A;
-                                        return e.jsx(
-                                          PopupColorField,
-                                          {
-                                            label: L.label,
-                                            badge: L.badge,
-                                            colorKey: L.key,
-                                            value:
-                                              ((A = N == null ? void 0 : N.style) == null ? void 0 : A[L.key]) ||
-                                              "#ffffff",
-                                            onChange: (k, Z) =>
-                                              I({
-                                                [k]: Z,
-                                              }),
-                                          },
-                                          L.key,
-                                        );
-                                      }),
-                                    }),
-                                    e.jsx("div", {
-                                      className: "slider-panel",
-                                      children: e.jsxs("div", {
-                                        className: "slider-grid",
-                                        children: [
-                                          e.jsx(PopupSlider, {
-                                            label: "Button width (%)",
-                                            value:
-                                              ((B = N == null ? void 0 : N.style) == null ? void 0 : B.buttonWidth) ||
-                                              100,
-                                            min: 40,
-                                            max: 100,
-                                            unit: "%",
-                                            onChange: (L) =>
-                                              I({
-                                                buttonWidth: L,
-                                              }),
-                                          }),
-                                          e.jsx(PopupSlider, {
-                                            label: "Popup radius (px)",
-                                            value:
-                                              ((ee = N == null ? void 0 : N.style) == null ? void 0 : ee.radius) || 16,
-                                            min: 0,
-                                            max: 40,
-                                            unit: "px",
-                                            onChange: (L) =>
-                                              I({
-                                                radius: L,
-                                              }),
-                                          }),
-                                          e.jsx(PopupSlider, {
-                                            label: "Close icon size (px)",
-                                            value:
-                                              ((_ = N == null ? void 0 : N.style) == null ? void 0 : _.closeIconSize) ||
-                                              20,
-                                            min: 14,
-                                            max: 36,
-                                            unit: "px",
-                                            onChange: (L) =>
-                                              I({
-                                                closeIconSize: L,
-                                              }),
-                                          }),
-                                          e.jsx(PopupSlider, {
-                                            label: "Heading font size (px)",
-                                            value:
-                                              ((X = N == null ? void 0 : N.style) == null
-                                                ? void 0
-                                                : X.headingFontSize) || 20,
-                                            min: 14,
-                                            max: 40,
-                                            unit: "px",
-                                            onChange: (L) =>
-                                              I({
-                                                headingFontSize: L,
-                                              }),
-                                          }),
-                                          e.jsx(PopupSlider, {
-                                            label: "Body & field font size (px)",
-                                            value:
-                                              ((nlsPopBodyFs = N == null ? void 0 : N.style) == null
-                                                ? void 0
-                                                : nlsPopBodyFs.bodyFontSize) || 14,
-                                            min: 10,
-                                            max: 24,
-                                            unit: "px",
-                                            onChange: (L) =>
-                                              I({
-                                                bodyFontSize: L,
-                                              }),
-                                          }),
-                                        ],
-                                      }),
-                                    }),
-                                  ],
-                                }),
-                                e.jsxs("section", {
-                                  className: "nexulesuite_pop-section",
-                                  children: [
-                                    e.jsxs("div", {
-                                      className: "nexulesuite_pop-sec-head dense",
-                                      children: [
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-ico",
-                                          children: e.jsx("svg", {
-                                            width: "16",
-                                            height: "16",
-                                            viewBox: "0 0 24 24",
-                                            fill: "none",
-                                            stroke: "currentColor",
-                                            strokeWidth: "2",
-                                            children: e.jsx("path", {
-                                              d: "M4 6h16M7 12h10M10 18h4",
-                                            }),
-                                          }),
-                                        }),
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-title",
-                                          children: "Display Conditions",
-                                        }),
-                                      ],
-                                    }),
-                                    e.jsx(DisplayConditions, {
-                                      variant: "popup-reference",
-                                      conditions: (N == null ? void 0 : N.conditions) || {
-                                        match: "any",
-                                        rules: [],
-                                      },
-                                      onChange: (L) =>
-                                        W({
-                                          conditions: L,
-                                        }),
-                                      conditionMeta: V,
-                                      contentSearch: U,
-                                      onSearchContent: O,
-                                      searchKeyPrefix: `popup-${(N == null ? void 0 : N.id) || "new"}`,
-                                      description:
-                                        "Where this popup is allowed to appear. Leave all rules unchecked to show on every page.",
-                                    }),
-                                  ],
-                                }),
-                                e.jsxs("section", {
-                                  className: "nexulesuite_pop-section",
-                                  children: [
-                                    e.jsxs("div", {
-                                      className: "nexulesuite_pop-sec-head dense",
-                                      children: [
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-ico pink",
-                                          children: e.jsx("svg", {
-                                            width: "16",
-                                            height: "16",
-                                            viewBox: "0 0 24 24",
-                                            fill: "none",
-                                            stroke: "currentColor",
-                                            strokeWidth: "2",
-                                            children: e.jsx("path", {
-                                              d: "M13 2L4 14h6l-1 8 9-12h-6z",
-                                            }),
-                                          }),
-                                        }),
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-title",
-                                          children: "Advanced Automation Logic",
-                                        }),
-                                        e.jsxs("span", {
-                                          className: "nexulesuite_pop-sec-pill",
-                                          children: [
-                                            ((N == null ? void 0 : N.logic) || []).length,
-                                            " trigger",
-                                            ((N == null ? void 0 : N.logic) || []).length !== 1 ? "s" : "",
-                                          ],
-                                        }),
-                                      ],
-                                    }),
-                                    e.jsx("p", {
-                                      className: "nexulesuite_pop-sec-sub",
-                                      children:
-                                        "When the popup fires. Add multiple triggers to fire on whichever happens first.",
-                                    }),
-                                    e.jsx("div", {
-                                      className: "nexulesuite_pop-logic-list",
-                                      children: ((N == null ? void 0 : N.logic) || []).map((L, A) =>
-                                        e.jsxs(
-                                          "div",
-                                          {
-                                            className: "nexulesuite_pop-logic-row",
-                                            children: [
-                                              e.jsxs("div", {
-                                                className: "nexulesuite_pop-logic-top",
-                                                children: [
-                                                  e.jsx("span", {
-                                                    className: "ln",
-                                                    children: A + 1,
-                                                  }),
-                                                  e.jsxs("span", {
-                                                    className: "lt",
-                                                    children: ["Trigger ", A + 1],
-                                                  }),
-                                                  ((N == null ? void 0 : N.logic) || []).length > 1
-                                                    ? e.jsx("button", {
-                                                        type: "button",
-                                                        onClick: () => j(L.id),
-                                                        className: "nexulesuite_pop-icon-btn danger",
-                                                        "aria-label": "Remove trigger",
-                                                        children: e.jsx("svg", {
-                                                          width: "15",
-                                                          height: "15",
-                                                          viewBox: "0 0 24 24",
-                                                          fill: "none",
-                                                          stroke: "currentColor",
-                                                          strokeWidth: "2",
-                                                          children: e.jsx("path", {
-                                                            d: "M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14",
-                                                          }),
-                                                        }),
-                                                      })
-                                                    : null,
-                                                ],
-                                              }),
-                                              e.jsxs("div", {
-                                                className: "nexulesuite_pop-logic-grid",
-                                                children: [
-                                                  e.jsxs("div", {
-                                                    className: "nexulesuite_pop-field",
-                                                    children: [
-                                                      e.jsx("label", {
-                                                        children: "Event",
-                                                      }),
-                                                      e.jsxs("select", {
-                                                        value: L.trigger,
-                                                        onChange: (k) =>
-                                                          C(L.id, {
-                                                            trigger: k.target.value,
-                                                          }),
-                                                        children: [
-                                                          e.jsx("option", {
-                                                            value: "scroll",
-                                                            children: "On scroll",
-                                                          }),
-                                                          e.jsx("option", {
-                                                            value: "timer",
-                                                            children: "After delay",
-                                                          }),
-                                                          e.jsx("option", {
-                                                            value: "exit",
-                                                            children: "Exit intent",
-                                                          }),
-                                                          e.jsx("option", {
-                                                            value: "click",
-                                                            children: "Manual Click",
-                                                          }),
-                                                        ],
-                                                      }),
-                                                    ],
-                                                  }),
-                                                  e.jsxs("div", {
-                                                    className: "nexulesuite_pop-field",
-                                                    style: {
-                                                      display: L.trigger === "timer" ? "" : "none",
-                                                    },
-                                                    children: [
-                                                      e.jsx("label", {
-                                                        children: "Delay (sec)",
-                                                      }),
-                                                      e.jsx("input", {
-                                                        type: "number",
-                                                        value: L.delay,
-                                                        min: "0",
-                                                        onChange: (k) =>
-                                                          C(L.id, {
-                                                            delay: k.target.value,
-                                                          }),
-                                                      }),
-                                                    ],
-                                                  }),
-                                                  e.jsxs("div", {
-                                                    className: "nexulesuite_pop-field",
-                                                    style: {
-                                                      display: L.trigger === "scroll" ? "" : "none",
-                                                    },
-                                                    children: [
-                                                      e.jsx("label", {
-                                                        children: "Scroll depth (%)",
-                                                      }),
-                                                      e.jsx("input", {
-                                                        type: "number",
-                                                        value: L.scrollPercentage,
-                                                        min: "0",
-                                                        max: "100",
-                                                        onChange: (k) =>
-                                                          C(L.id, {
-                                                            scrollPercentage: k.target.value,
-                                                          }),
-                                                      }),
-                                                    ],
-                                                  }),
-                                                  e.jsxs("div", {
-                                                    className: "nexulesuite_pop-field",
-                                                    style: {
-                                                      display: L.trigger === "click" ? "" : "none",
-                                                    },
-                                                    children: [
-                                                      e.jsx("label", {
-                                                        children: "Fires on event name",
-                                                      }),
-                                                      e.jsx("input", {
-                                                        type: "text",
-                                                        readOnly: !0,
-                                                        value: (N == null ? void 0 : N.eventName) || "",
-                                                        title:
-                                                          "Link a Menu Item button to this event name to open the popup on click.",
-                                                      }),
-                                                    ],
-                                                  }),
-                                                ],
-                                              }),
-                                            ],
-                                          },
-                                          L.id,
-                                        ),
-                                      ),
-                                    }),
-                                    e.jsxs("button", {
-                                      type: "button",
-                                      onClick: J,
-                                      className: "nexulesuite_pop-add-dash",
-                                      children: [
-                                        e.jsx("svg", {
-                                          width: "15",
-                                          height: "15",
-                                          viewBox: "0 0 24 24",
-                                          fill: "none",
-                                          stroke: "currentColor",
-                                          strokeWidth: "2.2",
-                                          children: e.jsx("path", {
-                                            d: "M12 5v14M5 12h14",
-                                          }),
-                                        }),
-                                        "Add trigger",
-                                      ],
-                                    }),
-                                  ],
-                                }),
-                                e.jsxs("section", {
-                                  className: "nexulesuite_pop-section",
-                                  children: [
-                                    e.jsxs("div", {
-                                      className: "nexulesuite_pop-sec-head dense",
-                                      children: [
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-ico",
-                                          children: e.jsx(Dl, {
-                                            size: 16,
-                                            strokeWidth: 2,
-                                          }),
-                                        }),
-                                        e.jsx("span", {
-                                          className: "nexulesuite_pop-sec-title",
-                                          children: "Popup Body (HTML / Shortcode)",
-                                        }),
-                                      ],
-                                    }),
-                                    e.jsxs("p", {
-                                      className: "content-hint",
-                                      children: [
-                                        "Put the form you want here (e.g. ",
-                                        e.jsx("code", {
-                                          children: '[nexulesuite_form id="…"]',
-                                        }),
-                                        "). If this box has any content, Settings → Default Nexus forms (ordered list) are ",
-                                        e.jsx("b", {
-                                          children: "not",
-                                        }),
-                                        " prepended — you will not get duplicate forms. Leave it empty only if you rely on those global defaults for timer/scroll/exit.",
-                                      ],
-                                    }),
-                                    e.jsx("textarea", {
-                                      className: "content-code",
-                                      value: (N == null ? void 0 : N.content) || "",
-                                      onChange: (L) =>
-                                        W({
-                                          content: L.target.value,
-                                        }),
-                                    }),
-                                  ],
-                                }),
-                              ],
-                            })
-                          : null,
-                      ],
-                    }),
-                  }),
-                ],
-              }),
-              e.jsxs("footer", {
-                className: "px-12 py-6 border-t border-line-soft bg-white flex justify-between items-center shrink-0",
-                children: [
-                  e.jsxs("div", {
-                    className: "flex items-center gap-2 text-faint text-[10px] font-bold uppercase tracking-widest",
-                    children: [
-                      e.jsx("span", {
-                        className: "inline-flex h-2 w-2 rounded-full bg-form",
-                      }),
-                      "System Ready & Synchronized",
-                    ],
-                  }),
-                  e.jsxs("div", {
-                    className: "flex gap-4",
-                    children: [
-                      e.jsx("button", {
-                        type: "button",
-                        onClick: te,
-                        disabled: !H || S.saving,
-                        className: "px-6 py-2.5 text-muted hover:text-ink-2 font-bold text-sm disabled:opacity-50",
-                        children: "Discard",
-                      }),
-                      e.jsxs("button", {
-                        type: "button",
-                        onClick: pe,
-                        disabled: S.saving || !H,
-                        className:
-                          "flex items-center gap-3 px-12 py-3 text-white font-bold rounded-tile text-sm transition-all hover:brightness-110 active:scale-95 disabled:opacity-60",
-                        style: {
-                          background: "linear-gradient(135deg, #8b5cf6, #a78bfa)",
-                          boxShadow: "0 8px 18px -8px #8b5cf6",
+                  S.loading
+                    ? e.jsxs("div", {
+                        className: "nls-loading",
+                        role: "status",
+                        children: [e.jsx("span", { className: "nls-spinner", "aria-hidden": "true" }), "Loading…"],
+                      })
+                    : null,
+                  o.map((L) => {
+                    const A = L.id === d;
+                    return e.jsxs(
+                      "div",
+                      {
+                        role: "button",
+                        tabIndex: 0,
+                        onClick: () => u(L.id),
+                        onKeyDown: (k) => {
+                          (k.key === "Enter" || k.key === " ") &&
+                            k.target === k.currentTarget &&
+                            (k.preventDefault(), u(L.id));
                         },
+                        "aria-pressed": A ? "true" : "false",
+                        className: ["nls-list-row", A ? "is-active" : ""].filter(Boolean).join(" "),
                         children: [
-                          e.jsx(bn, {
-                            size: 18,
+                          e.jsxs("div", {
+                            className: "nls-list-row__main",
+                            children: [
+                              e.jsx(dd, { "aria-hidden": "true" }),
+                              e.jsx("span", { className: "nls-list-row__title", children: L.name || "Popup" }),
+                            ],
                           }),
-                          " ",
-                          S.saving ? "Saving…" : "Save Popup Configuration",
+                          e.jsxs("div", {
+                            className: "nls-list-row__actions",
+                            onClick: (k) => k.stopPropagation(),
+                            children: [
+                              e.jsx("button", {
+                                type: "button",
+                                onClick: () => h(L),
+                                className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--primary",
+                                "aria-label": "Preview",
+                                children: e.jsx(Rt, {}),
+                              }),
+                              e.jsx("button", {
+                                type: "button",
+                                onClick: () => ie(L.id),
+                                className: "nls-icon-btn nls-icon-btn--sm nls-icon-btn--danger",
+                                "aria-label": "Delete",
+                                children: e.jsx(yt, {}),
+                              }),
+                            ],
+                          }),
                         ],
-                      }),
-                    ],
+                      },
+                      L.id,
+                    );
                   }),
                 ],
               }),
             ],
           }),
-          p &&
-            e.jsx("div", {
-              className:
-                "fixed inset-0 z-[1000] flex items-center justify-center p-6 md:p-12 animate-in fade-in duration-300 backdrop-blur-md bg-navy/60",
-              children: e.jsxs("div", {
-                className:
-                  "bg-white rounded-card shadow-lift w-full max-w-[1200px] h-full flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-white/20",
-                children: [
-                  e.jsxs("div", {
-                    className: "p-6 border-b border-line-soft flex justify-between items-center bg-[#fbfcfe]",
+          e.jsxs("div", {
+            className: "nls-split__main nls-stack nls-stack--tight",
+            children: [
+              S.error
+                ? e.jsx("div", { className: "nls-notice nls-notice--danger", role: "alert", children: S.error })
+                : null,
+              !S.loading && !N
+                ? e.jsxs("div", {
+                    className: "nls-empty",
                     children: [
-                      e.jsxs("div", {
-                        className: "flex items-center gap-3",
+                      e.jsx("span", {
+                        className: "nls-empty__icon",
+                        "aria-hidden": "true",
+                        children: e.jsx(Ra, { size: 22 }),
+                      }),
+                      e.jsx("h3", { className: "nls-empty__title", children: "No popups yet" }),
+                      e.jsx("p", {
+                        className: "nls-empty__desc",
+                        children: "Create your first popup, then wire its triggers in Advanced Automation Logic below.",
+                      }),
+                      e.jsx("div", {
+                        className: "nls-empty__actions",
+                        children: e.jsxs("button", {
+                          type: "button",
+                          onClick: le,
+                          className: "nls-btn nls-btn--primary",
+                          children: [e.jsx(dt, { "aria-hidden": "true" }), "Create first popup"],
+                        }),
+                      }),
+                    ],
+                  })
+                : null,
+              N
+                ? e.jsxs("div", {
+                    className: "nexulesuite_popups-editor-wrap nls-pop-editor nls-stack nls-stack--tight",
+                    children: [
+                      e.jsxs("section", {
+                        className: "nls-card",
                         children: [
-                          e.jsx(Rt, {
-                            className: "text-pop",
-                            size: 20,
+                          e.jsx(PopSectionHead, {
+                            title: "Identity & Core Structure",
+                            icon: e.jsxs("svg", {
+                              width: "16",
+                              height: "16",
+                              viewBox: "0 0 24 24",
+                              fill: "none",
+                              stroke: "currentColor",
+                              strokeWidth: "2",
+                              children: [
+                                e.jsx("rect", { x: "3", y: "4", width: "18", height: "16", rx: "2" }),
+                                e.jsx("path", { d: "M3 9h18M9 9v11" }),
+                              ],
+                            }),
                           }),
-                          e.jsx("h4", {
-                            className: "font-display font-bold text-ink text-lg",
-                            children: "Pop-Up Simulator",
+                          e.jsx("div", {
+                            className: "nls-card__body",
+                            children: e.jsxs("div", {
+                              className: "id-row",
+                              children: [
+                                e.jsxs("div", {
+                                  className: "nls-field",
+                                  children: [
+                                    e.jsx("label", {
+                                      className: "lbl nls-field__label",
+                                      htmlFor: nlsNameId,
+                                      children: "Internal name",
+                                    }),
+                                    e.jsx("input", {
+                                      id: nlsNameId,
+                                      type: "text",
+                                      value: (N == null ? void 0 : N.name) || "",
+                                      onChange: (L) =>
+                                        W({
+                                          name: L.target.value,
+                                        }),
+                                    }),
+                                  ],
+                                }),
+                                e.jsxs("div", {
+                                  className: "nls-field",
+                                  children: [
+                                    e.jsx("label", {
+                                      className: "lbl nls-field__label",
+                                      htmlFor: nlsEventId,
+                                      children: "Event name (unique id)",
+                                    }),
+                                    e.jsx("input", {
+                                      id: nlsEventId,
+                                      type: "text",
+                                      className: "nls-mono",
+                                      value: (N == null ? void 0 : N.eventName) || "",
+                                      onChange: (L) =>
+                                        W({
+                                          eventName: L.target.value,
+                                        }),
+                                      placeholder: "e.g. nexus-pop-contact",
+                                    }),
+                                    e.jsxs("div", {
+                                      className: "hint nls-field__hint",
+                                      children: [
+                                        "This ID is used to link a ",
+                                        e.jsx("b", { children: "Menu Item button" }),
+                                        " to this popup (Manual Click trigger).",
+                                      ],
+                                    }),
+                                  ],
+                                }),
+                                e.jsxs("div", {
+                                  className: "nls-field",
+                                  children: [
+                                    e.jsx("span", { className: "lbl nls-field__label", children: "Text alignment" }),
+                                    e.jsx(SegmentedControl, {
+                                      value: (N == null ? void 0 : N.textAlign) || "left",
+                                      onChange: (L) =>
+                                        W({
+                                          textAlign: L,
+                                        }),
+                                    }),
+                                  ],
+                                }),
+                              ],
+                            }),
                           }),
                         ],
                       }),
-                      e.jsx("div", {
-                        className: "flex bg-line-soft p-1 rounded-tile",
+                      e.jsxs("section", {
+                        className: "nls-card",
                         children: [
-                          {
-                            id: "desktop",
-                            Icon: pm,
-                          },
-                          {
-                            id: "tablet",
-                            Icon: Sm,
-                          },
-                          {
-                            id: "mobile",
-                            Icon: od,
-                          },
+                          e.jsx(PopSectionHead, {
+                            title: "Main Heading Editor",
+                            icon: e.jsx("svg", {
+                              width: "16",
+                              height: "16",
+                              viewBox: "0 0 24 24",
+                              fill: "none",
+                              stroke: "currentColor",
+                              strokeWidth: "2",
+                              children: e.jsx("path", { d: "M6 4v16M18 4v16M6 12h12M4 4h4M16 4h4M4 20h4M16 20h4" }),
+                            }),
+                          }),
+                          e.jsx("div", {
+                            className: "nls-card__body",
+                            children: e.jsx(HeadingEditor, {
+                              heading: (N == null ? void 0 : N.heading) || "",
+                              onChange: (L) =>
+                                W({
+                                  heading: L,
+                                }),
+                              disabled: !N,
+                            }),
+                          }),
+                        ],
+                      }),
+                      e.jsxs("section", {
+                        className: "nls-card",
+                        children: [
+                          e.jsx(PopSectionHead, {
+                            title: "Sub Heading Text",
+                            icon: e.jsx("svg", {
+                              width: "16",
+                              height: "16",
+                              viewBox: "0 0 24 24",
+                              fill: "none",
+                              stroke: "currentColor",
+                              strokeWidth: "2",
+                              children: e.jsx("path", { d: "M4 7h16M4 12h12M4 17h8" }),
+                            }),
+                          }),
+                          e.jsx("div", {
+                            className: "nls-card__body",
+                            children: e.jsx("input", {
+                              type: "text",
+                              "aria-label": "Sub heading text",
+                              value: (N == null ? void 0 : N.subHeading) || "",
+                              onChange: (L) =>
+                                W({
+                                  subHeading: L.target.value,
+                                }),
+                              style: {
+                                textAlign: (N == null ? void 0 : N.textAlign) || "left",
+                              },
+                            }),
+                          }),
+                        ],
+                      }),
+                      e.jsxs("section", {
+                        className: "nls-card",
+                        children: [
+                          e.jsx(PopSectionHead, {
+                            title: "Visual Styling & Area Controls",
+                            icon: e.jsxs("svg", {
+                              width: "16",
+                              height: "16",
+                              viewBox: "0 0 24 24",
+                              fill: "none",
+                              stroke: "currentColor",
+                              strokeWidth: "2",
+                              children: [
+                                e.jsx("circle", { cx: "13.5", cy: "6.5", r: "2.5" }),
+                                e.jsx("circle", { cx: "6.5", cy: "12", r: "2.5" }),
+                                e.jsx("circle", { cx: "15", cy: "16", r: "2.5" }),
+                                e.jsx("path", { d: "M3 21c2-4 4-6 8-7" }),
+                              ],
+                            }),
+                          }),
+                          e.jsxs("div", {
+                            className: "nls-card__body",
+                            children: [
+                              e.jsx("div", {
+                                className: "color-row5",
+                                children: gx.map((L) => {
+                                  var A;
+                                  return e.jsx(
+                                    PopupColorField,
+                                    {
+                                      label: L.label,
+                                      badge: L.badge,
+                                      colorKey: L.key,
+                                      value:
+                                        ((A = N == null ? void 0 : N.style) == null ? void 0 : A[L.key]) || "#ffffff",
+                                      onChange: (k, Z) =>
+                                        I({
+                                          [k]: Z,
+                                        }),
+                                    },
+                                    L.key,
+                                  );
+                                }),
+                              }),
+                              e.jsx("div", {
+                                className: "nls-card nls-card--soft nls-card__body nls-pop-slider-panel",
+                                children: e.jsxs("div", {
+                                  className: "slider-grid",
+                                  children: [
+                                    e.jsx(PopupSlider, {
+                                      label: "Button width (%)",
+                                      value:
+                                        ((B = N == null ? void 0 : N.style) == null ? void 0 : B.buttonWidth) || 100,
+                                      min: 40,
+                                      max: 100,
+                                      unit: "%",
+                                      onChange: (L) =>
+                                        I({
+                                          buttonWidth: L,
+                                        }),
+                                    }),
+                                    e.jsx(PopupSlider, {
+                                      label: "Popup radius (px)",
+                                      value: ((ee = N == null ? void 0 : N.style) == null ? void 0 : ee.radius) || 16,
+                                      min: 0,
+                                      max: 40,
+                                      unit: "px",
+                                      onChange: (L) =>
+                                        I({
+                                          radius: L,
+                                        }),
+                                    }),
+                                    e.jsx(PopupSlider, {
+                                      label: "Close icon size (px)",
+                                      value:
+                                        ((_ = N == null ? void 0 : N.style) == null ? void 0 : _.closeIconSize) || 20,
+                                      min: 14,
+                                      max: 36,
+                                      unit: "px",
+                                      onChange: (L) =>
+                                        I({
+                                          closeIconSize: L,
+                                        }),
+                                    }),
+                                    e.jsx(PopupSlider, {
+                                      label: "Heading font size (px)",
+                                      value:
+                                        ((X = N == null ? void 0 : N.style) == null ? void 0 : X.headingFontSize) || 20,
+                                      min: 14,
+                                      max: 40,
+                                      unit: "px",
+                                      onChange: (L) =>
+                                        I({
+                                          headingFontSize: L,
+                                        }),
+                                    }),
+                                    e.jsx(PopupSlider, {
+                                      label: "Body & field font size (px)",
+                                      value:
+                                        ((nlsPopBodyFs = N == null ? void 0 : N.style) == null
+                                          ? void 0
+                                          : nlsPopBodyFs.bodyFontSize) || 14,
+                                      min: 10,
+                                      max: 24,
+                                      unit: "px",
+                                      onChange: (L) =>
+                                        I({
+                                          bodyFontSize: L,
+                                        }),
+                                    }),
+                                  ],
+                                }),
+                              }),
+                            ],
+                          }),
+                        ],
+                      }),
+                      e.jsxs("section", {
+                        className: "nls-card",
+                        children: [
+                          e.jsx(PopSectionHead, {
+                            title: "Display Conditions",
+                            icon: e.jsx("svg", {
+                              width: "16",
+                              height: "16",
+                              viewBox: "0 0 24 24",
+                              fill: "none",
+                              stroke: "currentColor",
+                              strokeWidth: "2",
+                              children: e.jsx("path", { d: "M4 6h16M7 12h10M10 18h4" }),
+                            }),
+                          }),
+                          e.jsx("div", {
+                            className: "nls-card__body",
+                            children: e.jsx(DisplayConditions, {
+                              variant: "popup-reference",
+                              conditions: (N == null ? void 0 : N.conditions) || {
+                                match: "any",
+                                rules: [],
+                              },
+                              onChange: (L) =>
+                                W({
+                                  conditions: L,
+                                }),
+                              conditionMeta: V,
+                              contentSearch: U,
+                              onSearchContent: O,
+                              searchKeyPrefix: `popup-${(N == null ? void 0 : N.id) || "new"}`,
+                              description:
+                                "Where this popup is allowed to appear. Leave all rules unchecked to show on every page.",
+                            }),
+                          }),
+                        ],
+                      }),
+                      e.jsxs("section", {
+                        className: "nls-card",
+                        children: [
+                          e.jsx(PopSectionHead, {
+                            title: "Advanced Automation Logic",
+                            desc: "When the popup fires. Add multiple triggers to fire on whichever happens first.",
+                            pill: e.jsxs("span", {
+                              className: "nls-badge nls-badge--muted",
+                              children: [
+                                ((N == null ? void 0 : N.logic) || []).length,
+                                " trigger",
+                                ((N == null ? void 0 : N.logic) || []).length !== 1 ? "s" : "",
+                              ],
+                            }),
+                            icon: e.jsx("svg", {
+                              width: "16",
+                              height: "16",
+                              viewBox: "0 0 24 24",
+                              fill: "none",
+                              stroke: "currentColor",
+                              strokeWidth: "2",
+                              children: e.jsx("path", { d: "M13 2L4 14h6l-1 8 9-12h-6z" }),
+                            }),
+                          }),
+                          e.jsxs("div", {
+                            className: "nls-card__body",
+                            children: [
+                              e.jsx("div", {
+                                className: "nexulesuite_pop-logic-list",
+                                children: ((N == null ? void 0 : N.logic) || []).map((L, A) =>
+                                  e.jsxs(
+                                    "div",
+                                    {
+                                      className: "nexulesuite_pop-logic-row",
+                                      children: [
+                                        e.jsxs("div", {
+                                          className: "nexulesuite_pop-logic-top",
+                                          children: [
+                                            e.jsx("span", { className: "ln", "aria-hidden": "true", children: A + 1 }),
+                                            e.jsxs("span", { className: "lt", children: ["Trigger ", A + 1] }),
+                                            ((N == null ? void 0 : N.logic) || []).length > 1
+                                              ? e.jsx("button", {
+                                                  type: "button",
+                                                  onClick: () => j(L.id),
+                                                  className: "nexulesuite_pop-icon-btn danger",
+                                                  "aria-label": "Remove trigger",
+                                                  children: e.jsx("svg", {
+                                                    width: "15",
+                                                    height: "15",
+                                                    viewBox: "0 0 24 24",
+                                                    fill: "none",
+                                                    stroke: "currentColor",
+                                                    strokeWidth: "2",
+                                                    "aria-hidden": "true",
+                                                    children: e.jsx("path", {
+                                                      d: "M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14",
+                                                    }),
+                                                  }),
+                                                })
+                                              : null,
+                                          ],
+                                        }),
+                                        e.jsxs("div", {
+                                          className: "nexulesuite_pop-logic-grid",
+                                          children: [
+                                            e.jsxs("div", {
+                                              className: "nexulesuite_pop-field",
+                                              children: [
+                                                e.jsx("label", { children: "Event" }),
+                                                e.jsxs("select", {
+                                                  value: L.trigger,
+                                                  onChange: (k) =>
+                                                    C(L.id, {
+                                                      trigger: k.target.value,
+                                                    }),
+                                                  children: [
+                                                    e.jsx("option", { value: "scroll", children: "On scroll" }),
+                                                    e.jsx("option", { value: "timer", children: "After delay" }),
+                                                    e.jsx("option", { value: "exit", children: "Exit intent" }),
+                                                    e.jsx("option", { value: "click", children: "Manual Click" }),
+                                                  ],
+                                                }),
+                                              ],
+                                            }),
+                                            e.jsxs("div", {
+                                              className: "nexulesuite_pop-field",
+                                              style: {
+                                                display: L.trigger === "timer" ? "" : "none",
+                                              },
+                                              children: [
+                                                e.jsx("label", { children: "Delay (sec)" }),
+                                                e.jsx("input", {
+                                                  type: "number",
+                                                  value: L.delay,
+                                                  min: "0",
+                                                  onChange: (k) =>
+                                                    C(L.id, {
+                                                      delay: k.target.value,
+                                                    }),
+                                                }),
+                                              ],
+                                            }),
+                                            e.jsxs("div", {
+                                              className: "nexulesuite_pop-field",
+                                              style: {
+                                                display: L.trigger === "scroll" ? "" : "none",
+                                              },
+                                              children: [
+                                                e.jsx("label", { children: "Scroll depth (%)" }),
+                                                e.jsx("input", {
+                                                  type: "number",
+                                                  value: L.scrollPercentage,
+                                                  min: "0",
+                                                  max: "100",
+                                                  onChange: (k) =>
+                                                    C(L.id, {
+                                                      scrollPercentage: k.target.value,
+                                                    }),
+                                                }),
+                                              ],
+                                            }),
+                                            e.jsxs("div", {
+                                              className: "nexulesuite_pop-field",
+                                              style: {
+                                                display: L.trigger === "click" ? "" : "none",
+                                              },
+                                              children: [
+                                                e.jsx("label", { children: "Fires on event name" }),
+                                                e.jsx("input", {
+                                                  type: "text",
+                                                  readOnly: !0,
+                                                  value: (N == null ? void 0 : N.eventName) || "",
+                                                  title:
+                                                    "Link a Menu Item button to this event name to open the popup on click.",
+                                                }),
+                                              ],
+                                            }),
+                                          ],
+                                        }),
+                                      ],
+                                    },
+                                    L.id,
+                                  ),
+                                ),
+                              }),
+                              e.jsxs("button", {
+                                type: "button",
+                                onClick: J,
+                                className: "nls-btn nls-btn--dashed nls-btn--block nls-pop-add-trigger",
+                                children: [e.jsx(dt, { "aria-hidden": "true" }), "Add trigger"],
+                              }),
+                            ],
+                          }),
+                        ],
+                      }),
+                      e.jsxs("section", {
+                        className: "nls-card",
+                        children: [
+                          e.jsx(PopSectionHead, {
+                            title: "Popup Body (HTML / Shortcode)",
+                            icon: e.jsx(Dl, { size: 16, strokeWidth: 2 }),
+                          }),
+                          e.jsxs("div", {
+                            className: "nls-card__body",
+                            children: [
+                              e.jsxs("p", {
+                                className: "content-hint",
+                                id: nlsContentHintId,
+                                children: [
+                                  "Put the form you want here (e.g. ",
+                                  e.jsx("code", { children: '[nexulesuite_form id="…"]' }),
+                                  "). If this box has any content, Settings → Default Nexus forms (ordered list) are ",
+                                  e.jsx("b", { children: "not" }),
+                                  " prepended — you will not get duplicate forms. Leave it empty only if you rely on those global defaults for timer/scroll/exit.",
+                                ],
+                              }),
+                              e.jsx("textarea", {
+                                className: "content-code",
+                                "aria-label": "Popup body HTML",
+                                "aria-describedby": nlsContentHintId,
+                                value: (N == null ? void 0 : N.content) || "",
+                                onChange: (L) =>
+                                  W({
+                                    content: L.target.value,
+                                  }),
+                              }),
+                            ],
+                          }),
+                        ],
+                      }),
+                    ],
+                  })
+                : null,
+            ],
+          }),
+        ],
+      }),
+      p
+        ? e.jsxs(ModalShell, {
+            open: !0,
+            onClose: () => h(null),
+            size: "xl",
+            labelledBy: "nexulesuite_pop-sim-title",
+            className: "nexulesuite_pop-sim-panel",
+            children: [
+              e.jsxs("div", {
+                className: "nls-modal__header nls-pop-sim__head",
+                children: [
+                  e.jsxs("div", {
+                    className: "nls-pop-sim__title",
+                    children: [
+                      e.jsx(Rt, { size: 18, "aria-hidden": "true" }),
+                      e.jsx("h4", {
+                        id: "nexulesuite_pop-sim-title",
+                        className: "nls-modal__title",
+                        children: "Pop-Up Simulator",
+                      }),
+                    ],
+                  }),
+                  e.jsxs("div", {
+                    className: "nls-pop-sim__tools",
+                    children: [
+                      e.jsx("div", {
+                        className: "nls-seg",
+                        role: "group",
+                        "aria-label": "Preview device",
+                        children: [
+                          { id: "desktop", Icon: pm },
+                          { id: "tablet", Icon: Sm },
+                          { id: "mobile", Icon: od },
                         ].map((L) => {
                           const A = x === L.id;
                           return e.jsx(
@@ -1615,14 +1401,10 @@ export function PopupsPage() {
                             {
                               type: "button",
                               onClick: () => f(L.id),
-                              className: [
-                                "p-2 rounded-lg transition-all",
-                                A ? "bg-white shadow-sm text-pop" : "text-faint hover:text-ink-2",
-                              ].join(" "),
+                              className: ["nls-seg__btn", A ? "is-active" : ""].filter(Boolean).join(" "),
+                              "aria-pressed": A ? "true" : "false",
                               "aria-label": L.id,
-                              children: e.jsx(L.Icon, {
-                                size: 16,
-                              }),
+                              children: e.jsx(L.Icon, { size: 16, "aria-hidden": "true" }),
                             },
                             L.id,
                           );
@@ -1631,101 +1413,98 @@ export function PopupsPage() {
                       e.jsx("button", {
                         type: "button",
                         onClick: () => h(null),
-                        className:
-                          "p-3 bg-white border border-line hover:bg-mail-soft text-muted rounded-full transition-all",
+                        className: "nls-icon-btn",
                         "aria-label": "Close",
-                        children: e.jsx(_t, {
-                          size: 20,
-                        }),
+                        children: e.jsx(_t, {}),
                       }),
                     ],
                   }),
-                  e.jsx("div", {
-                    className: "flex-1 bg-slate-200/20 p-12 overflow-y-auto flex items-center justify-center",
+                ],
+              }),
+              e.jsxs("div", {
+                className: "nls-modal__body nls-pop-sim__stage",
+                children: [
+                  e.jsx("style", {
+                    dangerouslySetInnerHTML: {
+                      __html:
+                        ".nls-pop-sim-heading,:where(.nls-pop-sim-heading) :is(h1,h2,h3,h4,h5,h6,p,div,span,strong,em,b,i,a){font-size:inherit!important;line-height:inherit;margin:0;padding:0;}",
+                    },
+                  }),
+                  e.jsxs("div", {
+                    className: [
+                      "nls-pop-sim__popup transition-all duration-500 ease-out shadow-2xl overflow-hidden relative",
+                      x === "mobile" ? "max-w-[320px]" : x === "tablet" ? "max-w-[500px]" : "",
+                    ].join(" "),
+                    style: {
+                      backgroundColor: p.style.bodyBgColor,
+                      width: x === "desktop" ? `${p.style.width}px` : "100%",
+                      borderRadius: `${p.style.radius}px`,
+                    },
                     children: [
-                      e.jsx("style", {
-                        dangerouslySetInnerHTML: {
-                          __html:
-                            ".nls-pop-sim-heading,:where(.nls-pop-sim-heading) :is(h1,h2,h3,h4,h5,h6,p,div,span,strong,em,b,i,a){font-size:inherit!important;line-height:inherit;margin:0;padding:0;}",
+                      e.jsx("button", {
+                        type: "button",
+                        className:
+                          "absolute top-4 right-4 flex items-center justify-center transition-transform hover:rotate-90",
+                        style: {
+                          width: `${parseInt(p.style.closeIconSize, 10) + 12}px`,
+                          height: `${parseInt(p.style.closeIconSize, 10) + 12}px`,
+                          backgroundColor: p.style.closeIconBg,
+                          color: p.style.closeIconColor,
+                          borderRadius: "9999px",
+                          zIndex: 10,
                         },
+                        children: e.jsx(_t, {
+                          size: p.style.closeIconSize,
+                        }),
                       }),
                       e.jsxs("div", {
-                        className: [
-                          "transition-all duration-500 ease-out shadow-2xl overflow-hidden relative",
-                          x === "mobile" ? "max-w-[320px]" : x === "tablet" ? "max-w-[500px]" : "",
-                        ].join(" "),
                         style: {
-                          backgroundColor: p.style.bodyBgColor,
-                          width: x === "desktop" ? `${p.style.width}px` : "100%",
-                          borderRadius: `${p.style.radius}px`,
+                          backgroundColor: p.style.headingBgColor,
+                          color: p.style.headingTextColor,
+                          padding: `${p.style.padding}px`,
+                          textAlign: p.textAlign,
                         },
                         children: [
-                          e.jsx("button", {
-                            type: "button",
-                            className:
-                              "absolute top-4 right-4 flex items-center justify-center transition-transform hover:rotate-90",
+                          e.jsx("div", {
+                            className: "nls-pop-sim-heading font-bold max-w-none",
                             style: {
-                              width: `${parseInt(p.style.closeIconSize, 10) + 12}px`,
-                              height: `${parseInt(p.style.closeIconSize, 10) + 12}px`,
-                              backgroundColor: p.style.closeIconBg,
-                              color: p.style.closeIconColor,
-                              borderRadius: "9999px",
-                              zIndex: 10,
+                              fontSize: `${parseInt((p.style && p.style.headingFontSize) || 20, 10) || 20}px`,
                             },
-                            children: e.jsx(_t, {
-                              size: p.style.closeIconSize,
+                            dangerouslySetInnerHTML: {
+                              __html: p.heading,
+                            },
+                          }),
+                          e.jsx("p", {
+                            className: "text-xs opacity-80 font-semibold mt-1 uppercase tracking-wider",
+                            children: p.subHeading,
+                          }),
+                        ],
+                      }),
+                      e.jsxs("div", {
+                        className: "p-10",
+                        style: {
+                          backgroundColor: p.style.bodyBgColor,
+                          fontSize: `${parseInt((p.style && p.style.bodyFontSize) || 14, 10) || 14}px`,
+                        },
+                        children: [
+                          e.jsx("div", {
+                            className: "prose prose-slate max-w-none mb-8 font-medium",
+                            dangerouslySetInnerHTML: {
+                              __html: me(p.content),
+                            },
+                          }),
+                          e.jsx("div", {
+                            className: "flex justify-center",
+                            children: e.jsx("button", {
+                              type: "button",
+                              className:
+                                "py-4 text-white font-bold text-sm rounded-xl shadow-xl hover:brightness-90 transition-all active:scale-95",
+                              style: {
+                                backgroundColor: p.style.buttonColor,
+                                width: `${p.style.buttonWidth}%`,
+                              },
+                              children: "Complete Action",
                             }),
-                          }),
-                          e.jsxs("div", {
-                            style: {
-                              backgroundColor: p.style.headingBgColor,
-                              color: p.style.headingTextColor,
-                              padding: `${p.style.padding}px`,
-                              textAlign: p.textAlign,
-                            },
-                            children: [
-                              e.jsx("div", {
-                                className: "nls-pop-sim-heading font-bold max-w-none",
-                                style: {
-                                  fontSize: `${parseInt((p.style && p.style.headingFontSize) || 20, 10) || 20}px`,
-                                },
-                                dangerouslySetInnerHTML: {
-                                  __html: p.heading,
-                                },
-                              }),
-                              e.jsx("p", {
-                                className: "text-xs opacity-80 font-semibold mt-1 uppercase tracking-wider",
-                                children: p.subHeading,
-                              }),
-                            ],
-                          }),
-                          e.jsxs("div", {
-                            className: "p-10",
-                            style: {
-                              backgroundColor: p.style.bodyBgColor,
-                              fontSize: `${parseInt((p.style && p.style.bodyFontSize) || 14, 10) || 14}px`,
-                            },
-                            children: [
-                              e.jsx("div", {
-                                className: "prose prose-slate max-w-none mb-8 font-medium",
-                                dangerouslySetInnerHTML: {
-                                  __html: me(p.content),
-                                },
-                              }),
-                              e.jsx("div", {
-                                className: "flex justify-center",
-                                children: e.jsx("button", {
-                                  type: "button",
-                                  className:
-                                    "py-4 text-white font-bold text-sm rounded-xl shadow-xl hover:brightness-90 transition-all active:scale-95",
-                                  style: {
-                                    backgroundColor: p.style.buttonColor,
-                                    width: `${p.style.buttonWidth}%`,
-                                  },
-                                  children: "Complete Action",
-                                }),
-                              }),
-                            ],
                           }),
                         ],
                       }),
@@ -1733,9 +1512,9 @@ export function PopupsPage() {
                   }),
                 ],
               }),
-            }),
-        ],
-      }),
+            ],
+          })
+        : null,
     ],
   });
 }

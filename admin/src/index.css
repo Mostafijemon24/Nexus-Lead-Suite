@@ -9,5 +9,6 @@
 @import "./styles/components.css";
 @import "./styles/pages.css";
 @import "./styles/pages/emails.css";
+@import "./styles/pages/popups.css";
 @import "./styles/legacy-pages.css";
 @import "./styles/overrides.css";
