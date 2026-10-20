@@ -1,6 +1,14 @@
 /**
- * Flush Nexus admin SPA against the WP admin menu (removes default #wpcontent gap).
+ * WordPress admin integration for the Nexus admin app.
+ *
+ * Loaded before the compiled bundle (assets/admin/css/main.css). This file only
+ * contains rules that must reach outside the app root: removing the default
+ * wp-admin content padding on plugin pages, keeping stray TinyMCE overlays
+ * hidden, and a few wp-admin element styles that would otherwise distort
+ * icons inside the app. All visual styling lives in the compiled bundle.
  */
+
+/* Flush the app against the WP admin menu (removes the default #wpcontent gap). */
 body.toplevel_page_nexulesuite_ #wpcontent,
 body[class*="page_nexulesuite_"] #wpcontent {
 	padding-left: 0;
@@ -16,6 +24,13 @@ body[class*="page_nexulesuite_"] .wrap {
 	margin: 0;
 }
 
+/* The WP footer sits below the app; keep it readable but out of the way. */
+body.toplevel_page_nexulesuite_ #wpfooter,
+body[class*="page_nexulesuite_"] #wpfooter {
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
 #nexulesuite_admin-root {
 	margin: 0;
 	padding: 0;
@@ -23,218 +38,17 @@ body[class*="page_nexulesuite_"] .wrap {
 	max-width: none;
 }
 
-/**
- * Plugin shell + sidebar — transparent, synced with WP admin color scheme.
- */
-#nexulesuite_admin-root .nexulesuite_admin-app,
-#nexulesuite_admin-root > .flex.min-h-screen,
-#nexulesuite_admin-root .bg-\[\#070b14\] {
-	background: transparent;
-}
-
-#nexulesuite_admin-root .nexulesuite_admin-sidebar,
-#nexulesuite_admin-root aside[aria-label="Nexus Lead Suite navigation"] {
-	background: transparent;
-	border-right-color: #dcdcde;
-	color: #50575e;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-divider,
-#nexulesuite_admin-root aside .border-sidebar-border {
-	border-color: #dcdcde;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-logo,
-#nexulesuite_admin-root aside [aria-hidden="true"].rounded-xl {
-	background-color: var(--wp-admin-theme-color, #2271b1);
-	box-shadow: none;
-	color: #fff;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-brand,
-#nexulesuite_admin-root aside .nexulesuite_sidebar-brand {
-	color: #1d2327;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-brand:hover,
-#nexulesuite_admin-root aside button.rounded-lg:hover {
-	background-color: #f0f0f1;
-	color: #1d2327;
-}
-
-/* Hide legacy dropdown chevron next to "Nexus". */
-#nexulesuite_admin-root aside button[aria-haspopup="true"] svg {
-	display: none;
-}
-
-#nexulesuite_admin-root #nexulesuite_sidebar-nav {
-	min-height: 0;
-	overflow-y: auto;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-footer,
-#nexulesuite_admin-root aside > div:last-child {
-	position: relative;
-	z-index: 2;
-	flex-shrink: 0;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-collapse svg,
-#nexulesuite_admin-root aside > div:last-child button svg {
-	pointer-events: none;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-link,
-#nexulesuite_admin-root aside nav a {
-	color: #334155;
-	text-decoration: none;
-	border: 1px solid transparent;
-	border-left-width: 3px;
-	border-left-color: transparent;
-	transition:
-		background-color 0.18s ease,
-		color 0.18s ease,
-		border-color 0.18s ease;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-link:hover,
-#nexulesuite_admin-root aside nav a:hover {
-	background-color: #f8fafc;
-	border-color: #e2e8f0;
-	border-left-color: #a5b4fc;
-	color: #1e293b;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-link.is-active,
-#nexulesuite_admin-root .nexulesuite_sidebar-link[aria-current="page"],
-#nexulesuite_admin-root aside nav a[aria-current="page"] {
-	background-color: #eef2ff;
-	border-color: #c7d2fe;
-	border-left-color: #4f46e5;
-	color: #4338ca;
-	font-weight: 600;
-	box-shadow: none;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-link.is-active:hover,
-#nexulesuite_admin-root .nexulesuite_sidebar-link[aria-current="page"]:hover,
-#nexulesuite_admin-root aside nav a[aria-current="page"]:hover {
-	background-color: #eef2ff;
-	border-color: #c7d2fe;
-	border-left-color: #4f46e5;
-	color: #4338ca;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-link.is-active svg,
-#nexulesuite_admin-root .nexulesuite_sidebar-link[aria-current="page"] svg,
-#nexulesuite_admin-root aside nav a[aria-current="page"] svg {
-	color: #4338ca;
-}
-
-/* Nested Forms submenu (Templates / Submissions) — lighter than top-level links */
-#nexulesuite_admin-root .nexulesuite_sidebar-subnav {
-	margin-left: 1rem;
-	padding-left: 0.55rem;
-	border-left: 2px solid #e2e8f0;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-link.is-sub {
-	color: #64748b;
-	font-size: 12.5px;
-	font-weight: 500;
-	line-height: 1.25;
-	border-left-width: 0;
-	border-radius: 0.5rem;
-	background: transparent;
-	box-shadow: none;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-link.is-sub:hover {
-	color: #334155;
-	background-color: #f1f5f9;
-	border-color: transparent;
-	border-left-color: transparent;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-link.is-sub.is-active,
-#nexulesuite_admin-root .nexulesuite_sidebar-link.is-sub[aria-current="page"] {
-	color: #4338ca;
-	font-weight: 600;
-	background-color: #eef2ff;
-	border-color: transparent;
-	border-left-color: transparent;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-link.is-sub.is-active svg,
-#nexulesuite_admin-root .nexulesuite_sidebar-link.is-sub[aria-current="page"] svg {
-	color: #4338ca;
-	opacity: 1;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-link.is-parent-open:not(.is-active) {
-	color: #475569;
-	background-color: transparent;
-	border-color: transparent;
-	border-left-color: #c7d2fe;
-	font-weight: 600;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-collapse,
-#nexulesuite_admin-root aside > div:last-child button {
-	color: #646970;
-}
-
-#nexulesuite_admin-root .nexulesuite_sidebar-collapse:hover,
-#nexulesuite_admin-root aside > div:last-child button:hover {
-	background-color: #f0f0f1;
-	color: #1d2327;
-}
-
-/* Override legacy dark Tailwind sidebar utilities in the compiled bundle. */
-#nexulesuite_admin-root .bg-sidebar {
-	background-color: transparent;
-}
-
-#nexulesuite_admin-root .bg-sidebar-active {
-	background-color: var(--wp-admin-theme-color, #2271b1);
-}
-
-#nexulesuite_admin-root aside .text-white {
-	color: #1d2327;
-}
-
-#nexulesuite_admin-root aside nav a.text-white,
-#nexulesuite_admin-root aside nav a[aria-current="page"].text-white {
-	color: #fff;
-}
-
-#nexulesuite_admin-root aside .text-slate-400 {
-	color: #646970;
-}
-
-#nexulesuite_admin-root aside .text-slate-200,
-#nexulesuite_admin-root aside .hover\:text-slate-200:hover {
-	color: #1d2327;
-}
-
-#nexulesuite_admin-root aside .hover\:bg-white\/\[0\.06\]:hover,
-#nexulesuite_admin-root aside .hover\:bg-white\/5:hover {
-	background-color: #f0f0f1;
-}
-
-/* Form Builder — field picker (WP admin button styles can hide SVG / lowercase text) */
+/* Form Builder — field picker (wp-admin button styles can hide SVGs / lowercase text). */
 #nexulesuite_admin-root .nexulesuite_field-picker-icon {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	min-height: 2.5rem;
 	min-width: 2.5rem;
-	color: #475569;
 }
 
 #nexulesuite_admin-root .nexulesuite_field-picker-icon svg,
-#nexulesuite_admin-root button .nexulesuite_field-picker-icon svg,
-#nexulesuite_admin-root .nexulesuite_field-picker-modal > div:first-child button svg {
+#nexulesuite_admin-root button .nexulesuite_field-picker-icon svg {
 	display: block !important;
 	width: 1.5rem !important;
 	height: 1.5rem !important;
@@ -251,7 +65,6 @@ body[class*="page_nexulesuite_"] .wrap {
 #nexulesuite_admin-root .nexulesuite_field-picker-search-icon {
 	z-index: 2;
 	pointer-events: none;
-	color: #9ca3af;
 }
 
 #nexulesuite_admin-root .nexulesuite_field-picker-search-icon svg {
@@ -277,7 +90,7 @@ body[class*="page_nexulesuite_"] .wrap {
 	letter-spacing: normal;
 }
 
-/* Nexus admin — hide stray TinyMCE overlays unless a real dialog is open */
+/* Hide stray TinyMCE overlays unless a real dialog is open. */
 body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) #mce-modal-blocker,
 body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) .mce-blocker,
 body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) .tox-dialog__backdrop {
@@ -286,7 +99,7 @@ body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) .tox-dialog__backd
 	visibility: hidden !important;
 }
 
-/* Main Heading Editor — TinyMCE inside popup builder card (classic editor chrome) */
+/* Main Heading Editor — TinyMCE inside the popup builder card (classic editor chrome). */
 #nexulesuite_admin-root .nexulesuite_heading-mce-wrap {
 	display: flex;
 	flex-direction: column;
@@ -331,246 +144,4 @@ body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) .tox-dialog__backd
 	pointer-events: none;
 	overflow: hidden;
 	clip: rect(0, 0, 0, 0);
-}
-
-/* Settings → Auto Popup → Exclusion Rules: search + URL picker */
-.nexulesuite_sap-excl-link-row {
-	display: flex;
-	gap: 8px;
-	align-items: stretch;
-	margin-top: 8px;
-}
-.nexulesuite_sap-excl-link-row .inp {
-	flex: 1 1 auto;
-	min-width: 0;
-}
-.nexulesuite_sap-excl-link-btn {
-	flex: 0 0 auto;
-	padding: 0 14px;
-	border-radius: 10px;
-	border: 1px solid #c3c4c7;
-	background: #1d2327;
-	color: #fff;
-	font-size: 12px;
-	font-weight: 700;
-	cursor: pointer;
-}
-.nexulesuite_sap-excl-link-btn:disabled {
-	opacity: 0.45;
-	cursor: not-allowed;
-}
-.nexulesuite_sap-excl-hint {
-	margin: 6px 0 0;
-	font-size: 11px;
-	color: #646970;
-}
-.nexulesuite_sap-excl-results {
-	margin-top: 8px;
-	max-height: 180px;
-	overflow: auto;
-	border: 1px solid #dcdcde;
-	border-radius: 10px;
-	background: #fff;
-}
-.nexulesuite_sap-excl-result {
-	display: flex;
-	width: 100%;
-	align-items: center;
-	justify-content: space-between;
-	gap: 10px;
-	padding: 9px 12px;
-	border: 0;
-	border-bottom: 1px solid #f0f0f1;
-	background: transparent;
-	text-align: left;
-	cursor: pointer;
-	font-size: 13px;
-	color: #1d2327;
-}
-.nexulesuite_sap-excl-result:last-child {
-	border-bottom: 0;
-}
-.nexulesuite_sap-excl-result:hover {
-	background: #f6f7f7;
-}
-.nexulesuite_sap-excl-result .t {
-	font-weight: 600;
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-.nexulesuite_sap-excl-result .meta {
-	flex: 0 0 auto;
-	font-size: 11px;
-	color: #8c8f94;
-	font-variant-numeric: tabular-nums;
-}
-.nexulesuite_sap-excl-field .inp[type="search"] {
-	margin-top: 0;
-}
-
-/* Submissions report — PrimeReact-like horizontal filter menubar */
-#nexulesuite_admin-root .nls-sub-menubar-wrap {
-	position: relative;
-	z-index: 20;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: center;
-	gap: 10px;
-	padding: 6px 10px;
-	border: 1px solid #e2e8f0;
-	border-radius: 12px;
-	background: #fff;
-	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__item {
-	position: relative;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__trigger {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 6px;
-	height: 34px;
-	padding: 0 14px;
-	border: 0;
-	border-radius: 8px;
-	background: transparent;
-	color: #334155;
-	font-size: 12.5px;
-	font-weight: 600;
-	line-height: 1;
-	cursor: pointer;
-	white-space: nowrap;
-	transition:
-		background-color 0.15s ease,
-		color 0.15s ease;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__trigger svg {
-	flex: 0 0 auto;
-	opacity: 0.75;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__trigger em {
-	max-width: 110px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	font-style: normal;
-	font-weight: 500;
-	font-size: 11px;
-	color: #64748b;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__trigger:hover,
-#nexulesuite_admin-root .nls-sub-menubar__item.is-open .nls-sub-menubar__trigger {
-	background: #f1f5f9;
-	color: #0f172a;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__item.is-active .nls-sub-menubar__trigger {
-	background: #eef2ff;
-	color: #4338ca;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__item.is-active .nls-sub-menubar__trigger em {
-	color: #6366f1;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__popup {
-	position: absolute;
-	top: calc(100% + 6px);
-	left: 0;
-	z-index: 40;
-	min-width: 200px;
-	max-width: min(320px, 92vw);
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__popup--wide {
-	min-width: 380px;
-	width: min(440px, 92vw);
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__popup--wide .nls-sub-menubar__input {
-	height: 40px;
-	padding: 0 14px;
-	font-size: 14px;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__panel {
-	padding: 10px;
-	border: 1px solid #e2e8f0;
-	border-radius: 12px;
-	background: #fff;
-	box-shadow:
-		0 10px 28px rgba(15, 23, 42, 0.12),
-		0 2px 6px rgba(15, 23, 42, 0.06);
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__panel-title {
-	margin-bottom: 8px;
-	font-size: 11px;
-	font-weight: 700;
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
-	color: #94a3b8;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__input {
-	display: block;
-	width: 100%;
-	height: 34px;
-	padding: 0 10px;
-	border: 1px solid #e2e8f0;
-	border-radius: 8px;
-	background: #fff;
-	color: #0f172a;
-	font-size: 13px;
-	outline: none;
-	box-sizing: border-box;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__input:focus {
-	border-color: #a5b4fc;
-	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__option,
-#nexulesuite_admin-root .nls-sub-menubar__clear {
-	display: block;
-	width: 100%;
-	margin-top: 4px;
-	padding: 8px 10px;
-	border: 0;
-	border-radius: 8px;
-	background: transparent;
-	color: #334155;
-	font-size: 13px;
-	font-weight: 500;
-	text-align: left;
-	cursor: pointer;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__option:hover,
-#nexulesuite_admin-root .nls-sub-menubar__clear:hover {
-	background: #f8fafc;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__option.is-selected {
-	background: #eef2ff;
-	color: #4338ca;
-	font-weight: 600;
-}
-
-#nexulesuite_admin-root .nls-sub-menubar__clear {
-	margin-top: 8px;
-	color: #64748b;
-	font-size: 12px;
 }
