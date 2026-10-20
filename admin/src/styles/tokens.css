@@ -51,8 +51,8 @@
 	--nls-surface-3: var(--nls-gray-100);
 	--nls-ink: var(--nls-gray-900);   /* primary text, 16.9:1 on white */
 	--nls-ink-2: var(--nls-gray-700); /* secondary headings, 9.7:1 */
-	--nls-muted: var(--nls-gray-500); /* helper text, 4.7:1 (AA) */
-	--nls-faint: var(--nls-gray-500); /* kept distinct for legacy mapping; same contrast floor */
+	--nls-muted: #5b6778;             /* helper text: 5.7:1 on white, 5.2:1 on gray-100, 4.7:1 on gray-200 (AA at 12px) */
+	--nls-faint: #5b6778;             /* kept distinct for legacy mapping; same contrast floor */
 	--nls-placeholder: #6b7280;       /* 4.8:1 */
 	--nls-border: var(--nls-gray-200);
 	--nls-border-soft: var(--nls-gray-100);

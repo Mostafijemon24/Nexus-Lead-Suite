@@ -143,3 +143,10 @@
 #nexulesuite_admin-root .shadow-card {
 	box-shadow: var(--nls-shadow-card);
 }
+
+/* Shared display-conditions widget (legacy CSS): no text below 12px. */
+#nexulesuite_admin-root .nexulesuite_gd-mode-bar .ml,
+#nexulesuite_admin-root .nexulesuite_gd-seg button .tag,
+#nexulesuite_admin-root .nexulesuite_gd-cond-top .ctag {
+	font-size: var(--nls-fs-caption);
+}
