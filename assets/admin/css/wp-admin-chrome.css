@@ -3,32 +3,34 @@
  *
  * Loaded before the compiled bundle (assets/admin/css/main.css). This file only
  * contains rules that must reach outside the app root: removing the default
- * wp-admin content padding on plugin pages, keeping stray TinyMCE overlays
- * hidden, and a few wp-admin element styles that would otherwise distort
- * icons inside the app. All visual styling lives in the compiled bundle.
+ * wp-admin content padding on plugin pages and sizing the app root. All visual
+ * styling lives in the compiled bundle.
+ *
+ * Plugin pages carry the body classes `toplevel_page_nexus-lead-suite` and
+ * `nexus_page_nexus-lead-suite-*` (menu slug "nexus-lead-suite").
  */
 
 /* Flush the app against the WP admin menu (removes the default #wpcontent gap). */
-body.toplevel_page_nexulesuite_ #wpcontent,
-body[class*="page_nexulesuite_"] #wpcontent {
+body.toplevel_page_nexus-lead-suite #wpcontent,
+body[class*="page_nexus-lead-suite"] #wpcontent {
 	padding-left: 0;
 }
 
-body.toplevel_page_nexulesuite_ #wpbody-content,
-body[class*="page_nexulesuite_"] #wpbody-content {
-	padding: 0;
+body.toplevel_page_nexus-lead-suite #wpbody-content,
+body[class*="page_nexus-lead-suite"] #wpbody-content {
+	padding-bottom: 0;
 }
 
-body.toplevel_page_nexulesuite_ .wrap,
-body[class*="page_nexulesuite_"] .wrap {
+body.toplevel_page_nexus-lead-suite .wrap,
+body[class*="page_nexus-lead-suite"] .wrap {
 	margin: 0;
 }
 
 /* The WP footer sits below the app; keep it readable but out of the way. */
-body.toplevel_page_nexulesuite_ #wpfooter,
-body[class*="page_nexulesuite_"] #wpfooter {
-	padding-left: 20px;
-	padding-right: 20px;
+body.toplevel_page_nexus-lead-suite #wpfooter,
+body[class*="page_nexus-lead-suite"] #wpfooter {
+	position: static;
+	padding: 12px 20px;
 }
 
 #nexulesuite_admin-root {
@@ -36,112 +38,4 @@ body[class*="page_nexulesuite_"] #wpfooter {
 	padding: 0;
 	width: 100%;
 	max-width: none;
-}
-
-/* Form Builder — field picker (wp-admin button styles can hide SVGs / lowercase text). */
-#nexulesuite_admin-root .nexulesuite_field-picker-icon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	min-height: 2.5rem;
-	min-width: 2.5rem;
-}
-
-#nexulesuite_admin-root .nexulesuite_field-picker-icon svg,
-#nexulesuite_admin-root button .nexulesuite_field-picker-icon svg {
-	display: block !important;
-	width: 1.5rem !important;
-	height: 1.5rem !important;
-	min-width: 1.5rem !important;
-	min-height: 1.5rem !important;
-	flex-shrink: 0;
-	color: inherit;
-	stroke: currentColor;
-	fill: none;
-	opacity: 1 !important;
-	visibility: visible !important;
-}
-
-#nexulesuite_admin-root .nexulesuite_field-picker-search-icon {
-	z-index: 2;
-	pointer-events: none;
-}
-
-#nexulesuite_admin-root .nexulesuite_field-picker-search-icon svg {
-	display: block;
-	width: 1.125rem;
-	height: 1.125rem;
-	min-width: 1.125rem;
-	min-height: 1.125rem;
-	flex-shrink: 0;
-	color: inherit;
-	stroke: currentColor;
-	fill: none;
-}
-
-#nexulesuite_admin-root .nexulesuite_field-picker-search-input {
-	position: relative;
-	z-index: 1;
-	padding-left: 2.5rem !important;
-}
-
-#nexulesuite_admin-root .nexulesuite_field-picker-modal button {
-	text-transform: none;
-	letter-spacing: normal;
-}
-
-/* Hide stray TinyMCE overlays unless a real dialog is open. */
-body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) #mce-modal-blocker,
-body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) .mce-blocker,
-body[class*="nexulesuite_"]:not(.nexulesuite_mce-dialog-open) .tox-dialog__backdrop {
-	display: none !important;
-	pointer-events: none !important;
-	visibility: hidden !important;
-}
-
-/* Main Heading Editor — TinyMCE inside the popup builder card (classic editor chrome). */
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap {
-	display: flex;
-	flex-direction: column;
-	min-height: 170px;
-	background: #fff;
-}
-
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-tinymce,
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-tinymce {
-	border: none !important;
-	box-shadow: none !important;
-	background: transparent !important;
-}
-
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-toolbar-grp,
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-toolbar-overlord,
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-top-part .mce-toolbar,
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-editor-header {
-	display: none !important;
-}
-
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-edit-area,
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-edit-area {
-	border: none !important;
-}
-
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-statusbar,
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-statusbar {
-	display: none !important;
-}
-
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .mce-edit-area iframe,
-#nexulesuite_admin-root .nexulesuite_heading-mce-wrap .tox-edit-area__iframe {
-	min-height: 170px !important;
-}
-
-#nexulesuite_admin-root .nexulesuite_heading-mce-ta {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	opacity: 0;
-	pointer-events: none;
-	overflow: hidden;
-	clip: rect(0, 0, 0, 0);
 }
