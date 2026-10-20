@@ -3197,46 +3197,44 @@ export function FormPreviewModal({ isOpen: a, onClose: o, form: i }) {
       "--nexus-st-btn": P.buttonColor || "#7c3aed",
       "--nexus-st-stepper": P.stepperColor || P.buttonColor || "#7c3aed",
     };
-  return v.jsxs(v.Fragment, {
+  return v.jsxs(ModalShell, {
+    open: !0,
+    onClose: o,
+    labelledBy: "nexulesuite_form-preview-title",
+    size: "lg",
+    className: "nls-form-preview",
     children: [
-      v.jsx("div", {
-        className: "fixed inset-0 z-40 bg-black/40",
-        onClick: o,
-      }),
       v.jsxs("div", {
-        className:
-          "fixed left-1/2 top-1/2 z-50 w-[92vw] max-w-3xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl",
+        className: "nls-modal__header",
         children: [
           v.jsxs("div", {
-            className: "flex items-center justify-between border-b border-slate-200 px-5 py-4",
+            className: "min-w-0",
             children: [
-              v.jsxs("div", {
-                className: "min-w-0",
-                children: [
-                  v.jsx("p", {
-                    className: "text-sm font-semibold text-slate-800",
-                    children: "Form Preview",
-                  }),
-                  v.jsx("p", {
-                    className: "mt-0.5 truncate text-xs text-slate-400",
-                    children: (i == null ? void 0 : i.name) || "Untitled Form",
-                  }),
-                ],
+              v.jsx("h2", {
+                id: "nexulesuite_form-preview-title",
+                className: "nls-modal__title",
+                children: "Form Preview",
               }),
-              v.jsx("button", {
-                type: "button",
-                onClick: o,
-                className:
-                  "inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-700",
-                "aria-label": "Close preview",
-                children: v.jsx(qa, {
-                  className: "h-4 w-4",
-                }),
+              v.jsx("p", {
+                className: "nls-modal__desc truncate",
+                children: (i == null ? void 0 : i.name) || "Untitled Form",
               }),
             ],
           }),
-          v.jsx("div", {
-            className: "max-h-[75vh] overflow-auto p-6",
+          v.jsx("button", {
+            type: "button",
+            onClick: o,
+            className: "nls-icon-btn",
+            "aria-label": "Close preview",
+            children: v.jsx(qa, {
+              className: "h-4 w-4",
+              "aria-hidden": "true",
+            }),
+          }),
+        ],
+      }),
+      v.jsx("div", {
+        className: "nls-modal__body nls-form-preview__body",
             children: v.jsxs("div", {
               className: "mx-auto w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm",
               style: M,
@@ -3439,8 +3437,6 @@ export function FormPreviewModal({ isOpen: a, onClose: o, form: i }) {
               ],
             }),
           }),
-        ],
-      }),
     ],
   });
 }
@@ -4522,7 +4518,7 @@ export const useGoogleFontLink = (a, o) => {},
   Tooltip = ({ text: a, label: o = "More information" }) =>
     e.jsxs("button", {
       type: "button",
-      className: "nexulesuite_tip",
+      className: "nls-tip",
       "aria-label": o,
       children: [
         e.jsx(Ys, {
@@ -4530,7 +4526,7 @@ export const useGoogleFontLink = (a, o) => {},
           "aria-hidden": "true",
         }),
         e.jsx("span", {
-          className: "nexulesuite_tip-bubble",
+          className: "nls-tip__bubble",
           role: "tooltip",
           children: a,
         }),

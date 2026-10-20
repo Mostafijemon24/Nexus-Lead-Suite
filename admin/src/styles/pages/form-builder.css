@@ -992,19 +992,6 @@
 	text-transform: uppercase;
 }
 
-/* Shared Form Preview modal (common.js) rendered inside this host. */
-#nexulesuite_admin-root .nls-fb-preview-host > .fixed.inset-0 {
-	z-index: var(--nls-z-modal);
-	background: var(--nls-overlay);
-}
-
-#nexulesuite_admin-root .nls-fb-preview-host > .fixed.left-1\/2 {
-	z-index: calc(var(--nls-z-modal) + 1);
-	border: 0;
-	border-radius: var(--nls-radius-dialog);
-	box-shadow: var(--nls-shadow-dialog);
-}
-
 /* ---- Page stacking ------------------------------------------------------- */
 #nexulesuite_admin-root .nls-fb-aside {
 	max-width: 760px;

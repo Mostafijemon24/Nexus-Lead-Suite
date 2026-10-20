@@ -1841,7 +1841,7 @@
 	left: 50%;
 	z-index: var(--nls-z-dropdown);
 	width: max-content;
-	max-width: 260px;
+	max-width: min(260px, calc(100vw - 32px));
 	padding: 8px 10px;
 	border-radius: var(--nls-radius-control);
 	background: var(--nls-gray-900);
@@ -1853,14 +1853,14 @@
 	text-transform: none;
 	letter-spacing: 0;
 	transform: translateX(-50%);
-	opacity: 0;
+	/* Out of layout until shown, so an off-screen bubble never widens the page. */
+	display: none;
 	pointer-events: none;
-	transition: opacity var(--nls-transition);
 }
 
 #nexulesuite_admin-root .nls-tip:hover .nls-tip__bubble,
 #nexulesuite_admin-root .nls-tip:focus-visible .nls-tip__bubble {
-	opacity: 1;
+	display: block;
 }
 
 /* ==========================================================================
@@ -1910,4 +1910,13 @@
 
 #nexulesuite_admin-root .nls-divider {
 	border-top: 1px solid var(--nls-border);
+}
+
+/* Shared Form Preview modal (common.js). The inner card is the form's own preview. */
+#nexulesuite_admin-root .nls-modal__panel.nls-form-preview {
+	max-width: 768px;
+}
+
+#nexulesuite_admin-root .nls-form-preview__body {
+	background: var(--nls-canvas);
 }

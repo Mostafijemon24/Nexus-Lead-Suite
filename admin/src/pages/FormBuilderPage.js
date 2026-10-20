@@ -8847,13 +8847,10 @@ export function FormBuilderPage() {
             : null,
         ],
       }),
-      e.jsx("div", {
-        className: "nls-fb-preview-host",
-        children: e.jsx(FormPreviewModal, {
-          isOpen: !!N,
-          onClose: () => H(null),
-          form: te,
-        }),
+      e.jsx(FormPreviewModal, {
+        isOpen: !!N,
+        onClose: () => H(null),
+        form: te,
       }),
       e.jsx(AddFormModal, {
         open: C,
@@ -8861,13 +8858,10 @@ export function FormBuilderPage() {
         onSelect: ie,
         onPreview: (_) => le(formFromTemplate(_, "template-preview")),
       }),
-      e.jsx("div", {
-        className: "nls-fb-preview-host",
-        children: e.jsx(FormPreviewModal, {
-          isOpen: !!j,
-          onClose: () => le(null),
-          form: j,
-        }),
+      e.jsx(FormPreviewModal, {
+        isOpen: !!j,
+        onClose: () => le(null),
+        form: j,
       }),
     ],
   });

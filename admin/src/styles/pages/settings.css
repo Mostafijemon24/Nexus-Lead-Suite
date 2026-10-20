@@ -547,22 +547,6 @@
 	}
 }
 
-/* ---- Tooltip bubbles ------------------------------------------------------------ */
-/* components.css hides bubbles with opacity only, so a bubble near the right edge
-   still widens the document; take it out of layout until it is shown. */
-#nexulesuite_admin-root .nls-set-page .nls-tip__bubble,
-#nexulesuite_admin-root .nexulesuite_ai-livechat .nls-tip__bubble {
-	display: none;
-	max-width: min(260px, calc(100vw - 32px));
-}
-
-#nexulesuite_admin-root .nls-set-page .nls-tip:hover .nls-tip__bubble,
-#nexulesuite_admin-root .nls-set-page .nls-tip:focus-visible .nls-tip__bubble,
-#nexulesuite_admin-root .nexulesuite_ai-livechat .nls-tip:hover .nls-tip__bubble,
-#nexulesuite_admin-root .nexulesuite_ai-livechat .nls-tip:focus-visible .nls-tip__bubble {
-	display: block;
-}
-
 /* Live Chat toolbar: keep the legacy grid from forcing a minimum width on phones. */
 #nexulesuite_admin-root .nexulesuite_ai-livechat .nls-ai-livechat-toolbar > * {
 	min-width: 0;

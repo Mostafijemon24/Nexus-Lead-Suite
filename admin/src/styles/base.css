@@ -126,7 +126,7 @@
  * below use the same specificity and load later, so they win over wp-admin
  * but still yield to page classes such as `.nexulesuite_sg-field .inp`.
  */
-.nexulesuite_admin-app :where(button, input, optgroup, select, textarea) {
+:where(.nexulesuite_admin-app button, .nexulesuite_admin-app input, .nexulesuite_admin-app optgroup, .nexulesuite_admin-app select, .nexulesuite_admin-app textarea) {
 	font-family: inherit;
 	font-size: 100%;
 	font-weight: inherit;
@@ -136,7 +136,8 @@
 	padding: 0;
 }
 
-.nexulesuite_admin-app :where(button, [role="button"]) {
+/* (0,0,0) so Tailwind/background utilities on buttons still win regardless of order. */
+:where(.nexulesuite_admin-app button, .nexulesuite_admin-app [role="button"]) {
 	cursor: pointer;
 	border: 0;
 	background-color: transparent;
@@ -146,7 +147,7 @@
 	appearance: button;
 }
 
-.nexulesuite_admin-app :where(button:disabled, [role="button"][aria-disabled="true"]) {
+:where(.nexulesuite_admin-app button:disabled, .nexulesuite_admin-app [role="button"][aria-disabled="true"]) {
 	cursor: not-allowed;
 }
 
@@ -156,6 +157,7 @@
 	display: block;
 	width: 100%;
 	min-height: 36px;
+	margin: 0;
 	padding: 6px 10px;
 	border: 1px solid var(--nls-border);
 	border-radius: var(--nls-radius-control);
