@@ -7,3 +7,6 @@ admin/node_modules/
 # OS / editor
 .DS_Store
 *.log
+
+# Local agent worktrees / editor state
+.claude/
