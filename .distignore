@@ -1,0 +1,15 @@
+# Paths left out of the distributable plugin ZIP (see bin/build-zip.py).
+# Everything else that is tracked by git ships, including the human-readable
+# admin source (admin/src, package.json, vite configs) that readme.txt promises.
+.git
+.gitignore
+.distignore
+.github
+admin/node_modules
+assets/admin/.vite
+tests
+replica
+docs
+dist
+bin
+README.md

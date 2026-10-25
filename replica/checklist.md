@@ -18,6 +18,7 @@ Two kinds of evidence are kept apart throughout this file:
 | 5 Implement Phases 1–3 | ✅ | 11 tables, 2 roles, 6 stores, 56 REST routes, 8 shortcodes, admin page (8 tabs, 5 appointment views), public JS app (auth with Patient/Doctor tabs, cascade booking, patient and doctor panels), printable prescription. |
 | 6 Test | ✅ in this container | `php tests/run.php`: **39 passed, 0 failed** (3 files). `node tests/e2e/run.mjs`: **27 passed, 0 failed**, no console errors, no PHP notices. 20 clone screenshots in `replica/screens/clone/` (1280 / 768 / 375 px). |
 | 7 Report | ✅ this file | |
+| 8 Staging package | ✅ built and verified offline | `dist/nexus-lead-suite-1.2.18-513118e.zip` (2.4 MB, 195 files, `.sha256` alongside) built by `bin/build-zip.py`; `bin/verify-zip.sh … --e2e` → **24 checks passed, 0 failed** (structure, exclusions, secrets scan, `php -l` on 60 files, require targets, PHP suite 39/0 and e2e 27/0 against the packaged files). Real-WordPress smoke run (`replica/staging.md` §4) **not yet done**. |
 
 ## Phase results (automated evidence)
 
@@ -80,6 +81,6 @@ Verified OK and citable (see the audit notes in `spec.md` §7): permission callb
 
 ## Next
 
-1. Install the branch on a **staging** site and run the 22 smoke checks in `replica/staging.md` (never production first).
+1. Upload `dist/nexus-lead-suite-1.2.18-513118e.zip` to a **staging** site (`replica/staging.md` §3, Option A) and run the 22 smoke checks in §4; 11 of them are staging-only and will be the project's first real-WordPress evidence. Never production first.
 2. From an ordinary connection, capture the remaining original pages listed in `replica/screens/original/README.md` (doctors listing, booking modal, patient / doctor / admin screens with your own demo accounts) so the panels can be aligned with evidence.
 3. Decide on Phases 4–7.

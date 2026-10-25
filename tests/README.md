@@ -31,3 +31,18 @@ doctor and admin, checks responsive layouts, and writes screenshots to
 What these tests cannot prove: behaviour under a real WordPress request cycle (rewrite
 rules, cookies, nonces, `dbDelta` on MySQL, e-mail delivery). Run the plugin on a staging
 site for that.
+
+## Packaging the plugin for a staging install
+
+```bash
+python3 bin/build-zip.py                                   # dist/nexus-lead-suite-<version>-<sha>.zip + .sha256
+bash bin/verify-zip.sh dist/nexus-lead-suite-*.zip --e2e   # offline checks, then the PHP suite and the e2e run against the packaged files
+```
+
+`bin/build-zip.py` packages only git-tracked files minus `.distignore` (tests, recon docs,
+build tooling, git data, `node_modules`) under a single `nexus-lead-suite/` folder, with fixed
+timestamps so the same commit always yields the same ZIP. `bin/verify-zip.sh` unpacks it in a
+temporary folder, checks structure, forbidden content, required files, `php -l`, PHP 8-only
+syntax and internal `require` targets, then copies `tests/` next to the packaged files and runs
+the suites there. Passing it proves the package is self-contained; it still proves nothing
+about a real WordPress install (see `replica/staging.md`).
