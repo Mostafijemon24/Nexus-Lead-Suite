@@ -7,6 +7,7 @@ import { PopupsPage } from './pages/PopupsPage.jsx';
 import { EmailsPage } from './pages/EmailsPage.jsx';
 import { FormBuilderPage } from './pages/FormBuilderPage.jsx';
 import { SettingsPage } from './pages/SettingsPage.jsx';
+import { AppointmentsPage } from './pages/AppointmentsPage.jsx';
 
 const ROUTES = {
 	activities: ActivitiesPage,
@@ -14,6 +15,7 @@ const ROUTES = {
 	popups: PopupsPage,
 	emails: EmailsPage,
 	'form-builder': FormBuilderPage,
+	appointments: AppointmentsPage,
 	settings: SettingsPage,
 };
 

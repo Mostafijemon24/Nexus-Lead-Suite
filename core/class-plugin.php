@@ -46,6 +46,23 @@ final class Plugin {
 		add_action( 'admin_init', array( $this, 'maybe_upgrade_db' ), -10 );
 		add_action( 'init', array( $this, 'init_admin' ) );
 		add_action( 'init', array( $this, 'init_public' ) );
+		add_action( 'init', array( $this, 'init_appointments' ), 5 );
+	}
+
+	/**
+	 * Loads the appointment module (stores, REST routes, front end).
+	 *
+	 * @return void
+	 */
+	public function init_appointments(): void {
+		require_once nexulesuite_PLUGIN_DIR . 'core/appointments/class-module.php';
+		\nexulesuite_\Appointments\Module::load();
+
+		if ( ! wp_doing_cron() ) {
+			require_once nexulesuite_PLUGIN_DIR . 'public/class-appointments-frontend.php';
+			$frontend = new \nexulesuite_\Frontend\Appointments_Frontend();
+			$frontend->register_hooks();
+		}
 	}
 
 	/**
@@ -160,6 +177,12 @@ final class Plugin {
 		$did = true;
 
 		require_once nexulesuite_PLUGIN_DIR . 'api/class-rest-api.php';
+		require_once nexulesuite_PLUGIN_DIR . 'core/appointments/class-module.php';
+		\nexulesuite_\Appointments\Module::load();
+		require_once nexulesuite_PLUGIN_DIR . 'api/class-appointments-api.php';
+		$appointments_api = new \nexulesuite_\Api\Appointments_Api();
+		$appointments_api->register_routes();
+
 		$rest = new \nexulesuite_\Api\Rest_Api();
 		$rest->register_routes();
 	}

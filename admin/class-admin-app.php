@@ -37,6 +37,7 @@ final class Admin_App {
 		add_action( 'admin_menu', array( $this, 'reorder_submenu' ), 999 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'wp_ajax_nexulesuite_popup_preview', array( $this, 'ajax_popup_preview' ) );
+		add_action( 'admin_print_footer_scripts', array( $this, 'print_sidebar_appointments_link' ) );
 	}
 
 	/**
@@ -56,6 +57,7 @@ final class Admin_App {
 			self::MENU_SLUG . '-menus'        => 'menu-items',
 			self::MENU_SLUG . '-emails'       => 'emails',
 			self::MENU_SLUG . '-accessibility'=> 'accessibility',
+			self::MENU_SLUG . '-appointments' => 'appointments',
 			self::MENU_SLUG . '-settings'     => 'settings',
 		);
 	}
@@ -83,6 +85,7 @@ final class Admin_App {
 			self::MENU_SLUG . '-menus'         => __( 'Smart Buttons', 'nexus-lead-suite' ),
 			self::MENU_SLUG . '-emails'        => __( 'Email', 'nexus-lead-suite' ),
 			self::MENU_SLUG . '-accessibility' => __( 'Acc & Lang', 'nexus-lead-suite' ),
+			self::MENU_SLUG . '-appointments'  => __( 'Appointments', 'nexus-lead-suite' ),
 			self::MENU_SLUG . '-settings'      => __( 'Settings', 'nexus-lead-suite' ),
 		);
 
@@ -134,6 +137,7 @@ final class Admin_App {
 			self::MENU_SLUG . '-menus',
 			self::MENU_SLUG . '-emails',
 			self::MENU_SLUG . '-accessibility',
+			self::MENU_SLUG . '-appointments',
 			self::MENU_SLUG . '-settings',
 		);
 
@@ -215,6 +219,13 @@ final class Admin_App {
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// The Appointments page ships as its own bundle (assets/admin/js/appointments.js);
+		// the main SPA bundle is not loaded there. See admin/vite.appointments.config.js.
+		if ( 'appointments' === ( $this->get_submenu_routes()[ $page ] ?? '' ) ) {
+			$this->enqueue_appointments_assets();
 			return;
 		}
 
@@ -487,6 +498,62 @@ final class Admin_App {
 		return $cache[ $path ];
 	}
 
+	/**
+	 * Enqueues the standalone Appointments admin bundle.
+	 *
+	 * @return void
+	 */
+	private function enqueue_appointments_assets(): void {
+		wp_enqueue_style( 'dashicons' );
+		$this->enqueue_admin_chrome_styles();
+		$this->enqueue_admin_global_font();
+		add_filter( 'style_loader_tag', array( $this, 'make_google_fonts_non_blocking' ), 10, 4 );
+
+		$css = nexulesuite_PLUGIN_DIR . 'assets/admin/css/appointments.css';
+		$js  = nexulesuite_PLUGIN_DIR . 'assets/admin/js/appointments.js';
+		wp_enqueue_style(
+			'nexulesuite_admin-appointments',
+			esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/css/appointments.css' ),
+			array(),
+			file_exists( $css ) ? (string) filemtime( $css ) : nexulesuite_VERSION
+		);
+		wp_enqueue_script(
+			'nexulesuite_admin-appointments',
+			esc_url( nexulesuite_PLUGIN_URL . 'assets/admin/js/appointments.js' ),
+			array(),
+			file_exists( $js ) ? (string) filemtime( $js ) : nexulesuite_VERSION,
+			true
+		);
+		wp_set_script_translations( 'nexulesuite_admin-appointments', 'nexus-lead-suite', nexulesuite_PLUGIN_DIR . 'languages' );
+		$this->localize_admin_script( 'nexulesuite_admin-appointments' );
+	}
+
+	/**
+	 * The shipped main bundle predates the Appointments page, so its React sidebar has no
+	 * entry for it. Adds the link client-side on the other Nexus pages.
+	 *
+	 * @return void
+	 */
+	public function print_sidebar_appointments_link(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$page   = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['page'] ) ) : '';
+		$routes = $this->get_submenu_routes();
+		if ( ! isset( $routes[ $page ] ) || 'appointments' === $routes[ $page ] || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		$href  = esc_url( admin_url( 'admin.php?page=' . self::MENU_SLUG . '-appointments' ) );
+		$label = esc_js( __( 'Appointments', 'nexus-lead-suite' ) );
+		$icon  = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 shrink-0"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>';
+		$js    = <<<'JS'
+(function(){var tries=0;function add(){var nav=document.getElementById("nexulesuite_sidebar-nav");if(!nav){if(tries++<50){setTimeout(add,200);}return;}if(nav.querySelector("[data-nexus-appointments]")){return;}var links=nav.querySelectorAll("a.nexulesuite_sidebar-link");var ref=links[links.length-1];if(!ref){return;}var a=document.createElement("a");a.href=__HREF__;a.className=ref.className.replace(/\bis-active\b/,"");a.setAttribute("data-nexus-appointments","1");var collapsed=!ref.querySelector("span");a.innerHTML=__ICON__+(collapsed?"":'<span class="min-w-0 flex-1 truncate">'+__LABEL__+'</span>');if(collapsed){a.title=__LABEL__;}var wrap=document.createElement("div");wrap.appendChild(a);ref.parentNode.parentNode.insertBefore(wrap,ref.parentNode);}add();})();
+JS;
+		$js = str_replace(
+			array( '__HREF__', '__ICON__', '__LABEL__' ),
+			array( wp_json_encode( $href ), wp_json_encode( $icon ), wp_json_encode( $label ) ),
+			$js
+		);
+		echo '<script>' . $js . '</script>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- constants and JSON-encoded strings only.
+	}
 	/**
 	 * Removes default WP admin content padding so the SPA sits flush against the menu.
 	 *

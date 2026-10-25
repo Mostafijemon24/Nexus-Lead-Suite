@@ -42,6 +42,8 @@ function nexulesuite_uninstall_option_keys(): array {
 		'nexulesuite_email_templates',
 		'nexulesuite_smtp_settings',
 		'nexulesuite_erase_on_uninstall',
+		'nexulesuite_appointments_settings_v1',
+		'nexulesuite_appt_flush_rewrites',
 	);
 }
 
@@ -107,6 +109,18 @@ function nexulesuite_uninstall_delete_site_data(): void {
 	$wpdb->query( "DROP TABLE IF EXISTS `{$chat_logs}`" );
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- intentional uninstall cleanup.
 	$wpdb->query( "DROP TABLE IF EXISTS `{$ai_vectors}`" );
+
+	// Appointment module tables and roles.
+	$appt_tables = array( 'departments', 'locations', 'doctors', 'schedules', 'leaves', 'medicine_types', 'medicines', 'patients', 'appointments', 'treatments', 'prescription_items' );
+	foreach ( $appt_tables as $suffix ) {
+		$table = $wpdb->prefix . 'nexulesuite_appt_' . $suffix;
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$wpdb->query( "DROP TABLE IF EXISTS `{$table}`" );
+	}
+	if ( function_exists( 'remove_role' ) ) {
+		remove_role( 'nexulesuite_doctor' );
+		remove_role( 'nexulesuite_patient' );
+	}
 
 	foreach ( nexulesuite_uninstall_option_keys() as $key ) {
 		delete_option( $key );

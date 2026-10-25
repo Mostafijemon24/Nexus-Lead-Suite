@@ -1,0 +1,7 @@
+# Build tooling (admin SPA)
+admin/node_modules/
+assets/admin/.vite/
+
+# Test harness state
+tests/e2e/.state/
+/tmp/

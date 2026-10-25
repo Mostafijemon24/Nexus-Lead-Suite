@@ -1,6 +1,6 @@
 # Implementation plan: appointment system in Nexus Lead Suite
 
-Status: **proposed, awaiting approval**. Nothing in `admin/`, `api/`, `core/` or `public/` has been changed yet. Only `replica/` was added.
+Status: **Phases 1–3 built and tested** (approved slice). Phases 4–7 remain proposed. See `checklist.md` for evidence and `spec.md` §9 for the decisions taken where the original is undocumented.
 
 ## 0. Two decisions before any code
 

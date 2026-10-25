@@ -27,7 +27,7 @@ final class Activator {
 	/**
 	 * Current database schema version (increment when tables change).
 	 */
-	public const SCHEMA_VERSION = '1.3.0';
+	public const SCHEMA_VERSION = '1.4.0';
 
 	/**
 	 * Runs on plugin activation.
@@ -37,6 +37,9 @@ final class Activator {
 	public static function activate(): void {
 		self::install_tables();
 		update_option( self::SCHEMA_VERSION_OPTION, self::SCHEMA_VERSION, false );
+
+		require_once nexulesuite_PLUGIN_DIR . 'core/appointments/class-module.php';
+		\nexulesuite_\Appointments\Module::activate();
 
 		if ( ! wp_next_scheduled( 'nexulesuite_purge_form_submissions' ) ) {
 			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'nexulesuite_purge_form_submissions' );
@@ -140,6 +143,13 @@ final class Activator {
 		dbDelta( $sql_submissions );
 		dbDelta( $sql_chat_logs );
 		dbDelta( $sql_ai_vectors );
+
+		// Appointment module tables (departments, doctors, schedules, appointments, ...).
+		require_once nexulesuite_PLUGIN_DIR . 'core/appointments/class-module.php';
+		\nexulesuite_\Appointments\Module::load();
+		\nexulesuite_\Appointments\Schema::install();
+		\nexulesuite_\Appointments\Roles::install();
+		\nexulesuite_\Appointments\Module::ensure_pages();
 	}
 
 	/**

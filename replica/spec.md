@@ -122,3 +122,28 @@ All validation runs server-side in the REST layer (and mirrored client-side for 
 - Payment and Zoom flows: implementable against official APIs but **unverifiable** in this container (no outbound network, no merchant/Zoom accounts).
 - WebSocket real-time chat: WordPress hosting has no persistent socket server; the clone uses 5-second polling, which looks the same to a user.
 - Doctor subscription plans: not evidenced; built only if the demo shows them.
+
+## 9. Clone decisions and unresolved questions (Phases 1–3 build)
+
+Behaviour the original leaves undocumented was **not** invented silently; where the clone had to pick something, the choice is recorded here as a decision to confirm against the live demo once it is reachable.
+
+| topic | what the clone does | status |
+| --- | --- | --- |
+| Admin login page | WordPress login; the module lives under *Nexus → Appointments*. No separate `/admin/login` page. | decision |
+| Appointment status names | `pending → confirmed → treated`, `pending|confirmed → cancelled`; payment is a separate field (`unpaid|paid|refunded`). | inferred `[I]`; original names unknown |
+| "New" appointments (doctor panel) | booked within the last 7 days and not yet treated or cancelled. | inferred `[I]` |
+| Patient appointment list | the original shows treated appointments only `[V]`; the clone shows all with a filter that defaults to *Upcoming*, and a *Treated* filter that matches the original. | decision (superset) |
+| Slot length | per weekday row (default from settings, 30 min). The original's slot model is unknown. | `[U]` |
+| Minimum notice and cancel window | 60 min to book, 120 min to cancel online; both admin settings. | decision |
+| Booking window | 30 days ahead (setting). | decision |
+| Deleting a doctor with appointments | refused; deactivate instead. Deleting a department/location/medicine type in use: refused. | decision |
+| Doctor self-service profile | name, phone, address, bio, photo. Fee, department, location, status stay with the admin. | inferred `[I]` |
+| Payment at booking | pay at clinic or bank transfer (manual). Gateways are Phase 4. Free doctors are marked paid/none automatically. | scope |
+| E-mail verification | required by default, 24 h token, resend endpoint never reveals whether an account exists. | decision |
+| Rate limits | 120 public reads / minute / IP; 10 register-login attempts / 10 minutes / IP. | decision |
+| Pretty URLs | `/doctor-details/{slug}` and `/department-details/{slug}` map onto the configured pages (matches the demo's URL shape `[V]`). | decision |
+| Front-end rendering | catalogue pages are server-rendered (SEO, as the Laravel original); booking, auth and panels are JS apps on top of REST. | decision |
+| Admin bundle | the shipped `assets/admin/js/main.js` predates `admin/src` (distribution snapshot); the Appointments page ships as its own bundle `assets/admin/js/appointments.js` and the main bundle is untouched. A sidebar link is injected on the other pages. | repository constraint |
+| Health data | treatment notes and prescriptions are stored in plugin tables; access is ownership-checked. No HIPAA claim is made; a separate assessment is required. | caveat |
+
+Open questions for the live demo: exact admin sidebar labels and order; fields of the doctor form (photo upload vs. media picker); whether patients can cancel at all; whether a doctor may edit their fee; the real status vocabulary; validation copy; pagination sizes; the look of the five-step booking stepper; whether the "SaaS" plans exist in DocMent.

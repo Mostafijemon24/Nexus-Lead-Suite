@@ -1,6 +1,7 @@
 import React, { useId, useState } from 'react';
 import {
 	Activity,
+	CalendarCheck,
 	ChevronLeft,
 	FileText,
 	Layout,
@@ -14,6 +15,7 @@ const NAV_ITEMS = [
 	{ id: 'popups', label: 'Popups', icon: Layout },
 	{ id: 'emails', label: 'Emails', icon: Mail },
 	{ id: 'form-builder', label: 'Form Builder', icon: FileText },
+	{ id: 'appointments', label: 'Appointments', icon: CalendarCheck },
 	{ id: 'settings', label: 'Settings', icon: Settings },
 ];
 
@@ -37,9 +39,9 @@ function SidebarLogo() {
 	);
 }
 
-export function AdminSidebar( { activeId, onNavigate } ) {
+export function AdminSidebar( { activeId, onNavigate, defaultCollapsed = false } ) {
 	const navLabelId = useId();
-	const [ collapsed, setCollapsed ] = useState( false );
+	const [ collapsed, setCollapsed ] = useState( defaultCollapsed );
 
 	return (
 		<aside

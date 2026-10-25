@@ -1,46 +1,46 @@
 feature,area,priority,original,clone,notes
-Admin login (email + password),auth,must,yes,no,maps to WordPress login with a manage_options admin; a dedicated /admin/login page is not reproduced
-Doctor login (email + password),auth,must,yes,no,new WP role nexulesuite_doctor; front-end login form via shortcode
-Patient registration with e-mail verification,auth,must,yes,no,new WP role nexulesuite_patient; verification via WP mail (existing Mailer)
-Patient login,auth,must,yes,no,front-end login form via shortcode
-Forgot / reset password,auth,should,yes,no,delegate to WP lost-password flow styled in the gateway template
-Multiple admins,auth,should,yes,no,WordPress administrators already cover this
-Departments CRUD,catalogue,must,yes,no,admin React page + REST + table
-Locations CRUD,catalogue,must,yes,no,admin React page + REST + table
-Doctors CRUD (admin creates doctors; no self-registration),catalogue,must,yes,no,admin React page + REST + table; creates WP user with doctor role
-Doctor profile fields (photo department location fee experience bio address),catalogue,must,yes,no,
-Doctor weekday time schedule,availability,must,yes,no,admin + doctor can edit
-Doctor leave days,availability,must,yes,no,doctor edits; admin can view
-Availability engine (weekday schedule minus leave days minus taken slots),availability,must,yes,no,server side; drives date and slot pickers
-Public doctors listing with search by location / doctor / department,public,must,yes,no,shortcode [nexulesuite_doctors]
-Public doctor profile with fee and weekly schedule table,public,must,yes,no,shortcode [nexulesuite_doctor]; pretty URL via rewrite
-Public department listing and department detail with its doctors,public,must,yes,no,shortcodes
-Quick appointment flow (department > doctor > date > time slot > payment),booking,must,yes,no,shortcode [nexulesuite_appointment]
-Book from doctor profile,booking,must,yes,no,same booking widget preselected
-Block booking on leave days and on weekdays without schedule,booking,must,yes,no,
-Prevent double booking of a slot,booking,must,yes,no,unique index (doctor date slot)
-Appointment statuses (pending paid treated cancelled),booking,must,yes,no,status names are inferred
-Patient panel: appointments list (treated only) with print prescription,patient,must,yes,no,shortcode [nexulesuite_patient_panel]
-Patient panel: orders / payment history,patient,should,yes,no,
-Patient panel: edit profile,patient,must,yes,no,
-Patient panel: change password,patient,must,yes,no,
-Doctor dashboard (today's appointments monthly earnings new-appointment alerts),doctor,must,yes,no,shortcode [nexulesuite_doctor_panel]
-Doctor appointments: new / not treated / history,doctor,must,yes,no,
-Treatment + prescription editor (medicines with dosage),doctor,must,yes,no,
-Printable prescription (doctor patient admin),doctor,must,yes,no,print stylesheet; reuse existing Simple_PDF for PDF export (optional)
-Medicine types CRUD,catalogue,must,yes,no,
-Medicines CRUD,catalogue,must,yes,no,
+Admin login (email + password),auth,must,yes,yes,WordPress login; admin pages are under Nexus → Appointments (no separate /admin/login page by design)
+Doctor login (email + password),auth,must,yes,yes,[nexulesuite_auth] with ?type=doctor; REST public/login checks the doctor role and active status
+Patient registration with e-mail verification,auth,must,yes,yes,REST public/register; token e-mail; /?nexulesuite_verify link; login refused until verified (toggle in settings)
+Patient login,auth,must,yes,yes,[nexulesuite_auth]; redirects to the patient panel
+Forgot / reset password,auth,should,yes,partial,link to the WordPress lost-password flow; not restyled
+Multiple admins,auth,should,yes,yes,WordPress administrators
+Departments CRUD,catalogue,must,yes,yes,admin tab + REST + table; delete blocked while doctors reference it
+Locations CRUD,catalogue,must,yes,yes,admin tab + REST + table
+Doctors CRUD (admin creates doctors; no self-registration),catalogue,must,yes,yes,creates the WP user with the doctor role; delete refused when appointments exist
+Doctor profile fields (photo department location fee experience bio address),catalogue,must,yes,yes,photo as media attachment ID (no upload widget yet)
+Doctor weekday time schedule,availability,must,yes,yes,admin drawer tab + doctor panel; per-day slot length
+Doctor leave days,availability,must,yes,yes,admin drawer tab + doctor panel; future dates only
+Availability engine (weekday schedule minus leave days minus taken slots),availability,must,yes,yes,Availability::compute_day; lead time and booking window from settings; unit tested
+Public doctors listing with search by location / doctor / department,public,must,yes,yes,server-rendered [nexulesuite_doctors] with GET filters and pagination
+Public doctor profile with fee and weekly schedule table,public,must,yes,yes,[nexulesuite_doctor] + /doctor-details/{slug}; booking widget embedded
+Public department listing and department detail with its doctors,public,must,yes,yes,"[nexulesuite_departments], [nexulesuite_department] + /department-details/{slug}"
+Quick appointment flow (department > doctor > date > time slot > payment),booking,must,yes,yes,[nexulesuite_appointment] five-step stepper; payment step offers pay-at-clinic / bank transfer only
+Book from doctor profile,booking,must,yes,yes,widget preselects the doctor (steps 3-5)
+Block booking on leave days and on weekdays without schedule,booking,must,yes,yes,calendar disables leave/closed/past/beyond-window days; server re-validates
+Prevent double booking of a slot,booking,must,yes,yes,UNIQUE slot_key index + availability check; cancelled rows free the slot
+Appointment statuses (pending paid treated cancelled),booking,must,yes,yes,pending → confirmed → treated; pending/confirmed → cancelled; payment status separate (unpaid/paid/refunded)
+Patient panel: appointments list (treated only) with print prescription,patient,must,yes,yes,filters Upcoming / Treated / All; Print on treated rows
+Patient panel: orders / payment history,patient,should,yes,yes,"Payments view (fee, method, payment status)"
+Patient panel: edit profile,patient,must,yes,yes,
+Patient panel: change password,patient,must,yes,yes,current password required
+Doctor dashboard (today's appointments monthly earnings new-appointment alerts),doctor,must,yes,yes,stats + today list + new list
+Doctor appointments: new / not treated / history,doctor,must,yes,yes,new = booked in last 7 days and not treated (inferred definition)
+Treatment + prescription editor (medicines with dosage),doctor,must,yes,yes,"notes, advice, follow-up, medicine rows (catalogue or free text)"
+Printable prescription (doctor patient admin),doctor,must,yes,yes,standalone print document at /?nexulesuite_prescription=ID with nonce + ownership check
+Medicine types CRUD,catalogue,must,yes,yes,
+Medicines CRUD,catalogue,must,yes,yes,
 Doctor payment history with date range,money,should,yes,no,
 Doctor withdraw request,money,should,yes,no,
 Admin manage withdraw payments (approve / reject),money,should,yes,no,
-Admin manage appointments (filters view print),admin,must,yes,no,React page
-Admin manage schedules (per doctor),admin,must,yes,no,React page
-Admin patients list,admin,must,yes,no,React page
-Admin dashboard KPIs,admin,should,yes,no,counters + recent appointments
+Admin manage appointments (filters view print),admin,must,yes,yes,"search, doctor, status, date range; detail drawer with status/payment update"
+Admin manage schedules (per doctor),admin,must,yes,yes,inside the doctor drawer (Weekly schedule tab)
+Admin patients list,admin,must,yes,yes,"search, status, activate/deactivate"
+Admin dashboard KPIs,admin,should,yes,yes,"today, pending, doctors, patients, revenue month, treated + recent/today tables"
 Payment at booking: Stripe,payments,should,yes,no,official API with the user's keys; cannot be tested in this container
 Payment at booking: PayPal,payments,should,yes,no,official API with the user's keys
 Payment at booking: Razorpay,payments,could,yes,no,official API
-Payment at booking: bank transfer (manual),payments,should,yes,no,admin marks paid
+Payment at booking: bank transfer (manual),payments,should,yes,yes,appointment stays unpaid until admin marks paid
 Payment at booking: bKash (add-on),payments,could,yes,skip,regional add-on; only with the user's merchant account
 Multi-currency,payments,could,yes,no,currency setting + display
 Real-time chat doctor <-> patient,messaging,should,yes,no,polling-based thread in WordPress (no WebSocket server)
@@ -59,7 +59,7 @@ Contact form -> Contact Message inbox,marketing,should,yes,no,reuse Form Builder
 SEO settings (title description keywords),settings,should,yes,no,per public page meta
 E-mail template setting,settings,should,yes,no,reuse existing Email templates
 Cookie consent,settings,could,yes,no,
-Google reCAPTCHA on auth and contact forms,settings,should,yes,no,reuse existing reCAPTCHA keys from Form Builder
+Google reCAPTCHA on auth and contact forms,settings,should,yes,no,not wired yet; rate limiting per IP is in place
 Google Analytics snippet,settings,could,yes,no,
 Tawk live chat,integrations,could,yes,skip,third-party widget; the project has its own AI chatbot
 Preloader on/off,settings,could,yes,skip,theme concern not a plugin concern
