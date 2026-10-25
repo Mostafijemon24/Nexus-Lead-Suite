@@ -79,7 +79,13 @@ final class Appointments_Frontend {
 		}
 		if ( '1' === (string) get_option( 'nexulesuite_appt_flush_rewrites', '' ) ) {
 			delete_option( 'nexulesuite_appt_flush_rewrites' );
-			flush_rewrite_rules( false );
+			// After every plugin has registered its rules for this request.
+			add_action(
+				'wp_loaded',
+				static function (): void {
+					flush_rewrite_rules( false );
+				}
+			);
 		}
 	}
 

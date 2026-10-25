@@ -17,7 +17,6 @@
 			if ( v === null || v === undefined || v === false ) { return; }
 			if ( k === 'class' ) { node.className = v; }
 			else if ( k === 'text' ) { node.textContent = v; }
-			else if ( k === 'html' ) { node.innerHTML = v; }
 			else if ( k.indexOf( 'on' ) === 0 && typeof v === 'function' ) { node.addEventListener( k.slice( 2 ).toLowerCase(), v ); }
 			else if ( k === 'disabled' || k === 'checked' || k === 'selected' ) { node[ k ] = !! v; }
 			else { node.setAttribute( k, v ); }
@@ -124,7 +123,10 @@
 				e.preventDefault(); clear( msg ); busy( btn, true );
 				api( 'public/login', { method: 'POST', body: { email: email.input.value, password: pass.input.value, type: type } } ).then( function ( r ) {
 					cfg.nonce = r.nonce || cfg.nonce; cfg.loggedIn = true; cfg.role = type;
-					if ( opts.onSuccess ) { opts.onSuccess( r ); return; }
+					if ( opts.onSuccess ) {
+						// Re-read the nonce with the new session cookie in place before any authenticated call.
+						return api( 'public/me' ).then( function ( me ) { cfg.nonce = me.nonce || cfg.nonce; cfg.role = me.role || cfg.role; opts.onSuccess( r ); } );
+					}
 					window.location.href = redirectTo || r.redirect;
 				} ).catch( function ( err ) {
 					busy( btn, false );
@@ -147,7 +149,7 @@
 				e.preventDefault(); clear( msg ); busy( btn, true );
 				api( 'public/register', { method: 'POST', body: formData( form ) } ).then( function ( r ) {
 					if ( r.verificationRequired ) { notice = alertBox( 'info', t.checkInbox ); mode = 'verify'; render(); return; }
-					if ( opts.onSuccess ) { opts.onSuccess( r ); return; }
+					if ( opts.onSuccess ) { return api( 'public/me' ).then( function ( me ) { cfg.nonce = me.nonce || cfg.nonce; cfg.loggedIn = true; cfg.role = me.role || 'patient'; opts.onSuccess( r ); } ); }
 					window.location.href = redirectTo || r.redirect;
 				} ).catch( function ( err ) { busy( btn, false ); msg.appendChild( alertBox( 'error', applyErrors( form, err.errors, err.message ) ) ); } );
 			} }, [ msg, name, email, phone, el( 'div', { class: 'nxa-row' }, [ pass, pass2 ] ), el( 'div', { class: 'nxa-actions' }, [ el( 'span' ), btn ] ) ] );

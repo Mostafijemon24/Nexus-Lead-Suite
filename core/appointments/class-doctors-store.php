@@ -301,7 +301,7 @@ final class Doctors_Store {
 		);
 		$ok  = $wpdb->insert( Schema::table( 'doctors' ), $row ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- custom table.
 		if ( false === $ok ) {
-			wp_delete_user( (int) $uid );
+			self::delete_wp_user( (int) $uid );
 			return new \WP_Error( 'db_error', __( 'Could not save the doctor.', 'nexus-lead-suite' ), array( 'status' => 500 ) );
 		}
 		$id = (int) $wpdb->insert_id;
@@ -391,7 +391,7 @@ final class Doctors_Store {
 		$wpdb->delete( Schema::table( 'doctors' ), array( 'id' => $id ), array( '%d' ) );
 		// phpcs:enable
 		if ( $existing['userId'] > 0 ) {
-			wp_delete_user( $existing['userId'] );
+			self::delete_wp_user( (int) $existing['userId'] );
 		}
 
 		return true;
@@ -642,5 +642,19 @@ final class Doctors_Store {
 		);
 
 		return is_int( $n ) && $n > 0;
+	}
+
+	/**
+	 * wp_delete_user() lives in wp-admin/includes/user.php, which is not loaded on REST or
+	 * front-end requests.
+	 *
+	 * @param int $user_id User id.
+	 * @return void
+	 */
+	private static function delete_wp_user( int $user_id ): void {
+		if ( ! function_exists( 'wp_delete_user' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/user.php';
+		}
+		wp_delete_user( $user_id );
 	}
 }

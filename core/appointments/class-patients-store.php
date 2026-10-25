@@ -183,7 +183,7 @@ final class Patients_Store {
 			)
 		);
 		if ( false === $ok ) {
-			wp_delete_user( (int) $uid );
+			self::delete_wp_user( (int) $uid );
 			return new \WP_Error( 'db_error', __( 'Could not create the account.', 'nexus-lead-suite' ), array( 'status' => 500 ) );
 		}
 
@@ -371,5 +371,19 @@ final class Patients_Store {
 		wp_set_password( $new, $user_id );
 
 		return true;
+	}
+
+	/**
+	 * wp_delete_user() lives in wp-admin/includes/user.php, which is not loaded on REST or
+	 * front-end requests.
+	 *
+	 * @param int $user_id User id.
+	 * @return void
+	 */
+	private static function delete_wp_user( int $user_id ): void {
+		if ( ! function_exists( 'wp_delete_user' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/user.php';
+		}
+		wp_delete_user( $user_id );
 	}
 }

@@ -158,6 +158,7 @@ T::test( 'REST: registration sends verification; login blocked until verified; r
 	T::eq( $count, count( WP_Test_State::$mails ), 'no mail for unknown or already verified accounts' );
 	$me = R( 'GET', '/appt/public/me' )->get_data();
 	T::eq( 'guest', $me['role'] );
+	T::ok( isset( $me['nonce'] ) && '' !== $me['nonce'], 'me returns a REST nonce for the current session' );
 } );
 
 T::test( 'REST: doctor login via type=doctor, patients rejected from doctor login', function () {

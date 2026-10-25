@@ -36,6 +36,14 @@ Updated: 2026-10-25 (after Phases 1–3). Legend: ✅ completed and tested · �
 - Responsive: admin tables collapse to cards below 768 px; public panels and booking verified at 375 px.
 - No console errors and no PHP notices during the whole e2e run.
 
+## Code review of commit e589054 (2026-10-25)
+
+- Confirmed on the remote: 63 files, 9 724 insertions; the shipped `assets/admin/js/main.js` and `main.css` are byte-identical to before.
+- Changes to pre-existing files are limited to: submenu + route registration and the standalone bundle loader in `admin/class-admin-app.php`; activation/upgrade hooks in `core/class-activator.php` and `core/class-plugin.php`; table/role/option removal in `uninstall.php`; source-only edits to `admin/src/App.jsx` and `AdminSidebar.jsx` (not in the shipped bundle).
+- Static sweep: every query with user input goes through `$wpdb->prepare`; all superglobals are sanitised; all front-end output escaped; no PHP 8-only syntax in shipped code.
+- Defects found and fixed in the follow-up commit: `wp_delete_user()` needed `wp-admin/includes/user.php` on REST requests; the REST nonce returned by the login route would not match the new cookie session under real WordPress (now mirrored via `set_logged_in_cookie`, and the JS re-reads the nonce from `/appt/public/me`); rewrite rules are now flushed on `wp_loaded` after all plugins registered theirs; removed unused `innerHTML` support from the public DOM helper.
+- Residual risk the review could not clear: login CSRF on the REST login route (a cross-site POST could log a victim into an attacker-controlled patient account; no data of the victim is exposed). Mitigation candidate: require the `wp_rest` nonce on that route. Recorded, not changed.
+
 ## Unverified (needs a real WordPress site or the original)
 
 - ⚠️ Rewrite rules, cookie login (`wp_signon`) and REST nonces under a real WordPress request cycle; `dbDelta` on MySQL/MariaDB; e-mail delivery through the configured mailer; page creation on activation; the injected sidebar link on the other Nexus admin pages (the shipped main bundle could not be rebuilt, see `spec.md` §9).

@@ -813,6 +813,19 @@ final class Appointments_Api {
 			return Catalog_Store::validation_error( $v->errors() );
 		}
 
+		/*
+		 * The nonce returned below must match the session the browser will use next. WordPress
+		 * derives REST nonces from the logged-in cookie, which is only sent as a response header
+		 * here, so mirror it into $_COOKIE before creating the nonce (same approach as WooCommerce).
+		 */
+		add_action(
+			'set_logged_in_cookie',
+			static function ( $cookie ): void {
+				if ( defined( 'LOGGED_IN_COOKIE' ) ) {
+					$_COOKIE[ LOGGED_IN_COOKIE ] = (string) $cookie;
+				}
+			}
+		);
 		$user = wp_signon(
 			array(
 				'user_login'    => $email,
@@ -924,6 +937,7 @@ final class Appointments_Api {
 			array(
 				'loggedIn' => $uid > 0,
 				'role'     => $role,
+				'nonce'    => wp_create_nonce( 'wp_rest' ),
 				'verified' => $uid > 0 ? Patients_Store::is_verified( $uid ) : false,
 				'pages'    => array(
 					'auth'         => $this->panel_url( 'auth' ),
