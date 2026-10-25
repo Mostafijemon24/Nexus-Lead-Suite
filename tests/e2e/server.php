@@ -164,7 +164,11 @@ if ( str_starts_with( $path, '/wp-json/' ) ) {
 			$json = $decoded;
 		}
 	}
-	$res = wp_test_rest_dispatch( $method, $route, $query, $json );
+	$headers = array();
+	if ( isset( $_SERVER['HTTP_X_WP_NONCE'] ) ) {
+		$headers['X-WP-Nonce'] = (string) $_SERVER['HTTP_X_WP_NONCE'];
+	}
+	$res = wp_test_rest_dispatch( $method, $route, $query, $json, $headers );
 	nxa_json( $res->get_data(), (int) $res->get_status() );
 	return;
 }

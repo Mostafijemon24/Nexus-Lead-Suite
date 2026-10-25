@@ -1,6 +1,6 @@
 # Progress checklist — DocMent clone in Nexus Lead Suite
 
-Updated: 2026-10-25 (after Phases 1–3). Legend: ✅ completed and tested · ⬜ not started · ⚠️ built but unverified against the original or a real WordPress install · 🚫 cannot be reproduced.
+Updated: 2026-10-25 (after Phases 1–3 and the code review). Reference hosts still blocked by the environment network policy (HTTP 403 on CONNECT); no comparison with the original has been possible. Legend: ✅ completed and tested · ⬜ not started · ⚠️ built but unverified against the original or a real WordPress install · 🚫 cannot be reproduced.
 
 ## Workflow steps
 
@@ -11,7 +11,7 @@ Updated: 2026-10-25 (after Phases 1–3). Legend: ✅ completed and tested · �
 | 3 Investigate with evidence | ⚠️ | No scripts or network behaviour of the original could be observed. |
 | 4 Specification | ✅ | `spec.md` incl. §9 clone decisions and open questions. |
 | 5 Implement Phases 1–3 | ✅ | 11 tables, 2 roles, 6 stores, 50 REST routes, 8 shortcodes, admin page (8 tabs), public JS app (booking, auth, patient and doctor panels), printable prescription. |
-| 6 Test | ✅ in this container | `php tests/run.php`: 28 passed, 0 failed. `node tests/e2e/run.mjs`: 24 passed, 0 failed (Playwright against the real PHP API + real pages + real admin bundle on SQLite). Screenshots in `replica/screens/clone/` (12 files, 1280 px and 375 px). |
+| 6 Test | ✅ in this container | `php tests/run.php`: 29 passed, 0 failed. `node tests/e2e/run.mjs`: 24 passed, 0 failed (Playwright against the real PHP API + real pages + real admin bundle on SQLite). Screenshots in `replica/screens/clone/` (12 files, 1280 px and 375 px). |
 | 7 Report | ✅ this file | |
 
 ## Phase results
@@ -19,7 +19,7 @@ Updated: 2026-10-25 (after Phases 1–3). Legend: ✅ completed and tested · �
 | phase | scope | unit/REST tests | e2e steps | status |
 | --- | --- | --- | --- | --- |
 | 1 Catalogue & availability | departments, locations, doctors, schedules, leave days, medicines, availability engine, settings, admin tabs | 14 | 8 admin + 3 public | ✅ |
-| 2 Booking & patient account | public listing/profile/departments, five-step booking, registration + e-mail verification, login, patient panel, admin appointments & patients | 10 | 7 | ✅ |
+| 2 Booking & patient account | public listing/profile/departments, five-step booking, registration + e-mail verification, login (nonce-protected), patient panel, admin appointments & patients | 11 | 7 | ✅ |
 | 3 Doctor panel & prescriptions | doctor login, dashboard, new/not-treated/history, treatment + prescription editor, print, schedule, leave days, profile, password | 4 | 5 | ✅ |
 
 ## Feature matrix (`features.csv`, clone column)
@@ -42,7 +42,7 @@ Updated: 2026-10-25 (after Phases 1–3). Legend: ✅ completed and tested · �
 - Changes to pre-existing files are limited to: submenu + route registration and the standalone bundle loader in `admin/class-admin-app.php`; activation/upgrade hooks in `core/class-activator.php` and `core/class-plugin.php`; table/role/option removal in `uninstall.php`; source-only edits to `admin/src/App.jsx` and `AdminSidebar.jsx` (not in the shipped bundle).
 - Static sweep: every query with user input goes through `$wpdb->prepare`; all superglobals are sanitised; all front-end output escaped; no PHP 8-only syntax in shipped code.
 - Defects found and fixed in the follow-up commit: `wp_delete_user()` needed `wp-admin/includes/user.php` on REST requests; the REST nonce returned by the login route would not match the new cookie session under real WordPress (now mirrored via `set_logged_in_cookie`, and the JS re-reads the nonce from `/appt/public/me`); rewrite rules are now flushed on `wp_loaded` after all plugins registered theirs; removed unused `innerHTML` support from the public DOM helper.
-- Residual risk the review could not clear: login CSRF on the REST login route (a cross-site POST could log a victim into an attacker-controlled patient account; no data of the victim is exposed). Mitigation candidate: require the `wp_rest` nonce on that route. Recorded, not changed.
+- Login CSRF on the REST login route: **fixed** (commit after d54e4f7). The anonymous login, register and resend-verification routes now require a valid `wp_rest` nonce (sent as `X-WP-Nonce`); a missing or forged nonce answers 403 and the front end shows "Your session has expired. Please reload the page and try again." Covered by a new PHP test (29 total) and the unchanged e2e run (24 steps). **Must be smoke-tested on staging** (item 12 and the new item 18 in `replica/staging.md`): a stale page older than the nonce lifetime (12–24 h) must fail gracefully, and a fresh page must log in, register and book normally.
 
 ## Unverified (needs a real WordPress site or the original)
 

@@ -328,7 +328,7 @@ class WP_REST_Server { const READABLE = 'GET'; const CREATABLE = 'POST'; const E
 /**
  * Dispatches a request through the stub route table (permission callback + callback).
  */
-function wp_test_rest_dispatch( string $method, string $path, array $params = array(), array $json = array() ) {
+function wp_test_rest_dispatch( string $method, string $path, array $params = array(), array $json = array(), array $headers = array() ) {
 	$method = strtoupper( $method );
 	foreach ( WP_Test_State::$rest_routes as $r ) {
 		if ( $r['method'] !== $method ) { continue; }
@@ -339,6 +339,7 @@ function wp_test_rest_dispatch( string $method, string $path, array $params = ar
 			foreach ( $m as $k => $v ) { if ( ! is_int( $k ) ) { $req->set_param( $k, $v ); } }
 			$req->set_params( $params );
 			if ( $json ) { $req->set_json( $json ); }
+			foreach ( $headers as $hk => $hv ) { $req->set_header( $hk, $hv ); }
 			if ( isset( $r['handler']['args'] ) ) {
 				foreach ( $r['handler']['args'] as $name => $spec ) {
 					$val = $req->get_param( $name );

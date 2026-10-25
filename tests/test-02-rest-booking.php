@@ -18,7 +18,7 @@ function rest_world(): void {
 	$api = new \nexulesuite_\Api\Appointments_Api();
 	$api->register_routes();
 }
-function R( string $m, string $p, array $q = array(), array $json = array() ) { return wp_test_rest_dispatch( $m, '/nexulesuite_/v1' . $p, $q, $json ); }
+function R( string $m, string $p, array $q = array(), array $json = array(), ?array $headers = null ) { return wp_test_rest_dispatch( $m, '/nexulesuite_/v1' . $p, $q, $json, null === $headers ? array( 'X-WP-Nonce' => wp_create_nonce( 'wp_rest' ) ) : $headers ); }
 function as_user( int $uid ): void { wp_set_current_user( $uid ); }
 function as_guest(): void { wp_set_current_user( 0 ); }
 
@@ -392,4 +392,24 @@ T::test( 'REST: admin appointment list filters and patient admin update', functi
 	T::eq( true, $pl['items'][0]['emailVerified'] );
 	T::eq( 'inactive', R( 'PUT', "/appt/admin/patients/{$p['id']}", array(), array( 'status' => 'inactive' ) )->get_data()['status'] );
 	T::eq( 404, R( 'PUT', '/appt/admin/patients/999', array(), array( 'status' => 'active' ) )->get_status() );
+} );
+
+T::test( 'REST: anonymous login/register/resend require a valid wp_rest nonce (login CSRF)', function () {
+	rest_world();
+	seed_patient();
+	as_guest();
+	$no = R( 'POST', '/appt/public/login', array(), array( 'email' => 'pat@example.test', 'password' => 'patientpass1' ), array() );
+	T::eq( 403, $no->get_status() );
+	T::eq( 'rest_cookie_invalid_nonce', $no->get_data()['code'] );
+	T::eq( 0, get_current_user_id(), 'not logged in without a nonce' );
+	$bad = R( 'POST', '/appt/public/login', array(), array( 'email' => 'pat@example.test', 'password' => 'patientpass1' ), array( 'X-WP-Nonce' => 'forged' ) );
+	T::eq( 403, $bad->get_status() );
+	T::eq( 403, R( 'POST', '/appt/public/register', array(), array( 'name' => 'X Y', 'email' => 'x@example.test', 'password' => 'password123' ), array() )->get_status() );
+	T::eq( 403, R( 'POST', '/appt/public/resend-verification', array(), array( 'email' => 'pat@example.test' ), array() )->get_status() );
+	T::eq( false, email_exists( 'x@example.test' ), 'no account created without a nonce' );
+	$ok = R( 'POST', '/appt/public/login', array(), array( 'email' => 'pat@example.test', 'password' => 'patientpass1' ) );
+	T::eq( 200, $ok->get_status(), 'valid guest nonce still logs in' );
+	// Public reads never need a nonce.
+	as_guest();
+	T::eq( 200, R( 'GET', '/appt/public/departments', array(), array(), array() )->get_status() );
 } );

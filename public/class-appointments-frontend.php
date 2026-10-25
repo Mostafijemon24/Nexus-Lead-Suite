@@ -249,6 +249,7 @@ final class Appointments_Frontend {
 			'loading'          => __( 'Loading…', 'nexus-lead-suite' ),
 			'retry'            => __( 'Retry', 'nexus-lead-suite' ),
 			'networkError'     => __( 'Could not reach the server. Please try again.', 'nexus-lead-suite' ),
+			'sessionExpired'   => __( 'Your session has expired. Please reload the page and try again.', 'nexus-lead-suite' ),
 			'department'       => __( 'Department', 'nexus-lead-suite' ),
 			'doctor'           => __( 'Doctor', 'nexus-lead-suite' ),
 			'date'             => __( 'Date', 'nexus-lead-suite' ),

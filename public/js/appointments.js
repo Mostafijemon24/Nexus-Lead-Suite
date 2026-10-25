@@ -50,7 +50,7 @@
 				var data = null;
 				try { data = txt ? JSON.parse( txt ) : null; } catch ( e ) { data = null; }
 				if ( ! res.ok ) {
-					var err = new Error( ( data && data.message ) || ( t.networkError || 'Request failed' ) );
+					var err = new Error( ( data && data.code === 'rest_cookie_invalid_nonce' && t.sessionExpired ) || ( data && data.message ) || ( t.networkError || 'Request failed' ) );
 					err.code = data && data.code; err.status = res.status; err.errors = ( data && data.data && data.data.errors ) || {};
 					throw err;
 				}

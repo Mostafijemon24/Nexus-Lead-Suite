@@ -51,6 +51,7 @@ Tick each one; stop and roll back on any fatal error.
 | 14 | Doctor panel | treat with medicines, Print prescription | status "treated", print page opens, no other patient's data visible |
 | 15 | Cross-account access | as patient A open `/?nexulesuite_prescription=<id of patient B>&_wpnonce=…` | 404 |
 | 16 | Theme compatibility | public pages at 375 / 768 / 1280 px | layout holds; note theme CSS conflicts |
+| 18 | Login CSRF guard | open `/nexus-auth/`, wait, then log in; also submit the same form from a page left open for more than 24 h (or temporarily set a short nonce life with the `nonce_life` filter) | fresh page logs in; stale page shows "Your session has expired" and no login happens |
 | 17 | Uninstall (optional, last) | set *Settings → erase on uninstall* then delete the plugin on a throw-away copy | tables, roles and options removed |
 
 ## 3. Roll back

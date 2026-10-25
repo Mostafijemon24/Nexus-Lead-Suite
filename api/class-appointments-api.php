@@ -218,11 +218,23 @@ final class Appointments_Api {
 	}
 
 	/**
-	 * Anonymous write (register / login): 10 per 10 minutes per IP.
+	 * Anonymous write (register / login / resend): 10 per 10 minutes per IP, and the request
+	 * must carry a valid `wp_rest` nonce (sent by the front end as X-WP-Nonce). WordPress only
+	 * checks that nonce for cookie-authenticated users; requiring it here blocks login CSRF
+	 * (a cross-site form posting credentials to sign the victim into an attacker's account).
 	 *
+	 * @param \WP_REST_Request $request Request.
 	 * @return bool|\WP_Error
 	 */
-	public function public_write_ok() {
+	public function public_write_ok( \WP_REST_Request $request ) {
+		$nonce = (string) $request->get_header( 'X-WP-Nonce' );
+		if ( '' === $nonce ) {
+			$nonce = (string) $request->get_param( '_wpnonce' );
+		}
+		if ( ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+			return new \WP_Error( 'rest_cookie_invalid_nonce', __( 'Your session has expired. Please reload the page and try again.', 'nexus-lead-suite' ), array( 'status' => 403 ) );
+		}
+
 		return $this->rate_limit( 'w', 10, 10 * MINUTE_IN_SECONDS );
 	}
 
