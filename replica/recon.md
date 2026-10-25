@@ -15,6 +15,22 @@ Every row below carries one of these tags. Nothing tagged `[U]` or `[I]` may be 
 | `[I]` | inferred from the product category, the Laravel/Bootstrap conventions WebSolutionUS uses, or the sister product DocPoint |
 | `[U]` | unknown; needs the live demo |
 
+## Evidence update (2026-10-25, later the same day)
+
+After the network allowlist was applied the vendor host became reachable intermittently (TLS resets on most
+attempts). The vendor manual, the doctor profile, department, login, register and admin-login pages were
+captured as HTML, and the home, department, doctor profile, login, register and admin-login pages as
+screenshots at up to three widths. **See `evidence.md`** for the verified structure; the rows below marked
+`[I]`/`[U]` for those pages are superseded by it. Still not seen: the `/doctors` listing, the payment page,
+and every screen behind a login (admin, doctor, patient panels).
+
+Corrections to the map from that evidence: the quick appointment is a **modal** (no `/appointment` page);
+doctors **can** self-register (Register page has a Doctor tab); patient registration has no phone field;
+the doctor profile has seven tabs and lists working hours in 12-hour format for scheduled days only; the
+admin "Appointment" menu is All / New / Pending / Prescription / Payment History plus Schedule, Days and
+Habits; the patient list of appointments shows treated ones only; an incomplete patient profile redirects to
+the profile page before payment.
+
 ## Access status (read this first)
 
 The session's cloud container could **not** open the target. Every outbound request to the demo host and to the vendor's other hosts was refused by the environment's network policy (HTTP 403 on CONNECT from the egress proxy; the WebFetch tool returned DNS "not found" for the same hosts). Only web search worked, so this map was built from indexed text of:

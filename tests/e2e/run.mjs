@@ -17,6 +17,7 @@ const failures = [];
 async function step( name, fn ) {
 	try { await fn(); passed++; console.log( '  ok   ' + name ); }
 	catch ( e ) { failed++; failures.push( name + ': ' + e.message ); console.log( '  FAIL ' + name + '\n       ' + e.message.split( '\n' )[ 0 ] ); }
+	finally { if ( typeof page !== 'undefined' ) { await page.setViewportSize( { width: 1280, height: 900 } ); } } // a failed responsive step must not leak its viewport into the next one
 }
 function expect( cond, msg ) { if ( ! cond ) { throw new Error( msg || 'expectation failed' ); } }
 
@@ -136,8 +137,12 @@ try {
 		await page.goto( BASE + '/doctor-details/dr-jane-roe/' );
 		await page.getByRole( 'heading', { name: 'Dr. Jane Roe' } ).waitFor();
 		expect( await page.getByText( '$25.00' ).first().isVisible(), 'fee shown' );
-		expect( ( await page.locator( '.nxa-profile-schedule tbody tr' ).count() ) === 7, 'seven schedule rows' );
-		await page.locator( '.nxa-booking .nxa-cal' ).waitFor();
+		expect( ( await page.locator( '.nxa-profile-schedule tbody tr' ).count() ) === 5, 'only the five open weekdays are listed (as on the original)' );
+		expect( await page.locator( '.nxa-profile-schedule tbody' ).textContent().then( ( x ) => x.includes( '9:00 AM - 12:00 PM' ) ), '12-hour working hours' );
+		for ( const tab of [ 'Doctor Info', 'Working Hours', 'Address', 'Education', 'Experience', 'Qualification', 'Appointment' ] ) { await page.getByRole( 'tab', { name: tab } ).waitFor(); }
+		await page.getByRole( 'tab', { name: 'Appointment' } ).click();
+		await page.locator( '.nxa-booking form.nxa-booking-form' ).waitFor();
+		await page.locator( 'select[name=startTime]' ).waitFor();
 		await page.screenshot( { path: SHOTS + 'public-doctor-profile-1280.png', fullPage: true } );
 		await page.goto( BASE + '/doctor-details/nobody/' );
 		await page.getByText( 'This doctor profile is not available.' ).waitFor();
@@ -148,25 +153,34 @@ try {
 		await page.goto( BASE + '/department-details/cardiology/' );
 		await page.getByRole( 'heading', { name: 'Cardiology' } ).waitFor();
 		expect( ( await page.locator( '.nxa-doctor-card' ).count() ) === 1, 'one doctor in cardiology' );
+		expect( ( await page.locator( '.nxa-dept-list a' ).count() ) === 3, 'department sidebar lists every active department' );
+		expect( ( await page.locator( '.nxa-dept-list a.is-active' ).textContent() ).trim() === 'Cardiology', 'current department highlighted' );
+		await page.locator( '.nxa-dept-list a', { hasText: 'Pediatric' } ).click();
+		await page.getByRole( 'heading', { name: 'Pediatric' } ).waitFor();
+		await page.screenshot( { path: SHOTS + 'public-department-1280.png', fullPage: true } );
 	} );
 
 	/* ---------------- booking as a new patient ---------------- */
 	let verifyLink = '';
-	await step( 'booking: guest walks department → doctor → date → slot, then registers inline', async () => {
+	await step( 'booking: guest fills Department → Doctor → Date → Schedule (as on the original), then registers inline', async () => {
 		await page.goto( BASE + '/nexus-booking/' );
-		await page.getByRole( 'button', { name: /Cardiology/ } ).click();
-		await page.getByRole( 'button', { name: /Dr\. Jane Roe/ } ).click();
-		await page.locator( '.nxa-cal' ).waitFor();
-		expect( await page.locator( 'button.nxa-cal-day.is-past' ).first().isDisabled(), 'past days disabled' );
-		expect( await page.locator( 'button.nxa-cal-day.is-closed' ).first().isDisabled(), 'closed weekend disabled' );
-		await page.locator( 'button.nxa-cal-day[aria-label="2026-10-27 open"]' ).click();
-		await page.locator( '.nxa-slot', { hasText: /^09:00 / } ).click();
-		await page.getByRole( 'button', { name: 'Next' } ).click();
+		await page.locator( 'select[name=departmentId]' ).selectOption( { label: 'Cardiology' } );
+		await page.locator( 'select[name=doctorId] option[value="' + seed.doctors[ 0 ].id + '"]' ).waitFor( { state: 'attached' } );
+		await page.locator( 'select[name=doctorId]' ).selectOption( String( seed.doctors[ 0 ].id ) );
+		await page.locator( 'input[name=date]' ).fill( '2026-10-31' ); // Saturday: closed
+		await page.getByText( 'The doctor has no hours this day.' ).waitFor();
+		await page.locator( 'input[name=date]' ).fill( '2026-10-27' );
+		await page.locator( 'select[name=startTime] option[value="09:00"]' ).waitFor( { state: 'attached' } );
+		expect( ( await page.locator( 'select[name=startTime] option[value="09:00"]' ).textContent() ).includes( '9:00 AM - 9:30 AM' ), '12-hour schedule labels' );
+		await page.locator( 'select[name=startTime]' ).selectOption( '09:00' );
+		await page.screenshot( { path: SHOTS + 'public-booking-form-1280.png', fullPage: true } );
+		await page.getByRole( 'button', { name: 'Create Appointment' } ).click();
 		await page.getByText( 'Review and confirm' ).waitFor();
 		await page.getByText( 'Log in or create a patient account' ).waitFor();
 		await page.screenshot( { path: SHOTS + 'public-booking-review-1280.png', fullPage: true } );
 		await page.getByRole( 'tab', { name: 'Register' } ).click();
-		await page.getByLabel( 'Full name' ).fill( 'Pat Smith' );
+		expect( ( await page.locator( 'form input[name=phone]' ).count() ) === 0, 'patient registration has no phone field (as on the original)' );
+		await page.getByLabel( 'Name', { exact: true } ).fill( 'Pat Smith' );
 		await page.getByLabel( 'E-mail' ).fill( 'pat@example.test' );
 		await page.getByLabel( 'Password', { exact: true } ).fill( 'patientpass1' );
 		await page.getByLabel( 'Confirm password' ).fill( 'patientpass2' );
@@ -182,6 +196,11 @@ try {
 	} );
 	await step( 'booking: unverified login is refused; verification link activates; login redirects to panel', async () => {
 		await page.goto( BASE + '/nexus-auth/' );
+		await page.getByRole( 'tab', { name: 'Patient' } ).waitFor();
+		await page.getByRole( 'tab', { name: 'Doctor' } ).waitFor();
+		await page.getByText( 'Remember Me' ).waitFor();
+		await page.getByRole( 'link', { name: 'Forgot your password?' } ).waitFor();
+		await page.screenshot( { path: SHOTS + 'public-login-1280.png', fullPage: true } );
 		await page.getByLabel( 'E-mail' ).fill( 'pat@example.test' );
 		await page.getByLabel( 'Password', { exact: true } ).fill( 'patientpass1' );
 		await page.getByRole( 'button', { name: 'Log in' } ).click();
@@ -193,14 +212,29 @@ try {
 		await page.getByLabel( 'Password', { exact: true } ).fill( 'patientpass1' );
 		await page.getByRole( 'button', { name: 'Log in' } ).click();
 		await page.waitForURL( /nexus-patient-panel/ );
-		await page.getByText( 'Nothing here yet.' ).waitFor();
+		await page.getByText( 'Your profile is incomplete.' ).waitFor();
+		await page.locator( '.nxa-stat' ).first().waitFor();
 	} );
 	let code = '';
-	await step( 'booking: logged-in patient books from the doctor profile and gets a code', async () => {
+	await step( 'booking: incomplete profile is sent to the profile page first (as on the original), then booking succeeds', async () => {
 		await page.goto( BASE + '/nexus-booking/?doctor=' + seed.doctors[ 0 ].id );
-		await page.locator( 'button.nxa-cal-day[aria-label="2026-10-27 open"]' ).click();
-		await page.locator( '.nxa-slot', { hasText: /^09:00 / } ).click();
-		await page.getByRole( 'button', { name: 'Next' } ).click();
+		await page.locator( 'input[name=date]' ).fill( '2026-10-27' );
+		await page.locator( 'select[name=startTime] option[value="09:00"]' ).waitFor( { state: 'attached' } );
+		await page.locator( 'select[name=startTime]' ).selectOption( '09:00' );
+		await page.getByRole( 'button', { name: 'Create Appointment' } ).click();
+		await page.getByRole( 'button', { name: 'Confirm' } ).click();
+		await page.getByText( 'Please complete your profile' ).waitFor();
+		await page.getByRole( 'link', { name: 'Complete profile' } ).click();
+		await page.waitForURL( /#profile/ );
+		await page.getByLabel( 'Phone' ).fill( '555-0100' );
+		await page.getByLabel( 'Address' ).fill( '1 Test Street' );
+		await page.getByRole( 'button', { name: 'Save' } ).click();
+		await page.getByText( 'Saved.' ).waitFor();
+		await page.goto( BASE + '/nexus-booking/?doctor=' + seed.doctors[ 0 ].id );
+		await page.locator( 'input[name=date]' ).fill( '2026-10-27' );
+		await page.locator( 'select[name=startTime] option[value="09:00"]' ).waitFor( { state: 'attached' } );
+		await page.locator( 'select[name=startTime]' ).selectOption( '09:00' );
+		await page.getByRole( 'button', { name: 'Create Appointment' } ).click();
 		await page.getByLabel( /Reason for visit/ ).fill( 'Chest pain after exercise' );
 		await page.getByText( 'Bank transfer' ).click();
 		await page.getByRole( 'button', { name: 'Confirm' } ).click();
@@ -211,14 +245,21 @@ try {
 	} );
 	await step( 'booking: the taken slot is now disabled for everyone', async () => {
 		await page.goto( BASE + '/nexus-booking/?doctor=' + seed.doctors[ 0 ].id );
-		await page.locator( 'button.nxa-cal-day[aria-label="2026-10-27 open"]' ).click();
-		const slot = page.locator( '.nxa-slot', { hasText: /^09:00 / } );
-		await slot.waitFor();
-		expect( await slot.isDisabled(), '09:00 disabled' );
-		expect( ! ( await page.locator( '.nxa-slot', { hasText: /^09:30 / } ).isDisabled() ), '09:30 free' );
+		await page.locator( 'input[name=date]' ).fill( '2026-10-27' );
+		const slot = page.locator( 'select[name=startTime] option[value="09:00"]' );
+		await slot.waitFor( { state: 'attached' } );
+		const optDisabled = ( sel ) => page.locator( sel ).evaluate( ( o ) => o.disabled ); // Playwright's isDisabled() ignores <option>
+		expect( await optDisabled( 'select[name=startTime] option[value="09:00"]' ), '09:00 disabled' );
+		expect( ! ( await optDisabled( 'select[name=startTime] option[value="09:30"]' ) ), '09:30 free' );
 	} );
-	await step( 'patient panel: appointment listed, detail shows reason, cancel then rebook', async () => {
+	await step( 'patient panel: Order List shows the booking; Appointment/Prescription List shows treated only; cancel then rebook', async () => {
+		await page.goto( BASE + '/nexus-patient-panel/#orders' );
+		await page.getByRole( 'heading', { name: 'Order List' } ).waitFor();
+		await page.getByRole( 'cell', { name: 'Dr. Jane Roe' } ).first().waitFor();
 		await page.goto( BASE + '/nexus-patient-panel/#appointments' );
+		await page.getByRole( 'heading', { name: 'Appointment/Prescription List' } ).waitFor();
+		await page.getByText( 'Nothing here yet.' ).waitFor(); // not treated yet
+		await page.getByRole( 'button', { name: 'Upcoming' } ).click();
 		await page.getByRole( 'cell', { name: 'Dr. Jane Roe' } ).first().waitFor();
 		await page.getByRole( 'link', { name: 'View' } ).click();
 		await page.getByText( 'Chest pain after exercise' ).waitFor();
@@ -226,16 +267,17 @@ try {
 		await page.getByRole( 'button', { name: 'Cancel appointment' } ).click();
 		await page.locator( '.nxa-badge-cancelled' ).waitFor();
 		await page.goto( BASE + '/nexus-booking/?doctor=' + seed.doctors[ 0 ].id );
-		await page.locator( 'button.nxa-cal-day[aria-label="2026-10-27 open"]' ).click();
-		await page.locator( '.nxa-slot', { hasText: /^09:00 / } ).click();
-		await page.getByRole( 'button', { name: 'Next' } ).click();
+		await page.locator( 'input[name=date]' ).fill( '2026-10-27' );
+		await page.locator( 'select[name=startTime] option[value="09:00"]' ).waitFor( { state: 'attached' } );
+		await page.locator( 'select[name=startTime]' ).selectOption( '09:00' );
+		await page.getByRole( 'button', { name: 'Create Appointment' } ).click();
 		await page.getByRole( 'button', { name: 'Confirm' } ).click();
 		await page.getByText( 'Your appointment is booked.' ).waitFor();
 		code = ( await page.locator( '.nxa-code' ).textContent() ).trim();
 	} );
 	await step( 'patient panel: profile save, password change validation, responsive 375', async () => {
 		await page.goto( BASE + '/nexus-patient-panel/#profile' );
-		await page.getByLabel( 'Phone' ).fill( '555-0100' );
+		await page.getByLabel( 'Phone' ).fill( '555-0101' );
 		await page.getByRole( 'button', { name: 'Save' } ).click();
 		await page.getByText( 'Saved.' ).waitFor();
 		await page.goto( BASE + '/nexus-patient-panel/#password' );
@@ -246,6 +288,7 @@ try {
 		await page.getByText( 'The current password is incorrect.' ).waitFor();
 		await page.setViewportSize( { width: 375, height: 800 } );
 		await page.goto( BASE + '/nexus-patient-panel/#appointments' );
+		await page.getByRole( 'button', { name: 'Upcoming' } ).click(); // default "Treated" is empty at this point
 		await page.locator( '.nxa-table' ).waitFor();
 		await page.screenshot( { path: SHOTS + 'public-patient-panel-375.png', fullPage: true } );
 		await page.setViewportSize( { width: 1280, height: 900 } );
@@ -258,7 +301,7 @@ try {
 		await page.getByText( 'This area is for doctors.' ).waitFor();
 		await page.goto( BASE + '/__test/logout' );
 		await page.goto( BASE + '/nexus-auth/?type=doctor' );
-		await page.getByRole( 'heading', { name: 'Doctor login' } ).waitFor();
+		expect( ( await page.getByRole( 'tab', { name: 'Doctor' } ).getAttribute( 'aria-selected' ) ) === 'true', 'Doctor tab preselected' );
 		await page.getByLabel( 'E-mail' ).fill( 'pat@example.test' );
 		await page.getByLabel( 'Password', { exact: true } ).fill( 'patientpass1' );
 		await page.getByRole( 'button', { name: 'Log in' } ).click();
@@ -295,7 +338,7 @@ try {
 		await page.getByText( 'Dr. Jane Roe' ).first().waitFor();
 		await page.screenshot( { path: SHOTS + 'print-prescription.png', fullPage: true } );
 		await page.goto( BASE + '/nexus-doctor-panel/#appointments' );
-		await page.getByRole( 'button', { name: 'History' } ).click();
+		await page.getByRole( 'button', { name: 'Appointments History' } ).click();
 		await page.getByRole( 'cell', { name: code, exact: true } ).first().waitFor();
 	} );
 	await step( 'doctor: schedule editor saves; leave day added and blocks booking', async () => {
@@ -308,20 +351,66 @@ try {
 		await page.getByRole( 'button', { name: 'Add leave day' } ).click();
 		await page.getByRole( 'cell', { name: /28 Oct 2026/ } ).first().waitFor();
 		await page.goto( BASE + '/nexus-booking/?doctor=' + seed.doctors[ 0 ].id );
-		const leaveDay = page.locator( 'button.nxa-cal-day[aria-label="2026-10-28 leave"]' );
-		await leaveDay.waitFor();
-		expect( await leaveDay.isDisabled(), 'leave day disabled in calendar' );
+		await page.locator( 'input[name=date]' ).fill( '2026-10-28' );
+		await page.getByText( 'The doctor is on leave this day.' ).waitFor();
+		expect( await page.locator( 'select[name=startTime] option' ).count() === 1, 'no schedule options on a leave day' );
 	} );
 	await step( 'patient: sees treated appointment with Print; other patient data never exposed', async () => {
 		await page.goto( BASE + '/__test/logout' );
 		await j( '/__test/login-as?email=pat@example.test' );
 		await page.goto( BASE + '/nexus-patient-panel/#appointments' );
-		await page.getByRole( 'button', { name: 'Treated' } ).click();
-		await page.getByRole( 'link', { name: 'Print prescription' } ).first().waitFor();
+		await page.getByRole( 'link', { name: 'Print prescription' } ).first().waitFor(); // treated-only default list
 		const other = await page.request.get( BASE + '/wp-json/nexulesuite_/v1/appt/patient/appointments/999' );
 		expect( other.status() === 404, 'unknown appointment is 404' );
 		const admin = await page.request.get( BASE + '/wp-json/nexulesuite_/v1/appt/admin/appointments' );
 		expect( admin.status() === 403, 'patient cannot call admin routes: ' + admin.status() );
+	} );
+	await step( 'doctor: Today Appointments and Payment History views render; dashboard shows the monthly chart', async () => {
+		await page.goto( BASE + '/__test/logout' );
+		await j( '/__test/login-as?email=jane@example.test' );
+		await page.goto( BASE + '/nexus-doctor-panel/#today' );
+		await page.getByRole( 'heading', { name: 'Today Appointments' } ).waitFor();
+		await page.goto( BASE + '/nexus-doctor-panel/#payments' );
+		await page.getByRole( 'heading', { name: 'Payment History' } ).waitFor();
+		await page.getByText( 'Total earnings' ).waitFor();
+		await page.goto( BASE + '/nexus-doctor-panel/#dashboard' );
+		await page.locator( '.nxa-chart-wrap' ).waitFor();
+		await page.setViewportSize( { width: 768, height: 1024 } );
+		await page.goto( BASE + '/nexus-doctor-panel/#appointments' );
+		await page.locator( '.nxa-side' ).waitFor();
+		await page.screenshot( { path: SHOTS + 'public-doctor-appointments-768.png', fullPage: true } );
+		await page.setViewportSize( { width: 1280, height: 900 } );
+	} );
+	await step( 'register: Doctor tab registers an inactive doctor pending admin approval', async () => {
+		await page.goto( BASE + '/__test/logout' );
+		await page.goto( BASE + '/nexus-auth/?mode=register&type=doctor' );
+		await page.getByLabel( 'Designations' ).waitFor();
+		await page.getByLabel( 'Name', { exact: true } ).fill( 'Dr. Self Registered' );
+		await page.getByLabel( 'Designations' ).fill( 'MBBS' );
+		await page.getByLabel( 'E-mail' ).fill( 'self@example.test' );
+		await page.getByLabel( 'Phone' ).fill( '555-7' );
+		await page.getByLabel( 'Password', { exact: true } ).fill( 'doctorpass123' );
+		await page.getByLabel( 'Confirm password' ).fill( 'doctorpass123' );
+		await page.locator( 'select[name=departmentId] option', { hasText: 'Cardiology' } ).waitFor( { state: 'attached' } );
+		await page.locator( 'select[name=departmentId]' ).selectOption( { label: 'Cardiology' } );
+		await page.getByRole( 'button', { name: 'Register' } ).click();
+		await page.getByText( 'will be reviewed and activated' ).waitFor();
+		const pub = await ( await page.request.get( BASE + '/wp-json/nexulesuite_/v1/appt/public/doctors' ) ).json();
+		expect( ! pub.items.some( ( d ) => d.name === 'Dr. Self Registered' ), 'inactive doctor hidden from the public list' );
+	} );
+	await step( 'public: tablet (768) and phone (375) layouts of the doctors page and profile', async () => {
+		for ( const w of [ 768, 375 ] ) {
+			await page.setViewportSize( { width: w, height: 1000 } );
+			await page.goto( BASE + '/nexus-doctors/' );
+			await page.locator( '.nxa-doctor-card' ).first().waitFor();
+			expect( ! ( await page.evaluate( () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1 ) ), 'no horizontal overflow at ' + w );
+			await page.screenshot( { path: SHOTS + 'public-doctors-' + w + '.png', fullPage: true } );
+			await page.goto( BASE + '/doctor-details/dr-jane-roe/' );
+			await page.getByRole( 'tab', { name: 'Working Hours' } ).click();
+			expect( ! ( await page.evaluate( () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1 ) ), 'no horizontal overflow on profile at ' + w );
+			await page.screenshot( { path: SHOTS + 'public-doctor-profile-' + w + '.png', fullPage: true } );
+		}
+		await page.setViewportSize( { width: 1280, height: 900 } );
 	} );
 	await step( 'admin: appointment appears treated with treatment details', async () => {
 		await page.goto( BASE + '/__test/logout' );

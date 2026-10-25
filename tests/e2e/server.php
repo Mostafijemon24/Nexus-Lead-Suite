@@ -165,8 +165,10 @@ if ( str_starts_with( $path, '/wp-json/' ) ) {
 		}
 	}
 	$headers = array();
-	if ( isset( $_SERVER['HTTP_X_WP_NONCE'] ) ) {
-		$headers['X-WP-Nonce'] = (string) $_SERVER['HTTP_X_WP_NONCE'];
+	foreach ( array( 'HTTP_X_WP_NONCE' => 'X-WP-Nonce', 'HTTP_ORIGIN' => 'Origin', 'HTTP_REFERER' => 'Referer', 'HTTP_SEC_FETCH_SITE' => 'Sec-Fetch-Site' ) as $k => $name ) {
+		if ( isset( $_SERVER[ $k ] ) ) {
+			$headers[ $name ] = (string) $_SERVER[ $k ]; // forwarded so the same-site guard on anonymous writes runs against real browser headers
+		}
 	}
 	$res = wp_test_rest_dispatch( $method, $route, $query, $json, $headers );
 	nxa_json( $res->get_data(), (int) $res->get_status() );

@@ -1,66 +1,85 @@
 # Progress checklist — DocMent clone in Nexus Lead Suite
 
-Updated: 2026-10-25 (after Phases 1–3 and the code review). Reference hosts still blocked by the environment network policy (HTTP 403 on CONNECT); no comparison with the original has been possible. Legend: ✅ completed and tested · ⬜ not started · ⚠️ built but unverified against the original or a real WordPress install · 🚫 cannot be reproduced.
+Updated: 2026-10-25 (evidence pass, alignment of Phases 1–3 to the original, security review). Legend: ✅ completed and tested in this container · ⬜ not started · ⚠️ built but unverified against the original or a real WordPress install · 🚫 cannot be reproduced.
+
+Two kinds of evidence are kept apart throughout this file:
+
+- **Automated, in this container** — `php tests/run.php` (stubs + SQLite) and `node tests/e2e/run.mjs` (Playwright against the real REST API, real shortcode output and the real admin bundle served by `php -S`). These prove logic, authorization and the browser flows, not WordPress itself.
+- **Real WordPress / original site** — only a staging install (`replica/staging.md`) or a direct look at the original can give these. Nothing in this section is claimed as done.
 
 ## Workflow steps
 
 | step | status | evidence |
 | --- | --- | --- |
-| 1 Inspect the website | ⚠️ partial | Live demo and vendor hosts are blocked by the environment's network policy. Evidence is limited to search-indexed text of the docs, the CodeCanyon listing and six public demo pages. No panel page of the original was ever seen. |
-| 2 Map the website | ✅ with gaps | `recon.md`: 50 screens, 9 flows, ~25 entities, every row tagged verified / inferred / unknown. |
-| 3 Investigate with evidence | ⚠️ | No scripts or network behaviour of the original could be observed. |
-| 4 Specification | ✅ | `spec.md` incl. §9 clone decisions and open questions. |
-| 5 Implement Phases 1–3 | ✅ | 11 tables, 2 roles, 6 stores, 50 REST routes, 8 shortcodes, admin page (8 tabs), public JS app (booking, auth, patient and doctor panels), printable prescription. |
-| 6 Test | ✅ in this container | `php tests/run.php`: 29 passed, 0 failed. `node tests/e2e/run.mjs`: 24 passed, 0 failed (Playwright against the real PHP API + real pages + real admin bundle on SQLite). Screenshots in `replica/screens/clone/` (12 files, 1280 px and 375 px). |
+| 1 Inspect the website | ⚠️ partial, improved | The vendor host now passes the environment's network policy but resets most TLS handshakes from the cloud egress range; codecanyon.net serves a Cloudflare challenge that was **not** bypassed. In the windows when the host answered, the manual and six public pages were captured (`replica/evidence.md`, 14 screenshots in `replica/screens/original/`). No screen behind a login (patient, doctor, admin) has been seen. |
+| 2 Map the website | ✅ with gaps | `recon.md`: 50 screens, 9 flows, ~25 entities, every row tagged verified / inferred / unknown; rows re-tagged after the evidence pass. |
+| 3 Investigate with evidence | ⚠️ partial | Public page structure, field names, labels, tab names and the booking cascade are verified from captured HTML. Scripts, network behaviour and all authenticated screens of the original remain unobserved. |
+| 4 Specification | ✅ | `spec.md` incl. §7 security rules, §9 decisions and the "verified later" table. |
+| 5 Implement Phases 1–3 | ✅ | 11 tables, 2 roles, 6 stores, 56 REST routes, 8 shortcodes, admin page (8 tabs, 5 appointment views), public JS app (auth with Patient/Doctor tabs, cascade booking, patient and doctor panels), printable prescription. |
+| 6 Test | ✅ in this container | `php tests/run.php`: **39 passed, 0 failed** (3 files). `node tests/e2e/run.mjs`: **27 passed, 0 failed**, no console errors, no PHP notices. 20 clone screenshots in `replica/screens/clone/` (1280 / 768 / 375 px). |
 | 7 Report | ✅ this file | |
 
-## Phase results
+## Phase results (automated evidence)
 
-| phase | scope | unit/REST tests | e2e steps | status |
+| phase | scope | PHP tests | e2e steps | status |
 | --- | --- | --- | --- | --- |
-| 1 Catalogue & availability | departments, locations, doctors, schedules, leave days, medicines, availability engine, settings, admin tabs | 14 | 8 admin + 3 public | ✅ |
-| 2 Booking & patient account | public listing/profile/departments, five-step booking, registration + e-mail verification, login (nonce-protected), patient panel, admin appointments & patients | 11 | 7 | ✅ |
-| 3 Doctor panel & prescriptions | doctor login, dashboard, new/not-treated/history, treatment + prescription editor, print, schedule, leave days, profile, password | 4 | 5 | ✅ |
+| 1 Catalogue & availability | departments (+ sidebar on the department page), locations, doctors (designations, education, experience, qualification), schedules, leave days, medicines, availability engine (12-hour labels, overlap-safe), settings, admin tabs | 14 | 8 admin + 3 public | ✅ |
+| 2 Booking & patient account | catalogue pages, Department → Doctor → Date → Schedule booking, registration (Patient / Doctor tabs) + e-mail verification, nonce- and origin-guarded login, profile-complete gate, patient panel (Dashboard, Appointment/Prescription List defaulting to Treated, Order List, Edit Profile, Change Password), admin appointments & patients | 18 | 9 | ✅ |
+| 3 Doctor panel & prescriptions | doctor login, dashboard with monthly earnings chart, Today Appointments, Manage Appointment (New / Not treated / History), treatment + prescription editor, print, Manage Leave, Payment History, Time Schedule, Update Profile, Change Password, doctor self-registration pending approval | 7 (security file) + shared | 7 | ✅ |
 
-## Feature matrix (`features.csv`, clone column)
+## Audit of Phases 1–3 against `spec.md` / `features.csv`
 
-- ✅ yes: 35 · ⬜ no: 27 (Phases 4–7: payments, Zoom, chat, CMS, SEO, reCAPTCHA, multi-currency, languages) · partial: 1 (reset password delegates to WordPress) · 🚫 skip: 6.
+`features.csv` clone column: **yes 42 · partial 1 · no 31 · skip 7**. All "no" rows are Phases 4–7 (payments, Zoom, chat, CMS, SEO, reCAPTCHA, multi-currency, languages) or explicitly out of scope; "partial" is password reset (delegated to WordPress).
 
-## Verified in this container (what the tests prove)
+| area | implemented | partial | missing (in scope) | unverified against the original |
+| --- | --- | --- | --- | --- |
+| Catalogue | departments, locations, doctors, medicines, schedules, leaves, department sidebar | — | — | `/doctors` listing layout (page not captured) |
+| Availability | weekday grid − leave − booked (overlap-safe) − past/lead/window | — | — | the original's slot model and lead-time rules |
+| Booking | cascade form, review + confirm, profile-complete gate, inline login/register | review step stands in for the payment page (Phase 4) | — | the payment page, confirmation copy |
+| Patient account | register/verify/login, dashboard, lists, orders, profile, password | password reset via WordPress | — | every panel screen (behind login) |
+| Doctor panel | all nine sidebar items of the original except Live Consultation, Withdraw, Messaging (Phases 4–5) | — | — | every panel screen (behind login); exact status vocabulary |
+| Prescriptions | treatment notes + medicine rows, print view, ownership checks | — | — | the original's prescription layout |
+| Admin | Appointments page with All / New / Pending / Prescription / Payment History, doctors, departments, locations, medicines, patients, settings | — | Schedule / Days / Habits admin lists (purpose of "Habits" undocumented) | admin screens (behind login) |
 
-- Validation: every form rejects bad input with field-level messages (name length, e-mail, password ≥ 8, confirm match, times, weekdays, dates, fee range, unknown references).
-- Authorization: admin routes 401/403 for guests and patients; doctor and patient routes require the role plus an active record (plus verified e-mail for patients); every record read or write is scoped to the session's own doctor or patient; foreign records answer 404 so their existence is not revealed; `patientId`/`doctorId` in requests cannot override the session.
-- Booking integrity: leave days, closed weekdays, past dates, window and lead time are enforced server-side; a slot can be booked once (UNIQUE index) and is freed on cancel; cancel lead time enforced for patients.
-- Prescription data: visible to admin, the treating doctor and the owning patient only, via REST and via the nonce-protected print URL; print page is `noindex` and contains no scripts.
-- Rate limiting: anonymous write routes 10 / 10 min / IP, read routes 120 / min / IP.
-- Responsive: admin tables collapse to cards below 768 px; public panels and booking verified at 375 px.
-- No console errors and no PHP notices during the whole e2e run.
+## Security review (2026-10-25) — findings and fixes
 
-## Code review of commit e589054 (2026-10-25)
+A fresh read of the API, stores, front end and JS found eight items; seven are fixed and covered by `tests/test-03-security-review.php`, one is an accepted decision.
 
-- Confirmed on the remote: 63 files, 9 724 insertions; the shipped `assets/admin/js/main.js` and `main.css` are byte-identical to before.
-- Changes to pre-existing files are limited to: submenu + route registration and the standalone bundle loader in `admin/class-admin-app.php`; activation/upgrade hooks in `core/class-activator.php` and `core/class-plugin.php`; table/role/option removal in `uninstall.php`; source-only edits to `admin/src/App.jsx` and `AdminSidebar.jsx` (not in the shipped bundle).
-- Static sweep: every query with user input goes through `$wpdb->prepare`; all superglobals are sanitised; all front-end output escaped; no PHP 8-only syntax in shipped code.
-- Defects found and fixed in the follow-up commit: `wp_delete_user()` needed `wp-admin/includes/user.php` on REST requests; the REST nonce returned by the login route would not match the new cookie session under real WordPress (now mirrored via `set_logged_in_cookie`, and the JS re-reads the nonce from `/appt/public/me`); rewrite rules are now flushed on `wp_loaded` after all plugins registered theirs; removed unused `innerHTML` support from the public DOM helper.
-- Login CSRF on the REST login route: **fixed** (commit after d54e4f7). The anonymous login, register and resend-verification routes now require a valid `wp_rest` nonce (sent as `X-WP-Nonce`); a missing or forged nonce answers 403 and the front end shows "Your session has expired. Please reload the page and try again." Covered by a new PHP test (29 total) and the unchanged e2e run (24 steps). **Must be smoke-tested on staging** (item 12 and the new item 18 in `replica/staging.md`): a stale page older than the nonce lifetime (12–24 h) must fail gracefully, and a fresh page must log in, register and book normally.
+| # | finding | fix | test |
+| --- | --- | --- | --- |
+| 1 | Bookings only blocked the slot with the same start time, so after a doctor changed the slot length or start time an overlapping slot could be booked | availability now blocks every slot a booking overlaps (`Availability::overlaps_booking`) | overlap after schedule change → 409 |
+| 2 | An unapproved (inactive) doctor could log in by omitting `type=doctor`; a deactivated doctor kept prescription access | inactive check in every login branch; prescription access requires an active doctor/patient | login refused on both tabs; deactivated accounts lose print access |
+| 3 | The logged-out `wp_rest` nonce is shared by all visitors and readable from `/appt/public/me`, so a cross-site form with `_wpnonce` could still log a victim into an attacker's account | nonce accepted from the `X-WP-Nonce` header only; `Origin`/`Referer`/`Sec-Fetch-Site` must be same-site when present | form-field nonce, foreign origin, null origin, cross-site all 403 |
+| 4 | `?redirect_to=` on the auth page accepted any absolute URL (open redirect) | `wp_validate_redirect()` server-side and a same-origin check in the JS | foreign and protocol-relative URLs dropped, same-site kept |
+| 5 | The verification link answered "verified" for any token once the user was verified (patient-id oracle) | token checked first; hash kept until expiry so the same link still works twice | wrong token is false regardless of account state |
+| 6 | Register endpoints say whether an e-mail already exists | accepted (standard WordPress behaviour); resend-verification stays neutral | existing test |
+| 7 | A doctor could attach any media-library attachment as their photo | must be an image attachment the doctor owns (admins unrestricted) | page / foreign / PDF / unknown ids → 422 |
+| 8 | A logged-out visitor opening a print link was redirected with a freshly minted nonce that could never match after login | redirect back to the original URL | — (functional; smoke item 14 on staging) |
+
+Verified OK and citable (see the audit notes in `spec.md` §7): permission callbacks per route, server-side identity on every patient/doctor write, 404 for foreign records, whitelisted mass assignment, prepared SQL everywhere, escaped output incl. the print view, no `innerHTML` in the JS, public payloads strip e-mail/phone/user ids.
+
+## Responsiveness (evidence-based)
+
+- Clone screenshots at 1280 / 768 / 375 px for the doctors page, doctor profile, booking form, patient panel and doctor appointments (`replica/screens/clone/*-768.png`, `*-375.png`); e2e asserts no horizontal overflow at 768 and 375 and that admin tables collapse to cards below 768 px.
+- Original screenshots at the same widths exist for home, department, login and admin login (`replica/screens/original/`). Both stack to one column on phones and keep a two-column layout on tablets; no pixel comparison has been made and none is claimed.
 
 ## Unverified (needs a real WordPress site or the original)
 
-- ⚠️ Rewrite rules, cookie login (`wp_signon`) and REST nonces under a real WordPress request cycle; `dbDelta` on MySQL/MariaDB; e-mail delivery through the configured mailer; page creation on activation; the injected sidebar link on the other Nexus admin pages (the shipped main bundle could not be rebuilt, see `spec.md` §9).
-- ⚠️ Visual and behavioural similarity to DocMent: **no direct comparison was possible**. The 99 % target is therefore **not claimed**. Every `[I]`/`[U]` row in `recon.md` is still an assumption.
+- ⚠️ Rewrite rules, cookie login (`wp_signon`), REST nonces and the new same-site guard under a real WordPress request cycle; `dbDelta` on MySQL/MariaDB (schema 1.4.1 adds four doctor text columns); e-mail delivery; page creation on activation; the injected sidebar link on the other Nexus admin pages.
+- ⚠️ Similarity to DocMent: public pages are aligned to captured HTML; every screen behind a login is still an assumption. **The 99 % target is not claimed.**
 - ⚠️ Health-data compliance (HIPAA or similar): not assessed; no claim is made.
 
 ## Cannot be reproduced / needs the user
 
-- 🚫 Vendor's design, copy, images, demo data (theirs; clean-room clone uses its own).
+- 🚫 Vendor's design, copy, images, demo data (theirs; the clone uses its own assets and copy).
 - 🚫 Tawk live chat widget, preloader toggle, one-click "clear database".
 - 🚫 bKash gateway without a merchant account.
-- ⚠️ Stripe / PayPal / Razorpay / Zoom (Phases 4–5): buildable against official APIs, untestable here without the user's sandbox credentials and outbound network.
+- ⚠️ Stripe / PayPal / Razorpay / Zoom (Phases 4–5): buildable against official APIs, untestable here without the user's sandbox credentials.
 - ⚠️ Real-time chat (Phase 5): WordPress hosting has no socket server; polling would stand in.
-- ❓ Doctor subscription plans: not evidenced for DocMent; verify on the demo.
+- ❓ Doctor subscription plans: not evidenced for DocMent.
 
 ## Next
 
-1. Allow `docment.websolutionus.com`, `doc.websolutionus.com`, `codecanyon.net`, `websolutionus.com` in the environment's network settings, then rerun Steps 1–3 with Playwright to replace assumptions with evidence and score parity with `/replica-diff`.
-2. Install the branch on a staging WordPress site and run the smoke list in `tests/README.md` ("what these tests cannot prove").
+1. Install the branch on a **staging** site and run the 22 smoke checks in `replica/staging.md` (never production first).
+2. From an ordinary connection, capture the remaining original pages listed in `replica/screens/original/README.md` (doctors listing, booking modal, patient / doctor / admin screens with your own demo accounts) so the panels can be aligned with evidence.
 3. Decide on Phases 4–7.

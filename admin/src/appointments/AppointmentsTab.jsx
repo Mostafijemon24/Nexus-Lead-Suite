@@ -4,6 +4,8 @@ import { api, money } from './api.js';
 import { Alert, Badge, Btn, Drawer, EmptyState, ErrorState, Field, Pagination, Skeleton, Table, inputCls, useDebounce, useList } from './ui.jsx';
 
 const STATUSES = [ [ '', 'All' ], [ 'pending', 'Pending' ], [ 'confirmed', 'Confirmed' ], [ 'treated', 'Treated' ], [ 'cancelled', 'Cancelled' ] ];
+/* The original's Appointment menu: All Appointment · New Appointments · Pending Appointments · Prescription · Payment History. */
+const VIEWS = [ [ 'all', 'All Appointment', {} ], [ 'new', 'New Appointments', { view: 'new' } ], [ 'pending', 'Pending Appointments', { view: 'pending' } ], [ 'prescription', 'Prescription', { view: 'treated' } ], [ 'payments', 'Payment History', { paymentStatus: 'paid' } ] ];
 
 export function AppointmentsTab( { onNotify, currencySymbol } ) {
 	const [ search, setSearch ] = useState( '' );
@@ -12,8 +14,10 @@ export function AppointmentsTab( { onNotify, currencySymbol } ) {
 	const [ from, setFrom ] = useState( '' );
 	const [ to, setTo ] = useState( '' );
 	const [ page, setPage ] = useState( 1 );
+	const [ view, setView ] = useState( 'all' );
 	const q = useDebounce( search );
-	const { loading, error, data, reload } = useList( 'admin/appointments', { search: q, status, doctorId: doctor, dateFrom: from, dateTo: to, page, perPage: 20 } );
+	const viewParams = ( VIEWS.find( ( v ) => v[ 0 ] === view ) || VIEWS[ 0 ] )[ 2 ];
+	const { loading, error, data, reload } = useList( 'admin/appointments', { search: q, status, doctorId: doctor, dateFrom: from, dateTo: to, page, perPage: 20, ...viewParams } );
 	const doctors = useList( 'admin/doctors', { perPage: 200 } );
 	const [ openId, setOpenId ] = useState( null );
 
@@ -34,6 +38,9 @@ export function AppointmentsTab( { onNotify, currencySymbol } ) {
 
 	return (
 		<div>
+			<div className="mb-3 flex gap-1 overflow-x-auto border-b border-slate-200" role="tablist" aria-label="Appointment views">
+				{ VIEWS.map( ( [ k, label ] ) => <button key={ k } type="button" role="tab" aria-selected={ view === k } onClick={ () => { setView( k ); setPage( 1 ); } } className={ `-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-xs font-semibold ${ view === k ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-800' }` }>{ label }</button> ) }
+			</div>
 			<div className="mb-3 flex flex-wrap items-end gap-2">
 				<input type="search" value={ search } onChange={ ( e ) => { setSearch( e.target.value ); setPage( 1 ); } } placeholder="Code, patient, doctor…" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm sm:w-56" aria-label="Search appointments" />
 				<select value={ doctor } onChange={ ( e ) => { setDoctor( e.target.value ); setPage( 1 ); } } className="rounded-lg border border-slate-200 px-3 py-2 text-sm" aria-label="Filter by doctor">

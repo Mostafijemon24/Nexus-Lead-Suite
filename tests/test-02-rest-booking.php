@@ -145,7 +145,8 @@ T::test( 'REST: registration sends verification; login blocked until verified; r
 
 	T::eq( false, Patients_Store::verify( (int) $m[2], 'bogus' ) );
 	T::eq( true, Patients_Store::verify( (int) $m[2], $m[1] ) );
-	T::eq( true, Patients_Store::verify( (int) $m[2], 'anything-after-verified' ), 'already verified stays verified' );
+	T::eq( true, Patients_Store::verify( (int) $m[2], $m[1] ), 'the same link twice still answers verified' );
+	T::eq( false, Patients_Store::verify( (int) $m[2], 'anything-after-verified' ), 'a wrong token never says verified (no account oracle)' );
 	$login = R( 'POST', '/appt/public/login', array(), array( 'email' => 'pat@example.test', 'password' => 'patientpass1' ) );
 	T::eq( 200, $login->get_status() );
 	T::eq( (int) $m[2], $login->get_data()['userId'] );
@@ -412,4 +413,77 @@ T::test( 'REST: anonymous login/register/resend require a valid wp_rest nonce (l
 	// Public reads never need a nonce.
 	as_guest();
 	T::eq( 200, R( 'GET', '/appt/public/departments', array(), array(), array() )->get_status() );
+} );
+
+T::test( 'REST: booking requires a complete patient profile (phone + address), as on the original', function () {
+	rest_world();
+	Availability::$now_override = '2026-10-26 08:00';
+	$d = seed_doctor()['doctor'];
+	$p = Patients_Store::register( array( 'name' => 'No Address', 'email' => 'na@example.test', 'password' => 'patientpass1', 'passwordConfirm' => 'patientpass1' ) );
+	update_user_meta( $p['userId'], Patients_Store::META_VERIFIED, '1' );
+	as_user( $p['userId'] );
+	$r = R( 'POST', '/appt/patient/appointments', array(), array( 'doctorId' => $d['id'], 'date' => '2026-10-27', 'startTime' => '09:00' ) );
+	T::eq( 409, $r->get_status() );
+	T::eq( 'profile_incomplete', $r->get_data()['code'] );
+	T::ok( false !== strpos( (string) $r->get_data()['data']['redirect'], '#profile' ) );
+	$dash = R( 'GET', '/appt/patient/dashboard' )->get_data();
+	T::eq( false, $dash['profileComplete'] );
+	T::eq( 0, $dash['stats']['total'] );
+	R( 'PUT', '/appt/patient/profile', array(), array( 'phone' => '555-0100', 'address' => '2 Main St' ) );
+	T::eq( 201, R( 'POST', '/appt/patient/appointments', array(), array( 'doctorId' => $d['id'], 'date' => '2026-10-27', 'startTime' => '09:00' ) )->get_status() );
+	$dash = R( 'GET', '/appt/patient/dashboard' )->get_data();
+	T::eq( true, $dash['profileComplete'] );
+	T::eq( 1, $dash['stats']['upcoming'] );
+	T::eq( 1, count( $dash['upcoming'] ) );
+} );
+
+T::test( 'REST: doctor self-registration creates an inactive doctor that cannot log in until approved', function () {
+	rest_world();
+	$s = seed_doctor();
+	as_guest();
+	$bad = R( 'POST', '/appt/public/register', array(), array( 'type' => 'doctor', 'name' => 'Dr. New', 'email' => 'new@example.test', 'password' => 'password123', 'passwordConfirm' => 'password124', 'departmentId' => $s['department']['id'] ) );
+	T::eq( 422, $bad->get_status() );
+	T::ok( isset( $bad->get_data()['data']['errors']['passwordConfirm'] ) );
+	$r = R( 'POST', '/appt/public/register', array(), array( 'type' => 'doctor', 'name' => 'Dr. New', 'designations' => 'MBBS, FCPS', 'email' => 'new@example.test', 'phone' => '555-1', 'password' => 'password123', 'passwordConfirm' => 'password123', 'departmentId' => $s['department']['id'], 'locationId' => $s['location']['id'], 'fee' => 500, 'status' => 'active' ) );
+	T::eq( 201, $r->get_status() );
+	T::eq( true, $r->get_data()['pendingApproval'] );
+	$doc = Doctors_Store::get_by_slug( 'dr-new' );
+	T::eq( 'inactive', $doc['status'], 'status cannot be set by the registrant' );
+	T::eq( 0.0, $doc['fee'], 'fee cannot be set by the registrant' );
+	T::eq( 'MBBS, FCPS', $doc['designations'] );
+	T::ok( in_array( 'nexulesuite_doctor_registered', WP_Test_State::$fired, true ) );
+	T::eq( 404, R( 'GET', '/appt/public/doctors/dr-new' )->get_status(), 'hidden from the public catalogue' );
+	T::eq( 'account_inactive', R( 'POST', '/appt/public/login', array(), array( 'email' => 'new@example.test', 'password' => 'password123', 'type' => 'doctor' ) )->get_data()['code'] );
+	as_user( 1 );
+	T::eq( 'active', R( 'PUT', "/appt/admin/doctors/{$doc['id']}", array(), array( 'status' => 'active' ) )->get_data()['status'] );
+	as_guest();
+	T::eq( 200, R( 'POST', '/appt/public/login', array(), array( 'email' => 'new@example.test', 'password' => 'password123', 'type' => 'doctor' ) )->get_status() );
+} );
+
+T::test( 'Doctor profile fields, 12-hour labels and earnings-by-day', function () {
+	rest_world();
+	Availability::$now_override = '2026-10-26 08:00';
+	$d = seed_doctor( array( 'designations' => 'MBBS, FCPS, FRCS', 'education' => "MBBS - NYU (2007)\nFCPS (2012)", 'experience' => 'Consultant', 'qualification' => 'Board Certified' ) )['doctor'];
+	T::eq( 'MBBS, FCPS, FRCS', $d['designations'] );
+	T::eq( "MBBS - NYU (2007)\nFCPS (2012)", $d['education'] );
+	T::eq( '9:00 AM', Availability::label12( '09:00' ) );
+	T::eq( '12:30 PM', Availability::label12( '12:30' ) );
+	T::eq( '12:05 AM', Availability::label12( '00:05' ) );
+	T::eq( '5:00 PM', Availability::label12( '17:00' ) );
+	$day = Availability::for_date( $d['id'], '2026-10-27' );
+	T::eq( '9:00 AM - 9:30 AM', $day['slots'][0]['label'] );
+	$p = seed_patient();
+	$a = Appointments_Store::book( array( 'doctorId' => $d['id'], 'patientId' => $p['id'], 'date' => '2026-10-27', 'startTime' => '09:00' ) );
+	Appointments_Store::admin_update( $a['id'], array( 'paymentStatus' => 'paid' ) );
+	$stats = Appointments_Store::stats( $d['id'] );
+	T::eq( array( array( 'date' => '2026-10-27', 'amount' => 25.0 ) ), $stats['earningsByDay'] );
+	T::eq( '2026-10', $stats['month'] );
+	as_user( 1 );
+	T::eq( 1, R( 'GET', '/appt/admin/appointments', array( 'paymentStatus' => 'paid' ) )->get_data()['total'] );
+	T::eq( 0, R( 'GET', '/appt/admin/appointments', array( 'paymentStatus' => 'unpaid' ) )->get_data()['total'] );
+	as_user( $d['userId'] );
+	T::eq( 1, count( R( 'GET', '/appt/doctor/dashboard' )->get_data()['stats']['earningsByDay'] ) );
+	$prof = R( 'PUT', '/appt/doctor/profile', array(), array( 'education' => 'Updated edu', 'designations' => 'MD' ) )->get_data();
+	T::eq( 'Updated edu', $prof['education'] );
+	T::eq( 'MD', $prof['designations'] );
 } );

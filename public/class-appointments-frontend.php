@@ -223,6 +223,8 @@ final class Appointments_Frontend {
 				'role'           => $role,
 				'currencySymbol' => (string) $s['currencySymbol'],
 				'slotMinutes'    => (int) $s['slotMinutes'],
+				'bookingWindowDays' => (int) $s['bookingWindowDays'],
+				'today'          => \nexulesuite_\Appointments\Availability::today(),
 				'pages'          => array(
 					'doctors'      => self::page_url( 'doctors' ),
 					'booking'      => self::page_url( 'booking' ),
@@ -350,6 +352,43 @@ final class Appointments_Frontend {
 			'fixFields'        => __( 'Please correct the highlighted fields.', 'nexus-lead-suite' ),
 			'previousHistory'  => __( 'Previous treatments for this patient', 'nexus-lead-suite' ),
 			'about'            => __( 'About', 'nexus-lead-suite' ),
+			'patientTab'       => __( 'Patient', 'nexus-lead-suite' ),
+			'doctorTab'        => __( 'Doctor', 'nexus-lead-suite' ),
+			'rememberMe'       => __( 'Remember Me', 'nexus-lead-suite' ),
+			'noAccount'        => __( "Don't have an account?", 'nexus-lead-suite' ),
+			'signUp'           => __( 'Sign up', 'nexus-lead-suite' ),
+			'haveAccount'      => __( 'Already have an account?', 'nexus-lead-suite' ),
+			'name'             => __( 'Name', 'nexus-lead-suite' ),
+			'designations'     => __( 'Designations', 'nexus-lead-suite' ),
+			'selectDepartment' => __( 'Select Department', 'nexus-lead-suite' ),
+			'selectDoctor'     => __( 'Select Doctor', 'nexus-lead-suite' ),
+			'selectLocation'   => __( 'Select Location', 'nexus-lead-suite' ),
+			'selectDate'       => __( 'Select Date', 'nexus-lead-suite' ),
+			'selectSchedule'   => __( 'Select Schedule', 'nexus-lead-suite' ),
+			'createAppointment'=> __( 'Create Appointment', 'nexus-lead-suite' ),
+			'submit'           => __( 'Submit', 'nexus-lead-suite' ),
+			'doctorPending'    => __( 'Thank you for registering. Your doctor account will be reviewed and activated by the clinic administrator before you can log in.', 'nexus-lead-suite' ),
+			'makeAppointment'  => __( 'Make Appointment', 'nexus-lead-suite' ),
+			'appointmentList'  => __( 'Appointment/Prescription List', 'nexus-lead-suite' ),
+			'orderList'        => __( 'Order List', 'nexus-lead-suite' ),
+			'editProfile'      => __( 'Edit Profile', 'nexus-lead-suite' ),
+			'updateProfile'    => __( 'Update Profile', 'nexus-lead-suite' ),
+			'todayAppointments'=> __( 'Today Appointments', 'nexus-lead-suite' ),
+			'manageAppointment'=> __( 'Manage Appointment', 'nexus-lead-suite' ),
+			'newAppointment'   => __( 'New Appointment', 'nexus-lead-suite' ),
+			'notTreatedLabel'  => __( 'Not treated Appointments', 'nexus-lead-suite' ),
+			'historyLabel'     => __( 'Appointments History', 'nexus-lead-suite' ),
+			'manageLeave'      => __( 'Manage Leave', 'nexus-lead-suite' ),
+			'paymentHistory'   => __( 'Payment History', 'nexus-lead-suite' ),
+			'totalEarnings'    => __( 'Total earnings', 'nexus-lead-suite' ),
+			'search'           => __( 'Search', 'nexus-lead-suite' ),
+			'noEarnings'       => __( 'No paid appointments this month yet.', 'nexus-lead-suite' ),
+			'profileIncomplete'=> __( 'Your profile is incomplete. Add your phone number and address to book appointments.', 'nexus-lead-suite' ),
+			'completeProfile'  => __( 'Complete profile', 'nexus-lead-suite' ),
+			'order'            => __( 'Order', 'nexus-lead-suite' ),
+			'total'            => __( 'Total', 'nexus-lead-suite' ),
+			'noAvailability'   => __( 'Pick a date to see the available schedule.', 'nexus-lead-suite' ),
+			'loadingSchedule'  => __( 'Checking availability…', 'nexus-lead-suite' ),
 		);
 	}
 
@@ -430,8 +469,9 @@ final class Appointments_Frontend {
 			</a>
 			<div class="nxa-doctor-body">
 				<h3 class="nxa-doctor-name"><a href="<?php echo esc_url( self::doctor_url( $d['slug'] ) ); ?>"><?php echo esc_html( $d['name'] ); ?></a></h3>
-				<p class="nxa-doctor-meta"><?php echo esc_html( $d['departmentName'] ); ?><?php if ( '' !== $d['locationName'] ) : ?> · <?php echo esc_html( $d['locationName'] ); ?><?php endif; ?></p>
-				<p class="nxa-doctor-fee"><?php esc_html_e( 'Fee', 'nexus-lead-suite' ); ?>: <strong><?php echo esc_html( $d['fee'] > 0 ? Settings::format_money( (float) $d['fee'] ) : __( 'Free', 'nexus-lead-suite' ) ); ?></strong></p>
+				<p class="nxa-doctor-meta"><?php echo esc_html( $d['departmentName'] ); ?></p>
+				<?php if ( '' !== $d['designations'] ) : ?><p class="nxa-doctor-designations"><?php echo esc_html( $d['designations'] ); ?></p><?php endif; ?>
+				<?php if ( '' !== $d['locationName'] ) : ?><p class="nxa-doctor-location"><?php echo esc_html( $d['locationName'] ); ?></p><?php endif; ?>
 				<div class="nxa-doctor-actions">
 					<a class="nxa-btn" href="<?php echo esc_url( self::doctor_url( $d['slug'] ) ); ?>"><?php esc_html_e( 'View profile', 'nexus-lead-suite' ); ?></a>
 					<a class="nxa-btn nxa-btn-primary" href="<?php echo esc_url( self::booking_url( (int) $d['id'] ) ); ?>"><?php esc_html_e( 'Book now', 'nexus-lead-suite' ); ?></a>
@@ -497,40 +537,69 @@ final class Appointments_Frontend {
 		}
 		$days = array( __( 'Sunday', 'nexus-lead-suite' ), __( 'Monday', 'nexus-lead-suite' ), __( 'Tuesday', 'nexus-lead-suite' ), __( 'Wednesday', 'nexus-lead-suite' ), __( 'Thursday', 'nexus-lead-suite' ), __( 'Friday', 'nexus-lead-suite' ), __( 'Saturday', 'nexus-lead-suite' ) );
 
+		$open_days = array_values( array_filter( $d['schedule'], static function ( $row ) { return ! empty( $row['enabled'] ); } ) );
+		$tabs = array(
+			'info'          => __( 'Doctor Info', 'nexus-lead-suite' ),
+			'hours'         => __( 'Working Hours', 'nexus-lead-suite' ),
+			'address'       => __( 'Address', 'nexus-lead-suite' ),
+			'education'     => __( 'Education', 'nexus-lead-suite' ),
+			'experience'    => __( 'Experience', 'nexus-lead-suite' ),
+			'qualification' => __( 'Qualification', 'nexus-lead-suite' ),
+			'appointment'   => __( 'Appointment', 'nexus-lead-suite' ),
+		);
 		ob_start();
 		?>
 		<div class="nxa nxa-doctor-profile" data-nxa="doctor-profile" data-doctor-id="<?php echo (int) $d['id']; ?>">
-			<div class="nxa-profile-main">
-				<div class="nxa-profile-head">
-					<div class="nxa-profile-photo"><?php if ( '' !== $d['photoUrl'] ) : ?><img src="<?php echo esc_url( $d['photoUrl'] ); ?>" alt="<?php echo esc_attr( $d['name'] ); ?>"><?php else : ?><span class="nxa-avatar nxa-avatar-lg" aria-hidden="true"><?php echo esc_html( self::initials( $d['name'] ) ); ?></span><?php endif; ?></div>
-					<div>
-						<h2 class="nxa-profile-name"><?php echo esc_html( $d['name'] ); ?></h2>
-						<p class="nxa-profile-dept"><a href="<?php echo esc_url( self::department_url( $d['departmentSlug'] ) ); ?>"><?php echo esc_html( $d['departmentName'] ); ?></a></p>
-						<ul class="nxa-profile-facts">
-							<?php if ( $d['experienceYears'] > 0 ) : ?><li><?php echo esc_html( sprintf( /* translators: %d: years */ _n( '%d year of experience', '%d years of experience', $d['experienceYears'], 'nexus-lead-suite' ), $d['experienceYears'] ) ); ?></li><?php endif; ?>
-							<li><?php esc_html_e( 'Fee', 'nexus-lead-suite' ); ?>: <strong><?php echo esc_html( $d['fee'] > 0 ? Settings::format_money( (float) $d['fee'] ) : __( 'Free', 'nexus-lead-suite' ) ); ?></strong></li>
-							<?php if ( '' !== $d['locationName'] ) : ?><li><?php echo esc_html( $d['locationName'] ); ?></li><?php endif; ?>
-							<?php if ( '' !== $d['address'] ) : ?><li><?php echo esc_html( $d['address'] ); ?></li><?php endif; ?>
-						</ul>
-					</div>
+			<div class="nxa-profile-head nxa-card">
+				<div class="nxa-profile-photo"><?php if ( '' !== $d['photoUrl'] ) : ?><img src="<?php echo esc_url( $d['photoUrl'] ); ?>" alt="<?php echo esc_attr( $d['name'] ); ?>"><?php else : ?><span class="nxa-avatar nxa-avatar-lg" aria-hidden="true"><?php echo esc_html( self::initials( $d['name'] ) ); ?></span><?php endif; ?></div>
+				<div class="nxa-profile-headtext">
+					<h2 class="nxa-profile-name"><?php echo esc_html( $d['name'] ); ?></h2>
+					<p class="nxa-profile-dept"><a href="<?php echo esc_url( self::department_url( $d['departmentSlug'] ) ); ?>"><?php echo esc_html( $d['departmentName'] ); ?></a><?php if ( '' !== $d['designations'] ) : ?> <span class="nxa-muted">(<?php echo esc_html( $d['designations'] ); ?>)</span><?php endif; ?></p>
+					<ul class="nxa-profile-facts">
+						<li><?php esc_html_e( 'Years of experience', 'nexus-lead-suite' ); ?>: <strong><?php echo (int) $d['experienceYears']; ?></strong></li>
+						<li><?php esc_html_e( 'Fee', 'nexus-lead-suite' ); ?>: <strong><?php echo esc_html( $d['fee'] > 0 ? Settings::format_money( (float) $d['fee'] ) : __( 'Free', 'nexus-lead-suite' ) ); ?></strong></li>
+						<?php if ( '' !== $d['locationName'] ) : ?><li><?php echo esc_html( $d['locationName'] ); ?></li><?php endif; ?>
+					</ul>
+					<?php if ( '' !== $d['bio'] ) : ?><div class="nxa-profile-bio"><?php echo wp_kses_post( wpautop( $d['bio'] ) ); ?></div><?php endif; ?>
+					<p><a class="nxa-btn nxa-btn-primary" href="#nxa-tab-appointment" data-nxa-tab-link="appointment"><?php esc_html_e( 'Book now', 'nexus-lead-suite' ); ?></a></p>
 				</div>
-				<?php if ( '' !== $d['bio'] ) : ?><section class="nxa-profile-about"><h3><?php esc_html_e( 'About', 'nexus-lead-suite' ); ?></h3><?php echo wp_kses_post( wpautop( $d['bio'] ) ); ?></section><?php endif; ?>
-				<section class="nxa-profile-schedule">
-					<h3><?php esc_html_e( 'Weekly schedule', 'nexus-lead-suite' ); ?></h3>
-					<table class="nxa-table"><thead><tr><th><?php esc_html_e( 'Day', 'nexus-lead-suite' ); ?></th><th><?php esc_html_e( 'Hours', 'nexus-lead-suite' ); ?></th></tr></thead><tbody>
-					<?php foreach ( $d['schedule'] as $row ) : ?>
-						<tr><td><?php echo esc_html( $days[ (int) $row['weekday'] ] ); ?></td><td><?php echo $row['enabled'] ? esc_html( $row['startTime'] . ' – ' . $row['endTime'] ) : '<span class="nxa-muted">' . esc_html__( 'Closed', 'nexus-lead-suite' ) . '</span>'; ?></td></tr>
+			</div>
+			<div class="nxa-card nxa-profile-tabs" data-nxa="tabs">
+				<div class="nxa-tabs-bar" role="tablist">
+					<?php $first = true; foreach ( $tabs as $key => $label ) : ?>
+						<button type="button" role="tab" id="nxa-tabbtn-<?php echo esc_attr( $key ); ?>" aria-controls="nxa-tab-<?php echo esc_attr( $key ); ?>" aria-selected="<?php echo $first ? 'true' : 'false'; ?>" class="nxa-tab<?php echo $first ? ' is-active' : ''; ?>" data-nxa-tab="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></button>
+					<?php $first = false; endforeach; ?>
+				</div>
+				<section id="nxa-tab-info" role="tabpanel" class="nxa-tabpanel is-active" data-nxa-panel="info">
+					<h3><?php esc_html_e( 'Doctor Info', 'nexus-lead-suite' ); ?></h3>
+					<?php if ( '' !== $d['bio'] ) : ?><?php echo wp_kses_post( wpautop( $d['bio'] ) ); ?><?php else : ?><p class="nxa-muted"><?php esc_html_e( 'No information added yet.', 'nexus-lead-suite' ); ?></p><?php endif; ?>
+				</section>
+				<section id="nxa-tab-hours" role="tabpanel" class="nxa-tabpanel" data-nxa-panel="hours" hidden>
+					<h3><?php esc_html_e( 'Working Hours', 'nexus-lead-suite' ); ?></h3>
+					<?php if ( array() === $open_days ) : ?><p class="nxa-muted"><?php esc_html_e( 'No working hours published yet.', 'nexus-lead-suite' ); ?></p><?php else : ?>
+					<table class="nxa-table nxa-profile-schedule"><thead><tr><th><?php esc_html_e( 'Week Day', 'nexus-lead-suite' ); ?></th><th><?php esc_html_e( 'Schedule', 'nexus-lead-suite' ); ?></th></tr></thead><tbody>
+					<?php foreach ( $open_days as $row ) : ?>
+						<tr><td><?php echo esc_html( $days[ (int) $row['weekday'] ] ); ?></td><td><?php echo esc_html( \nexulesuite_\Appointments\Availability::label12( $row['startTime'] ) . ' - ' . \nexulesuite_\Appointments\Availability::label12( $row['endTime'] ) ); ?></td></tr>
 					<?php endforeach; ?>
 					</tbody></table>
+					<?php endif; ?>
 				</section>
-			</div>
-			<aside class="nxa-profile-side">
-				<div class="nxa-card nxa-booking-card">
-					<h3><?php esc_html_e( 'Book an appointment', 'nexus-lead-suite' ); ?></h3>
+				<section id="nxa-tab-address" role="tabpanel" class="nxa-tabpanel" data-nxa-panel="address" hidden>
+					<h3><?php esc_html_e( 'Address', 'nexus-lead-suite' ); ?></h3>
+					<p><?php echo '' !== $d['address'] ? nl2br( esc_html( $d['address'] ) ) : '<span class="nxa-muted">' . esc_html__( 'No address added yet.', 'nexus-lead-suite' ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above. ?></p>
+				</section>
+				<?php foreach ( array( 'education' => __( 'Education', 'nexus-lead-suite' ), 'experience' => __( 'Experience', 'nexus-lead-suite' ), 'qualification' => __( 'Qualification', 'nexus-lead-suite' ) ) as $key => $label ) : ?>
+				<section id="nxa-tab-<?php echo esc_attr( $key ); ?>" role="tabpanel" class="nxa-tabpanel" data-nxa-panel="<?php echo esc_attr( $key ); ?>" hidden>
+					<h3><?php echo esc_html( $label ); ?></h3>
+					<?php if ( '' !== $d[ $key ] ) : ?><ul class="nxa-profile-list"><?php foreach ( preg_split( '/\r\n|\r|\n/', $d[ $key ] ) as $line ) : if ( '' === trim( $line ) ) { continue; } ?><li><?php echo esc_html( trim( $line ) ); ?></li><?php endforeach; ?></ul><?php else : ?><p class="nxa-muted"><?php esc_html_e( 'Nothing added yet.', 'nexus-lead-suite' ); ?></p><?php endif; ?>
+				</section>
+				<?php endforeach; ?>
+				<section id="nxa-tab-appointment" role="tabpanel" class="nxa-tabpanel" data-nxa-panel="appointment" hidden>
+					<h3><?php esc_html_e( 'Create Appointment', 'nexus-lead-suite' ); ?></h3>
 					<div class="nxa-booking" data-nxa="booking" data-doctor-id="<?php echo (int) $d['id']; ?>" data-compact="1"><p class="nxa-muted"><?php esc_html_e( 'Loading…', 'nexus-lead-suite' ); ?></p></div>
 					<noscript><a class="nxa-btn nxa-btn-primary" href="<?php echo esc_url( self::booking_url( (int) $d['id'] ) ); ?>"><?php esc_html_e( 'Book now', 'nexus-lead-suite' ); ?></a></noscript>
-				</div>
-			</aside>
+				</section>
+			</div>
 		</div>
 		<?php
 		return (string) ob_get_clean();
@@ -582,14 +651,28 @@ final class Appointments_Frontend {
 			return '<div class="nxa nxa-empty"><p>' . esc_html__( 'This department is not available.', 'nexus-lead-suite' ) . '</p><a class="nxa-btn" href="' . esc_url( self::page_url( 'departments' ) ) . '">' . esc_html__( 'All departments', 'nexus-lead-suite' ) . '</a></div>';
 		}
 		$docs = Doctors_Store::all( array( 'publicOnly' => true, 'departmentId' => $dep['id'], 'perPage' => 100 ) )['items'];
+		$all  = Catalog_Store::all( 'departments', array( 'status' => 'active', 'perPage' => 200 ) )['items'];
 		ob_start();
 		?>
 		<div class="nxa nxa-department">
 			<header class="nxa-dept-head"><h2><?php echo esc_html( $dep['name'] ); ?></h2><?php if ( '' !== $dep['description'] ) : ?><?php echo wp_kses_post( wpautop( esc_html( $dep['description'] ) ) ); ?><?php endif; ?></header>
-			<h3><?php esc_html_e( 'Our doctors', 'nexus-lead-suite' ); ?></h3>
-			<?php if ( array() === $docs ) : ?><div class="nxa-empty"><p><?php esc_html_e( 'No doctors in this department yet.', 'nexus-lead-suite' ); ?></p></div><?php else : ?>
-			<div class="nxa-grid"><?php foreach ( $docs as $d ) { $this->doctor_card( $d ); } ?></div>
-			<?php endif; ?>
+			<div class="nxa-dept-layout">
+				<div class="nxa-dept-main">
+					<h3><?php esc_html_e( 'Department Doctor', 'nexus-lead-suite' ); ?></h3>
+					<?php if ( array() === $docs ) : ?><div class="nxa-empty"><p><?php esc_html_e( 'No doctors in this department yet.', 'nexus-lead-suite' ); ?></p></div><?php else : ?>
+					<div class="nxa-grid nxa-grid-2"><?php foreach ( $docs as $d ) { $this->doctor_card( $d ); } ?></div>
+					<?php endif; ?>
+				</div>
+				<aside class="nxa-dept-side" aria-label="<?php esc_attr_e( 'Departments', 'nexus-lead-suite' ); ?>">
+					<h3><?php esc_html_e( 'Departments', 'nexus-lead-suite' ); ?></h3>
+					<ul class="nxa-dept-list">
+						<?php foreach ( $all as $other ) : ?>
+						<li><a class="<?php echo (int) $other['id'] === (int) $dep['id'] ? 'is-active' : ''; ?>" href="<?php echo esc_url( self::department_url( $other['slug'] ) ); ?>"<?php echo (int) $other['id'] === (int) $dep['id'] ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $other['name'] ); ?></a></li>
+						<?php endforeach; ?>
+					</ul>
+					<a class="nxa-btn nxa-btn-primary nxa-btn-block" href="<?php echo esc_url( add_query_arg( 'department', (int) $dep['id'], self::page_url( 'booking' ) ) ); ?>"><?php esc_html_e( 'Make an Appointment', 'nexus-lead-suite' ); ?></a>
+				</aside>
+			</div>
 		</div>
 		<?php
 		return (string) ob_get_clean();
@@ -622,7 +705,7 @@ final class Appointments_Frontend {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- display state only.
 		$type     = isset( $_GET['type'] ) && 'doctor' === $_GET['type'] ? 'doctor' : 'patient';
 		$verified = isset( $_GET['verified'] ) ? ( '1' === $_GET['verified'] ? 'ok' : 'fail' ) : '';
-		$redirect = isset( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( (string) $_GET['redirect_to'] ) ) : '';
+		$redirect = isset( $_GET['redirect_to'] ) ? wp_validate_redirect( esc_url_raw( wp_unslash( (string) $_GET['redirect_to'] ) ), '' ) : ''; // same-site targets only (open-redirect guard).
 		// phpcs:enable
 		if ( is_user_logged_in() ) {
 			$uid = get_current_user_id();
@@ -631,7 +714,9 @@ final class Appointments_Frontend {
 			return '<div class="nxa nxa-card nxa-logged-in"><p>' . esc_html__( 'You are already logged in.', 'nexus-lead-suite' ) . '</p><p><a class="nxa-btn nxa-btn-primary" href="' . esc_url( $to ) . '">' . esc_html__( 'Go to my account', 'nexus-lead-suite' ) . '</a> <a class="nxa-btn" href="' . esc_url( wp_logout_url( self::page_url( 'auth' ) ) ) . '">' . esc_html__( 'Log out', 'nexus-lead-suite' ) . '</a></p></div>';
 		}
 
-		return '<div class="nxa nxa-auth" data-nxa="auth" data-type="' . esc_attr( $type ) . '" data-verified="' . esc_attr( $verified ) . '" data-redirect="' . esc_attr( $redirect ) . '"><p class="nxa-muted">' . esc_html__( 'Loading…', 'nexus-lead-suite' ) . '</p></div>';
+		$mode = isset( $_GET['mode'] ) && 'register' === $_GET['mode'] ? 'register' : 'login'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display state only.
+
+		return '<div class="nxa nxa-auth" data-nxa="auth" data-type="' . esc_attr( $type ) . '" data-mode="' . esc_attr( $mode ) . '" data-verified="' . esc_attr( $verified ) . '" data-redirect="' . esc_attr( $redirect ) . '"><p class="nxa-muted">' . esc_html__( 'Loading…', 'nexus-lead-suite' ) . '</p></div>';
 	}
 
 	/**
@@ -713,7 +798,9 @@ final class Appointments_Frontend {
 		$id    = absint( $_GET[ self::QV_PRINT ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['_wpnonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! is_user_logged_in() ) {
-			wp_safe_redirect( add_query_arg( 'redirect_to', rawurlencode( self::print_url( $id ) ), self::page_url( 'auth' ) ) );
+			// Send the visitor back to the very URL they opened: its nonce belongs to their own session, a freshly minted one would not.
+			$back = isset( $_SERVER['REQUEST_URI'] ) ? home_url( wp_unslash( (string) $_SERVER['REQUEST_URI'] ) ) : self::print_url( $id ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- passed through esc_url_raw below.
+			wp_safe_redirect( add_query_arg( 'redirect_to', rawurlencode( esc_url_raw( $back ) ), self::page_url( 'auth' ) ) );
 			exit;
 		}
 		if ( ! wp_verify_nonce( $nonce, 'nexulesuite_print_' . $id ) ) {

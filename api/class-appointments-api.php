@@ -95,6 +95,7 @@ final class Appointments_Api {
 		$this->route( '/appt/public/me', 'GET', 'public_me', '__return_true' );
 
 		/* ---------------- patient ---------------- */
+		$this->route( '/appt/patient/dashboard', 'GET', 'patient_dashboard', $patient );
 		$this->route( '/appt/patient/appointments', 'GET', 'patient_appointments', $patient );
 		$this->route( '/appt/patient/appointments', 'POST', 'patient_book', $patient );
 		$this->route( '/appt/patient/appointments/(?P<id>\d+)', 'GET', 'patient_appointment_get', $patient );
@@ -227,15 +228,49 @@ final class Appointments_Api {
 	 * @return bool|\WP_Error
 	 */
 	public function public_write_ok( \WP_REST_Request $request ) {
+		// The logged-out `wp_rest` nonce is the same for every anonymous visitor and is readable from
+		// /appt/public/me, so on its own it cannot stop a cross-site form post. Two extra rules close that:
+		// the nonce is accepted from the X-WP-Nonce header only (a plain HTML form cannot set it), and the
+		// request must not declare a foreign origin.
 		$nonce = (string) $request->get_header( 'X-WP-Nonce' );
-		if ( '' === $nonce ) {
-			$nonce = (string) $request->get_param( '_wpnonce' );
-		}
-		if ( ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+		if ( '' === $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
 			return new \WP_Error( 'rest_cookie_invalid_nonce', __( 'Your session has expired. Please reload the page and try again.', 'nexus-lead-suite' ), array( 'status' => 403 ) );
+		}
+		if ( ! self::request_is_same_site( $request ) ) {
+			return new \WP_Error( 'rest_cross_site', __( 'Cross-site requests are not allowed.', 'nexus-lead-suite' ), array( 'status' => 403 ) );
 		}
 
 		return $this->rate_limit( 'w', 10, 10 * MINUTE_IN_SECONDS );
+	}
+
+	/**
+	 * Rejects requests whose Origin / Referer host differs from the site host, or whose
+	 * `Sec-Fetch-Site` says cross-site. Requests without any of these headers pass (non-browser clients).
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return bool
+	 */
+	public static function request_is_same_site( \WP_REST_Request $request ): bool {
+		$home = strtolower( (string) wp_parse_url( home_url( '/' ), PHP_URL_HOST ) );
+		foreach ( array( 'Origin', 'Referer' ) as $h ) {
+			$v = trim( (string) $request->get_header( $h ) );
+			if ( '' === $v ) {
+				continue;
+			}
+			if ( 'null' === $v ) {
+				return false;
+			}
+			$host = strtolower( (string) wp_parse_url( $v, PHP_URL_HOST ) );
+			if ( '' === $host || $host !== $home ) {
+				return false;
+			}
+		}
+		$sfs = strtolower( trim( (string) $request->get_header( 'Sec-Fetch-Site' ) ) );
+		if ( '' !== $sfs && ! in_array( $sfs, array( 'same-origin', 'same-site', 'none' ), true ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -311,7 +346,7 @@ final class Appointments_Api {
 	private function list_args( \WP_REST_Request $request ): array {
 		$in = $this->input( $request );
 		$out = array();
-		foreach ( array( 'status', 'search', 'view', 'dateFrom', 'dateTo', 'order' ) as $k ) {
+		foreach ( array( 'status', 'search', 'view', 'dateFrom', 'dateTo', 'order', 'paymentStatus' ) as $k ) {
 			if ( isset( $in[ $k ] ) && is_scalar( $in[ $k ] ) ) {
 				$out[ $k ] = sanitize_text_field( (string) $in[ $k ] );
 			}
@@ -787,7 +822,25 @@ final class Appointments_Api {
 		if ( is_user_logged_in() ) {
 			return new \WP_Error( 'already_logged_in', __( 'You are already logged in.', 'nexus-lead-suite' ), array( 'status' => 409 ) );
 		}
-		$p = Patients_Store::register( $this->input( $request ) );
+		$in = $this->input( $request );
+		if ( isset( $in['type'] ) && 'doctor' === sanitize_key( (string) $in['type'] ) ) {
+			$d = Doctors_Store::register( $in );
+			if ( is_wp_error( $d ) ) {
+				return $d;
+			}
+
+			return new \WP_REST_Response(
+				array(
+					'registered'       => true,
+					'type'             => 'doctor',
+					'pendingApproval'  => true,
+					'email'            => $d['email'],
+					'redirect'         => '',
+				),
+				201
+			);
+		}
+		$p = Patients_Store::register( $in );
 		if ( is_wp_error( $p ) ) {
 			return $p;
 		}
@@ -866,6 +919,11 @@ final class Appointments_Api {
 			if ( Roles::is_admin( $uid ) ) {
 				$redirect = admin_url( 'admin.php?page=nexus-lead-suite-appointments' );
 			} elseif ( Roles::is_doctor( $uid ) ) {
+				$doctor = Doctors_Store::get_by_user( $uid );
+				if ( null === $doctor || 'active' !== $doctor['status'] ) {
+					wp_logout();
+					return new \WP_Error( 'account_inactive', __( 'This doctor account is inactive.', 'nexus-lead-suite' ), array( 'status' => 403 ) );
+				}
 				$redirect = $this->panel_url( 'doctor_panel' );
 			} else {
 				if ( ! Roles::is_patient( $uid ) ) {
@@ -994,8 +1052,20 @@ final class Appointments_Api {
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function patient_book( \WP_REST_Request $request ) {
-		$in              = $this->input( $request );
-		$in['patientId'] = (int) $this->current_patient()['id'];
+		$in      = $this->input( $request );
+		$patient = $this->current_patient();
+		// The original sends patients with an incomplete profile to the profile page before payment.
+		if ( '' === trim( (string) $patient['phone'] ) || '' === trim( (string) $patient['address'] ) ) {
+			return new \WP_Error(
+				'profile_incomplete',
+				__( 'Please complete your profile (phone and address) before booking an appointment.', 'nexus-lead-suite' ),
+				array(
+					'status'   => 409,
+					'redirect' => $this->panel_url( 'patient_panel' ) . '#profile',
+				)
+			);
+		}
+		$in['patientId'] = (int) $patient['id'];
 		$r               = Appointments_Store::book( $in );
 
 		return $this->out( is_wp_error( $r ) ? $r : Appointments_Store::patient_shape( $r ), 201 );
@@ -1042,6 +1112,31 @@ final class Appointments_Api {
 		$r = Appointments_Store::cancel( (int) $a['id'], true );
 
 		return $this->out( is_wp_error( $r ) ? $r : Appointments_Store::patient_shape( $r ) );
+	}
+
+	/**
+	 * Patient dashboard counters (the original shows a dashboard after login).
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function patient_dashboard() {
+		$p        = $this->current_patient();
+		$upcoming = Appointments_Store::all( array( 'patientId' => $p['id'], 'view' => 'upcoming', 'order' => 'asc', 'perPage' => 5 ) );
+		$treated  = Appointments_Store::all( array( 'patientId' => $p['id'], 'view' => 'treated', 'perPage' => 1 ) );
+		$all      = Appointments_Store::all( array( 'patientId' => $p['id'], 'perPage' => 1 ) );
+
+		return new \WP_REST_Response(
+			array(
+				'patient'  => $p,
+				'stats'    => array(
+					'total'    => $all['total'],
+					'upcoming' => $upcoming['total'],
+					'treated'  => $treated['total'],
+				),
+				'upcoming' => self::with_print_urls( array_map( array( Appointments_Store::class, 'patient_shape' ), $upcoming['items'] ) ),
+				'profileComplete' => '' !== trim( (string) $p['phone'] ) && '' !== trim( (string) $p['address'] ),
+			)
+		);
 	}
 
 	/**
@@ -1267,7 +1362,15 @@ final class Appointments_Api {
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function doctor_profile_save( \WP_REST_Request $request ) {
-		$in = array_intersect_key( $this->input( $request ), array_flip( array( 'name', 'phone', 'bio', 'address', 'photoId' ) ) );
+		$in = array_intersect_key( $this->input( $request ), array_flip( array( 'name', 'phone', 'designations', 'bio', 'education', 'experience', 'qualification', 'address', 'photoId' ) ) );
+		if ( ! empty( $in['photoId'] ) ) {
+			$photo = get_post( (int) $in['photoId'] );
+			$mine  = $photo && 'attachment' === $photo->post_type && wp_attachment_is_image( (int) $in['photoId'] )
+				&& ( (int) $photo->post_author === get_current_user_id() || current_user_can( 'edit_post', (int) $in['photoId'] ) );
+			if ( ! $mine ) {
+				return new \WP_Error( 'validation_failed', __( 'Please fix the highlighted fields.', 'nexus-lead-suite' ), array( 'status' => 422, 'errors' => array( 'photoId' => __( 'Choose an image you uploaded yourself.', 'nexus-lead-suite' ) ) ) );
+			}
+		}
 		$r  = Doctors_Store::update( (int) $this->current_doctor()['id'], $in );
 		if ( is_wp_error( $r ) ) {
 			return $r;
@@ -1352,13 +1455,13 @@ final class Appointments_Api {
 		}
 		if ( Roles::is_doctor( $user_id ) ) {
 			$d = Doctors_Store::get_by_user( $user_id );
-			if ( $d && (int) $d['id'] === (int) $a['doctorId'] ) {
+			if ( $d && 'active' === $d['status'] && (int) $d['id'] === (int) $a['doctorId'] ) {
 				return true;
 			}
 		}
 		if ( Roles::is_patient( $user_id ) ) {
 			$p = Patients_Store::get_by_user( $user_id );
-			if ( $p && (int) $p['id'] === (int) $a['patientId'] ) {
+			if ( $p && 'active' === $p['status'] && (int) $p['id'] === (int) $a['patientId'] ) {
 				return true;
 			}
 		}

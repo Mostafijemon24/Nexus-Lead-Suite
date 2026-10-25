@@ -1,27 +1,27 @@
 feature,area,priority,original,clone,notes
 Admin login (email + password),auth,must,yes,yes,WordPress login; admin pages are under Nexus → Appointments (no separate /admin/login page by design)
-Doctor login (email + password),auth,must,yes,yes,[nexulesuite_auth] with ?type=doctor; REST public/login checks the doctor role and active status
-Patient registration with e-mail verification,auth,must,yes,yes,REST public/register; token e-mail; /?nexulesuite_verify link; login refused until verified (toggle in settings)
-Patient login,auth,must,yes,yes,[nexulesuite_auth]; redirects to the patient panel
-Forgot / reset password,auth,should,yes,partial,link to the WordPress lost-password flow; not restyled
+Doctor login (email + password),auth,must,yes,yes,Doctor tab on the same login card (verified); REST checks role and active status
+Patient registration with e-mail verification,auth,must,yes,yes,"fields verified: Name, Email, Password, Confirm Password (no phone); cannot log in before confirming (manual)"
+Patient login,auth,must,yes,yes,"login card with Patient | Doctor tabs, Email, Password, Remember Me, Forgot password?, Sign up link (verified)"
+Forgot / reset password,auth,should,yes,partial,"original: ""Forgot password?"" link on the login card (verified); clone links to the WordPress lost-password flow, not restyled"
 Multiple admins,auth,should,yes,yes,WordPress administrators
 Departments CRUD,catalogue,must,yes,yes,admin tab + REST + table; delete blocked while doctors reference it
 Locations CRUD,catalogue,must,yes,yes,admin tab + REST + table
-Doctors CRUD (admin creates doctors; no self-registration),catalogue,must,yes,yes,creates the WP user with the doctor role; delete refused when appointments exist
-Doctor profile fields (photo department location fee experience bio address),catalogue,must,yes,yes,photo as media attachment ID (no upload widget yet)
+Doctors CRUD (admin creates doctors; no self-registration),catalogue,must,yes,yes,admin creates and edits doctors; the original ALSO has doctor self-registration (verified on /register) — see the separate row
+Doctor profile fields (photo department location fee experience bio address),catalogue,must,yes,yes,"verified fields added: designations (e.g. MBBS, FCPS, FRCS), Education, Experience, Qualification tabs; photo by media attachment ID"
 Doctor weekday time schedule,availability,must,yes,yes,admin drawer tab + doctor panel; per-day slot length
 Doctor leave days,availability,must,yes,yes,admin drawer tab + doctor panel; future dates only
 Availability engine (weekday schedule minus leave days minus taken slots),availability,must,yes,yes,Availability::compute_day; lead time and booking window from settings; unit tested
-Public doctors listing with search by location / doctor / department,public,must,yes,yes,server-rendered [nexulesuite_doctors] with GET filters and pagination
-Public doctor profile with fee and weekly schedule table,public,must,yes,yes,[nexulesuite_doctor] + /doctor-details/{slug}; booking widget embedded
-Public department listing and department detail with its doctors,public,must,yes,yes,"[nexulesuite_departments], [nexulesuite_department] + /department-details/{slug}"
-Quick appointment flow (department > doctor > date > time slot > payment),booking,must,yes,yes,[nexulesuite_appointment] five-step stepper; payment step offers pay-at-clinic / bank transfer only
+Public doctors listing with search by location / doctor / department,public,must,yes,yes,"cards show name, department, designations, location (verified on the department page); the /doctors listing page itself was not captured"
+Public doctor profile with fee and weekly schedule table,public,must,yes,yes,"seven tabs (Doctor Info, Working Hours, Address, Education, Experience, Qualification, Appointment), 12-hour ""Week Day | Schedule"" table listing open days only, Create Appointment box (all verified)"
+Public department listing and department detail with its doctors,public,must,yes,yes,"department detail verified: description, sidebar list of departments, ""Department Doctor"" cards; FAQ/video/quick-contact blocks are Phase 6"
+Quick appointment flow (department > doctor > date > time slot > payment),booking,must,yes,yes,now a Department → Doctor → Date → Schedule form as on the original modal (verified HTML); review + confirm replaces the payment page until Phase 4
 Book from doctor profile,booking,must,yes,yes,widget preselects the doctor (steps 3-5)
 Block booking on leave days and on weekdays without schedule,booking,must,yes,yes,calendar disables leave/closed/past/beyond-window days; server re-validates
 Prevent double booking of a slot,booking,must,yes,yes,UNIQUE slot_key index + availability check; cancelled rows free the slot
 Appointment statuses (pending paid treated cancelled),booking,must,yes,yes,pending → confirmed → treated; pending/confirmed → cancelled; payment status separate (unpaid/paid/refunded)
 Patient panel: appointments list (treated only) with print prescription,patient,must,yes,yes,filters Upcoming / Treated / All; Print on treated rows
-Patient panel: orders / payment history,patient,should,yes,yes,"Payments view (fee, method, payment status)"
+Patient panel: orders / payment history,patient,should,yes,yes,"""Order List"" view (verified label) with fee, method and payment status"
 Patient panel: edit profile,patient,must,yes,yes,
 Patient panel: change password,patient,must,yes,yes,current password required
 Doctor dashboard (today's appointments monthly earnings new-appointment alerts),doctor,must,yes,yes,stats + today list + new list
@@ -30,10 +30,10 @@ Treatment + prescription editor (medicines with dosage),doctor,must,yes,yes,"not
 Printable prescription (doctor patient admin),doctor,must,yes,yes,standalone print document at /?nexulesuite_prescription=ID with nonce + ownership check
 Medicine types CRUD,catalogue,must,yes,yes,
 Medicines CRUD,catalogue,must,yes,yes,
-Doctor payment history with date range,money,should,yes,no,
+Doctor payment history with date range,money,should,yes,yes,"""Payment History"" with From/To search and total earnings (verified in manual)"
 Doctor withdraw request,money,should,yes,no,
 Admin manage withdraw payments (approve / reject),money,should,yes,no,
-Admin manage appointments (filters view print),admin,must,yes,yes,"search, doctor, status, date range; detail drawer with status/payment update"
+Admin manage appointments (filters view print),admin,must,yes,yes,"views verified from the manual: All Appointment, New Appointments, Pending Appointments, Prescription, Payment History"
 Admin manage schedules (per doctor),admin,must,yes,yes,inside the doctor drawer (Weekly schedule tab)
 Admin patients list,admin,must,yes,yes,"search, status, activate/deactivate"
 Admin dashboard KPIs,admin,should,yes,yes,"today, pending, doctors, patients, revenue month, treated + recent/today tables"
@@ -68,3 +68,15 @@ Multi-language (RTL),settings,could,yes,no,plugin is translation-ready (text dom
 Doctor subscription pricing plans,saas,could,unknown,no,not evidenced for DocMent (exists in sister product DocPoint); verify on the live demo before building
 Vendor demo data copy images and theme,content,must,yes,skip,belongs to the vendor; the clone uses its own assets and copy
 Laravel internals (routes controllers Blade),platform,must,yes,skip,replaced by WordPress REST + React + shortcodes by design
+"Doctor self-registration (Register page, Doctor tab: name designations email phone password department location)",auth,must,yes,yes,verified on /register; clone creates the doctor inactive until an admin activates (approval step undocumented on the original)
+Patient dashboard after login,patient,should,yes,yes,"manual: ""After login, patient will see his dashboard""; clone shows counters, upcoming list, profile-completeness notice"
+Profile must be complete before booking (redirect to profile),booking,must,yes,yes,manual verified; clone requires phone + address and sends the patient to Edit Profile
+"Doctor ""Today Appointments"" view",doctor,must,yes,yes,manual verified
+Doctor dashboard monthly earnings chart,doctor,should,yes,yes,"manual: ""chart of the current month earnings""; clone renders daily paid totals as bars"
+Patient Appointment/Prescription List shows treated appointments only,patient,must,yes,yes,manual verified; clone defaults to Treated with Upcoming/All as extra filters
+"Admin orders (Order History, Successful, Pending)",money,should,yes,no,orders bundle appointments with a payment; Phase 4
+"Admin schedule ""Days"" and ""Habits"" catalogues",catalogue,could,yes,no,manual lists them; purpose of Habits not documented
+Language and currency switchers in the top bar,settings,could,yes,no,"verified on every public page (English/Arabic; USD, Naira, Rupee, Peso, CAD, Taka); Phase 7"
+"Home page sections (hero search, feature tiles, how we work, FAQ, services, counters, departments, testimonials, doctors, blog, subscribe, partners)",cms,should,yes,no,verified from the home screenshots; Phase 6
+"Department page FAQ, related video and quick-contact form",cms,could,yes,no,verified on /department-details; Phase 6
+Separate /admin/login page,auth,could,yes,skip,verified page; the clone uses the WordPress login by design

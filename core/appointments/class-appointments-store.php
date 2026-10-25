@@ -165,10 +165,11 @@ final class Appointments_Store {
 
 		$t = Schema::table( 'appointments' );
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table.
-		$col = $wpdb->get_col( $wpdb->prepare( "SELECT start_time FROM {$t} WHERE doctor_id = %d AND appointment_date = %s AND status <> 'cancelled'", $doctor_id, $date ) );
-		$set = array();
-		foreach ( (array) $col as $s ) {
-			$set[ (string) $s ] = true;
+		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT start_time, end_time FROM {$t} WHERE doctor_id = %d AND appointment_date = %s AND status <> 'cancelled'", $doctor_id, $date ), ARRAY_A );
+		$set  = array();
+		foreach ( (array) $rows as $r ) {
+			// start => end, so the availability engine can detect overlaps after a schedule change (not only identical starts).
+			$set[ substr( (string) $r['start_time'], 0, 5 ) ] = substr( (string) $r['end_time'], 0, 5 );
 		}
 
 		return $set;
@@ -186,10 +187,10 @@ final class Appointments_Store {
 
 		$t = Schema::table( 'appointments' );
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table.
-		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT appointment_date, start_time FROM {$t} WHERE doctor_id = %d AND appointment_date LIKE %s AND status <> 'cancelled'", $doctor_id, $wpdb->esc_like( $month ) . '-%' ), ARRAY_A );
+		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT appointment_date, start_time, end_time FROM {$t} WHERE doctor_id = %d AND appointment_date LIKE %s AND status <> 'cancelled'", $doctor_id, $wpdb->esc_like( $month ) . '-%' ), ARRAY_A );
 		$out  = array();
 		foreach ( (array) $rows as $r ) {
-			$out[ (string) $r['appointment_date'] ][ (string) $r['start_time'] ] = true;
+			$out[ (string) $r['appointment_date'] ][ substr( (string) $r['start_time'], 0, 5 ) ] = substr( (string) $r['end_time'], 0, 5 );
 		}
 
 		return $out;
@@ -226,6 +227,11 @@ final class Appointments_Store {
 		if ( '' !== $status && 'all' !== $status && in_array( $status, self::STATUSES, true ) ) {
 			$where[]  = 'a.status = %s';
 			$params[] = $status;
+		}
+		$pay = isset( $args['paymentStatus'] ) ? sanitize_key( (string) $args['paymentStatus'] ) : '';
+		if ( in_array( $pay, array( 'paid', 'unpaid', 'refunded' ), true ) ) {
+			$where[]  = 'a.payment_status = %s';
+			$params[] = $pay;
 		}
 		$view = isset( $args['view'] ) ? sanitize_key( (string) $args['view'] ) : '';
 		if ( 'new' === $view ) {
@@ -483,9 +489,21 @@ final class Appointments_Store {
 		$patients   = (int) $wpdb->get_var( "SELECT COUNT(DISTINCT patient_id) FROM {$a} WHERE 1=1{$scope}" );
 		// phpcs:enable
 
+		// Daily paid earnings for the current month (the original's dashboard shows a monthly earnings chart).
+		$by_day_rows = $wpdb->get_results( $wpdb->prepare( "SELECT appointment_date AS d, COALESCE(SUM(fee),0) AS s FROM {$a} WHERE payment_status = 'paid' AND appointment_date LIKE %s{$scope} GROUP BY appointment_date ORDER BY appointment_date ASC", $wpdb->esc_like( $month ) . '-%' ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table; scope prepared.
+		$by_day = array();
+		foreach ( (array) $by_day_rows as $r ) {
+			$by_day[] = array(
+				'date'   => (string) $r['d'],
+				'amount' => (float) $r['s'],
+			);
+		}
+
 		return array(
 			'total'          => $total,
 			'today'          => $today_cnt,
+			'earningsByDay'  => $by_day,
+			'month'          => $month,
 			'pending'        => $pending,
 			'treated'        => $treated,
 			'newThisWeek'    => $new_week,

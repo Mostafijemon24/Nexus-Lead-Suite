@@ -52,6 +52,10 @@ Tick each one; stop and roll back on any fatal error.
 | 15 | Cross-account access | as patient A open `/?nexulesuite_prescription=<id of patient B>&_wpnonce=…` | 404 |
 | 16 | Theme compatibility | public pages at 375 / 768 / 1280 px | layout holds; note theme CSS conflicts |
 | 18 | Login CSRF guard | open `/nexus-auth/`, wait, then log in; also submit the same form from a page left open for more than 24 h (or temporarily set a short nonce life with the `nonce_life` filter) | fresh page logs in; stale page shows "Your session has expired" and no login happens |
+| 19 | Cross-site guard | from a page on another host (or a local HTML file) auto-submit a form to `/wp-json/nexulesuite_/v1/appt/public/login` with valid credentials and the nonce from `/appt/public/me` as a field | 403 `rest_cross_site` or `rest_cookie_invalid_nonce`; nobody is logged in |
+| 20 | Open-redirect guard | open `/nexus-auth/?redirect_to=https://example.org/` and log in | you land on your own panel, never on example.org |
+| 21 | Slot overlap after a schedule change | book 10:00 on a 30-minute day, then as the doctor change that weekday to 20-minute slots; reload the booking page for that day | 10:00 and 10:20 are disabled, 10:40 is free; booking 10:20 by REST answers 409 |
+| 22 | Unapproved doctor | register on the Doctor tab, then try to log in on the Patient tab and on the Doctor tab | both refused with "This doctor account is inactive." until an admin activates the doctor |
 | 17 | Uninstall (optional, last) | set *Settings → erase on uninstall* then delete the plugin on a throw-away copy | tables, roles and options removed |
 
 ## 3. Roll back
@@ -69,7 +73,7 @@ What the rollback does **not** remove, and why that is safe:
   `nexulesuite_appointments_settings_v1` stay. The old plugin version ignores them.
 - To remove them anyway: delete the eight pages, run `wp role delete nexulesuite_doctor` and
   `wp role delete nexulesuite_patient`, and drop the eleven tables with `DROP TABLE IF EXISTS`.
-- The stored schema version option `nexulesuite_db_version` will read `1.4.0`; the old version
+- The stored schema version option `nexulesuite_db_version` will read `1.4.1`; the old version
   rewrites it to `1.3.0` on its next upgrade check. No data is lost.
 
 ## 4. Known limits on a real site

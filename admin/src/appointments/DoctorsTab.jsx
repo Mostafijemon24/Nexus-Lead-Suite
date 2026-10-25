@@ -22,7 +22,7 @@ export function DoctorsTab( { onNotify, currencySymbol } ) {
 		{ key: 'name', label: 'Doctor', render: ( r ) => (
 			<div className="flex items-center gap-2">
 				{ r.photoUrl ? <img src={ r.photoUrl } alt="" className="h-8 w-8 rounded-full object-cover" /> : <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-blue-700">{ initials( r.name ) }</span> }
-				<div><div className="font-semibold text-slate-800">{ r.name }</div><div className="text-xs text-slate-500">{ r.email }</div></div>
+				<div><div className="font-semibold text-slate-800">{ r.name }{ r.designations ? <span className="ml-1 font-normal text-slate-500">({ r.designations })</span> : null }</div><div className="text-xs text-slate-500">{ r.email }</div></div>
 			</div>
 		) },
 		{ key: 'departmentName', label: 'Department', render: ( r ) => r.departmentName || '—' },
@@ -91,7 +91,7 @@ function DoctorForm( { item, departments, locations, onClose, onSaved } ) {
 
 	if ( open && seeded !== item ) {
 		setSeeded( item );
-		setForm( { name: '', email: '', phone: '', password: '', departmentId: '', locationId: '', fee: 0, experienceYears: 0, bio: '', address: '', status: 'active', photoId: 0, schedule: null, ...item } );
+		setForm( { name: '', email: '', phone: '', password: '', designations: '', departmentId: '', locationId: '', fee: 0, experienceYears: 0, bio: '', education: '', experience: '', qualification: '', address: '', status: 'active', photoId: 0, schedule: null, ...item } );
 		setErrors( {} );
 		setMessage( '' );
 		setTab( 'profile' );
@@ -145,6 +145,7 @@ function DoctorForm( { item, departments, locations, onClose, onSaved } ) {
 					<Field label="E-mail (login)" error={ errors.email }><input type="email" className={ inputCls( errors.email ) } value={ form.email } onChange={ set( 'email' ) } /></Field>
 					<Field label={ isNew ? 'Password' : 'New password (leave blank to keep)' } error={ errors.password } hint="At least 8 characters."><input type="password" autoComplete="new-password" className={ inputCls( errors.password ) } value={ form.password } onChange={ set( 'password' ) } /></Field>
 					<Field label="Phone" error={ errors.phone }><input className={ inputCls( errors.phone ) } value={ form.phone } onChange={ set( 'phone' ) } /></Field>
+					<Field label="Designations" error={ errors.designations } hint="Shown after the name, e.g. MBBS, FCPS, FRCS" className="sm:col-span-2"><input className={ inputCls( errors.designations ) } value={ form.designations } onChange={ set( 'designations' ) } maxLength={ 190 } /></Field>
 					<Field label="Department" error={ errors.departmentId }>
 						<select className={ inputCls( errors.departmentId ) } value={ form.departmentId || '' } onChange={ set( 'departmentId' ) }>
 							<option value="">— Select —</option>
@@ -165,6 +166,9 @@ function DoctorForm( { item, departments, locations, onClose, onSaved } ) {
 					</Field>
 					<Field label="Address" error={ errors.address } className="sm:col-span-2"><textarea rows={ 2 } className={ inputCls( errors.address ) } value={ form.address } onChange={ set( 'address' ) } /></Field>
 					<Field label="About / bio" error={ errors.bio } className="sm:col-span-2"><textarea rows={ 5 } className={ inputCls( errors.bio ) } value={ form.bio } onChange={ set( 'bio' ) } /></Field>
+					<Field label="Education (one item per line)" error={ errors.education }><textarea rows={ 4 } className={ inputCls( errors.education ) } value={ form.education } onChange={ set( 'education' ) } /></Field>
+					<Field label="Experience (one item per line)" error={ errors.experience }><textarea rows={ 4 } className={ inputCls( errors.experience ) } value={ form.experience } onChange={ set( 'experience' ) } /></Field>
+					<Field label="Qualification (one item per line)" error={ errors.qualification } className="sm:col-span-2"><textarea rows={ 3 } className={ inputCls( errors.qualification ) } value={ form.qualification } onChange={ set( 'qualification' ) } /></Field>
 					<button type="submit" className="hidden" aria-hidden="true" />
 				</form>
 			) : null }

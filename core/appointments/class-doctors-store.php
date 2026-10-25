@@ -156,7 +156,11 @@ final class Doctors_Store {
 			'locationName'    => (string) ( $row['location_name'] ?? '' ),
 			'fee'             => (float) ( $row['fee'] ?? 0 ),
 			'experienceYears' => (int) ( $row['experience_years'] ?? 0 ),
+			'designations'    => (string) ( $row['designations'] ?? '' ),
 			'bio'             => (string) ( $row['bio'] ?? '' ),
+			'education'       => (string) ( $row['education'] ?? '' ),
+			'experience'      => (string) ( $row['experience'] ?? '' ),
+			'qualification'   => (string) ( $row['qualification'] ?? '' ),
 			'address'         => (string) ( $row['address'] ?? '' ),
 			'status'          => (string) ( $row['status'] ?? 'active' ),
 			'schedule'        => self::get_schedule( $id ),
@@ -194,7 +198,11 @@ final class Doctors_Store {
 		$data['location_id']      = $v->int( $input, 'locationId', 0, PHP_INT_MAX, 0 );
 		$data['fee']              = $v->money( $input, 'fee' );
 		$data['experience_years'] = $v->int( $input, 'experienceYears', 0, 80, 0 );
+		$data['designations']     = $v->text( $input, 'designations', 0, 190, false );
 		$data['bio']              = isset( $input['bio'] ) && is_scalar( $input['bio'] ) ? wp_kses_post( (string) $input['bio'] ) : '';
+		$data['education']        = $v->textarea( $input, 'education', 3000 );
+		$data['experience']       = $v->textarea( $input, 'experience', 3000 );
+		$data['qualification']    = $v->textarea( $input, 'qualification', 3000 );
 		$data['address']          = $v->textarea( $input, 'address', 1000 );
 		$data['photo_id']         = $v->int( $input, 'photoId', 0, PHP_INT_MAX, 0 );
 		$data['status']           = $v->one_of( $input, 'status', array( 'active', 'inactive' ), 'active' );
@@ -313,6 +321,40 @@ final class Doctors_Store {
 		}
 
 		return self::get( $id );
+	}
+
+	/**
+	 * Doctor self-registration (the original's Register page has a Doctor tab). The account is
+	 * created inactive: it is hidden from the public catalogue and cannot log in until an admin
+	 * activates it from Nexus → Appointments → Doctors. Whether the original activates
+	 * immediately is undocumented; this is the conservative choice (see spec §9).
+	 *
+	 * @param array<string,mixed> $input name, designations, email, phone, password, passwordConfirm, departmentId, locationId.
+	 * @return array<string,mixed>|\WP_Error
+	 */
+	public static function register( array $input ) {
+		$password = isset( $input['password'] ) && is_scalar( $input['password'] ) ? (string) $input['password'] : '';
+		$confirm  = isset( $input['passwordConfirm'] ) && is_scalar( $input['passwordConfirm'] ) ? (string) $input['passwordConfirm'] : $password;
+		if ( strlen( $password ) >= 8 && $password !== $confirm ) {
+			return Catalog_Store::validation_error( array( 'passwordConfirm' => __( 'Passwords do not match.', 'nexus-lead-suite' ) ) );
+		}
+		$allowed = array_intersect_key( $input, array_flip( array( 'name', 'designations', 'email', 'phone', 'password', 'departmentId', 'locationId' ) ) );
+		$allowed['status'] = 'inactive';
+		$allowed['fee']    = 0;
+		unset( $allowed['schedule'] );
+
+		$doctor = self::create( $allowed );
+		if ( is_wp_error( $doctor ) ) {
+			return $doctor;
+		}
+		/**
+		 * Fires after a doctor registered from the front end (account inactive until approved).
+		 *
+		 * @param array<string,mixed> $doctor Doctor.
+		 */
+		do_action( 'nexulesuite_doctor_registered', $doctor );
+
+		return $doctor;
 	}
 
 	/**

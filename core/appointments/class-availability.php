@@ -80,6 +80,24 @@ final class Availability {
 	}
 
 	/**
+	 * `HH:MM` (24 h) => `h:MM AM/PM`, the format the original shows ("10:00 AM - 11:00 AM").
+	 *
+	 * @param string $hhmm Time.
+	 * @return string
+	 */
+	public static function label12( string $hhmm ): string {
+		$m = self::minutes( $hhmm );
+		$h = intdiv( $m, 60 ) % 24;
+		$suffix = $h >= 12 ? 'PM' : 'AM';
+		$h12    = $h % 12;
+		if ( 0 === $h12 ) {
+			$h12 = 12;
+		}
+
+		return sprintf( '%d:%02d %s', $h12, $m % 60, $suffix );
+	}
+
+	/**
 	 * Weekday (0 = Sunday) for a `Y-m-d` date.
 	 *
 	 * @param string $date Date.
@@ -172,11 +190,12 @@ final class Availability {
 		$slots     = array();
 		$any_open  = false;
 		foreach ( self::generate( $row ) as $s ) {
-			$available = ! isset( $booked[ $s['start'] ] ) && self::minutes( $s['start'] ) >= $cutoff;
+			$available = ! self::overlaps_booking( $s['start'], $s['end'], $booked ) && self::minutes( $s['start'] ) >= $cutoff;
 			$any_open  = $any_open || $available;
 			$slots[]   = array(
 				'start'     => $s['start'],
 				'end'       => $s['end'],
+				'label'     => self::label12( $s['start'] ) . ' - ' . self::label12( $s['end'] ),
 				'available' => $available,
 			);
 		}
@@ -189,6 +208,35 @@ final class Availability {
 			'status' => $any_open ? self::STATUS_OPEN : self::STATUS_FULL,
 			'slots'  => $slots,
 		);
+	}
+
+	/**
+	 * True when an existing booking overlaps the candidate slot. Bookings made under an earlier
+	 * schedule (different slot length or shifted start) must still block every slot they intersect.
+	 *
+	 * @param string                    $start  Slot start `HH:MM`.
+	 * @param string                    $end    Slot end `HH:MM`.
+	 * @param array<string,string|bool> $booked start => end (or `true` for legacy callers that only know the start).
+	 * @return bool
+	 */
+	public static function overlaps_booking( string $start, string $end, array $booked ): bool {
+		if ( isset( $booked[ $start ] ) ) {
+			return true;
+		}
+		$s = self::minutes( $start );
+		$e = self::minutes( $end );
+		foreach ( $booked as $b_start => $b_end ) {
+			if ( ! is_string( $b_end ) ) {
+				continue; // start-only entry: handled by the exact match above.
+			}
+			$bs = self::minutes( (string) $b_start );
+			$be = self::minutes( $b_end );
+			if ( $bs < $e && $be > $s ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

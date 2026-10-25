@@ -108,5 +108,7 @@ function seed_patient( string $email = 'pat@example.test', string $name = 'Pat S
 	$p = \nexulesuite_\Appointments\Patients_Store::register( array( 'name' => $name, 'email' => $email, 'password' => 'patientpass1', 'passwordConfirm' => 'patientpass1', 'phone' => '555-0100' ) );
 	if ( is_wp_error( $p ) ) { throw new RuntimeException( 'seed_patient failed: ' . $p->get_error_message() . ' ' . json_encode( $p->get_error_data() ) ); }
 	update_user_meta( $p['userId'], \nexulesuite_\Appointments\Patients_Store::META_VERIFIED, '1' );
+	// Booking requires a complete profile (phone + address), as on the original.
+	$p = \nexulesuite_\Appointments\Patients_Store::update_profile( $p['id'], array( 'address' => '1 Test Street' ) );
 	return $p;
 }

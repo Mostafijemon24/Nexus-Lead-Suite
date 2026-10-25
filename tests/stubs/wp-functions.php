@@ -173,7 +173,7 @@ function remove_query_arg( $k, $u = '' ) { return $u; }
 function get_bloginfo( $k = '' ) { return 'name' === $k ? 'Test Clinic' : ''; }
 function wp_get_attachment_image_url( $id, $size = 'thumbnail' ) { return $id > 0 ? 'https://example.test/uploads/' . $id . '.jpg' : false; }
 function wp_get_attachment_url( $id ) { return $id > 0 ? 'https://example.test/uploads/' . $id . '.jpg' : false; }
-function get_post( $id ) { return WP_Test_State::$posts[ (int) $id ] ?? null; }
+function get_post( $id ) { return isset( WP_Test_State::$posts[ (int) $id ] ) ? (object) WP_Test_State::$posts[ (int) $id ] : null; }
 function get_post_status( $id ) { return isset( WP_Test_State::$posts[ (int) $id ] ) ? WP_Test_State::$posts[ (int) $id ]['post_status'] : false; }
 function wp_insert_post( $a, $wp_error = false ) { $id = WP_Test_State::$next_post++; $a['ID'] = $id; WP_Test_State::$posts[ $id ] = $a; return $id; }
 function get_page_by_path( $p ) { foreach ( WP_Test_State::$posts as $post ) { if ( $post['post_name'] === $p ) { return (object) $post; } } return null; }
@@ -374,3 +374,19 @@ function wpautop( $t ) { return '<p>' . str_replace( "\n\n", '</p><p>', (string)
 function wp_trim_words( $t, $n = 55, $m = '…' ) { $w = preg_split( '/\s+/', trim( (string) $t ) ); return count( $w ) > $n ? implode( ' ', array_slice( $w, 0, $n ) ) . $m : implode( ' ', $w ); }
 function wp_die( $m = '', $t = '', $a = array() ) { throw new RuntimeException( 'wp_die:' . $m ); }
 function _x( $t, $c, $d = null ) { return $t; }
+
+/* --- added with the security review: same-site / redirect / attachment helpers --- */
+if ( ! function_exists( 'wp_parse_url' ) ) { function wp_parse_url( $url, $component = -1 ) { return -1 === $component ? parse_url( (string) $url ) : parse_url( (string) $url, $component ); } }
+if ( ! function_exists( 'wp_validate_redirect' ) ) {
+	function wp_validate_redirect( $location, $fallback = '' ) {
+		$location = trim( (string) $location, " \t\n\r\0\x0B" );
+		if ( '' === $location ) { return $fallback; }
+		if ( str_starts_with( $location, '//' ) ) { $location = 'http:' . $location; }
+		$test = str_starts_with( $location, '/' ) ? 'http://placeholder.test' . $location : $location;
+		$lp   = parse_url( $test );
+		if ( ! $lp || ! isset( $lp['host'] ) || ( isset( $lp['scheme'] ) && ! in_array( $lp['scheme'], array( 'http', 'https' ), true ) ) ) { return $fallback; }
+		$home = parse_url( WP_Test_State::$home, PHP_URL_HOST );
+		return ( 'placeholder.test' === $lp['host'] || $lp['host'] === $home ) ? $location : $fallback;
+	}
+}
+if ( ! function_exists( 'wp_attachment_is_image' ) ) { function wp_attachment_is_image( $id ) { $p = get_post( $id ); return $p && 'attachment' === ( $p->post_type ?? '' ) && str_starts_with( (string) ( $p->post_mime_type ?? '' ), 'image/' ); } }

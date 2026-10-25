@@ -32,6 +32,19 @@ Capture each page at three widths and name the files `<prefix>-<width>.png`:
 Alongside each page, save the HTML with "Save page as… → Webpage, HTML only" as `<prefix>.html`.
 That lets the comparison read labels, field names, validation copy and link structure, not just pixels.
 
+## Captured so far (2026-10-25, from the cloud session during a window when the vendor host answered)
+
+| file(s) | page | notes |
+| --- | --- | --- |
+| `home-1280/768/375.png` | `/` | full page |
+| `department-1280/768/375.png` | `/department-details/cardiology` | description, sidebar list, "Department Doctor" cards |
+| `doctor-profile-375.png` | `/doctor-details/dr-miguel-silva` | 1280/768 captures still missing (host reset the connection) |
+| `login-patient-1280/768/375.png` | `/login` | Patient/Doctor tabs |
+| `register-375.png` | `/register` | 1280/768 still missing |
+| `admin-login-1280/768/375.png` | `/admin/login` | |
+
+Saved HTML of these pages is kept outside the repository (vendor markup). Still missing: `/doctors`, the booking modal steps, every patient, doctor and admin screen behind a login.
+
 ## Rules
 
 - Use only the vendor's public demo and your own demo accounts; never another person's data.

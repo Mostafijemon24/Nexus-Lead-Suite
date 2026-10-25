@@ -245,17 +245,16 @@ final class Patients_Store {
 		if ( $user_id <= 0 || '' === $token ) {
 			return false;
 		}
-		if ( '1' === (string) get_user_meta( $user_id, self::META_VERIFIED, true ) ) {
-			return true;
-		}
+		// The token is checked first so the outcome never reveals whether a user id belongs to a verified patient.
+		// The hash is kept until it expires, so clicking the same link twice still answers "verified".
 		$hash = (string) get_user_meta( $user_id, self::META_TOKEN_HASH, true );
 		$exp  = (int) get_user_meta( $user_id, self::META_TOKEN_EXP, true );
 		if ( '' === $hash || $exp < time() || ! hash_equals( $hash, wp_hash( $token ) ) ) {
 			return false;
 		}
-		update_user_meta( $user_id, self::META_VERIFIED, '1' );
-		delete_user_meta( $user_id, self::META_TOKEN_HASH );
-		delete_user_meta( $user_id, self::META_TOKEN_EXP );
+		if ( '1' !== (string) get_user_meta( $user_id, self::META_VERIFIED, true ) ) {
+			update_user_meta( $user_id, self::META_VERIFIED, '1' );
+		}
 
 		return true;
 	}

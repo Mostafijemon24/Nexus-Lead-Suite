@@ -27,7 +27,7 @@ final class Activator {
 	/**
 	 * Current database schema version (increment when tables change).
 	 */
-	public const SCHEMA_VERSION = '1.4.0';
+	public const SCHEMA_VERSION = '1.4.1';
 
 	/**
 	 * Runs on plugin activation.
