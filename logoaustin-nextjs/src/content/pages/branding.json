@@ -1,0 +1,1597 @@
+{
+ "id": 244110,
+ "type": "page",
+ "slug": "branding",
+ "url": "/branding/",
+ "title": "Branding",
+ "seo": {
+  "title": "Branding & Marketing Design in Austin, TX | Logo Austin",
+  "description": "Small business branding in Austin: custom logo, colors, fonts, business cards and social graphics that match everywhere. No upfront payment. Get a quote.",
+  "focusKeyword": "branding Austin",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/brand-identity-board-with-brand-lettering-logo-sketches-and-corporate.avif",
+  "alt": "Brand identity board with BRAND lettering, logo sketches and corporate color swatches",
+  "width": 1200,
+  "height": 628
+ },
+ "date": "2021-10-29 01:43:01",
+ "modified": "2026-11-03 15:57:51",
+ "template": "lda",
+ "sections": [
+  {
+   "id": "52b32cd",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 53,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Brand identity & marketing design · Austin, TX",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h1",
+         "text": "Branding and Marketing Design in Austin, TX",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A logo is the start. Branding is what makes customers recognize you on a shirt, a truck, an Instagram post and a business card without reading your name. We build small business brands for Austin companies: a custom logo plus the colors, fonts and marketing pieces that make everything look like it belongs together.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Custom logo with color palette and font choices",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Business cards, social graphics and apparel mockups",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "A simple brand guide so anyone can use it correctly",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get My Branding Quote",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "text",
+         "html": "<p>First logo concepts the same day are often possible for straightforward projects after review.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 41,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/brand-identity-board-with-brand-lettering-logo-sketches-and-corporate.avif",
+         "alt": "Brand identity board with BRAND lettering, logo sketches and corporate color swatches",
+         "width": 1200,
+         "height": 628,
+         "displayWidth": 100,
+         "classes": []
+        },
+        {
+         "t": "badge",
+         "strong": "No upfront payment",
+         "text": "Review concepts first, then pay.",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "390ae5a",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white",
+    "lda-trust"
+   ],
+   "bg": "white",
+   "variant": "trust",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "iconBox",
+       "icon": "fas fa-pen-nib",
+       "title": "Custom logo first",
+       "desc": "Designed from scratch",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-palette",
+       "title": "Colors and fonts",
+       "desc": "Defined and documented",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-layer-group",
+       "title": "Matching pieces",
+       "desc": "Cards, social, apparel",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-hand-holding-usd",
+       "title": "No upfront payment",
+       "desc": "Approve first, then pay",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "1c0b252",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row-reverse",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Why it matters",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "What Is Included in Small Business Branding?",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Small business branding is the set of visual choices that make your business recognizable and consistent: your logo and its variations, a color palette, typography, and a few rules for how they are used. Those choices then carry into business cards, social media, signs, uniforms, packaging and your website.</p><p>Consistency is what builds recognition. When your food truck, Instagram profile and invoice all use the same colors and type, customers remember you faster and trust you sooner. Without a system, every new flyer or post starts from scratch and the brand slowly drifts. A short brand guide keeps you, your staff and your printer on the same page.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Primary logo plus stacked, horizontal and icon versions",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "HEX, RGB and CMYK color values for screen and print",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Font pairings for headlines and body text",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/healthy-homes-llc-logo-printed-on-a-long-sleeve-shirt.avif",
+         "alt": "Healthy Homes LLC logo printed on a long-sleeve shirt",
+         "width": 323,
+         "height": 323,
+         "displayWidth": 100,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "877cabd",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "What we design",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Branding and Marketing Pieces We Create for Austin Businesses",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Choose what you need now and add more later. Everything is built from the same master files.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-pen-nib",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Logo suite",
+         "href": "/custom-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A custom primary logo with stacked, horizontal, icon and one-color versions.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Custom logo design",
+         "href": "/custom-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-palette",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Colors, fonts and brand guide",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A defined palette, font pairings and a short guide showing correct logo use.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-id-card",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Business cards and stationery",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Cards, letterhead and email signatures that match your new identity.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-hashtag",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Social media branding",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Profile images, cover graphics and post templates for Instagram, Facebook and LinkedIn.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-tshirt",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Apparel and merchandise",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Shirt, cap and merch graphics prepared for screen printing and embroidery.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-bullhorn",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Marketing materials",
+         "href": "/graphic-designer-austin/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Flyers, banners, signs and ads designed to match the rest of your brand.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Graphic design",
+         "href": "/graphic-designer-austin/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "eec6636",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Made a logo with AI?",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Building a Brand on an AI-Generated Logo? Fix the Foundation First",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A brand system only works if the logo file underneath it is solid. AI image tools give you a single flat picture, usually with soft edges, invented letters and colors that shift between screen and print. We rebuild AI-made logos by hand as clean vectors, set the name in a real font and define exact color values, so every branded piece starts from a dependable master.</p><p>Learn how our <a href=\"/fix-ai-generated-logo/\">AI logo cleanup and vector conversion</a> works, or send us your file for a free review.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get a Free AI Logo Audit",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "lda-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "bg": "#faf7f2",
+         "children": [
+          {
+           "t": "icon",
+           "icon": "fas fa-magic",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Free AI logo audit",
+           "align": "left",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Upload your AI logo and a designer will tell you whether it can anchor your brand or needs a cleanup first.</p>",
+           "align": "left",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a894181",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "How it works",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "How Our Branding Process Works",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Clear steps, handled by phone, text and email.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "01",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Tell us about your business",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Share your name, customers, competitors and the feeling you want your brand to have.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "02",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Review logo concepts",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Designers create several original logo directions and send them by text or email.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "03",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Build the brand system",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Once the logo is set, we define colors and fonts and design your cards and social graphics.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "04",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Approve and get files",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Pay after you approve and receive organized files plus your brand guide.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "row",
+       "wrap": true,
+       "width": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "button",
+         "text": "Start My Brand",
+         "href": "#consultation",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call (512) 782-9748",
+         "href": "tel:+15127829748",
+         "style": "ghost",
+         "icon": "fas fa-phone-alt",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4ee547d",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "gallery",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Recent work",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Brand Identities and Applications We Have Designed",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>One logo carried across cards, apparel, vehicles and merchandise, plus a few standalone identities.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "gallery",
+     "images": [
+      {
+       "src": "/images/portfolio/healthy-homes-llc-business-card-with-gold-house-logo-held-in-a-hand.avif",
+       "alt": "Healthy Homes LLC business card with gold house logo held in a hand",
+       "width": 48,
+       "height": 48
+      },
+      {
+       "src": "/images/portfolio/logo-design-austin-17.avif",
+       "alt": "Logo Designer Austin",
+       "width": 48,
+       "height": 48
+      },
+      {
+       "src": "/images/portfolio/healthy-homes-llc-logo-embroidered-on-a-white-cap.avif",
+       "alt": "Healthy Homes LLC logo embroidered on a white cap",
+       "width": 48,
+       "height": 48
+      },
+      {
+       "src": "/images/portfolio/healthy-homes-llc-logo-printed-on-a-lavender-face-mask.avif",
+       "alt": "Healthy Homes LLC logo printed on a lavender face mask",
+       "width": 764,
+       "height": 499
+      },
+      {
+       "src": "/images/portfolio/healthy-homes-llc-logo-printed-on-a-throw-pillow.avif",
+       "alt": "Healthy Homes LLC logo printed on a throw pillow",
+       "width": 273,
+       "height": 323
+      },
+      {
+       "src": "/images/pages/healthy-homes-llc-logo-printed-on-a-long-sleeve-shirt.avif",
+       "alt": "Healthy Homes LLC logo printed on a long-sleeve shirt",
+       "width": 323,
+       "height": 323
+      },
+      {
+       "src": "/images/portfolio/serein-natural-skincare-logo-in-gold-and-silver-on-charcoal.avif",
+       "alt": "Serein Natural Skincare logo in gold and silver on charcoal",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/bibi-hair-braiding-shop-logo-in-pink-and-gold-on-a-gradient.avif",
+       "alt": "BiBi Hair Braiding Shop logo in pink and gold on a gradient",
+       "width": 400,
+       "height": 400
+      }
+     ],
+     "cols": 4,
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "View the Full Portfolio",
+       "href": "/portfolio/",
+       "style": "ghost",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "86c91e5",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "heading",
+     "level": "p",
+     "text": "Local answers",
+     "classes": []
+    },
+    {
+     "t": "heading",
+     "level": "h2",
+     "text": "Where Can I Get Small Business Branding in Austin?",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Logo Design Austin builds brands for small businesses across Austin and Central Texas, fully online. You talk with a designer by phone or text, review concepts on your phone and get a complete, organized set of brand files at the end.</p><h3>Branding for restaurants, bars and shops on South Congress (78704) and in East Austin (78702)</h3><p>Hospitality and retail brands live on menus, cups, signs and social media. A clear palette and a recognizable icon make every one of those touchpoints feel like the same place.</p><h3>Startup and tech branding near the Domain (78758) and Downtown (78701)</h3><p>Young companies need a professional identity quickly for pitch decks, launch pages and event booths. We focus on a flexible logo suite and digital-first brand assets.</p><h3>Service business branding in Round Rock (78664), Cedar Park (78613) and Georgetown (78626)</h3><p>Contractors, cleaners and home service companies benefit from bold, consistent branding across trucks, uniforms, yard signs and door hangers.</p><h3>How much does branding cost in Austin?</h3><p>A custom logo at Logo Design Austin is priced from $125 to $175, depending on complexity, and supporting materials such as business cards and social headers can be added once the logo is approved. For new businesses, the $950 <a href=\"/business-packages/\">Business Starter Package</a> combines a logo, a basic website and 150 business cards. Custom logo design has no upfront charge; you pay after you approve.</p>",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "flex-start",
+     "children": [
+      {
+       "t": "button",
+       "text": "Talk to a Designer",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "29b7bbe",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Service area",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Branding Services Across Austin and Central Texas",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>We build brands for businesses in Austin neighborhoods and the surrounding cities.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "text",
+     "html": "<ul><li>Downtown 78701</li><li>East Austin 78702</li><li>Tarrytown 78703</li><li>Zilker 78704</li><li>Travis Heights 78704</li><li>Hyde Park 78751</li><li>Mueller 78723</li><li>Windsor Park 78723</li><li>Domain / North Burnet 78758</li><li>Westlake 78746</li><li>Steiner Ranch 78732</li><li><a href=\"/round-rock-logo-design/\">Round Rock 78664</a></li><li><a href=\"/cedar-park-logo-design/\">Cedar Park 78613</a></li><li><a href=\"/georgetown-logo-design/\">Georgetown 78626</a></li><li><a href=\"/pflugerville-logo-design/\">Pflugerville 78660</a></li><li><a href=\"/leander-logo-design/\">Leander 78641</a></li><li>Bee Cave 78738</li><li>Lakeway 78734</li><li>Buda 78610</li><li><a href=\"/san-marcos-logo-design/\">San Marcos 78666</a></li></ul>",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Every project is handled remotely, so you get the same service anywhere in the metro.</p>",
+     "align": "center",
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "5657998",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Questions, answered",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Branding FAQs",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "accordion",
+     "items": [
+      {
+       "q": "What is the difference between a logo and a brand?",
+       "a": "<p>A logo is a single mark. A brand is the full visual system around it: logo variations, colors, fonts and the way they appear on cards, signs, social media and packaging. The logo is the foundation, and branding makes it consistent everywhere.</p>"
+      },
+      {
+       "q": "What does a small business branding package include?",
+       "a": "<p>Typically a custom logo with variations, a color palette, font choices, business cards and social media graphics, plus a short brand guide. We tailor the package to the pieces you will actually use.</p>"
+      },
+      {
+       "q": "How much does branding cost in Austin?",
+       "a": "<p>Custom logo design at Logo Design Austin is priced from $125 to $175, with supporting materials added after the logo is approved. There is no upfront charge for logo design. The $950 Business Starter Package bundles a logo, a basic website and 150 business cards.</p>"
+      },
+      {
+       "q": "How long does a branding project take?",
+       "a": "<p>First logo concepts the same day are often possible for straightforward projects after review. Supporting pieces such as cards and social headers follow once the logo is approved, and timing depends on how many items you need.</p>"
+      },
+      {
+       "q": "Can you rebrand an existing business?",
+       "a": "<p>Yes. We can refresh or redesign an existing logo and build a consistent system around it, including cleaning up an older logo or one made with AI.</p>"
+      },
+      {
+       "q": "Will I own my brand files?",
+       "a": "<p>Yes. Once the project is complete and paid, the final logo and brand files are yours to use for your business.</p>"
+      }
+     ],
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "2b03af4",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Related services",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "More Logo and Design Services in Austin",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-pen-nib",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Custom Logo Design",
+         "href": "/custom-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>An original logo designed from scratch.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/custom-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-magic",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Fix an AI-Generated Logo",
+         "href": "/fix-ai-generated-logo/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Turn an AI logo into a clean, brand-ready vector.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/fix-ai-generated-logo/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-gem",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Brand Logo Design",
+         "href": "/brand-logo/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Brand research and logo concepts for new identities.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/brand-logo/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-palette",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Graphic Design",
+         "href": "/graphic-designer-austin/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Flyers, cards, banners and social graphics.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/graphic-designer-austin/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-laptop",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Website Design",
+         "href": "/website-designer-austin/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Websites built around your brand.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/website-designer-austin/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-star",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Logo Design Austin",
+         "href": "/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>See every logo and design service we offer in Austin.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fc2945c",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Ready to Build a Brand Customers Recognize Instantly?",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Tell us about your business. An Austin designer will send original concepts, and you pay only after you approve.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "Get My Branding Quote",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "What is the difference between a logo and a brand?",
+   "a": "<p>A logo is a single mark. A brand is the full visual system around it: logo variations, colors, fonts and the way they appear on cards, signs, social media and packaging. The logo is the foundation, and branding makes it consistent everywhere.</p>"
+  },
+  {
+   "q": "What does a small business branding package include?",
+   "a": "<p>Typically a custom logo with variations, a color palette, font choices, business cards and social media graphics, plus a short brand guide. We tailor the package to the pieces you will actually use.</p>"
+  },
+  {
+   "q": "How much does branding cost in Austin?",
+   "a": "<p>Custom logo design at Logo Design Austin is priced from $125 to $175, with supporting materials added after the logo is approved. There is no upfront charge for logo design. The $950 Business Starter Package bundles a logo, a basic website and 150 business cards.</p>"
+  },
+  {
+   "q": "How long does a branding project take?",
+   "a": "<p>First logo concepts the same day are often possible for straightforward projects after review. Supporting pieces such as cards and social headers follow once the logo is approved, and timing depends on how many items you need.</p>"
+  },
+  {
+   "q": "Can you rebrand an existing business?",
+   "a": "<p>Yes. We can refresh or redesign an existing logo and build a consistent system around it, including cleaning up an older logo or one made with AI.</p>"
+  },
+  {
+   "q": "Will I own my brand files?",
+   "a": "<p>Yes. Once the project is complete and paid, the final logo and brand files are yours to use for your business.</p>"
+  }
+ ],
+ "wordCount": 1280
+}

@@ -1,0 +1,744 @@
+{
+ "id": 253474,
+ "type": "page",
+ "slug": "san-marcos-logo-design",
+ "url": "/san-marcos-logo-design/",
+ "title": "San Marcos Logo Design",
+ "seo": {
+  "title": "Logo Design in San Marcos, TX | Custom Logos | Logo Austin",
+  "description": "Custom logo design for San Marcos, TX businesses, student organizations and startups. Same-day concepts, $125–$175, no upfront payment. Remote service.",
+  "focusKeyword": "logo design San Marcos",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/katymead-logo-design.avif",
+  "alt": "Katymead Logo Design",
+  "width": 850,
+  "height": 500
+ },
+ "date": "2023-03-23 19:10:31",
+ "modified": "2026-11-03 14:57:31",
+ "template": "la",
+ "sections": [
+  {
+   "id": "785d6fa",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 60,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "text",
+           "html": "<p><a href=\"/\">Home</a> › <a href=\"/austin-logo-designers/\">Austin Logo Designers</a> › San Marcos Logo Design</p><p>Hays County · I-35 Corridor</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h1",
+           "text": "Custom Logo Design for San Marcos Businesses",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logo Austin designs original logos for San Marcos restaurants, bars, apparel brands, outdoor and tubing businesses, and startups. Concepts are delivered the same day, with no upfront payment.</p>",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 40,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-10.avif",
+         "alt": "Custom Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "07f6877",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-text"
+   ],
+   "bg": "white",
+   "variant": "text",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Logo Design Services for San Marcos, TX",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>San Marcos, the Hays County seat between Austin and San Antonio on I-35, is home to Texas State University and the spring-fed San Marcos River. The mix of college students, river visitors and a growing year-round population supports many restaurants, bars, apparel brands and outdoor businesses.</p><p>San Marcos is one of the areas Logo Austin serves most often. All work is completed remotely, with files ready for merchandise, menus and signage.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2dfc0a3",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-cards"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Logos for San Marcos Businesses",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Popular logo projects for San Marcos businesses:</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Restaurants & Bars",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Eye-catching marks for menus, signage and event promotions.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Apparel & Merch Brands",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logos built for screen printing and embroidery.</p><p><a href=\"/clothing-line-logo-design/\">Clothing logos &rarr;</a></p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Outdoor & River Businesses",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Energetic logos for rentals, tours and outfitters.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Student Organizations & Events",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logos for T-shirts, banners and social media.</p><p><a href=\"/custom-tshirt-design-event-branding/\">Event T-shirt guide &rarr;</a></p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2d6123d",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-split"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/moving-logo-designer-austin.avif",
+         "alt": "Moving Logo Designer Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Branding Tips for San Marcos Businesses",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<ul><li>If your customers are students, your logo should look great on T-shirts, stickers and Instagram.</li><li>Seasonal businesses benefit from a logo that works on merchandise sold during peak months.</li><li>Keep a one-color version for affordable screen printing.</li><li>Use the same logo across delivery apps, Google and social media.</li></ul>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5b6e37f",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-steps"
+   ],
+   "bg": "white",
+   "variant": "steps",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "How San Marcos Clients Work With Logo Austin",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<ol><li><strong>Call or message.</strong> Call 512-717-7453 or request a <a href=\"/consultation/\">free consultation</a>. No office visit is needed.</li><li><strong>Share your vision.</strong> Send your business name, services and any styles you like.</li><li><strong>Review concepts the same day.</strong> Multiple original concepts arrive by text or email, usually within hours.</li><li><strong>Approve and pay.</strong> Revise until it is right, then pay ($125 to $175) and receive your files.</li></ol><p>Logo Austin also serves nearby areas: <a href=\"/kyle-logo-design/\">Kyle</a>, <a href=\"/austin-logo-designers/\">Austin</a>, <a href=\"/del-valle-logo-design/\">Del Valle</a>.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "85ade0b",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-faq"
+   ],
+   "bg": "white",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-faq"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "San Marcos Logo Design FAQs",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Do you design logos for San Marcos, TX businesses?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. San Marcos is one of Logo Austin's most frequent service areas, and all work is completed remotely.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Can you design logos and T-shirts for student organizations?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. Logo Austin designs logos and T-shirt graphics for organizations and events, and provides print-ready and embroidery files.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "How much does a custom logo cost for a San Marcos business?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logo Austin charges $125 to $175 for a custom logo, with no upfront payment. You pay only after approving the final design and receive JPG, PNG, SVG, PDF, AI and EPS files.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c80ae34",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns",
+        "la-center"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Get Logo Concepts for Your San Marcos Business",
+           "align": "center",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Same-day concepts, revisions until approved and no upfront payment.</p>",
+           "align": "center",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Do you design logos for San Marcos, TX businesses?",
+   "a": "<p>Yes. San Marcos is one of Logo Austin's most frequent service areas, and all work is completed remotely.</p>"
+  },
+  {
+   "q": "Can you design logos and T-shirts for student organizations?",
+   "a": "<p>Yes. Logo Austin designs logos and T-shirt graphics for organizations and events, and provides print-ready and embroidery files.</p>"
+  },
+  {
+   "q": "How much does a custom logo cost for a San Marcos business?",
+   "a": "<p>Logo Austin charges $125 to $175 for a custom logo, with no upfront payment. You pay only after approving the final design and receive JPG, PNG, SVG, PDF, AI and EPS files.</p>"
+  }
+ ],
+ "wordCount": 433
+}

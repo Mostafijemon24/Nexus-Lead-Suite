@@ -1,0 +1,171 @@
+{
+ "id": 230690,
+ "type": "page",
+ "slug": "blogs",
+ "url": "/blogs/",
+ "title": "Blogs",
+ "seo": {
+  "title": "Logo & Branding Blog for Austin Businesses | Logo Austin",
+  "description": "Guides on logo design, branding, business cards, brochures, T-shirts and websites for Austin small businesses and startups, from the Logo Austin design team.",
+  "focusKeyword": "logo and branding blog",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/branding-trends.avif",
+  "alt": "branding trends",
+  "width": 1200,
+  "height": 628
+ },
+ "date": "2021-04-29 17:18:23",
+ "modified": "2026-11-03 14:57:25",
+ "template": "la",
+ "sections": [
+  {
+   "id": "44f67fa",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "text",
+           "html": "<p><a href=\"/\">Home</a> › Blogs</p><p>Guides & Insights</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h1",
+           "text": "Logo, Branding and Design Guides for Austin Businesses",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Practical articles from the Logo Austin design team on logos, branding, print materials, apparel and websites, written for small business owners and startups in Austin.</p>",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7db5bac",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-blogs"
+   ],
+   "bg": "white",
+   "variant": "blogIndex",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Latest Articles",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Start with a topic below, or explore our services: <a href=\"/austin-logo-designers/\">logo design</a>, <a href=\"/branding/\">branding</a>, <a href=\"/graphic-designer-austin/\">graphic design</a> and <a href=\"/website-designer-austin/\">website design</a>.</p>",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "posts",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [],
+ "wordCount": 57
+}

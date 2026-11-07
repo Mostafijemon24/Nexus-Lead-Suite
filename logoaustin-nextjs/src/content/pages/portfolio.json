@@ -1,0 +1,1939 @@
+{
+ "id": 90,
+ "type": "page",
+ "slug": "portfolio",
+ "url": "/portfolio/",
+ "title": "Portfolio",
+ "seo": {
+  "title": "Logo Design Portfolio | Custom Logos by Logo Austin",
+  "description": "Browse custom logos designed by Logo Austin for construction, real estate, food, apparel, cleaning and tech brands. Every logo built from scratch.",
+  "focusKeyword": "logo design portfolio Austin",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/creative-portfolio.avif",
+  "alt": "creative portfolio",
+  "width": 1200,
+  "height": 628
+ },
+ "date": "2020-11-14 15:21:29",
+ "modified": "2026-11-03 14:57:24",
+ "template": "la",
+ "sections": [
+  {
+   "id": "2da49af",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "text",
+           "html": "<p><a href=\"/\">Home</a> › Portfolio</p><p>Recent Work</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h1",
+           "text": "Logo Design Portfolio: Custom Logos by Logo Austin",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>These are recent custom logos created by Logo Austin's designers for small businesses, startups and organizations. Every logo was designed from scratch based on the client's business name and vision.</p>",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Start Your Logo",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "9f00b1a",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-text"
+   ],
+   "bg": "white",
+   "variant": "text",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "What You Will See in Our Portfolio",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>The portfolio includes wordmarks, icon-and-text logos, emblems and illustrated mascot logos across many industries. Looking through it is the quickest way to judge whether a designer's range fits your brand. Notice how each logo reads at small sizes and in a single color, since that is how most logos are used day to day.</p><p>Want a logo for a specific industry? See examples and advice for <a href=\"/construction-logo-design/\">construction</a>, <a href=\"/real-estate-logo-design/\">real estate</a>, <a href=\"/cleaning-logo-design/\">cleaning</a>, <a href=\"/clothing-line-logo-design/\">clothing lines</a> and <a href=\"/small-business-logo-design/\">small businesses</a>.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5c231e3",
+   "classes": [
+    "wd2e-section"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Recent Works - Logos",
+         "align": "center",
+         "classes": []
+        },
+        {
+         "t": "divider",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-55.avif",
+         "alt": "Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-69.avif",
+         "alt": "Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/dessenberg-designs-logo-with-a-hammer-forming-a-house-roofline.avif",
+         "alt": "Dessenberg Designs logo with a hammer forming a house roofline",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-61.avif",
+         "alt": "Custom Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-59.avif",
+         "alt": "Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/small-business-logo-designer-austin.avif",
+         "alt": "Small Business Logo Designer Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-54.avif",
+         "alt": "Custom Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-57.avif",
+         "alt": "logodesignerusa",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-63.avif",
+         "alt": "Logo Designer Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-52.avif",
+         "alt": "Custom Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/amittai-investments-gold-monogram-logo-on-a-dark-teal-background.avif",
+         "alt": "Amittai Investments gold monogram logo on a dark teal background",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-49.avif",
+         "alt": "Custom Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-51.avif",
+         "alt": "Logo Designer Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-47.avif",
+         "alt": "Custom Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-43.avif",
+         "alt": "Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/hades-strength-and-conditioning-logo-with-a-greek-figure-holding-a.avif",
+         "alt": "Hades Strength and Conditioning logo with a Greek figure holding a trident",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-41.avif",
+         "alt": "Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/clear-creek-forest-animal-hospital-logo-with-a-dog-cat-and-rabbit-under.avif",
+         "alt": "Clear Creek Forest Animal Hospital logo with a dog, cat and rabbit under a tree",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-36.avif",
+         "alt": "Logo Designer Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-33.avif",
+         "alt": "Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/custom-moving-logo.avif",
+         "alt": "Custom Moving Logo",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-29.avif",
+         "alt": "Logo Designer Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/all-seasons-trucking-and-landscaping-logo-with-a-green-tree-and-work.avif",
+         "alt": "All Season's Trucking and Landscaping logo with a green tree and work trucks",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/cerise-logo-in-gold-script-inside-a-red-house-shaped-badge.avif",
+         "alt": "Cerise logo in gold script inside a red house-shaped badge",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/millennialism-logo-with-a-skyline-built-into-the-letter-m-on-blue.avif",
+         "alt": "Millennialism logo with a skyline built into the letter M on blue",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-25.avif",
+         "alt": "Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/custom-moving-logo-design-austin.avif",
+         "alt": "Custom moving Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-17.avif",
+         "alt": "Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-19.avif",
+         "alt": "Custom Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/fiat-construction-llc-logo-with-colorful-rooftops-above-red-script.avif",
+         "alt": "Fiat Construction LLC logo with colorful rooftops above red script",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/r-f-commercial-and-residential-construction-logo-in-navy-and-red-serif.avif",
+         "alt": "R&F Commercial and Residential Construction logo in navy and red serif letters",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/e-m-commercial-and-residential-painting-logo-with-a-pink-brush-stroke.avif",
+         "alt": "E&M Commercial and Residential Painting logo with a pink brush stroke",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-7.avif",
+         "alt": "Logo Designer Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-9.avif",
+         "alt": "Logo Design Austin",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-5.avif",
+         "alt": "Logo Designer Austin",
+         "width": 76,
+         "height": 76,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/logo-design-austin-3.avif",
+         "alt": "",
+         "width": 400,
+         "height": 400,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a478ac0",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-faq"
+   ],
+   "bg": "white",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-faq"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Portfolio FAQs",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Were these logos designed from templates?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>No. Every logo in the Logo Austin portfolio was designed from scratch for a specific client.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Can I get a logo in a similar style?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. You can point to portfolio pieces you like as style references. Your logo will still be original to your business.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "How long did these logos take?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logo Austin typically delivers first concepts the same day; final timing depends on how many revision rounds each client requested.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "9e21237",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns",
+        "la-center"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Want a Logo Like These?",
+           "align": "center",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Share your business name and see your own concepts today.</p>",
+           "align": "center",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Were these logos designed from templates?",
+   "a": "<p>No. Every logo in the Logo Austin portfolio was designed from scratch for a specific client.</p>"
+  },
+  {
+   "q": "Can I get a logo in a similar style?",
+   "a": "<p>Yes. You can point to portfolio pieces you like as style references. Your logo will still be original to your business.</p>"
+  },
+  {
+   "q": "How long did these logos take?",
+   "a": "<p>Logo Austin typically delivers first concepts the same day; final timing depends on how many revision rounds each client requested.</p>"
+  }
+ ],
+ "wordCount": 222
+}

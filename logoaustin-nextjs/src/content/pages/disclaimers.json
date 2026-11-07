@@ -1,0 +1,172 @@
+{
+ "id": 243748,
+ "type": "page",
+ "slug": "disclaimers",
+ "url": "/disclaimers/",
+ "title": "Disclaimers",
+ "seo": {
+  "title": "Disclaimers | Logo Austin",
+  "description": "Disclaimers covering the information, portfolio examples and design services provided by Logo Austin (Logo In Hours LLC) on the logoaustin.com site.",
+  "focusKeyword": "",
+  "canonical": ""
+ },
+ "featuredImage": null,
+ "date": "2021-09-20 03:42:09",
+ "modified": "2026-11-03 14:57:26",
+ "template": "la",
+ "sections": [
+  {
+   "id": "1902314",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-hero",
+    "la-legal-top"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "text",
+           "html": "<p><a href=\"/\">Home</a> › Disclaimers</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h1",
+           "text": "Disclaimers",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Important disclaimers about the information and design work provided by Logo Austin.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "0de8ce5",
+   "classes": [
+    "wd2e-section"
+   ],
+   "bg": "white",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Disclaimers",
+         "align": "center",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p>Logo In Hours LLC operate business from Houston, with marketing through a dedicated website for each location/state, without a storefront, and through virtual offices. We always try to make the design unique and memorable based on the client's logo vision. However, as clients often give their feedback to edit the design before final approval, it may come close to any other design. In that case, if things happen without our knowledge, clients may take discounted advantage to edit the design again. We are not a law office and clients will be requested to contact any law office for filing copyright applications.<br />Logo In Hours LLC has the job of completing the tasks of the clients. If any client hides his/her identity or use copyright images or provide an image from google without taking ownership or purchasing or reveals fake qualification or anything like that, Logo In Hours LLC isn’t responsible for that. The reason is that we’re not here to reveal client’s identities, rather we get their job done. Logo In Hours LLC is the logo designing/ graphic designing company only and it is the responsibility of clients to check the sources of their logo vision prior to giving us to do any design using the same or close to that. They must protect the design as well once we design through copyright. If clients’ relations with any user of the website aren’t good enough, they should resolve the matter by themselves because we’re released from any such claims.<br />As mentioned earlier, Logo In Hours LLC is responsible for the content only, not for the data associated with the website. There is no warranty from our side regarding the security of your data or anything related to your website, neither for the project. There will be an agreement between the client and us which will clear these things in front of them so that they don’t ask for any such thing later. We deny any kind of</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h6",
+         "text": "• Warranties of Merchantability for any purpose• Warranties related to any error in the website• Warranties related to the transmission of the client’s website",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Also, we’re not responsible if the website isn’t according to the client’s requirements during or after the end of the project.<br />Clients will have to indemnify if there is any violation by them and in that case, Logo In Hours LLC and its employees will be released from any kind of claims. Moreover, the client has to be able to follow the terms and conditions associated with the project.<br />The company will not be liable to the client or any other person for any damage happening to the client’s website. The client will have to face the music if the website is damaged during or after the project. This will also be decided under the influence of an agreement so that there is no issue between both parties at any point.<br />The client must do some research before choosing the name of their company so that they get legal rights. Our company will not be responsible if there are issues associated with the client’s company name because of not securing trademark or service mark.</p>",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [],
+ "wordCount": 537
+}

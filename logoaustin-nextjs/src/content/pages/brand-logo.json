@@ -1,0 +1,817 @@
+{
+ "id": 89,
+ "type": "page",
+ "slug": "brand-logo",
+ "url": "/brand-logo/",
+ "title": "Brand Logo",
+ "seo": {
+  "title": "Brand Logo Design & Visual Identity in Austin | Logo Austin",
+  "description": "Brand logo design in Austin: brand research, naming support, visual identity and a custom logo that tells your brand story. Same-day concepts, no deposit.",
+  "focusKeyword": "brand logo design",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/logo-concept.avif",
+  "alt": "logo concept",
+  "width": 1200,
+  "height": 628
+ },
+ "date": "2020-11-14 15:20:55",
+ "modified": "2026-11-03 14:57:22",
+ "template": "la",
+ "sections": [
+  {
+   "id": "9735ae7",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 60,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "text",
+           "html": "<p><a href=\"/\">Home</a> › Brand Logo</p><p>Naming · Research · Visual Identity</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h1",
+           "text": "Brand Logo Design and Visual Identity in Austin",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A brand logo is the center of your visual identity. Logo Austin combines brand research, naming support and custom logo design to create a mark that tells your business story and stays consistent everywhere customers see it.</p>",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 40,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/portfolio/absolute-paint-llc-logo-with-a-blue-paint-splash.avif",
+         "alt": "Absolute Paint LLC logo with a blue paint splash",
+         "width": 400,
+         "height": 284,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "998ce94",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-text"
+   ],
+   "bg": "white",
+   "variant": "text",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "What Is a Brand Logo?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A <strong>brand logo</strong> is a logo designed as part of a complete brand identity, not as a standalone graphic. It reflects the business's personality, values and target customers, and it sets the colors, fonts and style used across every other brand asset.</p><p>Your brand story is what separates you from competitors and explains the benefits of your products or services. A brand logo is the fastest way to communicate that story at a glance.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "98b0c58",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-cards"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Brand Identity Services",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Brand Research",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A review of your industry, competitors and customers to find a visual direction that stands apart.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Naming Support",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Help choosing or refining a business or product name that is memorable and works well as a logo.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Logo Design",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Multiple custom concepts covering different themes, color schemes, icons and emblems, refined through revisions.</p><p><a href=\"/custom-design/\">Custom logo process &rarr;</a></p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Visual Identity",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A defined color palette and typography so your brand looks the same on print, web and social media.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Graphics & Print",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Business cards, flyers, banners and signage designed with the new logo.</p><p><a href=\"/graphic-designer-austin/\">Graphic design &rarr;</a></p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Brand Development",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Ongoing updates as your business grows, including logo variations and new materials.</p><p><a href=\"/branding/\">Branding packages &rarr;</a></p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "8383838",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-split"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-2.avif",
+         "alt": "Logo Designer Austin",
+         "width": 400,
+         "height": 284,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "How Brand Logo Design Works",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<ol><li><strong>Share your logo vision</strong>: your name, story, audience and styles you like.</li><li><strong>Receive concepts</strong>: several custom options covering different directions.</li><li><strong>Refine your favorite</strong>: revise until it fits. You can even switch to a different concept.</li><li><strong>Build the identity</strong>: colors and fonts are set and applied to your first materials.</li></ol><p>Concepts are usually delivered the same day, by email or text message.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "f2e42dc",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-table"
+   ],
+   "bg": "white",
+   "variant": "table",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Logo vs. Brand Identity: What Is the Difference?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<div><table><thead><tr><th scope=\"col\"></th><th scope=\"col\">Logo Only</th><th scope=\"col\">Brand Logo + Identity</th></tr></thead><tbody><tr><td><strong>What you get</strong></td><td>A single mark</td><td>Logo, color palette, typography and applications</td></tr><tr><td><strong>Consistency</strong></td><td>Depends on who uses it</td><td>Defined rules keep every item consistent</td></tr><tr><td><strong>Best for</strong></td><td>A quick first mark</td><td>Businesses planning to grow, advertise or open a location</td></tr></tbody></table></div>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "9d171b3",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-faq"
+   ],
+   "bg": "white",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-faq"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Brand Logo FAQs",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "What should I prepare before starting a brand logo?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Have your business name, a short description of what you do, your ideal customers, and a few logos or colors you like. Logo Austin designers can guide you through the rest in a free consultation.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Can I change direction after seeing concepts?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. You can request revisions, combine ideas from different concepts, or ask for a completely different direction before approving the final logo.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "How much does a logo cost at Logo Austin?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Custom logo design at Logo Austin is priced from $125 to $175. There is no upfront charge; you pay only after you approve the final design.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Do you help with business names?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. Naming support is part of Logo Austin's brand identity service, and designers check that the name works well visually as a logo.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4296575",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns",
+        "la-center"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Build Your Brand Logo",
+           "align": "center",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Tell us your brand story and see custom logo concepts today.</p>",
+           "align": "center",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "What should I prepare before starting a brand logo?",
+   "a": "<p>Have your business name, a short description of what you do, your ideal customers, and a few logos or colors you like. Logo Austin designers can guide you through the rest in a free consultation.</p>"
+  },
+  {
+   "q": "Can I change direction after seeing concepts?",
+   "a": "<p>Yes. You can request revisions, combine ideas from different concepts, or ask for a completely different direction before approving the final logo.</p>"
+  },
+  {
+   "q": "How much does a logo cost at Logo Austin?",
+   "a": "<p>Custom logo design at Logo Austin is priced from $125 to $175. There is no upfront charge; you pay only after you approve the final design.</p>"
+  },
+  {
+   "q": "Do you help with business names?",
+   "a": "<p>Yes. Naming support is part of Logo Austin's brand identity service, and designers check that the name works well visually as a logo.</p>"
+  }
+ ],
+ "wordCount": 504
+}

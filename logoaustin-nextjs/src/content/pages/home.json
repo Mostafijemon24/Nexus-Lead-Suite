@@ -1,0 +1,2692 @@
+{
+ "id": 28,
+ "type": "page",
+ "slug": "home",
+ "url": "/",
+ "title": "Home",
+ "seo": {
+  "title": "Logo Design Austin, TX | Custom Logos & AI Logo Fixes",
+  "description": "Custom logo design in Austin from $125 to $175, plus AI logo cleanup and vector files. Branding, graphics and websites. No upfront payment. Free quote.",
+  "focusKeyword": "logo design Austin",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/logo-designer-near-me-in-austin.avif",
+  "alt": "logo designer near me in austin",
+  "width": 700,
+  "height": 550
+ },
+ "date": "2020-11-10 20:23:22",
+ "modified": "2026-11-05 00:47:12",
+ "template": "lda",
+ "sections": [
+  {
+   "id": "43b2b5e",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 53,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Logo Design Austin • Central Texas • AI Logo Cleanup & Vectorization",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h1",
+         "text": "Custom Logo Design & AI Logo Redesign in Austin, TX",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Need a logo that looks professional on your storefront sign, commercial wrap, and Instagram? Our Austin designers build custom brand identities from scratch, with options starting from $125 to $175 and <strong>no upfront payment</strong>. Already generated a logo concept using ChatGPT, Midjourney, or Canva? We specialize in <strong>AI logo cleanup</strong>, fixing blurry pixels, broken typography, and scaling raster images into <strong>real vector files (SVG, EPS, AI)</strong>.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Custom logos designed from scratch, never cookie-cutter templates",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Advanced AI logo cleanup & vectorization: fixing blurry pixels and broken lines",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Complete local branding, graphic design, and matching websites for Central Texas businesses",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get My Free Logo Quote",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "text",
+         "html": "<p>First concepts the same day are often possible for straightforward projects after review.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 41,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/collage-of-custom-logos-including-db-pro-service-dessenberg-texas-star.avif",
+         "alt": "Collage of custom logos including DB Pro Service, Dessenberg, Texas Star Tire, JG Landscaping and Gasgo",
+         "width": 500,
+         "height": 251,
+         "displayWidth": 100,
+         "classes": []
+        },
+        {
+         "t": "badge",
+         "strong": "Made a logo with AI?",
+         "text": "Get a free audit of what it needs to be print-ready.",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "8f7ec12",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white",
+    "lda-trust"
+   ],
+   "bg": "white",
+   "variant": "trust",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "iconBox",
+       "icon": "fas fa-pen-nib",
+       "title": "Original designs",
+       "desc": "Built for your business",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-magic",
+       "title": "AI logo fixes",
+       "desc": "Cleanup and vector rebuild",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-file-download",
+       "title": "Every file format",
+       "desc": "AI · EPS · SVG · PDF · PNG",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-hand-holding-usd",
+       "title": "No upfront payment",
+       "desc": "Approve first, then pay",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "42309b6",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Our services",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Logo and Design Services for Austin Businesses",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Start with the piece you need today. Everything we make comes from the same master files, so your brand stays consistent as you grow.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-pen-nib",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Custom logo design",
+         "href": "/custom-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Several original concepts, revisions until it is right, and files you fully own.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Custom logos",
+         "href": "/custom-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-magic",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Fix an AI-generated logo",
+         "href": "/fix-ai-generated-logo/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>We clean up blurry, misspelled or lopsided AI logos and rebuild them by hand.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "AI logo cleanup",
+         "href": "/fix-ai-generated-logo/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-bezier-curve",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Vector conversion",
+         "href": "/fix-ai-generated-logo/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Turn a PNG, JPG or screenshot into clean SVG, EPS, AI and PDF files.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Convert to vector",
+         "href": "/fix-ai-generated-logo/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-sync-alt",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Logo redesign and cleanup",
+         "href": "/logo-cleaning-service-or-logo-redesign/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Refresh a dated logo or repair an old, low-quality file without losing what works.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Cleanup vs redesign",
+         "href": "/logo-cleaning-service-or-logo-redesign/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-layer-group",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Branding",
+         "href": "/branding/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Colors, fonts, business cards, social graphics and a simple brand guide.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Branding services",
+         "href": "/branding/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-palette",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Graphic design",
+         "href": "/graphic-designer-austin/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Flyers, banners, menus, labels and social posts built around your logo.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Graphic design",
+         "href": "/graphic-designer-austin/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-laptop",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Website design",
+         "href": "/website-designer-austin/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Mobile-friendly small business websites that match your brand.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Website design",
+         "href": "/website-designer-austin/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-box-open",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Business Starter Package",
+         "href": "/business-packages/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logo, basic website and 150 business cards for $950.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "See the package",
+         "href": "/business-packages/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b0a81a6",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Same-day logo design",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Custom Logo Design in Austin With No Upfront Charge",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Our Austin logo designers build every concept from scratch. Share your business name, what you do and the look you have in mind, and we turn it into original logo concepts you can review, revise and adjust until it feels right. There is no upfront charge: you see the designs first and pay only when you are happy with the final logo.</p><p>Whether you need a brand-new logo, an enhancement that breathes new life into an existing one, or a complete branding package with business cards, letterhead, flyers and a website, our graphic artists work with every industry. Our workflow is built for speed, so first concepts are often ready the same day for straightforward projects after review. We keep communication clear by phone, text and email so your logo captures what makes your brand different.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Multiple original concepts, never templates",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Revisions and adjustments until you approve",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Delivered in JPG, PNG, AI, EPS, SVG and PDF",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Start My Custom Logo",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/austin-logo-designer-preparing-logo-concepts-and-final-files-in-design.avif",
+         "alt": "Austin logo designer preparing logo concepts and final files in design software",
+         "width": 1600,
+         "height": 1001,
+         "displayWidth": 100,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "d0e07c9",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row-reverse",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "The AI logo problem",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Made Your Logo With AI? Here Is Why It Breaks and How We Fix It",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>AI image generators are great for brainstorming, and plenty of Austin owners now start there. The catch is that they produce pictures, not logo files. What you download is a low-resolution PNG with soft edges, letters that are often misspelled or made up, uneven shapes, and a background that is not truly transparent.</p><p>That works on a phone screen and falls apart at the print shop. We keep the idea you like and rebuild it properly: hand-drawn vector paths, your business name set in a real typeface, balanced proportions and exact CMYK and RGB colors. You get SVG, EPS, AI, PDF and transparent PNG files that work on signs, shirts, vehicles and your website.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Free audit before any work begins",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Hand rebuild, not an auto-trace",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Print, embroidery and web-ready files",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get a Free AI Logo Audit",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/five-stages-of-redrawing-a-lion-logo-by-hand-from-sketch-outline-to.avif",
+         "alt": "Five stages of redrawing a lion logo by hand, from sketch outline to finished vector",
+         "width": 1024,
+         "height": 1024,
+         "displayWidth": 100,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2801adb",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Logo enhancement",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Logo Enhancement and Vectorization in Austin",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>If your logo feels outdated or lacks impact, you may not need to start over. We refine what already works, then deliver clean files for every use.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-font",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Font refresh",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>We update the lettering to a modern, brand-appropriate typeface so the whole logo looks current.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-palette",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Color refinement",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>We adjust the color palette to better reflect your brand and keep it consistent in print and on screen.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-eye",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Clarity enhancement",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>We simplify or refine details so your logo reads faster and is easier to remember, even at small sizes.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-bezier-curve",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Logo vectorization",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Low-resolution PNGs, JPGs and screenshots redrawn as scalable AI, EPS, SVG and PDF files.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-paw",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Mascot logo design",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Custom characters and mascots for teams, food brands, apparel lines and local businesses.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-tshirt",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Embroidery DST files",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Your logo prepared as a DST file for embroidered shirts, caps and uniforms, often turned around the same day.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a17cf83",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Industries",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Logo Design for Austin Industries",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Different businesses need different things from a logo. These pages explain what works in each field.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#f4f5f7",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-home",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Real estate",
+         "href": "/real-estate-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Agents, teams, brokerages and property managers.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Real estate logos",
+         "href": "/real-estate-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#f4f5f7",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-soap",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Cleaning services",
+         "href": "/cleaning-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Maid, janitorial, window and pressure-washing companies.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Cleaning logos",
+         "href": "/cleaning-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#f4f5f7",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-hard-hat",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Construction",
+         "href": "/construction-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Builders, remodelers, roofers and trades.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Construction logos",
+         "href": "/construction-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#f4f5f7",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-stethoscope",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Medical and healthcare",
+         "href": "/medical-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Doctors, clinics, dentists, therapists and med spas.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Medical logos",
+         "href": "/medical-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#f4f5f7",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-bolt",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Electrical",
+         "href": "/electrical-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Electricians and electrical contractors.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Electrical logos",
+         "href": "/electrical-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#f4f5f7",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-truck-moving",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Moving companies",
+         "href": "/moving-company-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Movers, haulers and delivery services.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Moving logos",
+         "href": "/moving-company-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#f4f5f7",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-tshirt",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Clothing lines",
+         "href": "/clothing-line-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Apparel brands, neck labels and merch.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Clothing logos",
+         "href": "/clothing-line-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#f4f5f7",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-store",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Small businesses",
+         "href": "/small-business-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Shops, food trucks, startups and local services.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Small business logos",
+         "href": "/small-business-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "More industries",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h3",
+       "text": "Logos for Every Type of Austin Business",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Beyond the industries above, we design logos for law firms and legal services, accounting and financial companies, consulting firms, fashion and clothing brands, art and design studios, restaurants and food businesses, software companies, e-commerce stores, social media apps, healthcare providers, non-profit organizations and educational institutions.</p><p>We study what each industry needs, design every concept from scratch for originality, and bring in a little Texas character when it fits your audience. We are especially experienced with construction, realtor and clothing line logos.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7f0932a",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "What you receive",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Every Logo Comes With a Complete File Package",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>No hunting for the right file when a printer, sign shop or web developer asks. You get an organized set you can hand to any vendor.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-bezier-curve",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "AI, EPS and SVG vector files",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Scalable masters for signs, vehicle graphics, embroidery and your website.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-file-pdf",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Print-ready PDF",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A vector PDF any print shop can open, with fonts outlined so nothing shifts.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-image",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "JPG and transparent PNG",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Everyday files for email signatures, social profiles, slides and documents.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-palette",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Color and black-and-white versions",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Full color, one color, white and black versions for light and dark backgrounds.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-th-large",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Horizontal, stacked and icon layouts",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Layouts that fit wide signs, square avatars and tiny favicons.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-key",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Full ownership",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Once you approve and pay, the final logo files are yours to use anywhere. We can also explain the next steps if you want to register a copyright or trademark.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "8b884a0",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "How it works",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "How Logo Design Works With Us",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Handled by phone, text and email, so you never need to schedule an office visit.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "01",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Share your idea",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Tell us your business name, what you do and any colors or styles you like. Send an AI logo if you have one.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "02",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Review concepts",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Designers create several original directions and send them by text or email.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "03",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Refine your favorite",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Request changes to fonts, colors and layout until it feels right.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "04",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Approve and download",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Pay after you approve and receive JPG, PNG, SVG, PDF, AI and EPS files.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "row",
+       "wrap": true,
+       "width": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "button",
+         "text": "Start My Logo",
+         "href": "#consultation",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call (512) 782-9748",
+         "href": "tel:+15127829748",
+         "style": "ghost",
+         "icon": "fas fa-phone-alt",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "6c87313",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "gallery",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Our work",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Recent Logos for Austin-Area Businesses",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>A sample from transportation, hospitality, real estate, beauty, professional services, construction and veterinary clients.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "gallery",
+     "images": [
+      {
+       "src": "/images/portfolio/road-bull-transportation-logo-with-a-red-semi-truck-and-bull-horns.avif",
+       "alt": "Road Bull Transportation logo with a red semi truck and bull horns",
+       "width": 1280,
+       "height": 1280
+      },
+      {
+       "src": "/images/portfolio/drinks-on-me-512-logo-with-a-gold-martini-glass-and-bottles.avif",
+       "alt": "Drinks On Me 512 logo with a gold martini glass and bottles",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/preeminence-properties-neon-style-logo-with-outlined-city-buildings.avif",
+       "alt": "Preeminence Properties neon-style logo with outlined city buildings",
+       "width": 1280,
+       "height": 1280
+      },
+      {
+       "src": "/images/portfolio/serein-natural-skincare-logo-in-gold-and-silver-on-charcoal.avif",
+       "alt": "Serein Natural Skincare logo in gold and silver on charcoal",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/bibi-hair-braiding-shop-logo-in-pink-and-gold-on-a-gradient.avif",
+       "alt": "BiBi Hair Braiding Shop logo in pink and gold on a gradient",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/taxwyn-logo-with-gold-scales-of-justice-and-serif-lettering-on-slate.avif",
+       "alt": "TaxWyn logo with gold scales of justice and serif lettering on slate",
+       "width": 400,
+       "height": 284
+      },
+      {
+       "src": "/images/portfolio/miceli-construction-group-logo-with-a-laurel-monogram-in-gold-tones.avif",
+       "alt": "Miceli Construction Group logo with a laurel monogram in gold tones",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/clear-creek-forest-animal-hospital-logo-with-a-dog-cat-and-rabbit-under.avif",
+       "alt": "Clear Creek Forest Animal Hospital logo with a dog, cat and rabbit under a tree",
+       "width": 400,
+       "height": 400
+      }
+     ],
+     "cols": 4,
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "View the Full Portfolio",
+       "href": "/portfolio/",
+       "style": "ghost",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "98a5192",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "heading",
+     "level": "p",
+     "text": "Local answers",
+     "classes": []
+    },
+    {
+     "t": "heading",
+     "level": "h2",
+     "text": "Who Is the Best Logo Designer Near Me in Austin?",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>The best logo designer for you is the one who designs original work for your type of business, shows you real examples, explains pricing upfront and gives you the files you need. When you compare Austin options, check for a portfolio of custom logos rather than templates, clear pricing, the number of concepts and revisions you get, and whether you receive vector files such as AI, EPS and SVG that you fully own.</p><p>Logo Design Austin, part of Logo In Hours LLC, works with business owners across Austin and Central Texas remotely by phone, text and email. Custom logos are priced from $125 to $175 depending on complexity, there is no upfront payment, and you receive multiple concepts with revisions before you approve. You can also see our guide on <a href=\"/choose-the-best-logo-design-company/\">how to choose a logo design company</a>.</p><h3>Logo design for Downtown (78701), South Congress (78704) and East Austin (78702)</h3><p>Restaurants, bars, boutiques and creative studios in central Austin compete for attention on busy streets and crowded feeds. We design logos that stay readable on storefront signs and small social avatars alike.</p><h3>Logos for North Austin and the Domain (78758), Round Rock (78664) and Cedar Park (78613)</h3><p>Tech companies, medical practices and home service businesses in the northern suburbs often need a logo that looks established on websites, vehicles and proposals. Many of our clients come from Round Rock, Cedar Park, Georgetown, San Marcos and Pflugerville.</p><h3>Logos for South and Southwest Austin (78745, 78749) and Kyle (78640)</h3><p>Family businesses, contractors and new shops in the fast-growing south side benefit from bold, friendly logos that work on yard signs, shirts and Google profiles.</p><h3>How much does a logo cost in Austin?</h3><p>At Logo Design Austin, custom logo design is priced from $125 to $175. You review concepts first and pay only when you are satisfied. For new businesses, the $950 Business Starter Package adds a basic website and 150 business cards.</p><h3>What makes a logo work for an Austin business?</h3><p>Austin is crowded with creative brands, so a logo has to be both distinctive and practical. The strongest marks are simple enough to recognize at a glance, legible from a distance on a storefront or truck, and flexible enough to shrink to a social media icon without losing detail. Good logos also print cleanly in one color, which matters for shirts, stamps and engraved signs. We test every concept against those real uses before you see it.</p><h3>Do you work with startups and brand-new businesses?</h3><p>Yes. Many clients come to us before they have a storefront, a website or even a final business name. We can help you compare name options visually, design a logo that grows with you and add business cards, social graphics or a starter website when you are ready.</p>",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "flex-start",
+     "children": [
+      {
+       "t": "button",
+       "text": "Talk to an Austin Designer",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b418bc7",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Service area",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Logo Design Across Austin and Central Texas",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>We design logos for businesses in every Austin ZIP code and the surrounding cities. Tap a city to see local details.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "text",
+     "html": "<ul><li>Downtown 78701</li><li>East Austin 78702</li><li>Tarrytown 78703</li><li>South Congress 78704</li><li>Hyde Park 78751</li><li>Mueller 78723</li><li>Domain / North Burnet 78758</li><li>Westlake 78746</li><li>Circle C Ranch 78739</li><li>Steiner Ranch 78732</li><li>South Austin 78745</li><li><a href=\"/copperfield-logo-design/\">Copperfield 78753</a></li><li><a href=\"/pecan-park-logo-design/\">Pecan Park 78750</a></li><li><a href=\"/round-rock-logo-design/\">Round Rock 78664</a></li><li><a href=\"/brushy-creek-logo-design/\">Brushy Creek 78681</a></li><li><a href=\"/cedar-park-logo-design/\">Cedar Park 78613</a></li><li><a href=\"/georgetown-logo-design/\">Georgetown 78626</a></li><li><a href=\"/pflugerville-logo-design/\">Pflugerville 78660</a></li><li><a href=\"/leander-logo-design/\">Leander 78641</a></li><li><a href=\"/kyle-logo-design/\">Kyle 78640</a></li><li>Buda 78610</li><li>Lakeway 78734</li><li>Bee Cave 78738</li><li>Hutto 78634</li><li>Manor 78653</li><li><a href=\"/san-marcos-logo-design/\">San Marcos 78666</a></li><li><a href=\"/del-valle-logo-design/\">Del Valle 78617</a></li></ul>",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Every project is handled remotely, so you get the same service anywhere in Travis, Williamson and Hays counties. Our website designers also help Austin clients build and maintain a strong online presence, and our team can fix website issues that hold back search visibility.</p>",
+     "align": "center",
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "7be529d",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Questions, answered",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Logo Design FAQs",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "accordion",
+     "items": [
+      {
+       "q": "How much does a custom logo cost in Austin?",
+       "a": "<p>Custom logo design at Logo Design Austin is priced from $125 to $175, depending on the complexity of the design. There is no upfront charge; you pay after you approve.</p>"
+      },
+      {
+       "q": "How fast can I get a logo?",
+       "a": "<p>First concepts the same day are often possible for straightforward projects after review. Final timing depends on revisions and how quickly you send feedback.</p>"
+      },
+      {
+       "q": "Can you fix a logo I made with ChatGPT, Midjourney or Canva?",
+       "a": "<p>Yes. We clean up AI-generated logos by rebuilding them by hand as vector files, correcting the lettering and balancing the shapes. Start with a free audit on our AI logo cleanup page.</p>"
+      },
+      {
+       "q": "What file formats will I receive?",
+       "a": "<p>You receive JPG and PNG files plus vector formats including SVG, PDF, AI and EPS, so your logo works for printing, signs, embroidery, websites and social media.</p>"
+      },
+      {
+       "q": "How many concepts and revisions do I get?",
+       "a": "<p>Designers create multiple original concepts, each exploring a different direction, and revisions continue until you are satisfied with the logo.</p>"
+      },
+      {
+       "q": "Do I need to visit an office?",
+       "a": "<p>No. Projects are handled by phone, text, WhatsApp and email, so you can work with us from anywhere in Austin or Central Texas.</p>"
+      },
+      {
+       "q": "Will I own my logo?",
+       "a": "<p>Yes. Once the project is complete and paid, you own the final logo files and can use them anywhere for your business.</p>"
+      },
+      {
+       "q": "Can you improve my existing logo instead of starting over?",
+       "a": "<p>Yes. Our logo enhancement service refreshes fonts, refines colors and simplifies details while keeping the parts your customers already recognize. You receive updated vector files once you approve.</p>"
+      },
+      {
+       "q": "Do you create embroidery DST files?",
+       "a": "<p>Yes. We can prepare your logo as a DST file for embroidered shirts, caps and uniforms, along with vector files for print. Straightforward files are often ready the same day.</p>"
+      },
+      {
+       "q": "Do you design mascot logos?",
+       "a": "<p>Yes. We design custom mascot and character logos for sports teams, food brands, apparel lines and local businesses, delivered with the same complete file package.</p>"
+      }
+     ],
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "8d066b0",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Start here",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Popular Pages",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-magic",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Fix an AI-Generated Logo",
+         "href": "/fix-ai-generated-logo/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Clean up and vectorize a logo made with AI.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/fix-ai-generated-logo/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-pen-nib",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Custom Logo Design",
+         "href": "/custom-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>How our custom process, pricing and files work.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/custom-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-users",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Austin Logo Designers",
+         "href": "/austin-logo-designers/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>How our Austin designers work and what you receive.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/austin-logo-designers/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-images",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Portfolio",
+         "href": "/portfolio/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Browse logos we have designed.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/portfolio/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-box-open",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Business Starter Package",
+         "href": "/business-packages/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logo, website and cards for $950.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/business-packages/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-comments",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Free Consultation",
+         "href": "/consultation/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Call, text, WhatsApp or send the form.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/consultation/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2243588",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Ready for a Logo That Works Everywhere Your Business Shows Up?",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Tell us about your business or upload the logo you have now. An Austin designer will reply with next steps, and you pay only after you approve.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "Get My Free Logo Quote",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "How much does a custom logo cost in Austin?",
+   "a": "<p>Custom logo design at Logo Design Austin is priced from $125 to $175, depending on the complexity of the design. There is no upfront charge; you pay after you approve.</p>"
+  },
+  {
+   "q": "How fast can I get a logo?",
+   "a": "<p>First concepts the same day are often possible for straightforward projects after review. Final timing depends on revisions and how quickly you send feedback.</p>"
+  },
+  {
+   "q": "Can you fix a logo I made with ChatGPT, Midjourney or Canva?",
+   "a": "<p>Yes. We clean up AI-generated logos by rebuilding them by hand as vector files, correcting the lettering and balancing the shapes. Start with a free audit on our AI logo cleanup page.</p>"
+  },
+  {
+   "q": "What file formats will I receive?",
+   "a": "<p>You receive JPG and PNG files plus vector formats including SVG, PDF, AI and EPS, so your logo works for printing, signs, embroidery, websites and social media.</p>"
+  },
+  {
+   "q": "How many concepts and revisions do I get?",
+   "a": "<p>Designers create multiple original concepts, each exploring a different direction, and revisions continue until you are satisfied with the logo.</p>"
+  },
+  {
+   "q": "Do I need to visit an office?",
+   "a": "<p>No. Projects are handled by phone, text, WhatsApp and email, so you can work with us from anywhere in Austin or Central Texas.</p>"
+  },
+  {
+   "q": "Will I own my logo?",
+   "a": "<p>Yes. Once the project is complete and paid, you own the final logo files and can use them anywhere for your business.</p>"
+  },
+  {
+   "q": "Can you improve my existing logo instead of starting over?",
+   "a": "<p>Yes. Our logo enhancement service refreshes fonts, refines colors and simplifies details while keeping the parts your customers already recognize. You receive updated vector files once you approve.</p>"
+  },
+  {
+   "q": "Do you create embroidery DST files?",
+   "a": "<p>Yes. We can prepare your logo as a DST file for embroidered shirts, caps and uniforms, along with vector files for print. Straightforward files are often ready the same day.</p>"
+  },
+  {
+   "q": "Do you design mascot logos?",
+   "a": "<p>Yes. We design custom mascot and character logos for sports teams, food brands, apparel lines and local businesses, delivered with the same complete file package.</p>"
+  }
+ ],
+ "wordCount": 2237
+}

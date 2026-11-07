@@ -1,0 +1,1002 @@
+{
+ "id": 244111,
+ "type": "page",
+ "slug": "business-packages",
+ "url": "/business-packages/",
+ "title": "Business Packages",
+ "seo": {
+  "title": "Small Business Starter Package: Logo + Website | $950",
+  "description": "Business Starter Package for $950: custom logo, basic website and 150 business cards, plus Google Business Profile setup and a free domain for a year.",
+  "focusKeyword": "small business starter package Austin",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/startup-branding.avif",
+  "alt": "startup branding",
+  "width": 1200,
+  "height": 628
+ },
+ "date": "2021-10-29 01:42:23",
+ "modified": "2026-11-03 14:57:27",
+ "template": "la",
+ "sections": [
+  {
+   "id": "5b50cc8",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 60,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "text",
+           "html": "<p><a href=\"/\">Home</a> › Business Packages</p><p>Business Starter Package</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h1",
+           "text": "Small Business Starter Package: Logo, Website and Business Cards for $950",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>The Logo Austin Business Starter Package gives a new business its core brand and online presence at one price: a custom logo, a basic website and 150 business cards, plus Google Business Profile setup and a free domain and hosting for the first year.</p>",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 40,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/graphic-designer-in-austin.avif",
+         "alt": "Graphic Designer in Austin",
+         "width": 1600,
+         "height": 820,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "146856d",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-facts"
+   ],
+   "bg": "ink",
+   "variant": "trust",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>$950</strong>one-time package</p>",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>150</strong>business cards</p>",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>1 Year</strong>free domain & hosting</p>",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>No Contract</strong>leave anytime</p>",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "8d9d1e1",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-table"
+   ],
+   "bg": "white",
+   "variant": "table",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "What the $950 Starter Package Includes",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<div><table><thead><tr><th scope=\"col\">Item</th><th scope=\"col\">Details</th></tr></thead><tbody><tr><td><strong>Custom logo</strong></td><td>Designed from scratch; JPG and PNG files</td></tr><tr><td><strong>Basic website</strong></td><td>Modern, responsive single-page multisection website</td></tr><tr><td><strong>Business cards</strong></td><td>150 printed cards</td></tr><tr><td><strong>Google Business Profile</strong></td><td>Setup and customization</td></tr><tr><td><strong>Domain</strong></td><td>Free for the first year</td></tr><tr><td><strong>Hosting</strong></td><td>Free for the first year</td></tr><tr><td><strong>Google indexing</strong></td><td>Website submitted to Google Search Console</td></tr><tr><td><strong>Website content</strong></td><td>Text and images provided for general service businesses (for example cleaning or landscaping)</td></tr><tr><td><strong>Maintenance</strong></td><td>Free for the first year</td></tr></tbody></table></div>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ecd23e8",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-table"
+   ],
+   "bg": "white",
+   "variant": "table",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Costs After the First Year",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>There are no hidden charges. After year one, these optional costs apply:</p><div><table><thead><tr><th scope=\"col\">Service</th><th scope=\"col\">Cost</th><th scope=\"col\">What It Covers</th></tr></thead><tbody><tr><td><strong>Website maintenance</strong></td><td>$250 per year</td><td>Updates, small edits and keeping the site running smoothly</td></tr><tr><td><strong>Website backup</strong></td><td>$50 per year</td><td>A full year of backups for your website</td></tr></tbody></table></div>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3cef5bd",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-cards"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Why a New Business Needs These Pieces",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "A Website",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A website makes a business look professional and gives Google a page to show when customers search for your service.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "A Google Business Profile",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Your Google Business Profile helps local customers find your hours, location, phone number and reviews.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Social Media",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Social media allows quick interaction and feedback, and lets you respond to customers right away.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "A Fast Website",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Slow pages frustrate visitors. A lightweight site keeps customers on the page.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Basic SEO",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Search optimization helps your business become visible to people already looking for your service.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Installment Options",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Installment payment is available so new businesses can launch without a large upfront cost.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7e1f984",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-text"
+   ],
+   "bg": "white",
+   "variant": "text",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "What the Starter Website Does and Does Not Include",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<ul><li>A single-page website with multiple sections (services, about, gallery, contact).</li><li>E-commerce is <strong>not</strong> included, but the site can be converted into an online store at any time.</li><li>Free domain and hosting for year one.</li><li>A 100% satisfaction commitment with a money-back guarantee. There is no contract, and you can leave at any time.</li></ul><p>Need only a logo? See <a href=\"/custom-design/\">custom logo design</a>. Want more pages or SEO? See <a href=\"/website-designer-austin/\">website design</a>.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "481526b",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-faq"
+   ],
+   "bg": "white",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-faq"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Business Package FAQs",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "What is included in the Logo Austin Business Starter Package?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>For $950 you get a custom logo (JPG and PNG), a basic single-page responsive website, 150 business cards, Google Business Profile setup, a free domain and hosting for one year, Google Search Console submission and free website maintenance for the first year.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Are there yearly fees?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>From the second year, website maintenance is $250 per year and an optional yearly backup is $50. There are no hidden charges.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Is there a contract?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>No. There is no contract, and you can stop working with Logo Austin at any time.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Can I pay in installments?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. Logo Austin offers an installment option for small businesses.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Does the package include an online store?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>No, but the starter website can be converted to e-commerce whenever you are ready.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "54bb538",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns",
+        "la-center"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Launch Your Business With One Package",
+           "align": "center",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Call 24/7 or request a free consultation to get started.</p>",
+           "align": "center",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a62cef0",
+   "classes": [
+    "wd2e-section"
+   ],
+   "bg": "white",
+   "variant": "formSection",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "bg": "#ffffff",
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p>WE WANT TO HELP.</p>",
+         "align": "center",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h4",
+         "text": "Let's Start The Journey",
+         "align": "center",
+         "classes": []
+        },
+        {
+         "t": "form",
+         "name": "Contact Form",
+         "fields": [
+          {
+           "id": "name",
+           "type": "text",
+           "label": "Name Surname",
+           "placeholder": "Name Surname",
+           "required": true,
+           "width": 50
+          },
+          {
+           "id": "email",
+           "type": "email",
+           "label": "Email Address",
+           "placeholder": "Email Address",
+           "required": true,
+           "width": 50
+          },
+          {
+           "id": "phone",
+           "type": "text",
+           "label": "Phone Number",
+           "placeholder": "Phone Number",
+           "required": true,
+           "width": 50
+          },
+          {
+           "id": "message",
+           "type": "textarea",
+           "label": "Your Message",
+           "placeholder": "Your Message",
+           "required": true,
+           "width": 100
+          }
+         ],
+         "button": "SEND MESSAGE",
+         "success": "Thanks for contacting us! We will be in touch with you shortly.",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "What is included in the Logo Austin Business Starter Package?",
+   "a": "<p>For $950 you get a custom logo (JPG and PNG), a basic single-page responsive website, 150 business cards, Google Business Profile setup, a free domain and hosting for one year, Google Search Console submission and free website maintenance for the first year.</p>"
+  },
+  {
+   "q": "Are there yearly fees?",
+   "a": "<p>From the second year, website maintenance is $250 per year and an optional yearly backup is $50. There are no hidden charges.</p>"
+  },
+  {
+   "q": "Is there a contract?",
+   "a": "<p>No. There is no contract, and you can stop working with Logo Austin at any time.</p>"
+  },
+  {
+   "q": "Can I pay in installments?",
+   "a": "<p>Yes. Logo Austin offers an installment option for small businesses.</p>"
+  },
+  {
+   "q": "Does the package include an online store?",
+   "a": "<p>No, but the starter website can be converted to e-commerce whenever you are ready.</p>"
+  }
+ ],
+ "wordCount": 517
+}

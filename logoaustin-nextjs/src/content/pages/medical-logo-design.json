@@ -1,0 +1,1562 @@
+{
+ "id": 254912,
+ "type": "page",
+ "slug": "medical-logo-design",
+ "url": "/medical-logo-design/",
+ "title": "Medical Logo Design",
+ "seo": {
+  "title": "Medical & Doctor Logo Design in Austin, TX | Clinic Logos",
+  "description": "Custom logos for Austin doctors, clinics, dentists, therapists and med spas. Calm, credible designs for signs and forms. No upfront payment. Get a quote.",
+  "focusKeyword": "medical logo design Austin",
+  "canonical": ""
+ },
+ "featuredImage": null,
+ "date": "2026-11-03 15:47:57",
+ "modified": "2026-11-03 15:47:57",
+ "template": "lda",
+ "sections": [
+  {
+   "id": "8572d28",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 53,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Doctor & clinic logos · Austin, TX",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h1",
+         "text": "Medical Logo Design in Austin, TX",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Patients size up a practice before they ever call: on Google, on your insurance listing and on the sign out front. We design medical logos for Austin physicians, clinics, dental offices, therapists, med spas and home health agencies that feel calm, competent and easy to trust.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Original designs for practices of every size and specialty",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Clear at small sizes on forms, badges and patient portals",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Vector and PNG files for signage, print and the web",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get My Medical Logo Quote",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "text",
+         "html": "<p>First concepts the same day are often possible for straightforward projects after review.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 41,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/designers-hands-at-a-laptop-with-color-swatches-while-planning-a.avif",
+         "alt": "Designer's hands at a laptop with color swatches while planning a healthcare brand",
+         "width": 700,
+         "height": 550,
+         "displayWidth": 100,
+         "classes": []
+        },
+        {
+         "t": "badge",
+         "strong": "$125–$175 custom logo",
+         "text": "No upfront payment. Pay after approval.",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5c81202",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white",
+    "lda-trust"
+   ],
+   "bg": "white",
+   "variant": "trust",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "iconBox",
+       "icon": "fas fa-stethoscope",
+       "title": "Healthcare focused",
+       "desc": "Calm, credible design",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-eye",
+       "title": "Readable everywhere",
+       "desc": "Forms, badges, signs",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-file-download",
+       "title": "Full file set",
+       "desc": "AI · EPS · SVG · PDF · PNG",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-hand-holding-usd",
+       "title": "No upfront payment",
+       "desc": "Approve first, then pay",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4abbf23",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row-reverse",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Why it matters",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "What Makes a Good Doctor or Clinic Logo?",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A good medical logo looks professional, reassuring and simple. Patients are often anxious, in a hurry or comparing several practices on a phone screen, so the logo should be clear before it is clever. Clean typography, a restrained palette and a symbol that fits your specialty do more than a busy illustration.</p><p>It also has to work in some unglamorous places: the header of an intake form, a name badge, an appointment reminder text, a building directory and a lobby wall. We design a full version and a compact mark, test them at small sizes and in one color, and avoid overused symbols that make every clinic look the same.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Legible typography for older patients and small print",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Colors that feel calm without looking generic",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "A compact icon for portals, apps and social profiles",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/midtown-mmt-medical-transportation-llc-logo-in-red-and-blue-on-a-dark.avif",
+         "alt": "Midtown MMT Medical Transportation LLC logo in red and blue on a dark background",
+         "width": 1231,
+         "height": 927,
+         "displayWidth": 100,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ef201c1",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "What we design",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Healthcare Branding We Create for Austin Practices",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Start with the logo, then add the pieces patients and staff use every day.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-user-md",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Physician and specialty clinic logos",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Identities for family medicine, pediatrics, cardiology, GI, urgent care and other specialties.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-tooth",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Dental and orthodontic logos",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Friendly, polished logos for general dentists, orthodontists and pediatric dental offices.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-hand-holding-heart",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Therapy, wellness and med spa logos",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Marks for counselors, physical therapists, chiropractors and aesthetic clinics.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-sign",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Office signage and lobby graphics",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logo layouts for exterior signs, suite plaques, window vinyl and reception walls.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-file-medical",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Forms, cards and stationery",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Letterhead, intake forms, appointment cards and referral pads that match your logo.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-tshirt",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Scrubs and staff apparel",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Embroidery-ready versions for scrubs, lab coats and staff polos.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "848e00f",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Made a logo with AI?",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Already Made a Medical Logo With AI? We Can Fix It",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Some practices try an AI generator to get a quick logo for a new location. The image may look polished, but it is usually a low-resolution PNG with soft edges, invented letters in the practice name, or medical symbols drawn incorrectly. We rebuild AI-made healthcare logos by hand as clean vectors with properly set type, so they are ready for signs and print.</p><p>Learn how our <a href=\"/fix-ai-generated-logo/\">AI logo cleanup and vector conversion</a> works, or send us your file for a free review.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get a Free AI Logo Audit",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "lda-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "bg": "#faf7f2",
+         "children": [
+          {
+           "t": "icon",
+           "icon": "fas fa-magic",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Free AI logo audit",
+           "align": "left",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Upload your AI logo and a designer will tell you what needs fixing before it goes on your sign, forms or website.</p>",
+           "align": "left",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "8600367",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "How it works",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "How Our Medical Logo Process Works",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Handled by phone, text and email, so it fits around patient hours.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "01",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Tell us about your practice",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Share your practice name, specialty, patients you serve and any colors you already use.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "02",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Review concepts",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Designers create several original concepts and send them by text or email.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "03",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Refine with your team",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Share concepts with partners or office managers and request changes until everyone agrees.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "04",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Approve and get files",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Pay after you approve and receive files for your sign company, printer and web developer.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "row",
+       "wrap": true,
+       "width": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "button",
+         "text": "Start My Medical Logo",
+         "href": "#consultation",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call (512) 782-9748",
+         "href": "tel:+15127829748",
+         "style": "ghost",
+         "icon": "fas fa-phone-alt",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "97b2c73",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "gallery",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Recent work",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Healthcare and Wellness Logos We Have Designed",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Examples from medical transportation, veterinary, therapy, skincare and fitness brands.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "gallery",
+     "images": [
+      {
+       "src": "/images/pages/midtown-mmt-medical-transportation-llc-logo-in-red-and-blue-on-a-dark.avif",
+       "alt": "Midtown MMT Medical Transportation LLC logo in red and blue on a dark background",
+       "width": 1231,
+       "height": 927
+      },
+      {
+       "src": "/images/portfolio/neartown-animal-clinic-round-orange-logo-with-a-dog-and-cat-silhouette.avif",
+       "alt": "Neartown Animal Clinic round orange logo with a dog and cat silhouette",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/clear-creek-forest-animal-hospital-logo-with-a-dog-cat-and-rabbit-under.avif",
+       "alt": "Clear Creek Forest Animal Hospital logo with a dog, cat and rabbit under a tree",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/streets-therapy-logo-with-sound-wave-headphones-in-blue-and-orange.avif",
+       "alt": "Streets Therapy logo with sound-wave headphones in blue and orange",
+       "width": 400,
+       "height": 284
+      },
+      {
+       "src": "/images/portfolio/serein-natural-skincare-logo-in-gold-and-silver-on-charcoal.avif",
+       "alt": "Serein Natural Skincare logo in gold and silver on charcoal",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/hades-strength-and-conditioning-logo-with-a-greek-figure-holding-a.avif",
+       "alt": "Hades Strength and Conditioning logo with a Greek figure holding a trident",
+       "width": 400,
+       "height": 400
+      }
+     ],
+     "cols": 4,
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "View the Full Portfolio",
+       "href": "/portfolio/",
+       "style": "ghost",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "68e5566",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "heading",
+     "level": "p",
+     "text": "Local answers",
+     "classes": []
+    },
+    {
+     "t": "heading",
+     "level": "h2",
+     "text": "Where Can I Get a Medical Practice Logo Designed in Austin?",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Logo Design Austin designs logos for healthcare practices across Austin and Central Texas, entirely online. Practice owners and office managers can talk with a designer by phone or text and review concepts between appointments, with no in-person meetings required.</p><h3>Clinic and specialist logos near the medical district Downtown (78701) and in Hyde Park (78751)</h3><p>Practices near the downtown hospitals and UT often share buildings with many other providers. A distinctive, readable logo helps patients find the right suite and remember your name for follow-up visits.</p><h3>Family medicine, pediatric and dental logos in Mueller (78723), Circle C (78739) and Cedar Park (78613)</h3><p>Neighborhood practices serving families benefit from a warm, approachable identity that still looks professional on insurance directories and school forms.</p><h3>Therapy, wellness and med spa logos in Westlake (78746) and Bee Cave (78738)</h3><p>Aesthetic and wellness clinics usually want a refined, calm look. We lean on elegant type, soft palettes and simple marks that translate well to product labels and social media.</p><h3>How much does a medical logo cost in Austin?</h3><p>A custom medical logo at Logo Design Austin is priced from $125 to $175, depending on complexity. There is no upfront payment; you review concepts, request revisions and pay once you approve. For larger systems, our guide to <a href=\"/hospital-branding-austin/\">hospital branding</a> covers what a full healthcare brand involves.</p>",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "flex-start",
+     "children": [
+      {
+       "t": "button",
+       "text": "Talk to a Designer",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "432b5f7",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Service area",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Medical Logo Design Across Austin and Central Texas",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>We design logos for healthcare practices in Austin neighborhoods and the surrounding cities.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "text",
+     "html": "<ul><li>Downtown 78701</li><li>West Campus 78705</li><li>Hyde Park 78751</li><li>Mueller 78723</li><li>Rosedale 78756</li><li>Allandale 78757</li><li>Domain / North Burnet 78758</li><li>Great Hills 78759</li><li>Westlake 78746</li><li>Circle C Ranch 78739</li><li>Shady Hollow 78748</li><li><a href=\"/round-rock-logo-design/\">Round Rock 78664</a></li><li><a href=\"/cedar-park-logo-design/\">Cedar Park 78613</a></li><li><a href=\"/georgetown-logo-design/\">Georgetown 78626</a></li><li><a href=\"/pflugerville-logo-design/\">Pflugerville 78660</a></li><li><a href=\"/leander-logo-design/\">Leander 78641</a></li><li>Lakeway 78734</li><li>Bee Cave 78738</li><li><a href=\"/kyle-logo-design/\">Kyle 78640</a></li><li><a href=\"/san-marcos-logo-design/\">San Marcos 78666</a></li></ul>",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Every project is handled remotely, so practices anywhere in the metro get the same service.</p>",
+     "align": "center",
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "2ffee63",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Questions, answered",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Medical Logo Design FAQs",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "accordion",
+     "items": [
+      {
+       "q": "What colors work best for a medical logo?",
+       "a": "<p>Blues and greens are popular because they read as calm and trustworthy, but they are also very common. Teal, navy, warm gray or a single accent color can help you stand out while staying professional. We test every palette for readability on forms and signs.</p>"
+      },
+      {
+       "q": "Can I use the caduceus or a red cross in my logo?",
+       "a": "<p>We usually advise against it. The red cross emblem is legally protected and reserved for specific uses, and the caduceus is often used incorrectly for medicine. A custom symbol tied to your specialty is more distinctive and avoids those issues.</p>"
+      },
+      {
+       "q": "Do you design logos for dentists, therapists and med spas too?",
+       "a": "<p>Yes. We design logos for physicians, dental offices, physical therapists, counselors, chiropractors, med spas, veterinary clinics, home health agencies and medical transportation companies.</p>"
+      },
+      {
+       "q": "How much does a medical practice logo cost in Austin?",
+       "a": "<p>Custom logo design at Logo Design Austin is priced from $125 to $175, depending on complexity, with no upfront payment. You pay after you approve the final design.</p>"
+      },
+      {
+       "q": "Will my logo work on scrubs and office signs?",
+       "a": "<p>Yes. You get a full version for signs and print plus a simplified version for embroidery on scrubs and lab coats, along with one-color versions for engraving or frosted glass.</p>"
+      },
+      {
+       "q": "What files do I receive?",
+       "a": "<p>You receive vector files (AI, EPS, SVG and PDF) for sign companies and printers, plus transparent PNGs for your website, patient portal, email signature and social media.</p>"
+      }
+     ],
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "a5eef9b",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Related services",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "More Design Services for Austin Healthcare Practices",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-magic",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Fix an AI-Generated Logo",
+         "href": "/fix-ai-generated-logo/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Turn an AI logo into clean vector files for signs and forms.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/fix-ai-generated-logo/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-laptop",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Website Design",
+         "href": "/website-designer-austin/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Mobile-friendly websites for clinics and practices.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/website-designer-austin/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-layer-group",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Branding Services",
+         "href": "/branding/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logo, cards, colors and social graphics that match.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/branding/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-palette",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Graphic Design",
+         "href": "/graphic-designer-austin/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Brochures, appointment cards, flyers and signs.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/graphic-designer-austin/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-pen-nib",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Custom Logo Design",
+         "href": "/custom-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>An original logo designed from scratch around your practice.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/custom-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-star",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Logo Design Austin",
+         "href": "/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>See every logo and design service we offer in Austin.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "0c8165e",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Ready for a Medical Logo Patients Trust at First Glance?",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Tell us about your practice. An Austin designer will send original concepts, and you pay only after you approve.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "Get My Medical Logo Quote",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "What colors work best for a medical logo?",
+   "a": "<p>Blues and greens are popular because they read as calm and trustworthy, but they are also very common. Teal, navy, warm gray or a single accent color can help you stand out while staying professional. We test every palette for readability on forms and signs.</p>"
+  },
+  {
+   "q": "Can I use the caduceus or a red cross in my logo?",
+   "a": "<p>We usually advise against it. The red cross emblem is legally protected and reserved for specific uses, and the caduceus is often used incorrectly for medicine. A custom symbol tied to your specialty is more distinctive and avoids those issues.</p>"
+  },
+  {
+   "q": "Do you design logos for dentists, therapists and med spas too?",
+   "a": "<p>Yes. We design logos for physicians, dental offices, physical therapists, counselors, chiropractors, med spas, veterinary clinics, home health agencies and medical transportation companies.</p>"
+  },
+  {
+   "q": "How much does a medical practice logo cost in Austin?",
+   "a": "<p>Custom logo design at Logo Design Austin is priced from $125 to $175, depending on complexity, with no upfront payment. You pay after you approve the final design.</p>"
+  },
+  {
+   "q": "Will my logo work on scrubs and office signs?",
+   "a": "<p>Yes. You get a full version for signs and print plus a simplified version for embroidery on scrubs and lab coats, along with one-color versions for engraving or frosted glass.</p>"
+  },
+  {
+   "q": "What files do I receive?",
+   "a": "<p>You receive vector files (AI, EPS, SVG and PDF) for sign companies and printers, plus transparent PNGs for your website, patient portal, email signature and social media.</p>"
+  }
+ ],
+ "wordCount": 1282
+}

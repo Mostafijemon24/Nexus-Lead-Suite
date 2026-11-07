@@ -1,0 +1,1579 @@
+{
+ "id": 252972,
+ "type": "page",
+ "slug": "graphic-designer-austin",
+ "url": "/graphic-designer-austin/",
+ "title": "Graphic Designer Austin",
+ "seo": {
+  "title": "Graphic Designer in Austin, TX | Flyers, Cards & Banners",
+  "description": "Austin graphic design for flyers, business cards, banners, menus, packaging and social posts, built from your logo. No upfront payment. Request a quote.",
+  "focusKeyword": "graphic designer Austin",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/designers-hands-sketching-on-a-graphics-tablet-beside-color-swatches.avif",
+  "alt": "Designer's hands sketching on a graphics tablet beside color swatches and a keyboard",
+  "width": 800,
+  "height": 550
+ },
+ "date": "2022-01-31 07:04:45",
+ "modified": "2026-11-03 15:53:52",
+ "template": "lda",
+ "sections": [
+  {
+   "id": "724cd52",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 53,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Print & digital design · Austin, TX",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h1",
+         "text": "Graphic Design in Austin, TX",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>You have the logo; now you need the flyers, cards, banners and social posts that actually bring customers in. Our Austin graphic designers create marketing pieces that match your brand, read clearly at a glance and arrive as print-ready files your shop can run the same day you get them.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Flyers, business cards, banners, menus and packaging",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Built around your logo, colors and fonts",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Print-ready PDF plus web and social image files",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get My Graphic Design Quote",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "text",
+         "html": "<p>Same-day turnaround is often possible for straightforward pieces after review.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 41,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/designers-hands-sketching-on-a-graphics-tablet-beside-color-swatches.avif",
+         "alt": "Designer's hands sketching on a graphics tablet beside color swatches and a keyboard",
+         "width": 800,
+         "height": 550,
+         "displayWidth": 100,
+         "classes": []
+        },
+        {
+         "t": "badge",
+         "strong": "No upfront payment",
+         "text": "Review the design first, then pay.",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3de0576",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white",
+    "lda-trust"
+   ],
+   "bg": "white",
+   "variant": "trust",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "iconBox",
+       "icon": "fas fa-print",
+       "title": "Print-ready files",
+       "desc": "Bleed, CMYK, outlined fonts",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-palette",
+       "title": "On-brand every time",
+       "desc": "Matches your logo",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-mobile-alt",
+       "title": "Web and social sizes",
+       "desc": "PNG and JPG exports",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-hand-holding-usd",
+       "title": "No upfront payment",
+       "desc": "Approve first, then pay",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "74504f4",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row-reverse",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Why it matters",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "What Does a Good Graphic Designer Do for a Small Business?",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A good graphic designer turns your message into something people notice and understand in a few seconds. For a flyer that means one clear headline, a reason to act and a phone number that is easy to find. For a banner at a Zilker event or a menu board on South Lamar, it means type that reads from across the room.</p><p>The other half of the job is technical. Printers need correct bleed, color mode and resolution; social platforms need exact pixel sizes. We handle those details so the file you send to the print shop or upload to Instagram looks exactly like the proof you approved.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "A clear visual hierarchy: headline, offer, call to action",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Consistent colors and fonts across every piece",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Files set up correctly for your printer or platform",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/adobe-illustrator-workspace-with-gold-script-logo-artwork-on-a-dark.avif",
+         "alt": "Adobe Illustrator workspace with gold script logo artwork on a dark canvas",
+         "width": 50,
+         "height": 13,
+         "displayWidth": 100,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "f430a50",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "What we design",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Graphic Design Services for Austin Businesses",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Pick a single piece or a set. Everything is designed from the same brand files so it looks like it belongs together.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-id-card",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Business cards and stationery",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Cards, letterhead, envelopes and email signatures that match your logo.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-file-alt",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Flyers, postcards and brochures",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Direct mail, door hangers, rack cards and tri-fold brochures with a clear offer.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-flag",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Banners, signs and trade-show graphics",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Vinyl banners, yard signs, pop-up displays and window graphics sized for your vendor.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-utensils",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Menus and food truck graphics",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Print menus, menu boards and trailer graphics for restaurants and mobile vendors.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-box-open",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Labels and packaging",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Product labels, stickers and packaging layouts with the details printers need.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-hashtag",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Social media and ad graphics",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Post templates, story graphics, cover images and digital ads in the right sizes.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "8666385",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Made a logo with AI?",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Using an AI-Generated Logo on Your Marketing? Fix It First",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>If your logo came from an AI image tool, it will often look soft or pixelated the moment it goes on a banner or a printed card, and the lettering may be slightly wrong. Before we design your print pieces we can rebuild that logo by hand as a clean vector file, so every flyer and sign starts from sharp artwork.</p><p>Read about our <a href=\"/fix-ai-generated-logo/\">AI logo cleanup and vector conversion</a> service, or send us your file for a free review.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get a Free AI Logo Audit",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "lda-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "bg": "#faf7f2",
+         "children": [
+          {
+           "t": "icon",
+           "icon": "fas fa-magic",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Free AI logo audit",
+           "align": "left",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Upload your AI logo and a designer will tell you whether it is ready for print or needs a cleanup first.</p>",
+           "align": "left",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "81ba19a",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "How it works",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "How Our Graphic Design Process Works",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Simple, fast and handled by phone, text and email.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "01",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Send your content",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Share your logo, text, photos and the size or platform you need.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "02",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Get a first design",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A designer lays out the piece and sends a proof by text or email.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "03",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Request changes",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Adjust wording, images or colors until it is exactly right.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "04",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Approve and print",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Pay after you approve and receive print-ready and web files.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "row",
+       "wrap": true,
+       "width": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "button",
+         "text": "Start My Design",
+         "href": "#consultation",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call (512) 782-9748",
+         "href": "tel:+15127829748",
+         "style": "ghost",
+         "icon": "fas fa-phone-alt",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a29d3c4",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "gallery",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Recent work",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Flyers, Banners and Print Pieces We Have Designed",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Examples of marketing materials created for real estate, contractor, retail and event clients.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "gallery",
+     "images": [
+      {
+       "src": "/images/portfolio/we-buy-houses-banner-in-blue-and-orange-with-a-large-phone-number-and-logo.avif",
+       "alt": "We buy houses banner in blue and orange with a large phone number and cash offer headline",
+       "width": 1600,
+       "height": 808
+      },
+      {
+       "src": "/images/portfolio/sell-your-house-fast-postcard-design-in-blue-with-orange-call-to-action-logo.avif",
+       "alt": "Sell your house fast postcard design in blue with orange call-to-action",
+       "width": 485,
+       "height": 485
+      },
+      {
+       "src": "/images/portfolio/contractor-services-banner-with-asfr-logo-service-list-and-free.avif",
+       "alt": "Contractor services banner with ASFR logo, service list and free estimate badges",
+       "width": 901,
+       "height": 451
+      },
+      {
+       "src": "/images/portfolio/church-event-flyer-with-floral-artwork-and-service-times-logo.avif",
+       "alt": "Church event flyer with floral artwork and service times",
+       "width": 1600,
+       "height": 2263
+      },
+      {
+       "src": "/images/portfolio/hbs-texans-auto-sales-banner-with-texas-flag-and-buy-here-pay-here-logo.avif",
+       "alt": "HBS Texans Auto Sales banner with Texas flag and buy here pay here headline",
+       "width": 1600,
+       "height": 1068
+      },
+      {
+       "src": "/images/portfolio/logo-design-austin-8.avif",
+       "alt": "Logo Designer Austin",
+       "width": 62,
+       "height": 42
+      },
+      {
+       "src": "/images/portfolio/weldtube-product-label-with-gold-hexagon-logo-and-lens-specifications.avif",
+       "alt": "WeldTube product label with gold hexagon logo and lens specifications",
+       "width": 46,
+       "height": 38
+      },
+      {
+       "src": "/images/portfolio/healthy-homes-llc-business-card-with-gold-house-logo-held-in-a-hand.avif",
+       "alt": "Healthy Homes LLC business card with gold house logo held in a hand",
+       "width": 48,
+       "height": 48
+      }
+     ],
+     "cols": 4,
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "View the Full Portfolio",
+       "href": "/portfolio/",
+       "style": "ghost",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "660d4b4",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "heading",
+     "level": "p",
+     "text": "Local answers",
+     "classes": []
+    },
+    {
+     "t": "heading",
+     "level": "h2",
+     "text": "Where Can I Find a Graphic Designer in Austin?",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Logo Design Austin provides graphic design for businesses across Austin and the surrounding suburbs, fully online. You share your content by text or email, review proofs on your phone and get files you can send straight to any Austin print shop or upload to your social accounts.</p><h3>Event, restaurant and retail graphics for Downtown (78701), East Austin (78702) and South Congress (78704)</h3><p>Venues, bars, food trucks and boutiques need a steady stream of flyers, menus and social posts. We keep your look consistent from one promotion to the next, so regulars recognize you instantly.</p><h3>Real estate and home service marketing in Round Rock (78664), Cedar Park (78613) and Pflugerville (78660)</h3><p>Agents, contractors and cleaning companies rely on postcards, door hangers and yard signs. We design them with a clear offer and an easy-to-read phone number.</p><h3>Startup and tech graphics near the Domain (78758) and Mueller (78723)</h3><p>Young companies need pitch-deck graphics, event banners and launch visuals that look polished without a long agency process.</p><h3>Can you design my graphics if you did not design my logo?</h3><p>Yes. Send us your current logo files. If you only have a low-quality image, we can clean it up first so your printed pieces stay sharp.</p><h3>What should I send for a flyer or business card?</h3><p>Your logo file, the exact wording, any photos you want to use, the finished size and where it will be printed or posted. If you are not sure about wording, send rough notes and a designer will help you tighten the headline and the call to action.</p>",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "flex-start",
+     "children": [
+      {
+       "t": "button",
+       "text": "Talk to a Designer",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3c99c61",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Service area",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Graphic Design Across Austin and Central Texas",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>We design print and digital marketing for businesses in Austin neighborhoods and nearby cities.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "text",
+     "html": "<ul><li>Downtown 78701</li><li>East Austin 78702</li><li>Clarksville 78703</li><li>South Congress 78704</li><li>West Campus 78705</li><li>Hyde Park 78751</li><li>Mueller 78723</li><li>North Loop 78751</li><li>Domain / North Burnet 78758</li><li>Riverside 78741</li><li><a href=\"/round-rock-logo-design/\">Round Rock 78664</a></li><li><a href=\"/cedar-park-logo-design/\">Cedar Park 78613</a></li><li><a href=\"/pflugerville-logo-design/\">Pflugerville 78660</a></li><li><a href=\"/georgetown-logo-design/\">Georgetown 78626</a></li><li><a href=\"/leander-logo-design/\">Leander 78641</a></li><li><a href=\"/kyle-logo-design/\">Kyle 78640</a></li><li>Buda 78610</li><li>Lakeway 78734</li><li><a href=\"/san-marcos-logo-design/\">San Marcos 78666</a></li></ul>",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Every project is handled remotely, so you get the same service anywhere in the metro.</p>",
+     "align": "center",
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "5b6a9a7",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Questions, answered",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Graphic Design FAQs",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "accordion",
+     "items": [
+      {
+       "q": "What graphic design services do you offer in Austin?",
+       "a": "<p>We design business cards, flyers, postcards, brochures, banners, yard signs, menus, labels, packaging, apparel graphics and social media images for Austin businesses.</p>"
+      },
+      {
+       "q": "How fast can I get a flyer or business card designed?",
+       "a": "<p>Same-day turnaround is often possible for straightforward pieces after review. Larger projects such as brochures or packaging take longer, and your designer will confirm timing before starting.</p>"
+      },
+      {
+       "q": "Do I have to pay before you start?",
+       "a": "<p>No. There is no upfront payment. You review the design, request changes and pay once you approve it.</p>"
+      },
+      {
+       "q": "Will the files work with my print shop?",
+       "a": "<p>Yes. We provide print-ready PDFs with correct bleed, CMYK color and outlined fonts, plus PNG or JPG files for web and social use. If your printer has specific requirements, just send them to us.</p>"
+      },
+      {
+       "q": "Can you use my existing logo and brand colors?",
+       "a": "<p>Yes. We design around your current logo, colors and fonts. If your logo file is low resolution or made with AI, we can rebuild it as a vector first.</p>"
+      },
+      {
+       "q": "Do you design t-shirts and apparel graphics?",
+       "a": "<p>Yes. We create shirt and merchandise graphics prepared for screen printing, DTG or embroidery, with the color separations your vendor needs.</p>"
+      }
+     ],
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "7b95b9f",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Related services",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "More Design Services in Austin",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-magic",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Fix an AI-Generated Logo",
+         "href": "/fix-ai-generated-logo/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Clean up an AI logo before it goes on print materials.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/fix-ai-generated-logo/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-layer-group",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Branding Services",
+         "href": "/branding/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logo, colors, fonts and templates as one system.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/branding/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-laptop",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Website Design",
+         "href": "/website-designer-austin/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Mobile-friendly websites that match your print pieces.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/website-designer-austin/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-pen-nib",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Custom Logo Design",
+         "href": "/custom-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>An original logo designed from scratch.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/custom-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-tshirt",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Clothing Line Logo Design",
+         "href": "/clothing-line-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logos and graphics for apparel brands.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/clothing-line-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-star",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Logo Design Austin",
+         "href": "/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>See every logo and design service we offer in Austin.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fc14410",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Ready for Marketing Pieces That Look as Good as Your Logo?",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Send us what you need. An Austin designer will create a proof, and you pay only after you approve.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "Get My Graphic Design Quote",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "What graphic design services do you offer in Austin?",
+   "a": "<p>We design business cards, flyers, postcards, brochures, banners, yard signs, menus, labels, packaging, apparel graphics and social media images for Austin businesses.</p>"
+  },
+  {
+   "q": "How fast can I get a flyer or business card designed?",
+   "a": "<p>Same-day turnaround is often possible for straightforward pieces after review. Larger projects such as brochures or packaging take longer, and your designer will confirm timing before starting.</p>"
+  },
+  {
+   "q": "Do I have to pay before you start?",
+   "a": "<p>No. There is no upfront payment. You review the design, request changes and pay once you approve it.</p>"
+  },
+  {
+   "q": "Will the files work with my print shop?",
+   "a": "<p>Yes. We provide print-ready PDFs with correct bleed, CMYK color and outlined fonts, plus PNG or JPG files for web and social use. If your printer has specific requirements, just send them to us.</p>"
+  },
+  {
+   "q": "Can you use my existing logo and brand colors?",
+   "a": "<p>Yes. We design around your current logo, colors and fonts. If your logo file is low resolution or made with AI, we can rebuild it as a vector first.</p>"
+  },
+  {
+   "q": "Do you design t-shirts and apparel graphics?",
+   "a": "<p>Yes. We create shirt and merchandise graphics prepared for screen printing, DTG or embroidery, with the color separations your vendor needs.</p>"
+  }
+ ],
+ "wordCount": 1257
+}

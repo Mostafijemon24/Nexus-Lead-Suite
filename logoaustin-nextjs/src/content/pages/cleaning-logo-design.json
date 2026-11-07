@@ -1,0 +1,1579 @@
+{
+ "id": 253986,
+ "type": "page",
+ "slug": "cleaning-logo-design",
+ "url": "/cleaning-logo-design/",
+ "title": "Cleaning Logo Design",
+ "seo": {
+  "title": "Cleaning Company Logo Design in Austin, TX | Maid Logos",
+  "description": "Custom logos for Austin cleaning, maid, janitorial and pressure-washing companies, made for uniforms and car magnets. No upfront payment. Get a quote.",
+  "focusKeyword": "cleaning company logo design Austin",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/cleaning-logo-design.avif",
+  "alt": "cleaning logo design",
+  "width": 438,
+  "height": 344
+ },
+ "date": "2024-03-08 17:07:59",
+ "modified": "2026-11-03 15:43:35",
+ "template": "lda",
+ "sections": [
+  {
+   "id": "ec40baf",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 53,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Cleaning service logos · Austin, TX",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h1",
+         "text": "Cleaning Company Logo Design in Austin, TX",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>People let a cleaning company into their home or office, so the first impression has to say clean, careful and dependable. We design logos for Austin maid services, janitorial crews, carpet and window cleaners and pressure-washing businesses that look fresh on a polo, a car magnet and a five-star review profile.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Original designs for residential and commercial cleaners",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Simple icons that embroider and print cleanly",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Vector and PNG files for uniforms, vehicles and the web",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get My Cleaning Logo Quote",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "text",
+         "html": "<p>First concepts the same day are often possible for straightforward projects after review.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 41,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/lucky-maids-cleaning-services-logo-with-a-house-roof-and-sparkling-blue.avif",
+         "alt": "Lucky Maids cleaning services logo with a house roof and sparkling blue water drops",
+         "width": 1600,
+         "height": 1600,
+         "displayWidth": 100,
+         "classes": []
+        },
+        {
+         "t": "badge",
+         "strong": "$125–$175 custom logo",
+         "text": "No upfront payment. Pay after approval.",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5dad0ff",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white",
+    "lda-trust"
+   ],
+   "bg": "white",
+   "variant": "trust",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "iconBox",
+       "icon": "fas fa-tshirt",
+       "title": "Uniform friendly",
+       "desc": "Clean at embroidery size",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-car-side",
+       "title": "Readable on vehicles",
+       "desc": "Name and service at a glance",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-file-download",
+       "title": "Full file set",
+       "desc": "AI · EPS · SVG · PDF · PNG",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-hand-holding-usd",
+       "title": "No upfront payment",
+       "desc": "Approve first, then pay",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b1a5338",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row-reverse",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Why it matters",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "What Should a Cleaning Business Logo Look Like?",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A strong cleaning logo is bright, uncluttered and easy to read in a single glance. Customers often see it for a second or two: on a car parked in a Circle C driveway, on a door hanger in Pflugerville, or next to your rating on Google. Light blues, greens and crisp whites signal freshness, but the shape and lettering do most of the work.</p><p>The design also has to survive real-world use. It will be stitched onto shirts, printed small on invoices, and shown as a tiny square in search results. We keep icons simple, avoid thin lines that disappear in embroidery, and make sure your name and service stay readable everywhere.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Clean shapes that hold up on shirts and aprons",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "High contrast for vehicle magnets and yard signs",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "A square icon version for Google and review sites",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/ariels-mermaids-residential-cleaning-logo-with-a-mermaid-holding-a.avif",
+         "alt": "Ariel's Mermaids residential cleaning logo with a mermaid holding a spray bottle",
+         "width": 400,
+         "height": 400,
+         "displayWidth": 100,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "037fa6d",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "What we design",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Branding We Create for Austin Cleaning Companies",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Begin with the logo, then add the pieces your crews and customers see every day.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-soap",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Maid and house cleaning logos",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Warm, trustworthy marks for residential cleaners, move-out specialists and Airbnb turnover services.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-building",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Janitorial and commercial cleaning logos",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Professional identities that look right on proposals for offices, clinics and property managers.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-tint",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Pressure washing and window cleaning logos",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Bold, energetic logos for exterior cleaning, gutter and window crews.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-tshirt",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Uniforms and aprons",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Embroidery-ready versions with simplified details and approved thread colors.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-car",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Car magnets and vehicle wraps",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Layouts that show your name, service and phone number clearly from the road.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-door-open",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Door hangers, flyers and cards",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Neighborhood marketing pieces and business cards that match your logo.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "519805c",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Made a logo with AI?",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Already Made a Cleaning Logo With AI? We Can Fix It",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>AI image tools can produce a cute sparkle or bubble icon in seconds, but the file usually is not ready for embroidery or a vehicle magnet. Common problems are blurry edges, a misspelled business name and tiny details that turn into blobs when stitched. We redraw AI-made cleaning logos as clean vectors and simplify them for real-world use.</p><p>See how our <a href=\"/fix-ai-generated-logo/\">AI logo cleanup and vector conversion</a> works, or send us your file for a free review.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get a Free AI Logo Audit",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "lda-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "bg": "#faf7f2",
+         "children": [
+          {
+           "t": "icon",
+           "icon": "fas fa-magic",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Free AI logo audit",
+           "align": "left",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Upload your AI logo and a designer will tell you what needs fixing before it goes on shirts, magnets or signs.</p>",
+           "align": "left",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a8574cc",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "How it works",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "How Our Cleaning Logo Process Works",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Handled by phone, text and email, so it fits around your cleaning schedule.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "01",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Tell us about your business",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Share your company name, the services you offer and whether you clean homes, offices or both.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "02",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Review concepts",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Designers create several original concepts in different styles and send them by text or email.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "03",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Refine the winner",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Adjust colors, fonts or icons, and preview the logo on a shirt and car magnet.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "04",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Approve and download",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Pay after you approve and receive print, embroidery and web files.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "row",
+       "wrap": true,
+       "width": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "button",
+         "text": "Start My Cleaning Logo",
+         "href": "#consultation",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call (512) 782-9748",
+         "href": "tel:+15127829748",
+         "style": "ghost",
+         "icon": "fas fa-phone-alt",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c0f3eca",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "gallery",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Recent work",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Cleaning and Home Service Logos We Have Designed",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Examples from cleaning, detailing, painting and other home service businesses.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "gallery",
+     "images": [
+      {
+       "src": "/images/pages/lucky-maids-cleaning-services-logo-with-a-house-roof-and-sparkling-blue.avif",
+       "alt": "Lucky Maids cleaning services logo with a house roof and sparkling blue water drops",
+       "width": 1600,
+       "height": 1600
+      },
+      {
+       "src": "/images/pages/ariels-mermaids-residential-cleaning-logo-with-a-mermaid-holding-a.avif",
+       "alt": "Ariel's Mermaids residential cleaning logo with a mermaid holding a spray bottle",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/amazing-dream-mobile-detailing-logo-with-a-wheelchair-and-cleaning.avif",
+       "alt": "Amazing Dream mobile detailing logo with a wheelchair and cleaning spray in a red ring",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/the-trash-lady-logo-with-bold-white-t-and-l-lettering-on-black.avif",
+       "alt": "The Trash Lady logo with bold white T and L lettering on black",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/asfr-services-logo-with-colorful-block-letters-and-a-dripping-paint-can.avif",
+       "alt": "ASFR Services logo with colorful block letters and a dripping paint can",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/e-m-commercial-and-residential-painting-logo-with-a-pink-brush-stroke.avif",
+       "alt": "E&M Commercial and Residential Painting logo with a pink brush stroke",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/absolute-paint-llc-logo-with-a-blue-paint-splash.avif",
+       "alt": "Absolute Paint LLC logo with a blue paint splash",
+       "width": 400,
+       "height": 284
+      },
+      {
+       "src": "/images/portfolio/all-seasons-trucking-and-landscaping-logo-with-a-green-tree-and-work.avif",
+       "alt": "All Season's Trucking and Landscaping logo with a green tree and work trucks",
+       "width": 400,
+       "height": 400
+      }
+     ],
+     "cols": 4,
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "View the Full Portfolio",
+       "href": "/portfolio/",
+       "style": "ghost",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "417f919",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "heading",
+     "level": "p",
+     "text": "Local answers",
+     "classes": []
+    },
+    {
+     "t": "heading",
+     "level": "h2",
+     "text": "Where Can I Get a Cleaning Company Logo Designed in Austin?",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Logo Design Austin designs logos for cleaning companies across Austin and its suburbs, and every project is handled remotely. You talk with a designer by phone or text, review concepts on your phone and get files you can send straight to your print shop or embroidery vendor.</p><h3>Home cleaning logos for Circle C (78739), Southwest Austin (78749) and Kyle (78640)</h3><p>Residential cleaners in fast-growing family neighborhoods compete on trust. A friendly, polished logo on your car and door hangers helps you look like the established choice when neighbors compare quotes.</p><h3>Janitorial and commercial cleaning logos near Downtown (78701) and the Domain (78758)</h3><p>Office and building cleaning contracts often start with a proposal and a website visit. A clean, professional identity helps you look ready for property managers and facility buyers.</p><h3>Pressure washing and window cleaning logos in Round Rock (78664) and Pflugerville (78660)</h3><p>Exterior crews live on yard signs and trailer graphics. We design bold logos that stay readable at driving speed and look sharp on a trailer wrap.</p><h3>How much does a cleaning company logo cost in Austin?</h3><p>A custom cleaning logo at Logo Design Austin is priced from $125 to $175, depending on complexity. There is no upfront payment; you review concepts, request revisions and pay when you are happy with the result.</p>",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "flex-start",
+     "children": [
+      {
+       "t": "button",
+       "text": "Talk to a Designer",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "e92df64",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Service area",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Cleaning Logo Design Across Austin and Nearby Cities",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>We design logos for cleaning businesses in Austin neighborhoods and the surrounding Central Texas suburbs.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "text",
+     "html": "<ul><li>Downtown 78701</li><li>East Austin 78702</li><li>South Congress 78704</li><li>Hyde Park 78751</li><li>Mueller 78723</li><li>Allandale 78757</li><li>Domain / North Burnet 78758</li><li>Riverside 78741</li><li>Southwest Austin 78749</li><li>Circle C Ranch 78739</li><li><a href=\"/round-rock-logo-design/\">Round Rock 78664</a></li><li><a href=\"/pflugerville-logo-design/\">Pflugerville 78660</a></li><li><a href=\"/cedar-park-logo-design/\">Cedar Park 78613</a></li><li><a href=\"/georgetown-logo-design/\">Georgetown 78626</a></li><li><a href=\"/kyle-logo-design/\">Kyle 78640</a></li><li>Buda 78610</li><li>Hutto 78634</li><li>Manor 78653</li><li><a href=\"/san-marcos-logo-design/\">San Marcos 78666</a></li></ul>",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Projects are handled remotely, so cleaning companies anywhere in the metro get the same service.</p>",
+     "align": "center",
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "7da6ee7",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Questions, answered",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Cleaning Company Logo FAQs",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "accordion",
+     "items": [
+      {
+       "q": "What colors are best for a cleaning company logo?",
+       "a": "<p>Blues, greens and teals are popular because they suggest water, freshness and trust. Pairing one of them with white or a dark navy keeps the logo readable on uniforms and vehicles. We test colors in both print and embroidery before you approve.</p>"
+      },
+      {
+       "q": "Should my cleaning logo include a broom, bubble or sparkle icon?",
+       "a": "<p>It can, but those icons are common. A distinctive letter mark, a simple house shape or a custom character can help you stand out. We usually show a mix of literal and more unique concepts.</p>"
+      },
+      {
+       "q": "Will my logo work for embroidery on shirts?",
+       "a": "<p>Yes. We design with embroidery in mind and provide a simplified version without tiny details or thin lines, so it stitches cleanly at chest size.</p>"
+      },
+      {
+       "q": "How much does a cleaning logo cost in Austin?",
+       "a": "<p>Custom logo design at Logo Design Austin is priced from $125 to $175, depending on complexity, with no upfront payment. You pay after you approve the final logo.</p>"
+      },
+      {
+       "q": "Can you also design car magnets and door hangers?",
+       "a": "<p>Yes. Once your logo is final we can design vehicle magnets, door hangers, flyers and business cards that match it.</p>"
+      },
+      {
+       "q": "What files do I receive?",
+       "a": "<p>You receive vector files (AI, EPS, SVG and PDF) for printers and embroidery shops, plus transparent PNG files for your website, Google Business Profile and social media.</p>"
+      }
+     ],
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "d74bdb5",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Related services",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "More Design Services for Austin Service Businesses",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-magic",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Fix an AI-Generated Logo",
+         "href": "/fix-ai-generated-logo/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Clean up an AI logo so it works on uniforms and magnets.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/fix-ai-generated-logo/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-hard-hat",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Construction Logo Design",
+         "href": "/construction-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Bold logos for contractors, remodelers and trades.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/construction-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-store",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Small Business Logo Design",
+         "href": "/small-business-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Custom logos for new and growing Austin businesses.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/small-business-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-palette",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Graphic Design",
+         "href": "/graphic-designer-austin/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Door hangers, flyers, cards and signs.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/graphic-designer-austin/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-box-open",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Business Starter Package",
+         "href": "/business-packages/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logo, website and business cards in one package.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/business-packages/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-star",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Logo Design Austin",
+         "href": "/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>See every logo and design service we offer in Austin.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "8965c6d",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Ready for a Cleaning Logo Customers Trust at First Glance?",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Tell us about your cleaning business. An Austin designer will send original concepts, and you pay only after you approve.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "Get My Cleaning Logo Quote",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "What colors are best for a cleaning company logo?",
+   "a": "<p>Blues, greens and teals are popular because they suggest water, freshness and trust. Pairing one of them with white or a dark navy keeps the logo readable on uniforms and vehicles. We test colors in both print and embroidery before you approve.</p>"
+  },
+  {
+   "q": "Should my cleaning logo include a broom, bubble or sparkle icon?",
+   "a": "<p>It can, but those icons are common. A distinctive letter mark, a simple house shape or a custom character can help you stand out. We usually show a mix of literal and more unique concepts.</p>"
+  },
+  {
+   "q": "Will my logo work for embroidery on shirts?",
+   "a": "<p>Yes. We design with embroidery in mind and provide a simplified version without tiny details or thin lines, so it stitches cleanly at chest size.</p>"
+  },
+  {
+   "q": "How much does a cleaning logo cost in Austin?",
+   "a": "<p>Custom logo design at Logo Design Austin is priced from $125 to $175, depending on complexity, with no upfront payment. You pay after you approve the final logo.</p>"
+  },
+  {
+   "q": "Can you also design car magnets and door hangers?",
+   "a": "<p>Yes. Once your logo is final we can design vehicle magnets, door hangers, flyers and business cards that match it.</p>"
+  },
+  {
+   "q": "What files do I receive?",
+   "a": "<p>You receive vector files (AI, EPS, SVG and PDF) for printers and embroidery shops, plus transparent PNG files for your website, Google Business Profile and social media.</p>"
+  }
+ ],
+ "wordCount": 1272
+}

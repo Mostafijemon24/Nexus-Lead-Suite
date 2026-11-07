@@ -1,0 +1,978 @@
+{
+ "id": 254011,
+ "type": "page",
+ "slug": "electrical-logo-design",
+ "url": "/electrical-logo-design/",
+ "title": "Electrical Logo Design",
+ "seo": {
+  "title": "Electrician Logo Design in Austin, TX | Logo Austin",
+  "description": "Custom logos for Austin electricians, electrical contractors and solar installers, built for vans, uniforms and permits. No upfront payment. Get a quote.",
+  "focusKeyword": "electrical logo design",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/electrical-logo-design.avif",
+  "alt": "Electrical Logo Design",
+  "width": 700,
+  "height": 550
+ },
+ "date": "2024-03-08 18:10:31",
+ "modified": "2026-11-03 14:58:24",
+ "template": "la",
+ "sections": [
+  {
+   "id": "cfd5e3c",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 60,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "text",
+           "html": "<p><a href=\"/\">Home</a> › <a href=\"/austin-logo-designers/\">Logo Design</a> › Electrical Logo Design</p><p>Same-Day Electrical Logo Design</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h1",
+           "text": "Electrician and Electrical Company Logo Design in Austin",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logo Austin designs custom logos for residential electricians, commercial electrical contractors, lighting installers and solar companies. Each logo is designed to read clearly on service vans and uniforms, with concepts the same day.</p>",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 40,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/electrical-logo-design-austin.avif",
+         "alt": "electrical Logo Design Austin",
+         "width": 400,
+         "height": 284,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bfb3259",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-facts"
+   ],
+   "bg": "ink",
+   "variant": "trust",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>Same Day</strong>logo concepts</p>",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>$125–$175</strong>custom logo</p>",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>$0 Upfront</strong>pay after approval</p>",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>Vector Files</strong>AI · EPS · SVG</p>",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "0d9d737",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-text"
+   ],
+   "bg": "white",
+   "variant": "text",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "What Makes a Good Electrician Logo?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A good <strong>electrical logo</strong> signals safety, expertise and dependability. Customers call an electrician when something is urgent or potentially dangerous, so the brand should feel competent and trustworthy rather than flashy.</p><p>Common symbols include lightning bolts, plugs, light bulbs, wires, circuits and sun icons for solar. Because lightning bolts are so common, the way the symbol is styled and combined with the name is what makes the logo distinctive.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b87bfe7",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-table"
+   ],
+   "bg": "white",
+   "variant": "table",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Where Your Electrical Logo Will Appear",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A electrical logo has to work in the places your customers actually see it. Logo Austin designs with these uses in mind:</p><div><table><thead><tr><th scope=\"col\">Placement</th><th scope=\"col\">Design Requirement</th></tr></thead><tbody><tr><td><strong>Service vans and trucks</strong></td><td>Large name and clear service type</td></tr><tr><td><strong>Uniforms and hats</strong></td><td>Simple icon that embroiders cleanly</td></tr><tr><td><strong>Yard signs at job sites</strong></td><td>High-contrast design readable from the street</td></tr><tr><td><strong>Quotes, permits and invoices</strong></td><td>Professional wordmark for commercial clients</td></tr><tr><td><strong>Google Business Profile</strong></td><td>Square icon for emergency-service searches</td></tr></tbody></table></div>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "08440a5",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-cards"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Popular Electrical Logo Styles",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Lightning Bolt Marks",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A stylized bolt integrated with a letter or shape.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Plug & Outlet Icons",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Clear symbols for residential electrical services.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Light Bulb Concepts",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Bulbs that suggest lighting design and ideas.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Circuit Lines",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Technical line work for commercial and industrial contractors.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Solar & Energy",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Sun and panel icons for renewable-energy installers.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "High-Contrast Colors",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yellow, black, blue and orange that read clearly.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a643f7f",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-split"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/power-supply-logo-design-austin.avif",
+         "alt": "Power Supply Logo Design Austin",
+         "width": 400,
+         "height": 284,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Checklist for a Strong Electrical Logo",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<ul><li>Style the lightning bolt distinctively; generic bolts look like clip art.</li><li>Make the service clear: residential, commercial, solar or lighting.</li><li>Use high contrast so the logo reads on white vans.</li><li>Keep a one-color version for decals and stamps.</li><li>Get vector files for vehicle graphics.</li></ul>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bf06a95",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-steps"
+   ],
+   "bg": "white",
+   "variant": "steps",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "How Your Electrical Logo Is Designed",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<ol><li><strong>Share your details.</strong> Business name, services, service area and any colors or symbols you want.</li><li><strong>Receive concepts.</strong> Designers create several original electrical logo concepts, usually within hours.</li><li><strong>Revise.</strong> Adjust fonts, colors, icons and layout until the logo fits your business.</li><li><strong>Get your files.</strong> Approve, pay and receive print, web and vector files with full ownership.</li></ol><p>See also: <a href=\"/construction-logo-design/\">construction logos</a> and <a href=\"/branding/\">branding for vans and uniforms</a>.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c0b1128",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-faq"
+   ],
+   "bg": "white",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-faq"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Electrical Logo FAQs",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Should an electrician logo use a lightning bolt?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A lightning bolt identifies the trade instantly, but it is very common. Logo Austin styles the symbol so it is distinctive, or explores alternatives such as plugs, circuits or monograms.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Do you design logos for solar companies?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. Logo Austin designs logos for solar installers and renewable-energy businesses as well as electricians and electrical contractors.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "How much does a electrical logo cost?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>At Logo Austin, a custom electrical logo is priced from $125 to $175. There is no upfront charge; you pay only after approving the final design.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "How fast can I get my electrical logo?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logo Austin usually delivers multiple electrical logo concepts the same day. Final files in JPG, PNG, SVG, PDF, AI and EPS follow as soon as you approve a design, with full ownership.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5fc8e55",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns",
+        "la-center"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Get Your Electrical Logo Concepts Today",
+           "align": "center",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Share your business name and see custom concepts today, with no upfront payment.</p>",
+           "align": "center",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Should an electrician logo use a lightning bolt?",
+   "a": "<p>A lightning bolt identifies the trade instantly, but it is very common. Logo Austin styles the symbol so it is distinctive, or explores alternatives such as plugs, circuits or monograms.</p>"
+  },
+  {
+   "q": "Do you design logos for solar companies?",
+   "a": "<p>Yes. Logo Austin designs logos for solar installers and renewable-energy businesses as well as electricians and electrical contractors.</p>"
+  },
+  {
+   "q": "How much does a electrical logo cost?",
+   "a": "<p>At Logo Austin, a custom electrical logo is priced from $125 to $175. There is no upfront charge; you pay only after approving the final design.</p>"
+  },
+  {
+   "q": "How fast can I get my electrical logo?",
+   "a": "<p>Logo Austin usually delivers multiple electrical logo concepts the same day. Final files in JPG, PNG, SVG, PDF, AI and EPS follow as soon as you approve a design, with full ownership.</p>"
+  }
+ ],
+ "wordCount": 543
+}

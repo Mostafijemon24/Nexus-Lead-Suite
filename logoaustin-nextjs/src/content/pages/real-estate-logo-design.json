@@ -1,0 +1,1579 @@
+{
+ "id": 253971,
+ "type": "page",
+ "slug": "real-estate-logo-design",
+ "url": "/real-estate-logo-design/",
+ "title": "Real Estate Logo Design",
+ "seo": {
+  "title": "Real Estate Logo Design in Austin, TX | Realtor Logos",
+  "description": "Custom real estate logos for Austin realtors, teams, brokerages and property managers, built for yard signs and listings. No upfront payment. Get a quote.",
+  "focusKeyword": "real estate logo design Austin",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/real-estate-logo-design-collage-with-a-house-key-sold-sign-and-a.avif",
+  "alt": "Real estate logo design collage with a house key, sold sign and a finished realtor logo",
+  "width": 700,
+  "height": 550
+ },
+ "date": "2024-03-08 16:40:52",
+ "modified": "2026-11-03 15:40:55",
+ "template": "lda",
+ "sections": [
+  {
+   "id": "e99e5f3",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 53,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Realtor & brokerage logos · Austin, TX",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h1",
+         "text": "Real Estate Logo Design in Austin, TX",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Buyers decide in a few seconds whether a sign or a listing feels professional. We design real estate logos for Austin agents, teams, brokerages and property managers that read clearly from the curb, look sharp on a Zillow profile and still work when they shrink to a social avatar.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Original concepts built around your name and niche",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Yard-sign, rider and lockbox-tag versions included in planning",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Vector and PNG files for print, IDX sites and social",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get My Real Estate Logo Quote",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "text",
+         "html": "<p>First concepts the same day are often possible for straightforward projects after review.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 41,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/real-estate-logo-design-collage-with-a-house-key-sold-sign-and-a.avif",
+         "alt": "Real estate logo design collage with a house key, sold sign and a finished realtor logo",
+         "width": 700,
+         "height": 550,
+         "displayWidth": 100,
+         "classes": []
+        },
+        {
+         "t": "badge",
+         "strong": "$125–$175 custom logo",
+         "text": "No upfront payment. You pay after you approve.",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5db273d",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white",
+    "lda-trust"
+   ],
+   "bg": "white",
+   "variant": "trust",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "iconBox",
+       "icon": "fas fa-sign",
+       "title": "Yard-sign ready",
+       "desc": "Readable from the street",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-pen-nib",
+       "title": "Designed from scratch",
+       "desc": "No templates or clip art",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-file-download",
+       "title": "Full file set",
+       "desc": "AI · EPS · SVG · PDF · PNG",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-hand-holding-usd",
+       "title": "No upfront payment",
+       "desc": "Approve first, then pay",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7b265f9",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row-reverse",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Why it matters",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "What Makes a Good Realtor Logo in Austin?",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A good real estate logo is legible at a distance, simple enough to recognize at a glance and distinct from the brokerage marks around it. Your logo lives on a sign in a front yard in Mueller, a rider on a lot in Leander, a postcard in a Westlake mailbox and a tiny square on Instagram. If it only looks good large, it is not doing its job.</p><p>Austin also has a lot of agents. Rooftop icons, keys and generic skylines blur together. We look at your farm area, your price point and the competition, then design something that fits you, whether that is a clean monogram for a luxury team or a friendly wordmark for a first-time-buyer specialist.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Strong contrast so the name reads from a moving car",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "A compact icon or monogram for social and favicon use",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Works alongside your brokerage branding where required",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/hands-reviewing-a-property-document-beside-a-small-model-house-and.avif",
+         "alt": "Hands reviewing a property document beside a small model house and calculator",
+         "width": 1200,
+         "height": 628,
+         "displayWidth": 100,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "8bfb606",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "What we design",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Real Estate Branding We Create for Austin Agents",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Start with the logo, then add the pieces you actually use. Everything is built from the same master files so your brand stays consistent.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-home",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Agent and team logos",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Personal brands for solo agents and named teams, with a full lockup and a compact mark for small spaces.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-building",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Brokerage and property management logos",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Identities for independent brokerages, leasing offices and property managers that need to look established.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-sign",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Yard signs and riders",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Sign layouts with your logo, phone number and QR code sized for standard frames and riders.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-id-card",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Business cards and open-house materials",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Cards, sign-in sheets, door hangers and listing flyers that match your new logo.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-hashtag",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Social and listing graphics",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Just Listed, Under Contract and Sold templates, profile images and cover graphics.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-car",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Car magnets and apparel",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Simplified versions for vehicle magnets, polos and embroidered caps.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "e5292e9",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Made a logo with AI?",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Already Made a Real Estate Logo With AI? We Can Fix It",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Plenty of agents try an AI generator first. The result often looks fine on a phone, then turns fuzzy on a 24-inch sign, or the brokerage name comes out misspelled. We rebuild AI-made logos by hand as clean vector files, fix the lettering and adjust the design so it meets sign and print requirements.</p><p>Learn more about our <a href=\"/fix-ai-generated-logo/\">AI logo cleanup and vector conversion</a> service, or send us your file for a free review.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get a Free AI Logo Audit",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "lda-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "bg": "#faf7f2",
+         "children": [
+          {
+           "t": "icon",
+           "icon": "fas fa-magic",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Free AI logo audit",
+           "align": "left",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Upload your AI image and a designer will tell you whether it can be cleaned up, what needs to change, and what files you will get back.</p>",
+           "align": "left",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "8112256",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "How it works",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "How Our Real Estate Logo Process Works",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Handled by phone, text and email, so it fits around showings and closings.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "01",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Share your brand",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Tell us your name, team or brokerage, your market and any colors your brokerage requires.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "02",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Review concepts",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Designers send several original concepts, each a different direction, by text or email.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "03",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Refine your favorite",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Request changes to fonts, colors or layout until the logo feels right on a sign mockup.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "04",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Approve and get files",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Pay once you approve and receive vector and PNG files for every use.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "row",
+       "wrap": true,
+       "width": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "button",
+         "text": "Start My Realtor Logo",
+         "href": "#consultation",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call (512) 782-9748",
+         "href": "tel:+15127829748",
+         "style": "ghost",
+         "icon": "fas fa-phone-alt",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fa7c42c",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "gallery",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Recent work",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Real Estate and Property Logos We Have Designed",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Examples from agents, investors, interior designers and property brands.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "gallery",
+     "images": [
+      {
+       "src": "/images/portfolio/preeminence-properties-neon-style-logo-with-outlined-city-buildings.avif",
+       "alt": "Preeminence Properties neon-style logo with outlined city buildings",
+       "width": 1280,
+       "height": 1280
+      },
+      {
+       "src": "/images/portfolio/cerise-family-l-p-gold-logo-with-a-house-roofline-above-script.avif",
+       "alt": "Cerise Family L.P. gold logo with a house roofline above script lettering",
+       "width": 807,
+       "height": 548
+      },
+      {
+       "src": "/images/portfolio/cerise-logo-in-gold-script-inside-a-red-house-shaped-badge.avif",
+       "alt": "Cerise logo in gold script inside a red house-shaped badge",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/logo-design-austin-55.avif",
+       "alt": "Logo Design Austin",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/pages/lag-properties-logo-in-pink-and-black-script-with-a-skyline.avif",
+       "alt": "LAG Properties logo in pink and black script with a skyline",
+       "width": 400,
+       "height": 284
+      },
+      {
+       "src": "/images/portfolio/amittai-investments-gold-monogram-logo-on-a-dark-teal-background.avif",
+       "alt": "Amittai Investments gold monogram logo on a dark teal background",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/millennialism-logo-with-a-skyline-built-into-the-letter-m-on-blue.avif",
+       "alt": "Millennialism logo with a skyline built into the letter M on blue",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/dessenberg-designs-logo-with-a-hammer-forming-a-house-roofline.avif",
+       "alt": "Dessenberg Designs logo with a hammer forming a house roofline",
+       "width": 400,
+       "height": 400
+      }
+     ],
+     "cols": 4,
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "View the Full Portfolio",
+       "href": "/portfolio/",
+       "style": "ghost",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "9be9b99",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "heading",
+     "level": "p",
+     "text": "Local answers",
+     "classes": []
+    },
+    {
+     "t": "heading",
+     "level": "h2",
+     "text": "Where Can I Get a Real Estate Logo Designed in Austin?",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Logo Design Austin works with agents and brokerages across Austin and the surrounding suburbs, fully online. You do not need to book a meeting room or drive across town; a designer talks with you by phone or text and sends concepts you can review between appointments.</p><h3>Luxury and listing-agent logos in Westlake (78746) and Tarrytown (78703)</h3><p>Higher-end markets usually call for restraint: a refined serif or monogram, a limited palette and plenty of white space. That style reads as confident on a rider in Westlake Hills or a brochure for a Tarrytown listing.</p><h3>Team and brokerage logos near the Domain (78758) and in Round Rock (78664)</h3><p>Growing teams in North Austin and Williamson County often need a logo that can carry several agent names and still look unified on group signage, a recruiting page and a shared Instagram account.</p><h3>Property management and investor logos in East Austin (78702) and Mueller (78723)</h3><p>Leasing and management companies need marks that look dependable on lease paperwork, a resident portal and a building sign. We design versions for both residents and owners.</p><h3>How much does a real estate logo cost in Austin?</h3><p>A custom real estate logo at Logo Design Austin is priced from $125 to $175, depending on complexity. There is no upfront charge; you review concepts, request revisions and pay when you are satisfied. Signs, cards and social templates can be added afterward.</p>",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "flex-start",
+     "children": [
+      {
+       "t": "button",
+       "text": "Talk to a Designer",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5942138",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Service area",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Real Estate Logo Design Across the Austin Metro",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>We design logos for agents and property businesses throughout Travis, Williamson and Hays counties.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "text",
+     "html": "<ul><li>Downtown 78701</li><li>Tarrytown 78703</li><li>Bouldin Creek 78704</li><li>Westlake 78746</li><li>Steiner Ranch 78732</li><li>Circle C Ranch 78739</li><li>Mueller 78723</li><li>Domain / North Burnet 78758</li><li>Avery Ranch 78717</li><li><a href=\"/round-rock-logo-design/\">Round Rock 78664</a></li><li><a href=\"/cedar-park-logo-design/\">Cedar Park 78613</a></li><li><a href=\"/leander-logo-design/\">Leander 78641</a></li><li><a href=\"/georgetown-logo-design/\">Georgetown 78626</a></li><li><a href=\"/pflugerville-logo-design/\">Pflugerville 78660</a></li><li>Lakeway 78734</li><li>Bee Cave 78738</li><li>Hutto 78634</li><li><a href=\"/kyle-logo-design/\">Kyle 78640</a></li><li>Buda 78610</li></ul>",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Every project is handled remotely, so agents anywhere in Central Texas get the same service.</p>",
+     "align": "center",
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "7a06eeb",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Questions, answered",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Real Estate Logo Design FAQs",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "accordion",
+     "items": [
+      {
+       "q": "Can I use my own logo if my brokerage has its own branding?",
+       "a": "<p>Often yes, but rules vary. Many brokerages allow a personal or team logo as long as the brokerage name and logo also appear with equal or greater prominence. Check your brokerage's brand guidelines and we will design within them.</p>"
+      },
+      {
+       "q": "What colors work best for a real estate logo?",
+       "a": "<p>Navy, charcoal, deep green and black read as trustworthy and print well on signs. A single accent color helps you stand out. We test contrast so the logo stays readable on white sign panels and dark social backgrounds.</p>"
+      },
+      {
+       "q": "Should a realtor logo include a house or roof icon?",
+       "a": "<p>It can, but rooftops are very common. A monogram, a distinctive wordmark or a symbol tied to your area often makes you more memorable. We usually show both directions so you can compare.</p>"
+      },
+      {
+       "q": "How much does a real estate logo cost in Austin?",
+       "a": "<p>Custom logo design at Logo Design Austin is priced from $125 to $175, depending on complexity, with no upfront payment. You pay after you approve the final design.</p>"
+      },
+      {
+       "q": "How fast can I get a logo for my new listing signs?",
+       "a": "<p>First concepts the same day are often possible for straightforward projects after review. Final timing depends on revisions and how quickly you send feedback.</p>"
+      },
+      {
+       "q": "What files will I receive for signs and my website?",
+       "a": "<p>You get vector files (AI, EPS, SVG and PDF) for sign shops and printers, plus high-resolution PNGs with transparent backgrounds for your website, IDX pages, email signature and social profiles.</p>"
+      }
+     ],
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "fdb37b2",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Related services",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "More Design Services for Austin Real Estate Pros",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-magic",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Fix an AI-Generated Logo",
+         "href": "/fix-ai-generated-logo/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Turn a blurry AI logo into clean, sign-ready vector files.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/fix-ai-generated-logo/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-hard-hat",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Construction Logo Design",
+         "href": "/construction-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logos for builders, remodelers and trades you refer.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/construction-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-laptop",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Website Design",
+         "href": "/website-designer-austin/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Simple, mobile-friendly sites for agents and teams.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/website-designer-austin/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-palette",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Graphic Design",
+         "href": "/graphic-designer-austin/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Flyers, postcards, signs and listing graphics.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/graphic-designer-austin/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-layer-group",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Branding Services",
+         "href": "/branding/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logo, cards, colors and social graphics that match.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/branding/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-star",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Logo Design Austin",
+         "href": "/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>See every logo and design service we offer in Austin.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a9bc9cd",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Ready for a Real Estate Logo That Works on Every Sign?",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Tell us about your market and your brand. An Austin designer will send original concepts, and you pay only after you approve.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "Get My Real Estate Logo Quote",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Can I use my own logo if my brokerage has its own branding?",
+   "a": "<p>Often yes, but rules vary. Many brokerages allow a personal or team logo as long as the brokerage name and logo also appear with equal or greater prominence. Check your brokerage's brand guidelines and we will design within them.</p>"
+  },
+  {
+   "q": "What colors work best for a real estate logo?",
+   "a": "<p>Navy, charcoal, deep green and black read as trustworthy and print well on signs. A single accent color helps you stand out. We test contrast so the logo stays readable on white sign panels and dark social backgrounds.</p>"
+  },
+  {
+   "q": "Should a realtor logo include a house or roof icon?",
+   "a": "<p>It can, but rooftops are very common. A monogram, a distinctive wordmark or a symbol tied to your area often makes you more memorable. We usually show both directions so you can compare.</p>"
+  },
+  {
+   "q": "How much does a real estate logo cost in Austin?",
+   "a": "<p>Custom logo design at Logo Design Austin is priced from $125 to $175, depending on complexity, with no upfront payment. You pay after you approve the final design.</p>"
+  },
+  {
+   "q": "How fast can I get a logo for my new listing signs?",
+   "a": "<p>First concepts the same day are often possible for straightforward projects after review. Final timing depends on revisions and how quickly you send feedback.</p>"
+  },
+  {
+   "q": "What files will I receive for signs and my website?",
+   "a": "<p>You get vector files (AI, EPS, SVG and PDF) for sign shops and printers, plus high-resolution PNGs with transparent backgrounds for your website, IDX pages, email signature and social profiles.</p>"
+  }
+ ],
+ "wordCount": 1348
+}

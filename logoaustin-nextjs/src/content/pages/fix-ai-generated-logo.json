@@ -1,0 +1,1863 @@
+{
+ "id": 254899,
+ "type": "page",
+ "slug": "fix-ai-generated-logo",
+ "url": "/fix-ai-generated-logo/",
+ "title": "Fix AI Generated Logo",
+ "seo": {
+  "title": "Fix AI Generated Logo in Austin, TX | AI Logo Cleanup",
+  "description": "Fuzzy, misspelled or pixelated AI logo? Austin designers rebuild it by hand as clean SVG, EPS, AI and PDF vector files. Upload it for a free logo audit today.",
+  "focusKeyword": "fix AI generated logo",
+  "canonical": ""
+ },
+ "featuredImage": null,
+ "date": "2026-11-03 15:38:08",
+ "modified": "2026-11-03 15:38:08",
+ "template": "lda",
+ "sections": [
+  {
+   "id": "bfc5a25",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 53,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "AI logo cleanup · Austin, TX",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h1",
+         "text": "Fix Your AI-Generated Logo in Austin, TX",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>You typed a prompt, picked your favorite and finally had a logo. Then the printer asked for a vector file, or the sign came back blurry. We take logos made with ChatGPT, Midjourney, Canva and similar tools, rebuild them by hand, correct the lettering and send you real files that work on everything from a food truck to a SXSW badge.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Soft pixels, halos and jagged edges cleaned up for good",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Garbled or misspelled words reset in a proper font",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "SVG, EPS, AI, PDF and transparent PNG files you own",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Get My Free AI Logo Audit",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "text",
+         "html": "<p>No upfront payment. Same-day turnaround is often possible for straightforward cleanups after review.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 41,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/pixelated-ai-lion-logo-next-to-its-crisp-vector-rebuild-with-ai-eps-pdf.avif",
+         "alt": "Pixelated AI lion logo next to its crisp vector rebuild with AI, EPS, PDF and SVG file icons",
+         "width": 1600,
+         "height": 960,
+         "displayWidth": 100,
+         "classes": []
+        },
+        {
+         "t": "badge",
+         "strong": "Free logo audit",
+         "text": "Send your AI image and a designer tells you what it needs.",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "9adb9b8",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white",
+    "lda-trust"
+   ],
+   "bg": "white",
+   "variant": "trust",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "iconBox",
+       "icon": "fas fa-vector-square",
+       "title": "Rebuilt by hand",
+       "desc": "No auto-trace shortcuts",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-spell-check",
+       "title": "Lettering corrected",
+       "desc": "Spelling, spacing, font",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-file-download",
+       "title": "Complete file set",
+       "desc": "SVG · EPS · AI · PDF · PNG",
+       "classes": []
+      },
+      {
+       "t": "iconBox",
+       "icon": "fas fa-hand-holding-usd",
+       "title": "Pay after approval",
+       "desc": "No deposit to start",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "579eedb",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row-reverse",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "The problem with AI logos",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Why Does My AI Logo Look Blurry When I Print It?",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Because an AI generator gives you a picture, not a logo file. What you download is a PNG or JPG made of a fixed grid of pixels, often around 1,000 pixels across, with soft edges and compression noise built in. Stretch it onto a banner or a storefront and every one of those pixels gets bigger.</p><p>A production logo is a vector: shapes defined by curves and points, so it stays sharp at a quarter inch or twenty feet. We hear the same story from Austin owners every week. The concept is good, the file is not. That is a fixable problem, and you usually get to keep the idea you liked.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Edges turn fuzzy or stair-stepped when enlarged",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Letters are misspelled, melted together or made up",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "One side of the icon does not match the other",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Colors look muddy and shift between screen and print",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "The “transparent” background is really a gray checkerboard",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "See What My Logo Needs",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/ai-logo-generator-screen-with-four-lion-logo-variations-that-are-not.avif",
+         "alt": "AI logo generator screen with four lion logo variations that are not print-ready",
+         "width": 1024,
+         "height": 661,
+         "displayWidth": 100,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ae17683",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "AI logo repair",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "What We Fix in an AI-Generated Logo",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>We start by studying your file, then repair only what is broken. Your logo keeps its personality; it just stops looking like a screenshot.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-th",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Clean up blurry AI logo pixels",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Your mark is redrawn as smooth vector paths, so soft and pixelated edges disappear instead of being blurred over by an upscaler.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-font",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Fix text and letters in an AI logo",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Image generators are bad at spelling. We remove the broken lettering and set your name in a matched or better professional typeface, spaced by eye.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-balance-scale",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Repair uneven shapes and symmetry",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Lopsided circles, wobbly lines and icons that lean get squared up, balanced and aligned to a clean grid.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-broom",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Remove compression artifacts",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Speckles, color banding and halos from JPG compression are gone because the logo is rebuilt from new shapes, not filtered.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-cut",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Remove the background from your AI logo",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>We separate the logo from its backdrop and deliver true transparent PNGs, plus versions for light and dark backgrounds.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-magic",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "AI logo redesign and refinement",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Want more than a repair? We can simplify busy details, improve legibility at small sizes and make the concept distinctly yours.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b00180d",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 51,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "PNG to vector",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "How Do I Convert an AI Logo to SVG or Vector?",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>The dependable way is to redraw it. One-click converters and auto-trace tools copy every flaw in the image, scatter thousands of stray anchor points and usually mangle the text. Our designers rebuild the logo in Adobe Illustrator, shape by shape, using your AI image as the reference.</p><p>You end up with a light, editable master file that prints cleanly on a business card and a wall banner, cuts properly on vinyl, and gives an embroidery digitizer clean outlines to work from. Your web developer gets a crisp SVG instead of a fuzzy PNG.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Paths drawn by a designer, not traced by software",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Simplified outlines that suit embroidery and vinyl",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Organized layers so later edits are quick",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Convert My AI Logo to Vector",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 43,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/five-stages-of-redrawing-a-lion-logo-by-hand-from-sketch-outline-to.avif",
+         "alt": "Five stages of redrawing a lion logo by hand, from sketch outline to finished vector",
+         "width": 1024,
+         "height": 1024,
+         "displayWidth": 100,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "856e5d2",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Deliverables",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Files You Receive After Your AI Logo Cleanup",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>A tidy, labeled logo package, so you can answer any vendor who asks for “the right file.”</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-bezier-curve",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "SVG, EPS and AI vector masters",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Scalable files for print shops, sign makers, embroiderers and your website.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-file-pdf",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Print-ready vector PDF",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A PDF any printer can open, with fonts outlined so nothing shifts on their end.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-image",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Transparent background PNG",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>High-resolution PNGs with real transparency for social profiles, slides and web pages.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-text-height",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Professional typography",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Font matching or an upgraded typeface, with the font names written down for you.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-palette",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "CMYK and RGB color versions",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Consistent color for print and screen, HEX codes, plus one-color black and white versions.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-book-open",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "One-page logo guide (optional)",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Your colors, fonts, spacing rules and correct logo use on a single sheet.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "0b30ff2",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "How it works",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "How AI Logo Cleanup Works",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Four plain steps, handled online, by phone or by text.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "01",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Send your AI image",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Upload the best version you have, even a screenshot, and tell us where the logo will be used.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "02",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Get a free audit",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A designer reviews it and explains what needs fixing and how long it should take before any work starts.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "03",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Rebuild and proof",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>We redraw the logo, fix the lettering and colors, and send a proof. Revisions are part of the job.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 23.2,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "04",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Approve, pay, download",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>When you are happy, you pay and receive the full vector and PNG package.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "row",
+       "wrap": true,
+       "width": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "button",
+         "text": "Upload My AI Logo",
+         "href": "#consultation",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call (512) 782-9748",
+         "href": "tel:+15127829748",
+         "style": "ghost",
+         "icon": "fas fa-phone-alt",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4dd2aba",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "heading",
+     "level": "p",
+     "text": "Austin answers",
+     "classes": []
+    },
+    {
+     "t": "heading",
+     "level": "h2",
+     "text": "Where Can I Get an AI Logo Fixed in Austin?",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Logo Design Austin handles AI logo cleanup for businesses across the city and Central Texas, entirely remotely. There is no office visit and no traffic on MoPac; you upload the file, talk with a designer by phone or text, and approve proofs from your phone.</p><h3>AI logo cleanup in 78701, 78702, 78704 and across Austin</h3><p>A coffee trailer in East Austin (78702), a boutique on South Congress (78704), a startup near the Domain (78758) or a law office downtown (78701) all run into the same wall: an AI image that looks fine on Instagram and falls apart at the print shop. We rebuild it as vector artwork and send files your printer, sign shop or uniform supplier can use the first time.</p><h3>Will an Austin sign or print shop accept my AI logo as it is?</h3><p>In most cases, no. Sign makers, vinyl cutters and embroidery shops around Austin ask for EPS, AI, SVG or a vector PDF. A PNG from an image generator prints soft when enlarged and cannot be cut or stitched cleanly. After cleanup you can hand any vendor the correct file without a second round of back-and-forth.</p><h3>Should I fix my AI logo or start over with a new design?</h3><p>If the concept suits your business, fixing it is usually quicker and costs less than a brand-new logo. If the idea has deeper issues, such as being hard to read at small sizes or looking too close to an existing brand, we will say so plainly and point you to <a href=\"/custom-design/\">custom logo design</a> instead. For reference, a new custom logo at Logo Design Austin is priced from $125 to $175.</p>",
+     "align": "left",
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "flex-start",
+     "children": [
+      {
+       "t": "button",
+       "text": "Ask a Designer About My Logo",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "39e8941",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "gallery",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Our work",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Clean, Professional Logos for Austin-Area Businesses",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>A sample of logos our team has designed and refined.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "gallery",
+     "images": [
+      {
+       "src": "/images/portfolio/road-bull-transportation-logo-with-a-red-semi-truck-and-bull-horns.avif",
+       "alt": "Road Bull Transportation logo with a red semi truck and bull horns",
+       "width": 1280,
+       "height": 1280
+      },
+      {
+       "src": "/images/portfolio/preeminence-properties-neon-style-logo-with-outlined-city-buildings.avif",
+       "alt": "Preeminence Properties neon-style logo with outlined city buildings",
+       "width": 1280,
+       "height": 1280
+      },
+      {
+       "src": "/images/portfolio/drinks-on-me-512-logo-with-a-gold-martini-glass-and-bottles.avif",
+       "alt": "Drinks On Me 512 logo with a gold martini glass and bottles",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/serein-natural-skincare-logo-in-gold-and-silver-on-charcoal.avif",
+       "alt": "Serein Natural Skincare logo in gold and silver on charcoal",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/db-pro-service-roofing-and-construction-logo-with-a-red-house-outline.avif",
+       "alt": "DB Pro Service roofing and construction logo with a red house outline",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/clear-creek-forest-animal-hospital-logo-with-a-dog-cat-and-rabbit-under.avif",
+       "alt": "Clear Creek Forest Animal Hospital logo with a dog, cat and rabbit under a tree",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/millennialism-logo-with-a-skyline-built-into-the-letter-m-on-blue.avif",
+       "alt": "Millennialism logo with a skyline built into the letter M on blue",
+       "width": 400,
+       "height": 400
+      },
+      {
+       "src": "/images/portfolio/absolute-paint-llc-logo-with-a-blue-paint-splash.avif",
+       "alt": "Absolute Paint LLC logo with a blue paint splash",
+       "width": 400,
+       "height": 284
+      }
+     ],
+     "cols": 4,
+     "classes": []
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "View the Full Portfolio",
+       "href": "/portfolio/",
+       "style": "ghost",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c399d6a",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Service area",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "AI Logo Cleanup Across Austin and Central Texas",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>We repair and vectorize AI-generated logos for businesses in every Austin ZIP code and the surrounding cities.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "text",
+     "html": "<ul><li>Downtown 78701</li><li>East Austin 78702</li><li>Tarrytown 78703</li><li>South Congress 78704</li><li>Hyde Park 78751</li><li>Mueller 78723</li><li>Domain / North Burnet 78758</li><li>Westlake 78746</li><li>Circle C Ranch 78739</li><li>Steiner Ranch 78732</li><li><a href=\"/round-rock-logo-design/\">Round Rock 78664</a></li><li><a href=\"/cedar-park-logo-design/\">Cedar Park 78613</a></li><li><a href=\"/georgetown-logo-design/\">Georgetown 78626</a></li><li><a href=\"/pflugerville-logo-design/\">Pflugerville 78660</a></li><li><a href=\"/leander-logo-design/\">Leander 78641</a></li><li><a href=\"/kyle-logo-design/\">Kyle 78640</a></li><li>Buda 78610</li><li>Lakeway 78734</li><li>Bee Cave 78738</li><li>Hutto 78634</li><li>Manor 78653</li><li><a href=\"/san-marcos-logo-design/\">San Marcos 78666</a></li><li><a href=\"/del-valle-logo-design/\">Del Valle 78617</a></li></ul>",
+     "classes": []
+    },
+    {
+     "t": "text",
+     "html": "<p>Every project runs online, so the service is the same whether you are in Travis, Williamson or Hays County.</p>",
+     "align": "center",
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "b6f5034",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Questions, answered",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "AI Logo Cleanup Questions",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "accordion",
+     "items": [
+      {
+       "q": "Can you fix a logo made with ChatGPT, Midjourney or Canva?",
+       "a": "<p>Yes. We clean up logos from any AI image tool, including ChatGPT, Midjourney, DALL·E, Canva, Looka and Leonardo. Send the highest-resolution version you have and we rebuild it as vector artwork.</p>"
+      },
+      {
+       "q": "What is the best way to convert an AI logo to SVG?",
+       "a": "<p>Have it redrawn in vector software. We rebuild your logo in Adobe Illustrator and export SVG, EPS, AI and PDF files plus transparent PNGs. Free online converters tend to produce bloated files with distorted text.</p>"
+      },
+      {
+       "q": "Can you correct misspelled words in my AI logo?",
+       "a": "<p>Yes. AI generators often scramble letters. We remove the broken text and set your business name in a matched or upgraded professional font with proper spacing.</p>"
+      },
+      {
+       "q": "How long does it take to fix an AI-generated logo?",
+       "a": "<p>Straightforward cleanups can often be finished the same day after review. Detailed illustrations or a full redesign take longer. Your designer confirms timing during the free audit, before work begins.</p>"
+      },
+      {
+       "q": "Do I need to pay before you start?",
+       "a": "<p>No. There is no upfront payment. You review the proof, ask for changes, and pay once you are satisfied.</p>"
+      },
+      {
+       "q": "Will the cleaned-up logo work for embroidery, vinyl and large signs?",
+       "a": "<p>Yes. Vector files are exactly what embroidery digitizers, vinyl cutters and sign printers ask for, and we can simplify fine details so the logo stitches and cuts cleanly.</p>"
+      },
+      {
+       "q": "Who owns the files after the cleanup?",
+       "a": "<p>You do. When the project is complete, the final logo files are yours to use for your business.</p>"
+      }
+     ],
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "a84a045",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Keep exploring",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "More Logo and Branding Services in Austin",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-pen-nib",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Custom Logo Design",
+         "href": "/custom-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>An original logo designed from scratch around your business.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/custom-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-home",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Real Estate Logo Design",
+         "href": "/real-estate-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logos for Austin agents, brokerages and property managers.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/real-estate-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-hard-hat",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Construction Logo Design",
+         "href": "/construction-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Strong marks for trucks, yard signs and job-site gear.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/construction-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-soap",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Cleaning Company Logo Design",
+         "href": "/cleaning-logo-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Fresh, trustworthy logos for maid and janitorial services.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/cleaning-logo-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-layer-group",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Branding Services",
+         "href": "/branding/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logo, cards, colors and social graphics that match.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/branding/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-star",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Logo Design Austin",
+         "href": "/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>See every logo and design service we offer in Austin.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b546423",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Ready to Turn Your AI Logo Into Files That Actually Work?",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Upload it for a free audit. An Austin designer will tell you exactly what it needs, with no pressure and nothing to pay upfront.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "Get My Free AI Logo Audit",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Can you fix a logo made with ChatGPT, Midjourney or Canva?",
+   "a": "<p>Yes. We clean up logos from any AI image tool, including ChatGPT, Midjourney, DALL·E, Canva, Looka and Leonardo. Send the highest-resolution version you have and we rebuild it as vector artwork.</p>"
+  },
+  {
+   "q": "What is the best way to convert an AI logo to SVG?",
+   "a": "<p>Have it redrawn in vector software. We rebuild your logo in Adobe Illustrator and export SVG, EPS, AI and PDF files plus transparent PNGs. Free online converters tend to produce bloated files with distorted text.</p>"
+  },
+  {
+   "q": "Can you correct misspelled words in my AI logo?",
+   "a": "<p>Yes. AI generators often scramble letters. We remove the broken text and set your business name in a matched or upgraded professional font with proper spacing.</p>"
+  },
+  {
+   "q": "How long does it take to fix an AI-generated logo?",
+   "a": "<p>Straightforward cleanups can often be finished the same day after review. Detailed illustrations or a full redesign take longer. Your designer confirms timing during the free audit, before work begins.</p>"
+  },
+  {
+   "q": "Do I need to pay before you start?",
+   "a": "<p>No. There is no upfront payment. You review the proof, ask for changes, and pay once you are satisfied.</p>"
+  },
+  {
+   "q": "Will the cleaned-up logo work for embroidery, vinyl and large signs?",
+   "a": "<p>Yes. Vector files are exactly what embroidery digitizers, vinyl cutters and sign printers ask for, and we can simplify fine details so the logo stitches and cuts cleanly.</p>"
+  },
+  {
+   "q": "Who owns the files after the cleanup?",
+   "a": "<p>You do. When the project is complete, the final logo files are yours to use for your business.</p>"
+  }
+ ],
+ "wordCount": 1629
+}

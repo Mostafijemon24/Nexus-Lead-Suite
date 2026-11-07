@@ -1,0 +1,319 @@
+{
+ "id": 230770,
+ "type": "page",
+ "slug": "terms-of-use",
+ "url": "/terms-of-use/",
+ "title": "Terms of Use",
+ "seo": {
+  "title": "Terms of Use | Logo Austin",
+  "description": "Terms of use for logoaustin.com and Logo Austin (Logo In Hours LLC) logo, branding and design services, including ownership and payment terms.",
+  "focusKeyword": "",
+  "canonical": ""
+ },
+ "featuredImage": null,
+ "date": "2021-08-08 02:40:23",
+ "modified": "2026-11-03 14:57:26",
+ "template": "la",
+ "sections": [
+  {
+   "id": "e181815",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-hero",
+    "la-legal-top"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "text",
+           "html": "<p><a href=\"/\">Home</a> › Terms of Use</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h1",
+           "text": "Terms of Use",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>The terms that apply when you use logoaustin.com and Logo Austin design services.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5fa410c",
+   "classes": [
+    "wd2e-section"
+   ],
+   "bg": "white",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Terms of Use",
+         "align": "center",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fb53f52",
+   "classes": [
+    "wd2e-section"
+   ],
+   "bg": "white",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>Effective date: December 12, 2020</strong></p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Introduction",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>The website is owned by Logo In Hours LLC. In this disclosure, “<strong>WE</strong>”, “<strong>US</strong>” AND “<strong>OUR</strong>” will be referred to Logo In Hours LLC. “<strong>YOU</strong>” AND “<strong>You’re</strong>” will be referred to you the user. This website requires consideration for and as a condition of allowing you access. Reading and accepting the \"Terms of use\" and reading and accepting the provisions of the \"Privacy Policy\" of this website are required considerations for the website granting you the right to visit, read or interact with it.</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Customer orders",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Payment:",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p> The Customer ordering for any of the available services will pay for the Service once the design is approved.  No upfront charge. Designed logo will  be delivered by email in the unusually used formats like JPG, PNG, AI, EPS/ PSD, PDF.</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Refunds:",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Once you have taken final delivery, we cannot provide a refund.</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Copyright for the Logo & Client's Responsibility",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>We will not take responsibility for the custom design, if not protected by the buyer/client through copyright, as our team will design logos based on the logo vision or images provided by clients. We are designers only.  However, we will give support for redesign at 25% of the regular charge once you fail to submit the design while doing a copyright application. We always try to make the design unique and memorable. However, as clients often give their feedback to edit the design before final approval, it may come close to any other design. In that case, if things happen without our knowledge, clients may take discounted advantage to edit the design again. We are not a law office and clients will be requested to contact any law office for filing copyright applications.</p>\n<p>Before placing order to us, we expects the Customer to perform researching on their company name. This is to be sure the name is not already in use and securing a copyright, trademark or service mark. In order to protect the Customer’s legal rights to any name or image. Our company/ websites are not and will not be held responsible for any legal action that may result from improper due diligence on the availability of a company name or image. All trademark matters are the full responsibility of the customer. The company/ we are not responsible for researching nor infringing any trademark violations, that may or may not arise in our dealings with the Customer and his/her agents. We retains rights to display the artwork in our portfolio and advertising materials.</p>\n<p>If any design becomes almost similar to any design inadvertently, full or partial, then please let us know at info@logoinhours.com and by phone at 83- 736-7335 ( use both options) to take off the design from our portfolio and inform clients for whom we did the design.</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Security",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>We are committed to protecting your privacy. We do not sell, share or rent your personal information. All the information stored about you by us is secured by the internal security policy. All our employees and designers sign a Non-Disclouser agreement before they start working with us and must comply with all our privacy policies. It is not our responsibility if an event arises due to unauthorized access to your personal information.</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Responsibility for the Content",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logo In Hours LLC isn’t ready to accept any blame regarding anything posted from some other website or person on the client’s website... Therefore, there is no warranty that the material related to the website you shared with us will be safe. Logo In Hours LLC also doesn’t advocate anyone’s opinion regarding a website, either by a member or someone else. If you’re a client and you’ve shared some private data related to your site, or the project you assigned to us will be at your own risk because we are not responsible if anyone tries to access it using malicious ways.</p>\n<p>Also, the client has to agree before the project that he/she won’t make any issue if there is a problem during or after the project related to the website he/she provided. We’re not responsible if any video or image gets leaked from the client’s site. Moreover, the client will have to pay in order to get all the rights to use the graphics, image of his/her choice. This also includes templates for brochures, T-shirt designs, and any other wallpaper. All in all, the client has to be responsible for any kind of malicious activity.</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Indemnification",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Upon a request by Logo In Hours LLC, you agree to defend, indemnify and hold harmless Logo In Hours LLC  and its subsidiaries, affiliates, officers, virtual offices, Google locations, agents, co-branders or other partners and employees from all liabilities to, claims of any third party due to or arising out of your violation of any of these Terms and Conditions, and any expenses, including, without limitation, reasonable attorneys fees, incurred in connection therewith.</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Copyright Infringement",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>We are always careful about copyright infringement. If there is any concern in this respect on any image or logo we made following the client's instruction, please let us know immediately at info@logoinhours.com and  832-736-7335. We will immediately take necessary action to take off the image, and doing refund to clients for whom we made the same.</p>\n<p>Clients also are requested to avoid any copyright image before requesting us to make any design close or similar to that.</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Marketing",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>We may use your information to notify you about our new services or offers. We may contact you by SMS, Social Media, post, fax, email, or telephone.</p>\n<p>We reserve the right to change and amend these privacy policies without any notice to you. It is your responsibility to regularly review privacy policies.</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Information of Children",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>The Website and Products are for business use and are not intended for or targeted toward children under 18 (“Children”). We do not knowingly collect any information about Children. We encourage parents and legal guardians to monitor the internet usage of their children and ensure they do not provide personal information</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Applicable Law:",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>The company Logo In Hours LLC is a Texas-registered company and governed by Texas Law.</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Changes to this policy",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>We may review this policy from time to time and any changes will be notified to you by posting an updated version on our website and/or by contacting you by email. Any changes will take effect 7 days after the date of our email or the date on which we post the modified terms on our website, whichever is the earlier. We recommend you regularly check for changes and review this policy whenever you visit our website. If you do not agree with any aspect of the updated policy you must immediately notify us and cease using our services.</p>",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Contact Us",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>If you have any questions or concerns about cookies or your privacy when using this Site, please contact us <a href=\"https://www.dusted.com/contact\">using the form on our website</a>.</p>\n<p>Email: <a href=\"mailto:info@logoinhours.com\">info@logoinhours.com</a>,  Phone: <a href=\"tel:8327367335\">832-736-7335</a></p>\n<p>website: <a href=\"/\">https://logoaustin.com</a></p>\n<p><b>website:<a href=\"https://www.logoinhours.com/\"> https://www.logoinhours.com</a></b></p>",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [],
+ "wordCount": 1177
+}

@@ -1,0 +1,578 @@
+{
+ "id": 253558,
+ "type": "page",
+ "slug": "logo-designing-company-near-me-austin-tx",
+ "url": "/logo-designing-company-near-me-austin-tx/",
+ "title": "Logo Designing Company near me Austin TX",
+ "seo": {
+  "title": "Logo Design Company Near Me in Austin, TX | Logo Austin",
+  "description": "Looking for a logo design company near you in Austin? See how Logo Austin works, what it costs, what files you get and how to choose the right designer.",
+  "focusKeyword": "logo design company near me Austin",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/professional-logo-designer.avif",
+  "alt": "professional logo designer",
+  "width": 1200,
+  "height": 628
+ },
+ "date": "2023-03-28 21:50:25",
+ "modified": "2026-11-03 14:58:15",
+ "template": "la",
+ "sections": [
+  {
+   "id": "de7754c",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 60,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "text",
+           "html": "<p><a href=\"/\">Home</a> › Logo Design Company Near Me</p><p>North Austin · 78752</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h1",
+           "text": "Logo Design Company Near You in Austin, TX",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logo Austin is a local logo design company at 7600 Chevy Chase Dr in North Austin. The team designs custom logos from scratch, delivers multiple concepts within hours, and charges nothing until you approve the final design.</p>",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 40,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-18.avif",
+         "alt": "Logo Designer Austin",
+         "width": 612,
+         "height": 408,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "17db3a8",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-text"
+   ],
+   "bg": "white",
+   "variant": "text",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "How to Choose a Logo Design Company in Austin",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>The right logo design company should show real portfolio work, design every logo from scratch, include editable vector files, and be clear about price and revisions before you start. Local availability helps when you need quick answers or a same-day turnaround for an opening or event.</p><ul><li><strong>Portfolio:</strong> look for variety across industries. See the <a href=\"/portfolio/\">Logo Austin portfolio</a>.</li><li><strong>Process:</strong> ask how many concepts and revisions are included.</li><li><strong>Files:</strong> confirm you will receive AI or EPS source files, not only a JPG.</li><li><strong>Ownership:</strong> make sure the final logo is fully yours.</li><li><strong>Payment terms:</strong> know when and how you pay.</li></ul>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "d3c33f8",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-table"
+   ],
+   "bg": "white",
+   "variant": "table",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "What Logo Austin Provides",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<div><table><thead><tr><th scope=\"col\">Question</th><th scope=\"col\">Logo Austin</th></tr></thead><tbody><tr><td><strong>Where is the company?</strong></td><td>7600 Chevy Chase Dr, Suite 300, Austin, TX 78752</td></tr><tr><td><strong>How fast are concepts?</strong></td><td>Multiple concepts within a couple of hours in most cases</td></tr><tr><td><strong>What does it cost?</strong></td><td>$125 to $175 for a custom logo</td></tr><tr><td><strong>When do I pay?</strong></td><td>Only after you approve the final design</td></tr><tr><td><strong>Which files do I get?</strong></td><td>JPG, PNG (transparent), PSD, AI, EPS, SVG and PDF</td></tr><tr><td><strong>Who owns the logo?</strong></td><td>You receive complete ownership</td></tr></tbody></table></div>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "306838c",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-split"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Logos Designed for Your Industry",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Different industries need different logos. A law firm usually suits a classic serif font and conservative colors, a tech startup a modern sans-serif and brighter palette, and a construction company a strong mark that reads on trucks and job-site signs.</p><p>Logo Austin designers work across industries, including <a href=\"/construction-logo-design/\">construction</a>, <a href=\"/real-estate-logo-design/\">real estate</a>, <a href=\"/cleaning-logo-design/\">cleaning</a>, <a href=\"/moving-company-logo-design/\">moving</a>, <a href=\"/electrical-logo-design/\">electrical</a> and <a href=\"/clothing-line-logo-design/\">clothing lines</a>.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "81b059f",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-steps"
+   ],
+   "bg": "white",
+   "variant": "steps",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "How Working With Logo Austin Works",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<ol><li><strong>Call or request a consultation.</strong> Call 512-717-7453 or use the <a href=\"/consultation/\">free consultation</a> page.</li><li><strong>Share your vision.</strong> Provide your business name, any slogan and the look you want.</li><li><strong>Review concepts.</strong> Designers create concepts in Adobe Illustrator and Photoshop and send them for your review.</li><li><strong>Revise and approve.</strong> Comment on your favorite until it represents your brand, then approve and receive your files.</li></ol>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4a74880",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-faq"
+   ],
+   "bg": "white",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-faq"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Logo Design Company FAQs",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Is there a logo design company near me in Austin?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. Logo Austin is located at 7600 Chevy Chase Dr, Suite 300, Austin, TX 78752, and serves businesses across Austin and nearby cities by phone, text and email.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "How much does a logo cost at Logo Austin?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Custom logo design at Logo Austin is priced from $125 to $175. There is no upfront charge; you pay only after you approve the final design.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Do I need to visit the office?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>No. Most Logo Austin projects are completed entirely by phone, text and email, which keeps turnaround fast.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Can one logo work for print and online?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. A single vector logo from Logo Austin can be used on business cards, flyers, posters, brochures, banners, websites and social media.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7d26056",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns",
+        "la-center"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Get Logo Concepts From a Local Austin Team",
+           "align": "center",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>No upfront charge. Multiple custom concepts within hours.</p>",
+           "align": "center",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Is there a logo design company near me in Austin?",
+   "a": "<p>Yes. Logo Austin is located at 7600 Chevy Chase Dr, Suite 300, Austin, TX 78752, and serves businesses across Austin and nearby cities by phone, text and email.</p>"
+  },
+  {
+   "q": "How much does a logo cost at Logo Austin?",
+   "a": "<p>Custom logo design at Logo Austin is priced from $125 to $175. There is no upfront charge; you pay only after you approve the final design.</p>"
+  },
+  {
+   "q": "Do I need to visit the office?",
+   "a": "<p>No. Most Logo Austin projects are completed entirely by phone, text and email, which keeps turnaround fast.</p>"
+  },
+  {
+   "q": "Can one logo work for print and online?",
+   "a": "<p>Yes. A single vector logo from Logo Austin can be used on business cards, flyers, posters, brochures, banners, websites and social media.</p>"
+  }
+ ],
+ "wordCount": 492
+}

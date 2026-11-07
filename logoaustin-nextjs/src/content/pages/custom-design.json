@@ -1,0 +1,677 @@
+{
+ "id": 88,
+ "type": "page",
+ "slug": "custom-design",
+ "url": "/custom-design/",
+ "title": "Custom Design",
+ "seo": {
+  "title": "Custom Logo Design in Austin, TX | Logo Austin",
+  "description": "How custom logo design works at Logo Austin: multiple original concepts, revisions until approved, and final AI, EPS, SVG, PNG and JPG files. $125–$175.",
+  "focusKeyword": "custom logo design Austin",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/personalized-branding.avif",
+  "alt": "personalized branding",
+  "width": 1200,
+  "height": 628
+ },
+ "date": "2020-11-14 15:20:19",
+ "modified": "2026-11-03 14:57:22",
+ "template": "la",
+ "sections": [
+  {
+   "id": "f8f40af",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 60,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "text",
+           "html": "<p><a href=\"/\">Home</a> › Custom Logo Design</p><p>Designed From Scratch</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h1",
+           "text": "Custom Logo Design in Austin: Concepts, Revisions and Final Files",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A custom logo from Logo Austin starts with your business vision, not a template. Designers create several original concepts, refine your favorite through revisions, and deliver print- and web-ready files you fully own.</p>",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 40,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-7.avif",
+         "alt": "Logo Designer Austin",
+         "width": 500,
+         "height": 84,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4fc71b2",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-text"
+   ],
+   "bg": "white",
+   "variant": "text",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "What Is Custom Logo Design?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p><strong>Custom logo design</strong> means a designer creates a logo specifically for your business, starting from a blank canvas. Unlike a logo generator or template, a custom logo is built around your name, your industry and your customers, so it is original and can be protected as your brand.</p><p>At Logo Austin, each custom logo is designed in Adobe Illustrator as a vector graphic. That makes it sharp at any size and easy to adapt for printing, signage, embroidery and the web.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "9f4c13e",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-steps"
+   ],
+   "bg": "white",
+   "variant": "steps",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "How a Custom Logo Is Developed",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<ol><li><strong>Share your vision.</strong> Tell the designers your business name, slogan, industry and any colors, symbols or logos you like or dislike.</li><li><strong>Initial concepts.</strong> Designers create multiple distinct concepts, often within hours, each exploring a different direction.</li><li><strong>Choose a direction.</strong> You select the concept closest to your vision. Parts of different concepts can be combined.</li><li><strong>Revisions.</strong> Fonts, colors, icon details and layout are adjusted based on your feedback until the logo is final.</li><li><strong>Final logo package.</strong> You pay after approval and receive the complete file set and full ownership.</li></ol>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b1a4bb5",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-table"
+   ],
+   "bg": "white",
+   "variant": "table",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Types of Logos We Design",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Choosing the right logo type depends on your name, industry and where the logo will be used most.</p><div><table><thead><tr><th scope=\"col\">Logo Type</th><th scope=\"col\">What It Is</th><th scope=\"col\">Works Well For</th></tr></thead><tbody><tr><td><strong>Wordmark</strong></td><td>The business name in a distinctive font</td><td>Short, memorable names; professional services</td></tr><tr><td><strong>Lettermark / Monogram</strong></td><td>Initials designed as a mark</td><td>Long names; law, finance, real estate</td></tr><tr><td><strong>Icon + Wordmark</strong></td><td>A symbol paired with the name</td><td>Most small businesses; new brands</td></tr><tr><td><strong>Emblem / Badge</strong></td><td>Text inside a shape or crest</td><td>Restaurants, breweries, schools, apparel</td></tr><tr><td><strong>Mascot</strong></td><td>An illustrated character</td><td>Sports, food, gaming and kids' brands</td></tr></tbody></table></div>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "017b6c3",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-split"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Logo Strategy: Positioning and Brand Features",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A custom logo should communicate how your business wants to be seen. Designers consider <strong>positioning</strong> (premium, affordable, friendly, technical), the <strong>brand features</strong> customers should notice, and how the logo will be used across digital and printed materials.</p><p>The goal is a logo that is simple, efficient and attractive: easy to recognize, easy to reproduce and right for your market.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-33-2.avif",
+         "alt": "Logo Designer Austin",
+         "width": 533,
+         "height": 505,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2b810c7",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-table"
+   ],
+   "bg": "white",
+   "variant": "table",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Files Included With Every Custom Logo",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<div><table><thead><tr><th scope=\"col\">Format</th><th scope=\"col\">Use It For</th></tr></thead><tbody><tr><td><strong>AI / EPS</strong></td><td>Editable vector source files for printers, sign makers and future edits</td></tr><tr><td><strong>SVG</strong></td><td>Websites and apps; scales without losing quality</td></tr><tr><td><strong>PDF</strong></td><td>Sending print-ready artwork</td></tr><tr><td><strong>PNG (transparent)</strong></td><td>Websites, social media and placing the logo over photos</td></tr><tr><td><strong>JPG</strong></td><td>Email, documents and quick sharing</td></tr></tbody></table></div>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3c5cfdc",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-faq"
+   ],
+   "bg": "white",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-faq"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Custom Logo Design FAQs",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "How much does a custom logo cost at Logo Austin?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Custom logo design at Logo Austin is priced from $125 to $175, depending on the complexity of the design. There is no upfront charge: you review the concepts and pay only when you are satisfied.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "How many logo concepts will I receive?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logo Austin provides multiple distinct concepts at the start of every custom logo project so you can compare directions before choosing one to refine.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "How many revisions are included?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Revisions continue until you are satisfied with the logo. Because payment is due only after approval, the design is finished when you say it is.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "What file formats are included?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Final logos are delivered in JPG, PNG (transparent background), PDF, SVG, AI and EPS formats, so the same logo works on websites, social media, business cards, signs, apparel and print.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Do I own the final logo?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. Logo Austin provides complete ownership of the final logo design along with the editable source files, and can assist with copyright paperwork.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Can my logo be used on shirts and embroidered hats?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. Vector files work for screen printing, and Logo Austin can also prepare a DST file for embroidery.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "78b959b",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns",
+        "la-center"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Start Your Custom Logo",
+           "align": "center",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Get multiple original logo concepts today and pay only when you love the result.</p>",
+           "align": "center",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "How much does a custom logo cost at Logo Austin?",
+   "a": "<p>Custom logo design at Logo Austin is priced from $125 to $175, depending on the complexity of the design. There is no upfront charge: you review the concepts and pay only when you are satisfied.</p>"
+  },
+  {
+   "q": "How many logo concepts will I receive?",
+   "a": "<p>Logo Austin provides multiple distinct concepts at the start of every custom logo project so you can compare directions before choosing one to refine.</p>"
+  },
+  {
+   "q": "How many revisions are included?",
+   "a": "<p>Revisions continue until you are satisfied with the logo. Because payment is due only after approval, the design is finished when you say it is.</p>"
+  },
+  {
+   "q": "What file formats are included?",
+   "a": "<p>Final logos are delivered in JPG, PNG (transparent background), PDF, SVG, AI and EPS formats, so the same logo works on websites, social media, business cards, signs, apparel and print.</p>"
+  },
+  {
+   "q": "Do I own the final logo?",
+   "a": "<p>Yes. Logo Austin provides complete ownership of the final logo design along with the editable source files, and can assist with copyright paperwork.</p>"
+  },
+  {
+   "q": "Can my logo be used on shirts and embroidered hats?",
+   "a": "<p>Yes. Vector files work for screen printing, and Logo Austin can also prepare a DST file for embroidery.</p>"
+  }
+ ],
+ "wordCount": 628
+}

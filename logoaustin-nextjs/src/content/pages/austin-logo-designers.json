@@ -1,0 +1,1068 @@
+{
+ "id": 253892,
+ "type": "page",
+ "slug": "austin-logo-designers",
+ "url": "/austin-logo-designers/",
+ "title": "Austin Logo Designers",
+ "seo": {
+  "title": "Austin Logo Designers | Our Team, Process & Pricing",
+  "description": "Austin logo designers creating original custom logos from scratch. Multiple concepts the same day, unlimited revisions, $125–$175, no upfront payment.",
+  "focusKeyword": "logo designer Austin",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/logo-design-austin-12.avif",
+  "alt": "Logo Design Austin",
+  "width": 1000,
+  "height": 600
+ },
+ "date": "2023-12-19 04:19:39",
+ "modified": "2026-11-03 14:58:20",
+ "template": "la",
+ "sections": [
+  {
+   "id": "3fc8832",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 60,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "text",
+           "html": "<p><a href=\"/\">Home</a> › Austin Logo Designers</p><p>Local Logo Design Team · Austin, TX</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h1",
+           "text": "Austin Logo Designers for Custom Business Logos",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logo Austin is a team of Austin-based logo designers who create original logos from scratch for small businesses, startups and local brands. Share your business name and idea, and you will receive multiple logo concepts the same day, with no upfront payment.</p>",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 40,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/austin-logo-designers.avif",
+         "alt": "austin logo designers",
+         "width": 400,
+         "height": 284,
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "88e64c2",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-facts"
+   ],
+   "bg": "ink",
+   "variant": "trust",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>Same Day</strong>multiple concepts</p>",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>$125–$175</strong>custom logo price</p>",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>$0 Upfront</strong>pay when satisfied</p>",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 25,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "text",
+         "html": "<p><strong>Austin, TX</strong>7600 Chevy Chase Dr</p>",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7ec47a6",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-text"
+   ],
+   "bg": "white",
+   "variant": "text",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "What Do Austin Logo Designers at Logo Austin Do?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p><strong>Logo Austin's logo designers</strong> turn a business name and a rough idea into a finished, professional logo. Every logo is drawn from scratch in Adobe Illustrator rather than assembled from templates, so the result is original to your business and can be scaled from a business card to a billboard.</p><p>The team works with brand-new businesses that need a first logo, established companies that want a refresh, and owners who need an existing logo cleaned up or converted to vector format.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "84a7b45",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-cards"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Logo Design Services in Austin",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "New Custom Logo",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>An original logo designed from your business name, industry and style preferences, with multiple concepts to choose from.</p><p><a href=\"/custom-design/\">Custom logo design &rarr;</a></p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Logo Redesign & Enhancement",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A refresh of an outdated logo: modern fonts, a refined color palette and simplified shapes that read clearly at small sizes.</p><p><a href=\"/logo-cleaning-service-or-logo-redesign/\">Logo redesign &rarr;</a></p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Vectorization & Embroidery Files",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Low-resolution or pixelated logos rebuilt as clean vector files, plus DST files for embroidery on shirts and hats.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Mascot & Illustrated Logos",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Character and mascot logos for sports teams, food businesses, gaming channels and apparel brands.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Industry Logos",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logos for construction, real estate, cleaning, moving, electrical and clothing businesses, designed around each industry's customers.</p><p><a href=\"/construction-logo-design/\">See industry logos &rarr;</a></p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 33.3333,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-card"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Full Brand Kits",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Your new logo applied to business cards, flyers, banners, social headers and a website.</p><p><a href=\"/branding/\">Branding services &rarr;</a></p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "60c4a8c",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-steps"
+   ],
+   "bg": "white",
+   "variant": "steps",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "How the Logo Design Process Works",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A typical Logo Austin project moves from first call to final files in about a day.</p><ol><li><strong>Research and discovery.</strong> You share your business name, slogan, industry, target customers and any colors or logos you like. Designers review competitors in your field.</li><li><strong>Concept development.</strong> Designers sketch and build several distinct logo concepts, usually delivered by text or email within a few hours.</li><li><strong>Feedback and revisions.</strong> You pick a favorite and request changes to fonts, colors, icons or layout. Revisions continue until the logo is right.</li><li><strong>Final files.</strong> After you approve and pay, you receive the complete file set in JPG, PNG, PDF, SVG, AI and EPS formats with full ownership.</li></ol>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "529eb82",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-split"
+   ],
+   "bg": "white",
+   "variant": "split",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/logo-design-austin-5.avif",
+         "alt": "Logo Designer Austin",
+         "width": 1600,
+         "height": 375,
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 50,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "What Makes a Logo Work for an Austin Business?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>A strong logo is <strong>simple, memorable and versatile</strong>. It must stay legible on a phone screen and an embroidered hat, work in one color, and signal the right tone for the industry: a law firm usually needs a restrained serif mark, while a food truck or apparel brand can be bold and playful.</p><p>Logo Austin designers also consider where the logo will appear first. A contractor's logo has to read on a truck door from across a parking lot; a boutique's logo has to look good on a shopping bag and an Instagram profile.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "06fdac8",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-table"
+   ],
+   "bg": "white",
+   "variant": "table",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Logo Austin vs. Other Ways to Get a Logo",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<div><table><thead><tr><th scope=\"col\">Option</th><th scope=\"col\">Turnaround</th><th scope=\"col\">Originality</th><th scope=\"col\">Revisions & Support</th></tr></thead><tbody><tr><td><strong>Logo Austin designers</strong></td><td>Concepts the same day</td><td>Designed from scratch</td><td>Revisions until approved; local Austin team</td></tr><tr><td><strong>Online logo generator</strong></td><td>Minutes</td><td>Template-based; others may use similar marks</td><td>Self-service only</td></tr><tr><td><strong>Freelance marketplace</strong></td><td>Days to weeks</td><td>Varies by designer</td><td>Varies; often limited revision rounds</td></tr><tr><td><strong>Large branding agency</strong></td><td>Weeks to months</td><td>Original</td><td>Extensive, at a much higher budget</td></tr></tbody></table></div>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2795d74",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-text"
+   ],
+   "bg": "white",
+   "variant": "text",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Where Logo Austin Works",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logo Austin's office is at <strong>7600 Chevy Chase Dr, Suite 300, Austin, TX 78752</strong>, in North Austin. Most projects are handled by phone, text and email, so clients across Austin and nearby cities work with the team without an office visit. Many clients come from <a href=\"/round-rock-logo-design/\">Round Rock</a>, <a href=\"/cedar-park-logo-design/\">Cedar Park</a>, <a href=\"/georgetown-logo-design/\">Georgetown</a>, <a href=\"/pflugerville-logo-design/\">Pflugerville</a> and <a href=\"/san-marcos-logo-design/\">San Marcos</a>.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "502f4e8",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-faq"
+   ],
+   "bg": "white",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text",
+          "la-faq"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Austin Logo Designer FAQs",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "How fast can I get a logo in Austin?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logo Austin usually delivers the first logo concepts the same day you share your business name and idea. Final files follow as soon as you approve a concept.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "How much does a custom logo cost at Logo Austin?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Custom logo design at Logo Austin is priced from $125 to $175, depending on the complexity of the design. There is no upfront charge: you review the concepts and pay only when you are satisfied.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "What file formats are included?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Final logos are delivered in JPG, PNG (transparent background), PDF, SVG, AI and EPS formats, so the same logo works on websites, social media, business cards, signs, apparel and print.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Do I own the final logo?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. Logo Austin provides complete ownership of the final logo design along with the editable source files, and can assist with copyright paperwork.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "Can you redesign or clean up my existing logo?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Yes. Logo Austin refreshes outdated logos by updating fonts, colors and clarity, and rebuilds blurry logos as clean vector files.</p>",
+           "classes": []
+          },
+          {
+           "t": "heading",
+           "level": "h3",
+           "text": "How can I pay?",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Logo Austin accepts Cash App, Zelle, PayPal and bank deposit. Payment is due only after you approve the final design.</p>",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7ac0e02",
+   "classes": [
+    "wd2e-section",
+    "la-sec",
+    "la-dark",
+    "la-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "wd2e-row"
+     ],
+     "dir": "row",
+     "wrap": false,
+     "boxed": true,
+     "align": "flex-start",
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "wd2e-col",
+        "la-btns",
+        "la-center"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "children": [
+        {
+         "t": "container",
+         "classes": [
+          "la-text"
+         ],
+         "dir": "column",
+         "wrap": false,
+         "boxed": false,
+         "children": [
+          {
+           "t": "heading",
+           "level": "h2",
+           "text": "Talk to an Austin Logo Designer Today",
+           "align": "center",
+           "classes": []
+          },
+          {
+           "t": "text",
+           "html": "<p>Share your business name and idea, and see your first logo concepts today. No upfront payment.</p>",
+           "align": "center",
+           "classes": []
+          }
+         ]
+        },
+        {
+         "t": "button",
+         "text": "Get a Free Consultation",
+         "href": "/consultation/",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call 512-717-7453",
+         "href": "tel:+15127177453",
+         "style": "primary",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "How fast can I get a logo in Austin?",
+   "a": "<p>Logo Austin usually delivers the first logo concepts the same day you share your business name and idea. Final files follow as soon as you approve a concept.</p>"
+  },
+  {
+   "q": "How much does a custom logo cost at Logo Austin?",
+   "a": "<p>Custom logo design at Logo Austin is priced from $125 to $175, depending on the complexity of the design. There is no upfront charge: you review the concepts and pay only when you are satisfied.</p>"
+  },
+  {
+   "q": "What file formats are included?",
+   "a": "<p>Final logos are delivered in JPG, PNG (transparent background), PDF, SVG, AI and EPS formats, so the same logo works on websites, social media, business cards, signs, apparel and print.</p>"
+  },
+  {
+   "q": "Do I own the final logo?",
+   "a": "<p>Yes. Logo Austin provides complete ownership of the final logo design along with the editable source files, and can assist with copyright paperwork.</p>"
+  },
+  {
+   "q": "Can you redesign or clean up my existing logo?",
+   "a": "<p>Yes. Logo Austin refreshes outdated logos by updating fonts, colors and clarity, and rebuilds blurry logos as clean vector files.</p>"
+  },
+  {
+   "q": "How can I pay?",
+   "a": "<p>Logo Austin accepts Cash App, Zelle, PayPal and bank deposit. Payment is due only after you approve the final design.</p>"
+  }
+ ],
+ "wordCount": 847
+}

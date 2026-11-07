@@ -1,0 +1,969 @@
+{
+ "id": 91,
+ "type": "page",
+ "slug": "consultation",
+ "url": "/consultation/",
+ "title": "Consultation",
+ "seo": {
+  "title": "Free Logo Consultation in Austin, TX | Logo Design Austin",
+  "description": "Talk with an Austin logo designer for free by phone, text or WhatsApp, or upload your current or AI logo for review. No obligation and no upfront payment.",
+  "focusKeyword": "free logo consultation Austin",
+  "canonical": ""
+ },
+ "featuredImage": {
+  "src": "/images/pages/branding-advice.avif",
+  "alt": "branding advice",
+  "width": 1200,
+  "height": 628
+ },
+ "date": "2020-11-14 15:21:53",
+ "modified": "2026-11-04 14:18:37",
+ "template": "lda",
+ "sections": [
+  {
+   "id": "a5c2e5a",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-hero"
+   ],
+   "bg": "ink",
+   "variant": "hero",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 53,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Free consultation · Austin, TX",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h1",
+         "text": "Free Logo Consultation in Austin, TX",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Tell us what you need, or upload the logo you already have, even a rough AI image. An Austin designer will reply with honest advice, timing and next steps. No obligation, and nothing to pay upfront.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "container",
+         "classes": [],
+         "dir": "row",
+         "wrap": true,
+         "width": 100,
+         "boxed": false,
+         "justify": "flex-start",
+         "children": [
+          {
+           "t": "button",
+           "text": "Start My Free Consultation",
+           "href": "#consultation",
+           "style": "primary",
+           "classes": []
+          },
+          {
+           "t": "button",
+           "text": "Call (512) 782-9748",
+           "href": "tel:+15127829748",
+           "style": "ghost",
+           "icon": "fas fa-phone-alt",
+           "classes": []
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 41,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "image",
+         "src": "/images/pages/downtown-austin-skyline-across-lady-bird-lake-on-a-clear-day.avif",
+         "alt": "Downtown Austin skyline across Lady Bird Lake on a clear day",
+         "width": 900,
+         "height": 650,
+         "displayWidth": 100,
+         "classes": []
+        },
+        {
+         "t": "badge",
+         "strong": "Seven days a week",
+         "text": "Call, text, WhatsApp or use the form.",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cff62ca",
+   "classes": [
+    "lih-cf"
+   ],
+   "bg": "white",
+   "variant": "consultationForm",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "width": 1000,
+     "widthMobile": 100,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 58,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#FFFFFF",
+       "children": [
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Get Your Free Consultation",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Share your business and logo vision. Get custom concepts today with <strong>no upfront payment</strong>.</p>",
+         "classes": []
+        },
+        {
+         "t": "form",
+         "name": "Free Logo Consultation (Contact)",
+         "fields": [
+          {
+           "id": "name",
+           "type": "text",
+           "label": "Name/Nombre",
+           "placeholder": "Name/Nombre",
+           "required": true,
+           "width": 100
+          },
+          {
+           "id": "email",
+           "type": "email",
+           "label": "Email",
+           "placeholder": "Email/Correo electrónico",
+           "required": true,
+           "width": 50
+          },
+          {
+           "id": "mobile",
+           "type": "text",
+           "label": "Mobile",
+           "placeholder": "Mobile/Móvil",
+           "required": true,
+           "width": 50
+          },
+          {
+           "id": "svclabel",
+           "type": "html",
+           "label": "",
+           "placeholder": "",
+           "required": false,
+           "width": 100
+          },
+          {
+           "id": "service",
+           "type": "radio",
+           "label": "Service Needed",
+           "placeholder": "",
+           "required": true,
+           "width": 100,
+           "options": [
+            "Custom Logo/Logotipo personalizado",
+            "Graphic /gráfico",
+            "Logo & Website /Logotipo y Sitio Web"
+           ]
+          }
+         ],
+         "button": "Submit",
+         "success": "Thank you! A designer will contact you shortly.",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Prefer to talk? Call <a href=\"tel:+15127829748\">(512) 782-9748</a>. No upfront charge • Multiple concepts • Revisions included.</p>",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 42,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#16325E",
+       "justify": "center",
+       "children": [
+        {
+         "t": "text",
+         "html": "<div><p>Free consultation • No upfront charge</p><h3>Custom logo design, delivered fast</h3><p>Work directly with professional designers to create a custom logo for your business. Fast concepts, multiple revisions, and high-resolution files, with no upfront payment.</p><ul><li>Same-day concepts for most projects</li><li>Multiple concepts & revisions included</li><li>High-resolution & vector files (AI, SVG, PNG, PDF)</li><li>You keep full ownership of your logo</li></ul><div>Prefer to talk? <a href=\"tel:+15127829748\">(512) 782-9748</a></div></div>",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "d189d6a",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "generic",
+   "children": [
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "justify": "space-between",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "column",
+       "wrap": false,
+       "width": 100,
+       "widthTablet": 100,
+       "widthMobile": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "heading",
+         "level": "p",
+         "text": "Start here",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h2",
+         "text": "Tell Us About Your Logo or Project",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Use the form to describe your project and attach any files: a sketch, an old logo, or the image an AI tool made for you. If you would rather talk, call or text the number below and a designer will pick it up from there.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "list",
+         "items": [
+          {
+           "text": "Upload PNG, JPG, SVG, PDF, AI or EPS files up to 10 MB",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Get a free review of any AI-generated logo",
+           "icon": "fas fa-check-circle"
+          },
+          {
+           "text": "Choose to be called, texted or emailed back",
+           "icon": "fas fa-check-circle"
+          }
+         ],
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<div><a href=\"tel:+15127829748\">Call (512) 782-9748</a><a href=\"sms:+15127829748\">Text (512) 782-9748</a><a href=\"https://wa.me/19792507486\" target=\"_blank\" rel=\"noopener\">Message on WhatsApp</a></div>",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "f65d39e",
+   "classes": [
+    "lda-sec",
+    "lda-bg-cream"
+   ],
+   "bg": "cream",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "What happens next",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "What Happens After You Reach Out",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Simple and quick, with no pressure at any step.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "01",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "We review your request",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>A designer looks at your notes and any files, including AI logos you want fixed.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "02",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "We contact you",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>You get a call, text or email, whichever you chose, with questions and a clear plan.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "heading",
+         "level": "span",
+         "text": "03",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Work begins",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>For logos, same-day first concepts are often possible for straightforward projects. You approve before you pay.</p>",
+         "align": "left",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "container",
+       "classes": [],
+       "dir": "row",
+       "wrap": true,
+       "width": 100,
+       "boxed": false,
+       "justify": "center",
+       "children": [
+        {
+         "t": "button",
+         "text": "Start My Free Consultation",
+         "href": "#consultation",
+         "style": "primary",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Call (512) 782-9748",
+         "href": "tel:+15127829748",
+         "style": "ghost",
+         "icon": "fas fa-phone-alt",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "642e184",
+   "classes": [
+    "lda-sec",
+    "lda-bg-soft"
+   ],
+   "bg": "soft",
+   "variant": "faq",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Questions, answered",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Consultation Questions",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "accordion",
+     "items": [
+      {
+       "q": "Is the consultation really free?",
+       "a": "<p>Yes. The consultation is free and there is no obligation to order. For logo design you also pay nothing until you approve the final design.</p>"
+      },
+      {
+       "q": "Can I send you a logo I made with AI?",
+       "a": "<p>Yes. Upload it with the form or send it by text or WhatsApp. A designer will tell you what needs fixing and whether a cleanup or a new design makes more sense. Learn more on our <a href=\"/fix-ai-generated-logo/\">AI logo cleanup page</a>.</p>"
+      },
+      {
+       "q": "Do I need to visit an office?",
+       "a": "<p>No. Consultations and projects are handled by phone, text, WhatsApp and email, so you can work with us from anywhere in Austin or Central Texas.</p>"
+      },
+      {
+       "q": "When are consultations available?",
+       "a": "<p>Consultations are available seven days a week. Send a message any time and a designer will get back to you.</p>"
+      },
+      {
+       "q": "How do I pay when the work is done?",
+       "a": "<p>After you approve your design, you can pay by Cash App, Zelle, PayPal or bank deposit. We never ask for card numbers through the website or by text.</p>"
+      }
+     ],
+     "classes": []
+    }
+   ]
+  },
+  {
+   "id": "065b7bd",
+   "classes": [
+    "lda-sec",
+    "lda-bg-white"
+   ],
+   "bg": "white",
+   "variant": "cards",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "p",
+       "text": "Explore services",
+       "classes": []
+      },
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Not Sure What You Need Yet?",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "boxed": false,
+     "children": [
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-pen-nib",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Custom Logo Design",
+         "href": "/custom-design/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>An original logo designed from scratch.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/custom-design/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-magic",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Fix an AI-Generated Logo",
+         "href": "/fix-ai-generated-logo/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Clean up and vectorize a logo made with AI.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/fix-ai-generated-logo/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-layer-group",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Branding Services",
+         "href": "/branding/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logo, colors, cards and social graphics.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/branding/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-box-open",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Business Starter Package",
+         "href": "/business-packages/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Logo, website and business cards for $950.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/business-packages/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-images",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Portfolio",
+         "href": "/portfolio/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>See logos we have designed.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/portfolio/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      },
+      {
+       "t": "container",
+       "classes": [
+        "lda-card"
+       ],
+       "dir": "column",
+       "wrap": false,
+       "width": 31.5,
+       "widthTablet": 48,
+       "widthMobile": 100,
+       "boxed": false,
+       "bg": "#ffffff",
+       "children": [
+        {
+         "t": "icon",
+         "icon": "fas fa-star",
+         "classes": []
+        },
+        {
+         "t": "heading",
+         "level": "h3",
+         "text": "Logo Design Austin",
+         "href": "/",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "text",
+         "html": "<p>Back to all logo and design services in Austin.</p>",
+         "align": "left",
+         "classes": []
+        },
+        {
+         "t": "button",
+         "text": "Explore",
+         "href": "/",
+         "style": "link",
+         "icon": "fas fa-arrow-right",
+         "classes": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ec3aefb",
+   "classes": [
+    "lda-sec",
+    "lda-bg-ink",
+    "lda-cta"
+   ],
+   "bg": "ink",
+   "variant": "cta",
+   "children": [
+    {
+     "t": "container",
+     "classes": [
+      "lda-head",
+      "lda-center"
+     ],
+     "dir": "column",
+     "wrap": false,
+     "boxed": false,
+     "align": "center",
+     "children": [
+      {
+       "t": "heading",
+       "level": "h2",
+       "text": "Ready to Talk to an Austin Designer?",
+       "align": "center",
+       "classes": []
+      },
+      {
+       "t": "text",
+       "html": "<p>Call, text or send the form. Same-day first concepts are often possible for straightforward projects after review.</p>",
+       "align": "center",
+       "classes": []
+      }
+     ]
+    },
+    {
+     "t": "container",
+     "classes": [],
+     "dir": "row",
+     "wrap": true,
+     "width": 100,
+     "boxed": false,
+     "justify": "center",
+     "children": [
+      {
+       "t": "button",
+       "text": "Start My Free Consultation",
+       "href": "#consultation",
+       "style": "primary",
+       "classes": []
+      },
+      {
+       "t": "button",
+       "text": "Call (512) 782-9748",
+       "href": "tel:+15127829748",
+       "style": "ghost",
+       "icon": "fas fa-phone-alt",
+       "classes": []
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Is the consultation really free?",
+   "a": "<p>Yes. The consultation is free and there is no obligation to order. For logo design you also pay nothing until you approve the final design.</p>"
+  },
+  {
+   "q": "Can I send you a logo I made with AI?",
+   "a": "<p>Yes. Upload it with the form or send it by text or WhatsApp. A designer will tell you what needs fixing and whether a cleanup or a new design makes more sense. Learn more on our <a href=\"/fix-ai-generated-logo/\">AI logo cleanup page</a>.</p>"
+  },
+  {
+   "q": "Do I need to visit an office?",
+   "a": "<p>No. Consultations and projects are handled by phone, text, WhatsApp and email, so you can work with us from anywhere in Austin or Central Texas.</p>"
+  },
+  {
+   "q": "When are consultations available?",
+   "a": "<p>Consultations are available seven days a week. Send a message any time and a designer will get back to you.</p>"
+  },
+  {
+   "q": "How do I pay when the work is done?",
+   "a": "<p>After you approve your design, you can pay by Cash App, Zelle, PayPal or bank deposit. We never ask for card numbers through the website or by text.</p>"
+  }
+ ],
+ "wordCount": 572
+}
