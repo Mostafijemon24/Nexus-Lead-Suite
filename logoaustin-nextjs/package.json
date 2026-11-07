@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "build:static": "STATIC_EXPORT=1 next build",
+    "typecheck": "tsc --noEmit",
+    "docs": "node scripts/generate-docs.mjs",
+    "migrate": "node scripts/convert-elementor.mjs",
+    "postmigrate": "node scripts/build-image-widths.mjs",
+    "deploy:staging": "bash scripts/deploy-staging.sh"
   },
   "dependencies": {
     "next": "16.4.5",

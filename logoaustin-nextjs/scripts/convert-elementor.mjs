@@ -483,6 +483,8 @@ for (const p of pages) {
     }
     html = html.replace(/href="([^"]+)"/g, (m, u) => `href="${normalizeHref(decode(u))}"`);
     html = html.replace(/\sstyle="[^"]*"/g, '').replace(/\sclass="[^"]*"/g, '');
+    // keep a logical heading outline (some posts jump from h2 to h5)
+    html = html.replace(/<(\/?)h[456]\b/g, '<$1h3');
     // headings -> ids + toc
     const toc = [];
     html = html.replace(/<h2([^>]*)>([\s\S]*?)<\/h2>/g, (m, attrs, inner) => {

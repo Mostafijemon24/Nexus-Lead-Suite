@@ -8,7 +8,7 @@ import Icon from "@/components/ui/Icon";
 export default function ReviewsButton() {
   const google = reviewSources[0];
   return (
-    <>
+    <aside className="reviews-aside" aria-label="Customer reviews shortcut">
       <a href="#reviews" className="reviews-fab reviews-fab--local" aria-label="Jump to customer reviews">
         <Icon name="star" size={16} />
         <span>Reviews</span>
@@ -17,6 +17,6 @@ export default function ReviewsButton() {
         <Icon name="star" size={16} />
         <span>Reviews</span>
       </a>
-    </>
+    </aside>
   );
 }

@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { CONSULTATION_EVENT } from "./consultation-events";
-import ConsultationForm from "./ConsultationForm";
+import dynamic from "next/dynamic";
+
+const ConsultationForm = dynamic(() => import("./ConsultationForm"), { ssr: false, loading: () => <p className="modal__lead">Loading form…</p> });
 import Icon from "@/components/ui/Icon";
 import { site } from "@/data/site";
 

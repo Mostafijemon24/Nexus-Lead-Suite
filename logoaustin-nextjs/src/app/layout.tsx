@@ -9,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 import StickyBar from "@/components/layout/StickyBar";
 import ConsultationModal from "@/components/consultation/ConsultationModal";
 
+// Both fonts are self-hosted via next/font with metric-compatible fallbacks (CLS 0).
 const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-sans" });
 const serif = DM_Serif_Display({ subsets: ["latin"], weight: "400", display: "swap", variable: "--font-display" });
 

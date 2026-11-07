@@ -1,0 +1,40 @@
+# ---- Logo Austin Next.js static export (staging) -------------------------------------------
+# Appended to the WordPress .htaccess on the temporary Hostinger domain. The exported HTML lives
+# next to the WordPress files; existing files/directories are served directly (WordPress' own
+# rewrite rules only run for paths that do not exist), so index.html wins for every exported route.
+# BEGIN LogoAustinStaging
+DirectoryIndex index.html index.php
+
+# Never let search engines index the temporary domain.
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow, noarchive"
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  <FilesMatch "\.(avif|webp|png|jpg|jpeg|svg|woff2|css|js)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(html|txt|xml)$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+AddType image/avif .avif
+AddType font/woff2 .woff2
+
+# Optional password protection (recommended while clients review). Create the password file with
+# `htpasswd -B -c /home/<account>/domains/<staging-domain>/.htpasswd-staging preview` and remove the
+# leading "#" from the block below. The /wp-json/ and /api/ paths stay open so the WordPress
+# connector and the form endpoint keep working.
+#SetEnvIf Request_URI "^/wp-json/" noauth
+#SetEnvIf Request_URI "^/api/" noauth
+#AuthType Basic
+#AuthName "Logo Austin staging preview"
+#AuthUserFile /home/<account>/domains/<staging-domain>/.htpasswd-staging
+#<RequireAny>
+#  Require env noauth
+#  Require valid-user
+#</RequireAny>
+
+# Static 404 page from the export.
+ErrorDocument 404 /404.html
+# END LogoAustinStaging

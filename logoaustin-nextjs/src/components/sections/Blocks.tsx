@@ -21,6 +21,7 @@ function hasRenderableContent(node: ContentNode): boolean {
 
 function Heading({ node, ctx }: { node: HeadingNode; ctx: Ctx }) {
   const lvl = node.level.toLowerCase();
+  if (!node.text.trim()) return null;
   const align = node.align ? ` align-${node.align}` : "";
   if (lvl === "p" || lvl === "span") {
     // Elementor "heading" widgets with p/span size are eyebrow labels in this design
@@ -76,7 +77,12 @@ function Img({ node, ctx }: { node: ImageNode; ctx: Ctx }) {
       className="img"
     />
   );
-  const figure = <figure className={`figure${isHero ? " figure--hero" : ""}`}>{node.href ? <Link href={node.href}>{img}</Link> : img}</figure>;
+  const style = isHero && node.width < 640 ? ({ ["--max" as string]: `${node.width}px` } as CSSProperties) : undefined;
+  const figure = (
+    <figure className={`figure${isHero ? " figure--hero" : ""}`} style={style}>
+      {node.href ? <Link href={node.href}>{img}</Link> : img}
+    </figure>
+  );
   return figure;
 }
 

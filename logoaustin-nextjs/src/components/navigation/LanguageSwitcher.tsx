@@ -36,7 +36,7 @@ export default function LanguageSwitcher() {
 
   return (
     <div className={`lang${open ? " is-open" : ""}`} ref={ref} translate="no">
-      <button type="button" className="lang__btn" aria-haspopup="menu" aria-expanded={open} aria-label="Choose language" onClick={() => setOpen((o) => !o)}>
+      <button type="button" className="lang__btn" aria-haspopup="menu" aria-expanded={open} aria-label={`${isEs ? "ES" : "EN"} – change language`} onClick={() => setOpen((o) => !o)}>
         <Icon name="globe" size={16} />
         <span>{isEs ? "ES" : "EN"}</span>
         <Icon name="chevron-down" size={14} />
