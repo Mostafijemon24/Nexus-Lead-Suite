@@ -4,6 +4,11 @@
 # rewrite rules only run for paths that do not exist), so index.html wins for every exported route.
 # BEGIN LogoAustinStaging
 DirectoryIndex index.html index.php
+# LiteSpeed ignores DirectoryIndex order for the docroot, so route "/" to the exported homepage explicitly.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^$ /index.html [L]
+</IfModule>
 
 # Never let search engines index the temporary domain.
 <IfModule mod_headers.c>
@@ -35,6 +40,7 @@ AddType font/woff2 .woff2
 #  Require valid-user
 #</RequireAny>
 
-# Static 404 page from the export.
+# Static 404 page from the export. The WordPress catch-all rule above is limited to WordPress paths
+# (wp-json, wp-admin, wp-login.php, xmlrpc.php) by the deploy step so unknown URLs return a real 404.
 ErrorDocument 404 /404.html
 # END LogoAustinStaging

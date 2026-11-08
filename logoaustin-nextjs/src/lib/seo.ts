@@ -23,7 +23,7 @@ export function buildMetadata(doc: AnyDoc): Metadata {
   const image = doc.featuredImage ? absoluteUrl(doc.featuredImage.src.replace(/\.avif$/, `-w${pickOgWidth(doc.featuredImage.width)}.avif`)) : absoluteUrl(site.defaultOgImage);
   const isPost = doc.type === "post";
   return {
-    title: titleFor(doc),
+    title: { absolute: titleFor(doc) }, // Yoast titles already carry the brand suffix
     description: descriptionFor(doc),
     alternates: { canonical: doc.seo.canonical || url, languages: alternatesFor(doc.url) },
     robots: robotsMeta,
